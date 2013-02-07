@@ -1,15 +1,19 @@
 open List;;
 
-type variable_rule = char * int list;;
+type variables = int list;;
+type variable_rule = char * variables;;
 type variable_rules = variable_rule list;;
 type production_rules = variable_rules list;;
 
 type gnf = int * char list * production_rules;;
 
+(* variable -> string *)
+let string_of_variables vars =
+  String.concat "" (map (fun v -> "X" ^ string_of_int v) vars);;
+
 (* variable_rule -> string *)
 let string_of_variable_rule = function
-  (c, vars) ->
-    fold_left (fun s v -> s ^ "X" ^ (string_of_int v)) (String.make 1 c) vars;;
+  (c, vars) -> (String.make 1 c) ^ string_of_variables vars;;
 
 (* variable_rules -> string *)
 let string_of_variable_rules r =
@@ -56,15 +60,17 @@ let initial_base prods =
 	  ([j], i::(norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
   addji 0 0;;
 
-let print_int_list = iter (Printf.printf "%d ")
+let string_of_base b = String.concat ","
+  (map (function (x,y) -> "(" ^ (string_of_variables x) ^ "," ^ (string_of_variables y) ^ ")") b);;
 
 let main () =
   let prods = [[('a', []); ('a', [1])];
 				  [('b', [0])]] in
-  let test = norm_reduce 0 [1;1;1] prods in
+  let nr_test = norm_reduce 0 [1;1;1] prods in
+  let base_test = initial_base prods in
 
-  print_int_list test;
-  print_endline "";
+  print_endline (string_of_base base_test);
+  print_endline (string_of_variables nr_test);
 
   print_endline "Production rules:";
   print_production_rules prods;
