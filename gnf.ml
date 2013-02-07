@@ -1,5 +1,4 @@
 open List;;
-open String;;
 
 type variable_rule = char * int list;;
 type variable_rules = variable_rule list;;
@@ -14,11 +13,11 @@ let string_of_variable_rule = function
 
 (* variable_rules -> string *)
 let string_of_variable_rules r =
-  concat " | " (map string_of_variable_rule r);;
+  String.concat " | " (map string_of_variable_rule r);;
 
 (* production_rules -> unit *)
 let print_production_rules r =
-  for i = 0 to (List.length r)-1 do
+  for i = 0 to (length r)-1 do
     Format.printf "X%d -> %s\n" i (string_of_variable_rules (nth r i));
   done;;
 
@@ -46,12 +45,23 @@ let rec norm_reduce p vars prods =
 		  let first_production = snd (hd (nth prods head)) in
 		  (norm_reduce (p - 1) first_production prods) @ tail;;
 
-let print_int_list = List.iter (Printf.printf "%d ")
+let initial_base prods =
+  let n = length prods in
+  let rec addji j i =
+    if j >= n then
+	  []
+	else if i > j then
+	  addji (j + 1) 0
+	else
+	  ([j], i::(norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
+  addji 0 0;;
+
+let print_int_list = iter (Printf.printf "%d ")
 
 let main () =
   let prods = [[('a', []); ('a', [1])];
 				  [('b', [0])]] in
-  let test = norm_reduce 1 [111] prods in
+  let test = norm_reduce 0 [1;1;1] prods in
 
   print_int_list test;
   print_endline "";
@@ -59,7 +69,7 @@ let main () =
   print_endline "Production rules:";
   print_production_rules prods;
 
-  for i = 0 to (List.length prods)-1 do
+  for i = 0 to (length prods)-1 do
     Format.printf "Variable %d has norm: %d\n" i (norm i prods);
   done;
 ;;
