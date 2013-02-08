@@ -6,14 +6,14 @@ type variable_rule = char * variables;;
 type variable_rules = variable_rule list;;
 type production_rules = variable_rules list;;
 
-type gnf = int * char list * production_rules;;
+type base = (variable * variable * variables) list;;
 
 (* variable -> string *)
-let string_of_variable var =
+let string_of_variable (var : variable) =
   "X" ^ string_of_int var;;
 
 (* variables -> string *)
-let string_of_variables vars =
+let string_of_variables (vars : variables) =
   String.concat "" (map string_of_variable vars);;
 
 (* variable_rule -> string *)
@@ -21,25 +21,25 @@ let string_of_variable_rule = function
   (c, vars) -> (String.make 1 c) ^ string_of_variables vars;;
 
 (* variable_rules -> string *)
-let string_of_variable_rules r =
+let string_of_variable_rules (r : variable_rules) =
   String.concat " | " (map string_of_variable_rule r);;
 
 (* production_rules -> unit *)
-let print_production_rules r =
+let print_production_rules (r : production_rules) =
   for i = 0 to (length r)-1 do
     Format.printf "X%d -> %s\n" i (string_of_variable_rules (nth r i));
   done;;
 
 (* calculate the norm of the i-th variable of a grammar *)
 (* int -> production_rules -> int *)
-let rec norm i prods =
+let rec norm (i : int) (prods : production_rules) =
   let vars = snd (hd (nth prods i)) in
   fold_left (fun prev_sum var -> prev_sum + (norm var prods)) 1 vars;;
 
 exception Negative_norm_reduce
 
-(* int -> int list -> production_rules -> int list *)
-let rec norm_reduce p vars prods =
+(* int -> variables -> production_rules -> int list *)
+let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
   if p < 0 then
     raise Negative_norm_reduce
   else if p = 0 then
@@ -54,7 +54,7 @@ let rec norm_reduce p vars prods =
 		  let first_production = snd (hd (nth prods head)) in
 		  (norm_reduce (p - 1) first_production prods) @ tail;;
 
-let initial_base prods =
+let initial_base (prods : production_rules) =
   let n = length prods in
   let rec addji j i =
     if j >= n then
@@ -66,13 +66,13 @@ let initial_base prods =
   addji 0 0;;
 
 (* return first n elements of a list *)
-(* 'a list -> 'a list *)
-let rec first_n n = function
+(* int -> 'a list -> 'a list *)
+let rec first_n (n : int) = function
   | [] -> []
   | head::tail -> if n > 0 then head::(first_n (n-1) tail) else [];;
 
-let base_equals base a b =
-  let rec be g =
+let base_equals (bs : base) (a : variables) (b : variables) =
+  let rec base_eq (g : variable -> variable * variable list) =
     let to_list = function (i, rest) -> i::rest in
     let gstar = fold_left (fun prev curr -> prev @ to_list (g curr)) [] in
 	let gsa = gstar a and gsb = gstar b in
@@ -87,23 +87,23 @@ let base_equals base a b =
 	    let mismatch = find (function (x,y) -> x <> y) gsab_cut in
 	    match mismatch with (ma, mb) ->
 	      let (i, j) = (min ma mb, max ma mb) in
-		  let elem = find (function (x,y,_) -> x = j && y = i) base in
+		  let elem = find (function (x,y,_) -> x = j && y = i) bs in
 		  match elem with (_, _, rest) ->
-			be (fun x -> if x = j then (i, rest) else g x)
+			base_eq (fun x -> if x = j then (i, rest) else g x)
 	  with Not_found ->
 		false in
 
-  be (fun x -> (x, []));;
+  base_eq (fun x -> (x, []));;
 
 
-let rec range i j = if i > j then [] else i :: (range (i+1) j)
+let rec range (i : int) (j : int) = if i > j then [] else i::(range (i+1) j)
 
-let rec refine_base base prods =
+let rec refine_base (bs : base) (prods : production_rules) =
   let valid_pair = function (j, i, rest) ->
 	  let check p q =
 	    let vjq = nth (nth prods j) q in
 		let vip = nth (nth prods i) p in
-		fst vjq = fst vip && base_equals base (snd vjq) ((snd vip)@rest) in
+		fst vjq = fst vip && base_equals bs (snd vjq) ((snd vip)@rest) in
 	
 	  let range_j = range 0 ((length (nth prods j))-1) in
 	  let range_i = range 0 ((length (nth prods i))-1) in
@@ -111,17 +111,17 @@ let rec refine_base base prods =
 	  for_all (fun q -> exists (fun p -> check p q) range_i) range_j &&
 	  for_all (fun p -> exists (fun q -> check p q) range_j) range_i in
 
-  let refined = filter valid_pair base in
-  if base = refined then
-    base
+  let refined = filter valid_pair bs in
+  if bs = refined then
+    bs
   else
     refine_base refined prods;;
 
 
-let string_of_base b = String.concat ","
+let string_of_base (bs : base) = String.concat ","
   (map (function (j,i,rest) ->
 		"(" ^ (string_of_variable j) ^ "," ^
-		(string_of_variable i) ^ (string_of_variables rest) ^ ")") b);;
+		(string_of_variable i) ^ (string_of_variables rest) ^ ")") bs);;
 
 let main () =
   (* let prods = [[('a', []); ('a', [1])];
