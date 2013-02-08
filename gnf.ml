@@ -1,5 +1,10 @@
 open List;;
 
+
+(************************************************
+ **************** Type definitions **************
+ ************************************************)
+
 type variable = int;;
 type variables = variable list;;
 type variable_rule = char * variables;;
@@ -7,6 +12,11 @@ type variable_rules = variable_rule list;;
 type production_rules = variable_rules list;;
 
 type base = (variable * variable * variables) list;;
+
+
+(************************************************
+ *************** Printing functions *************
+ ************************************************)
 
 (* variable -> string *)
 let string_of_variable (var : variable) =
@@ -24,11 +34,35 @@ let string_of_variable_rule = function
 let string_of_variable_rules (r : variable_rules) =
   String.concat " | " (map string_of_variable_rule r);;
 
+(* base -> string *)
+let string_of_base (bs : base) = String.concat ","
+  (map (function (j,i,rest) ->
+		"(" ^ (string_of_variable j) ^ "," ^
+		(string_of_variable i) ^ (string_of_variables rest) ^ ")") bs);;
+
 (* production_rules -> unit *)
 let print_production_rules (r : production_rules) =
   for i = 0 to (length r)-1 do
     Format.printf "X%d -> %s\n" i (string_of_variable_rules (nth r i));
   done;;
+
+
+(************************************************
+ *************** Auxiliary functions ************
+ ************************************************)
+
+(* return first n elements of a list *)
+(* int -> 'a list -> 'a list *)
+let rec first_n (n : int) = function
+  | [] -> []
+  | head::tail -> if n > 0 then head::(first_n (n-1) tail) else [];;
+
+let rec range (i : int) (j : int) = if i > j then [] else i::(range (i+1) j)
+
+
+(************************************************
+ ***************** Norm functions ***************
+ ************************************************)
 
 (* calculate the norm of the i-th variable of a grammar *)
 (* int -> production_rules -> int *)
@@ -54,6 +88,12 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
 		  let first_production = snd (hd (nth prods head)) in
 		  (norm_reduce (p - 1) first_production prods) @ tail;;
 
+
+(************************************************
+ ***************** Base functions ***************
+ ************************************************)
+
+(* production_rules -> base *)
 let initial_base (prods : production_rules) =
   let n = length prods in
   let rec addji j i =
@@ -65,12 +105,8 @@ let initial_base (prods : production_rules) =
 	  (j, i, (norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
   addji 0 0;;
 
-(* return first n elements of a list *)
-(* int -> 'a list -> 'a list *)
-let rec first_n (n : int) = function
-  | [] -> []
-  | head::tail -> if n > 0 then head::(first_n (n-1) tail) else [];;
-
+(* compute equality of two variable lists with respect to a certain base *)
+(* base -> variables -> variables -> bool *)
 let base_equals (bs : base) (a : variables) (b : variables) =
   let rec base_eq (g : variable -> variable * variable list) =
     let to_list = function (i, rest) -> i::rest in
@@ -96,8 +132,6 @@ let base_equals (bs : base) (a : variables) (b : variables) =
   base_eq (fun x -> (x, []));;
 
 
-let rec range (i : int) (j : int) = if i > j then [] else i::(range (i+1) j)
-
 let rec refine_base (bs : base) (prods : production_rules) =
   let valid_pair = function (j, i, rest) ->
 	  let check p q =
@@ -111,6 +145,7 @@ let rec refine_base (bs : base) (prods : production_rules) =
 	  for_all (fun q -> exists (fun p -> check p q) range_i) range_j &&
 	  for_all (fun p -> exists (fun q -> check p q) range_j) range_i in
 
+  print_endline (string_of_base bs);
   let refined = filter valid_pair bs in
   if bs = refined then
     bs
@@ -118,12 +153,11 @@ let rec refine_base (bs : base) (prods : production_rules) =
     refine_base refined prods;;
 
 
-let string_of_base (bs : base) = String.concat ","
-  (map (function (j,i,rest) ->
-		"(" ^ (string_of_variable j) ^ "," ^
-		(string_of_variable i) ^ (string_of_variables rest) ^ ")") bs);;
+(************************************************
+ ****************** Main function ***************
+ ************************************************)
 
-let main () =
+let _ =
   (* let prods = [[('a', []); ('a', [1])];
                [('b', [0])]] in *)
   let prods = [[('a', []); ('a', [0])];
@@ -150,5 +184,3 @@ let main () =
   print_endline "Test of norm_reduce:";
   print_endline (string_of_variables nr_test);
 ;;
-
-main ();;
