@@ -73,7 +73,8 @@ let rec first_n n = function
 
 let base_equals base a b =
   let rec be g =
-    let gstar = fold_left (fun prev_list curr -> prev_list @ (g curr)) [] in
+    let to_list = function (i, rest) -> i::rest in
+    let gstar = fold_left (fun prev curr -> prev @ to_list (g curr)) [] in
 	let gsa = gstar a and gsb = gstar b in
 	if gsa = gsb then
 	  true
