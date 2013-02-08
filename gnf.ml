@@ -62,7 +62,7 @@ let initial_base prods =
 	else if i > j then
 	  addji (j + 1) 0
 	else
-	  (j, i::(norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
+	  (j, i, (norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
   addji 0 0;;
 
 (* return first n elements of a list *)
@@ -72,7 +72,7 @@ let rec first_n n = function
   | head::tail -> if n > 0 then head::(first_n (n-1) tail) else [];;
 
 let base_equals base a b =
-  let be g =
+  let rec be g =
     let gstar = fold_left (fun prev_list curr -> prev_list @ (g curr)) [] in
 	let gsa = gstar a and gsb = gstar b in
 	if gsa = gsb then
@@ -86,30 +86,52 @@ let base_equals base a b =
 	    let mismatch = find (function (x,y) -> x <> y) gsab_cut in
 	    match mismatch with (ma, mb) ->
 	      let (i, j) = (min ma mb, max ma mb) in
-		  (* TODO *)
-		  true
+		  let elem = find (function (x,y,_) -> x = j && y = i) base in
+		  match elem with (_, _, rest) ->
+			be (fun x -> if x = j then (i, rest) else g x)
 	  with Not_found ->
-        (* this means that the two "cut" lists are equal, meaning that
-		   the bigger "uncut" list is equal to the smaller "uncut" list
-		   plus some more elements --- however, that way the both lists
-		   can in no way be equivalent with respect to any base! *)
 		false in
 
-  be (fun x -> x);;
+  be (fun x -> (x, []));;
+
+
+let rec range i j = if i > j then [] else i :: (range (i+1) j)
+
+let rec refine_base base prods =
+  let valid_pair = function (j, i, rest) ->
+	  let check p q =
+	    let vjq = nth (nth prods j) q in
+		let vip = nth (nth prods i) p in
+		fst vjq = fst vip && base_equals base (snd vjq) ((snd vip)@rest) in
+	
+	  let range_j = range 0 ((length (nth prods j))-1) in
+	  let range_i = range 0 ((length (nth prods i))-1) in
+
+	  for_all (fun q -> exists (fun p -> check p q) range_i) range_j &&
+	  for_all (fun p -> exists (fun q -> check p q) range_j) range_i in
+
+  let refined = filter valid_pair base in
+  if base = refined then
+    base
+  else
+    refine_base refined prods;;
 
 
 let string_of_base b = String.concat ","
-  (map (function (x,y) -> "(" ^ (string_of_variable x) ^ "," ^
-		                        (string_of_variables y) ^ ")") b);;
+  (map (function (j,i,rest) ->
+		"(" ^ (string_of_variable j) ^ "," ^
+		(string_of_variable i) ^ (string_of_variables rest) ^ ")") b);;
 
 let main () =
-  let prods = [[('a', []); ('a', [1])];
-				  [('b', [0])]] in
+  (* let prods = [[('a', []); ('a', [1])];
+               [('b', [0])]] in *)
+  let prods = [[('a', []); ('a', [0])];
+               [('a', []); ('a', [1]); ('a', [2])];
+			   [('a', [])]] in
+  
   let nr_test = norm_reduce 0 [1;1;1] prods in
-  let base_test = initial_base prods in
-
-  print_endline (string_of_base base_test);
-  print_endline (string_of_variables nr_test);
+  let i_base = initial_base prods in
+  let r_base = refine_base i_base prods in
 
   print_endline "Production rules:";
   print_production_rules prods;
@@ -117,6 +139,15 @@ let main () =
   for i = 0 to (length prods)-1 do
     Format.printf "Variable %d has norm: %d\n" i (norm i prods);
   done;
+
+  print_endline "Initial base:";
+  print_endline (string_of_base i_base);
+
+  print_endline "Refined base:";
+  print_endline (string_of_base r_base);
+
+  print_endline "Test of norm_reduce:";
+  print_endline (string_of_variables nr_test);
 ;;
 
 main ();;
