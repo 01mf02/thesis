@@ -170,18 +170,26 @@ let rec refine_base (bs : base) (prods : production_rules) =
  ************************************************)
 
 let _ =
-  (* let prods = [[('a', []); ('a', [1])];
-               [('b', [0])]] in *)
-  (* let prods = [[('a', []); ('b', [1])];
-               [('a', []); ('b', [0])]] in *)
-  let prods = [[('a', []); ('a', [0])];
-               [('a', []); ('a', [1]); ('a', [2])];
-			   [('a', [])]] in
-  
-  let nr_test = norm_reduce 0 [1;1;1] prods in
-  let i_base = initial_base prods in
-  let r_base = refine_base i_base prods in
+  (* X0 -> a | aX1, X1 -> bX0 *)
+  let p0 = [[('a', []); ('a', [1])];
+            [('b', [0])]] in
+  (* X0 -> a | bX1, X1 -> a | bX0 *)
+  let p1 = [[('a', []); ('b', [1])];
+            [('a', []); ('b', [0])]] in
+  (* X0 -> a | aX0, X1 -> a | aX1 | aX2, X2 -> a *)
+  let p2 = [[('a', []); ('a', [0])];
+            [('a', []); ('a', [1]); ('a', [2])];
+			[('a', [])]] in
+  (* X0 -> c | aX0X1, X1 -> b, X2 -> c | aX2X3, X3 -> b *)
+  let p3 = [[('c', []); ('a', [0; 1])];
+            [('b', [])];
+			[('c', []); ('a', [2; 3])];
+            [('b', [])]] in
 
+  let ps = [p0; p1; p2; p3] in
+  let prods = nth ps 3 in
+
+  
   print_endline "Production rules:";
   print_endline (string_of_production_rules prods);
 
@@ -189,12 +197,22 @@ let _ =
     Format.printf "Variable %d has norm: %d\n" i (norm i prods);
   done;
 
-  print_endline "Initial base:";
+  let i_base = initial_base prods in
+  print_string "Initial base: ";
   print_endline (string_of_base i_base);
 
-  print_endline "Refined base:";
+  let r_base = refine_base i_base prods in
+  print_string "Refined base: ";
   print_endline (string_of_base r_base);
 
-  print_endline "Test of norm_reduce:";
+  let nontrivial_equivalences = filter
+    (fun x -> match x with (j, i, rest) -> j <> i || rest <> []) in
+
+  let nte = nontrivial_equivalences r_base in
+  print_string "Nontrivial equivalences: ";
+  print_endline (string_of_base nte);
+
+  let nr_test = norm_reduce 0 [1;1;1] prods in
+  print_string "Test of norm_reduce: ";
   print_endline (string_of_variables nr_test);
 ;;
