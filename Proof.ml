@@ -48,16 +48,18 @@ let rec prove_eq e prods = match e with (a, b) ->
 	| Product (pah::pat) ->
 	    begin match b with
 		  | Product [] -> raise Empty_product
+		  | Product (pbh::[]) -> e, Sym(prove_eq (b, a) prods)
+		  | Product (pbh::pbt) -> e, Unsupported
+		  | Sum [] -> raise Empty_sum
 		  | _ -> e, Unsupported
 		end
 	| Sum [] -> raise Empty_sum
 	| Sum ((sahc, sahv)::[]) ->
 	    begin match b with
 		  | Product [] -> raise Empty_product
-		  | Product (pbhd::[]) -> let gr = Sum(nth prods pbhd) in
-			  e, Trans(prove_eq (a, gr) prods, ((gr, b), Sym((b, gr), Gr)))
+		  | Product (pbh::[]) -> e, Sym(prove_eq (b, a) prods)
 		  | Product (pbhd::patl) -> raise Proof_impossible
-		  | Sum  [] -> raise Empty_sum
+		  | Sum [] -> raise Empty_sum
 		  | Sum ((sbhc, sbhv)::[]) ->
 			  if sahc = sbhc then
 				let sum_of_char c = Sum([(c, [])]) in
