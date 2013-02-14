@@ -102,6 +102,12 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
 		  let first_production = snd (hd (nth prods head)) in
 		  (norm_reduce (p - 1) first_production prods) @ tail;;
 
+(* let check_prods prods = ...*)
+(* TODO: write function that verifies:
+   x norms of variables increase from variable to variable
+   x norm(X_i) < norm(\alpha_i1)
+ *)
+
 
 (************************************************
  ***************** Base functions ***************
