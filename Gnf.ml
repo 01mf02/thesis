@@ -40,15 +40,15 @@ let string_of_production_rules (r : production_rules) =
   | [] -> []
   | head::tail ->
     (Format.sprintf "X%d -> %s" i (string_of_variable_rules head))::
-	(aux (i+1) tail) in
+    (aux (i+1) tail) in
   String.concat "\n" (aux 0 r);;
 
 (* base -> string *)
 let string_of_base (bs : base) = String.concat ","
   (map (function (j,i,rest) ->
-		"(" ^ (string_of_variable j) ^ "," ^
-		(string_of_variable i) ^ (string_of_variables rest) ^ ")") bs);;
-    
+        "(" ^ (string_of_variable j) ^ "," ^
+        (string_of_variable i) ^ (string_of_variables rest) ^ ")") bs);;
+
 
 (************************************************
  *************** Auxiliary functions ************
@@ -73,7 +73,6 @@ let equalize_combine l1 l2 =
 let rec range i j = if i > j then [] else i::(range (i+1) j);;
 
 
-
 (************************************************
  ***************** Norm functions ***************
  ************************************************)
@@ -94,36 +93,52 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
     vars
   else
     match vars with
-	| [] -> raise Negative_norm_reduce
-	| head::tail ->
-	    if p >= norm head prods then
-		  norm_reduce (p - norm head prods) tail prods
-		else
-		  let first_production = snd (hd (nth prods head)) in
-		  (norm_reduce (p - 1) first_production prods) @ tail;;
+    | [] -> raise Negative_norm_reduce
+    | head::tail ->
+        if p >= norm head prods then
+          norm_reduce (p - norm head prods) tail prods
+        else
+          let first_production = snd (hd (nth prods head)) in
+          (norm_reduce (p - 1) first_production prods) @ tail;;
 
-(* let check_prods prods = ...*)
-(* TODO: write function that verifies:
-   x norms of variables increase from variable to variable
-   x norm(X_i) < norm(\alpha_i1)
- *)
-
+(* verify that production rules adhere to required restrictions:
+   * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
+   WARNING: does not verify another important restriction (yet):
+   * the first rule for each variable generates a norm-reducing transition,
+     i.e. norm(X_i) < norm(alpha_i1) *)
+(* production_rules -> bool *)
+let productions_valid (prods : production_rules) =
+  let rec is_sorted vc vm nc =
+    if vc = vm then
+      true
+    else
+      let n = norm vc prods in
+      if n >= nc then
+        is_sorted (vc+1) vm nc
+      else false in
+  is_sorted 0 (length prods) 0;;
+  
 
 (************************************************
  ***************** Base functions ***************
  ************************************************)
 
+exception Invalid_productions
+
 (* production_rules -> base *)
 let initial_base (prods : production_rules) =
-  let n = length prods in
-  let rec addji j i =
-    if j >= n then
-	  []
-	else if i > j then
-	  addji (j + 1) 0
-	else
-	  (j, i, (norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
-  addji 0 0;;
+  if not (productions_valid prods) then
+    raise Invalid_productions
+  else
+    let n = length prods in
+    let rec addji j i =
+      if j >= n then
+        []
+      else if i > j then
+        addji (j + 1) 0
+      else
+        (j, i, (norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
+    addji 0 0;;
 
 (* compute equality of two variable lists with respect to a certain base *)
 (* base -> variables -> variables -> bool *)
@@ -131,36 +146,36 @@ let base_equals (bs : base) (a : variables) (b : variables) =
   let rec base_eq (g : variable -> variable * variable list) =
     let to_list = function (i, rest) -> i::rest in
     let gstar = fold_left (fun prev curr -> prev @ to_list (g curr)) [] in
-	let ga = gstar a and gb = gstar b in
-	if ga = gb then
-	  true
-	else
-	  let gab = equalize_combine ga gb in
-	  try
-	    let mismatch = find (function (x,y) -> x <> y) gab in
-	    match mismatch with (ma, mb) ->
-	      let (i, j) = (min ma mb, max ma mb) in
-		  let elem = find (function (x,y,_) -> x = j && y = i) bs in
-		  match elem with (_, _, rest) ->
-			base_eq (fun x -> if x = j then (i, rest) else g x)
-	  with Not_found ->
-		false in
+    let ga = gstar a and gb = gstar b in
+    if ga = gb then
+      true
+    else
+      let gab = equalize_combine ga gb in
+      try
+        let mismatch = find (function (x,y) -> x <> y) gab in
+        match mismatch with (ma, mb) ->
+          let (i, j) = (min ma mb, max ma mb) in
+          let elem = find (function (x,y,_) -> x = j && y = i) bs in
+          match elem with (_, _, rest) ->
+            base_eq (fun x -> if x = j then (i, rest) else g x)
+      with Not_found ->
+        false in
 
   base_eq (fun x -> (x, []));;
 
 
 let rec refine_base (bs : base) (prods : production_rules) =
   let valid_pair = function (j, i, rest) ->
-	  let check p q =
-	    let vjq = nth (nth prods j) q in
-		let vip = nth (nth prods i) p in
-		fst vjq = fst vip && base_equals bs (snd vjq) ((snd vip)@rest) in
-	
-	  let range_j = range 0 ((length (nth prods j))-1) in
-	  let range_i = range 0 ((length (nth prods i))-1) in
+      let check p q =
+        let vjq = nth (nth prods j) q in
+        let vip = nth (nth prods i) p in
+        fst vjq = fst vip && base_equals bs (snd vjq) ((snd vip)@rest) in
+    
+      let range_j = range 0 ((length (nth prods j))-1) in
+      let range_i = range 0 ((length (nth prods i))-1) in
 
-	  for_all (fun q -> exists (fun p -> check p q) range_i) range_j &&
-	  for_all (fun p -> exists (fun q -> check p q) range_j) range_i in
+      for_all (fun q -> exists (fun p -> check p q) range_i) range_j &&
+      for_all (fun p -> exists (fun q -> check p q) range_j) range_i in
 
   print_endline ("Refine base: " ^ (string_of_base bs));
 
@@ -185,11 +200,11 @@ let _ =
   (* X0 -> a | aX0, X1 -> a | aX1 | aX2, X2 -> a *)
   let p2 = [[('a', []); ('a', [0])];
             [('a', []); ('a', [1]); ('a', [2])];
-			[('a', [])]] in
+            [('a', [])]] in
   (* X0 -> c | aX0X1, X1 -> b, X2 -> c | aX2X3, X3 -> b *)
   let p3 = [[('c', []); ('a', [0; 1])];
             [('b', [])];
-			[('c', []); ('a', [2; 3])];
+            [('c', []); ('a', [2; 3])];
             [('b', [])]] in
 
   let ps = [p0; p1; p2; p3] in
