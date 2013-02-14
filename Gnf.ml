@@ -104,7 +104,7 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
 (* verify that production rules adhere to required restrictions:
    * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
    * the first rule for each variable generates a norm-reducing transition,
-     i.e. norm(X_i) < norm(alpha_i1) *)
+     i.e. norm(X_i) > norm(alpha_i1) *)
 (* production_rules -> bool *)
 let productions_valid (prods : production_rules) =
   let rec is_sorted curr_var max_var prev_norm =
@@ -152,12 +152,12 @@ let base_equals (bs : base) (a : variables) (b : variables) =
     else
       let gab = equalize_combine ga gb in
       try
-        let mismatch = find (function (x,y) -> x <> y) gab in
-        match mismatch with (ma, mb) ->
-          let (i, j) = (min ma mb, max ma mb) in
-          let elem = find (function (x,y,_) -> x = j && y = i) bs in
-          match elem with (_, _, rest) ->
-            base_eq (fun x -> if x = j then (i, rest) else g x)
+        (* find mismatching pair *)
+        let (ma, mb) = find (function (x,y) -> x <> y) gab in
+        let (i, j) = (min ma mb, max ma mb) in
+        let elem = find (function (x,y,_) -> x = j && y = i) bs in
+        match elem with (_, _, rest) ->
+          base_eq (fun x -> if x = j then (i, rest) else g x)
       with Not_found ->
         false in
 
