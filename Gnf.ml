@@ -68,7 +68,7 @@ let equalize_combine l1 l2 =
   let l2_cut = first_n min_len l2 in
   (combine l1_cut l2_cut);;
 
-(* construct a list of integers [i; i+1; ... ;j] *)
+(* construct a list of integers [i; i+1; ... ; j] *)
 (* int -> int -> int list *)
 let rec range i j = if i > j then [] else i::(range (i+1) j);;
 
@@ -103,18 +103,18 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
 
 (* verify that production rules adhere to required restrictions:
    * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
-   WARNING: does not verify another important restriction (yet):
    * the first rule for each variable generates a norm-reducing transition,
      i.e. norm(X_i) < norm(alpha_i1) *)
 (* production_rules -> bool *)
 let productions_valid (prods : production_rules) =
-  let rec is_sorted vc vm nc =
-    if vc = vm then
+  let rec is_sorted curr_var max_var prev_norm =
+    if curr_var = max_var then
       true
     else
-      let n = norm vc prods in
-      if n >= nc then
-        is_sorted (vc+1) vm nc
+      let curr_norm = norm curr_var prods in
+      if curr_norm >= prev_norm &&
+      for_all (fun v -> v < curr_var) (snd (hd (nth prods curr_var))) then
+        is_sorted (curr_var+1) max_var curr_norm
       else false in
   is_sorted 0 (length prods) 0;;
   
