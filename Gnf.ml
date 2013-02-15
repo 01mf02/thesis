@@ -6,8 +6,9 @@ open List;;
  ************************************************)
 
 type variable = int;;
+type terminal = char;;
 type variables = variable list;;
-type variable_rule = char * variables;;
+type variable_rule = terminal * variables;;
 type variable_rules = variable_rule list;;
 type production_rules = variable_rules list;;
 

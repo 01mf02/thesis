@@ -2,7 +2,10 @@ open Format;;
 open Gnf;;
 open List;;
 
-type expression = Product of variables | Sum of variable_rules;;
+type expression =
+    Product of variable * variables
+  | Sum of variable_rule * variable_rules;;
+
 type equivalence = expression * expression;;
 
 type sequent = equivalence * rule and rule =
@@ -15,8 +18,8 @@ type sequent = equivalence * rule and rule =
   | Trans of sequent * sequent;;
 
 let string_of_expression = function
-  | Product p -> string_of_variables p
-  | Sum s -> string_of_variable_rules s;;
+  | Product (ph, pt) -> string_of_variables (ph::pt)
+  | Sum (sh, st) -> string_of_variable_rules (sh::st);;
 
 let string_of_equivalence = function (a, b) ->
   (string_of_expression a) ^ " = " ^ (string_of_expression b);;
@@ -34,11 +37,25 @@ string_of_rule = function
   | Trans (s1, s2) -> "Trans(" ^ (string_of_sequents [s1; s2]) ^ ")";;
 
 
-exception Empty_product;;
-exception Empty_sum;;
+exception Empty_variables;;
+exception Empty_variable_rules;;
 exception Proof_impossible;;
 
+let product_of_variable v = Product(v, []);;
+
+let product_of_variables = function
+  | [] -> raise Empty_variables
+  | (vh::vt) -> Product(vh, vt);;
+
+let sum_of_variable_rules = function
+  | [] -> raise Empty_variable_rules
+  | (rh::rt) -> Sum(rh, rt);;
+
+
+
 let prove_equivalence eq prods base =
+  let pov = product_of_variables in
+
   let partition a b =
     let norm_vars = fold_left (fun s v -> s + (norm v prods)) 0 in
 
@@ -50,11 +67,11 @@ let prove_equivalence eq prods base =
         (a1, a2, b1, b2)
       else if norm_vars a1 < norm_vars b1 || initial then
         match a2 with
-          | [] -> raise Empty_product
+          | [] -> raise Empty_variables
           | hd::tl -> partition' (a1@[hd]) tl b1 b2
       else if norm_vars a1 > norm_vars b1 then
         match b2 with
-          | [] -> raise Empty_product
+          | [] -> raise Empty_variables
           | hd::tl -> partition' a1 a2 (b1@[hd]) tl
       else raise Proof_impossible in
     partition' [] a [] b in
@@ -63,44 +80,39 @@ let prove_equivalence eq prods base =
     if a = b then
       (a, b), Refl
     else match a with
-      | Product [] -> raise Empty_product
-      | Product (pah::[]) -> let gr = Sum(nth prods pah) in
+      | Product (pah, []) -> let gr = sum_of_variable_rules (nth prods pah) in
           e, Trans(((a, gr), Gr), prove_eq (gr, b))
-      | Product (pah::pat) ->
+      | Product (pah, pat) ->
           begin match b with
-            | Product [] -> raise Empty_product
-            | Product (pbh::[]) -> e, Sym(prove_eq (b, a))
-            | Product (pbh::pbt) ->
+            | Product (pbh, []) -> e, Sym(prove_eq (b, a))
+            | Product (pbh, pbt) ->
                 let (pa1, pa2, pb1, pb2) = partition (pah::pat) (pbh::pbt) in
                 if (pa2 = [] && pb2 = []) then
                   e, Unsupported
-                else begin
-                  e, Times(prove_eq (Product(pa1), Product(pb1)),
-                           prove_eq (Product(pa1), Product(pb1))) end
-            | Sum [] -> raise Empty_sum
+                else
+                  e, Times(prove_eq (pov pa1, pov pb1),
+                           prove_eq (pov pa1, pov pb1))
             | _ -> e, Unsupported
           end
-      | Sum [] -> raise Empty_sum
-      | Sum ((sahc, sahv)::[]) ->
+      | Sum ((sahc, sahv), []) ->
           begin match b with
-            | Product [] -> raise Empty_product
-            | Product (pbh::[]) -> e, Sym(prove_eq (b, a))
-            | Product (pbh::pat) -> raise Proof_impossible
-            | Sum [] -> raise Empty_sum
-            | Sum ((sbhc, sbhv)::[]) ->
+            | Product (pbh, []) -> e, Sym(prove_eq (b, a))
+            | Product (pbh, pat) -> raise Proof_impossible
+            | Sum ((sbhc, sbhv), []) ->
                 if sahc = sbhc then
-                  let sum_of_char c = Sum([(c, [])]) in
-                  e, Times(((sum_of_char sahc, sum_of_char sbhc), Refl),
-                           prove_eq (Product(sahv), Product(sbhv)))
+                  let sum_of_terminal t = Sum((t, []), []) in
+                  e, Times(((sum_of_terminal sahc, sum_of_terminal sbhc), Refl),
+                           prove_eq (pov sahv, pov sbhv))
                 else
                   raise Proof_impossible
-            | Sum (sbh::sbt) -> raise Proof_impossible
+            | Sum (sbh, sbt) -> raise Proof_impossible
           end
-      | Sum (sah::sat) -> e, Unsupported in
+      | Sum (sah, sat) -> e, Unsupported in
 
   prove_eq eq;;
 
-let prove_var_eq a b = prove_equivalence (Product [a], Product [b]);;
+let prove_var_eq a b =
+  prove_equivalence (product_of_variable a, product_of_variable b);;
 
 let _ =
   let p0 = [[('a', [])]; [('a', [])]] in
