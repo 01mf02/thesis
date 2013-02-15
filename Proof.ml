@@ -39,24 +39,25 @@ exception Empty_sum;;
 exception Proof_impossible;;
 
 let prove_equivalence eq prods base =
-  let partition v1 v2 =
-    let norm_vars vars = fold_left (fun s v -> s + (norm v prods)) 0 in
+  let partition a b =
+    let norm_vars = fold_left (fun s v -> s + (norm v prods)) 0 in
 
-    let rec partition' v11 v12 v21 v22 =
-      (* TODO: check if first variables of v12 and v22 didn't appear yet in
+    let rec partition' a1 a2 b1 b2 =
+      (* TODO: check if first variables of a2 and b2 did not appear yet in
          proof before *)
-      if base_equals base v11 v21 then
-        (v11, v12, v21, v22)
-      else if norm_vars v11 < norm_vars v21 then
-        match v12 with
+      let initial = a1 = [] && b1 = [] in
+      if not initial && base_equals base a1 b1 then
+        (a1, a2, b1, b2)
+      else if norm_vars a1 < norm_vars b1 || initial then
+        match a2 with
           | [] -> raise Empty_product
-          | hd::tl -> partition' (v11@[hd]) tl v21 v22
-      else if norm_vars v11 > norm_vars v21 then
-        match v22 with
+          | hd::tl -> partition' (a1@[hd]) tl b1 b2
+      else if norm_vars a1 > norm_vars b1 then
+        match b2 with
           | [] -> raise Empty_product
-          | hd::tl -> partition' v11 v12 (v21@[hd]) tl
+          | hd::tl -> partition' a1 a2 (b1@[hd]) tl
       else raise Proof_impossible in
-    partition' [] v1 [] v2 in
+    partition' [] a [] b in
 
   let rec prove_eq e = match e with (a, b) ->
     if a = b then
@@ -69,7 +70,13 @@ let prove_equivalence eq prods base =
           begin match b with
             | Product [] -> raise Empty_product
             | Product (pbh::[]) -> e, Sym(prove_eq (b, a))
-            | Product (pbh::pbt) -> e, Unsupported
+            | Product (pbh::pbt) ->
+                let (pa1, pa2, pb1, pb2) = partition (pah::pat) (pbh::pbt) in
+                if (pa2 = [] && pb2 = []) then
+                  e, Unsupported
+                else begin
+                  e, Times(prove_eq (Product(pa1), Product(pb1)),
+                           prove_eq (Product(pa1), Product(pb1))) end
             | Sum [] -> raise Empty_sum
             | _ -> e, Unsupported
           end
