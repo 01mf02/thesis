@@ -88,16 +88,33 @@ let prove_equivalence eq prods base =
             | Product (pbh, pbt) ->
                 let (pa1, pa2, pb1, pb2) = partition (pah::pat) (pbh::pbt) in
                 if (pa2 = [] && pb2 = []) then
-                  e, Unsupported
+                  if not (base_equals base [pah] [pbh]) then
+                    if pah > pbh then
+                      let (j, i, rest) = base_find pah pbh base in
+                      let middle = Product(i, rest@pat) in
+                      e, Trans(prove_eq (a, middle), prove_eq (middle, b))
+                    else
+                      e, Sym(prove_eq (b, a))
+                  else
+                    e, Unsupported
                 else
                   e, Times(prove_eq (pov pa1, pov pb1),
-                           prove_eq (pov pa1, pov pb1))
+                           prove_eq (pov pa2, pov pb2))
             | _ -> e, Unsupported
           end
       | Sum ((sahc, sahv), []) ->
           begin match b with
             | Product (pbh, []) -> e, Sym(prove_eq (b, a))
-            | Product (pbh, pat) -> raise Proof_impossible
+            | Product (pbh, pbt) ->
+                let gr = nth prods pbh in
+                begin match gr with
+                  | (t, v)::[] ->
+                    let gr_sum = sum_of_variable_rules gr in
+                    let middle = Sum((t, v@pbt), []) in
+                    e, Trans(prove_eq (a, middle),
+                             ((middle, b), Times(prove_eq (gr_sum, pov [pbh]),
+                                                 prove_eq (pov pbt, pov pbt))))
+                  | _ -> raise Proof_impossible end
             | Sum ((sbhc, sbhv), []) ->
                 if sahc = sbhc then
                   let sum_of_terminal t = Sum((t, []), []) in

@@ -12,7 +12,8 @@ type variable_rule = terminal * variables;;
 type variable_rules = variable_rule list;;
 type production_rules = variable_rules list;;
 
-type base = (variable * variable * variables) list;;
+type base_element = variable * variable * variables;;
+type base = base_element list;;
 
 
 (************************************************
@@ -141,6 +142,10 @@ let initial_base (prods : production_rules) =
         (j, i, (norm_reduce (norm i prods) [j] prods)) :: (addji j (i+1)) in
     addji 0 0;;
 
+(* variable -> variable -> base -> base_element *)
+let base_find (j : variable) (i : variable) =
+  find (function (x, y, _) -> x = j && y = i);;
+
 (* compute equality of two variable lists with respect to a certain base *)
 (* base -> variables -> variables -> bool *)
 let base_equals (bs : base) (a : variables) (b : variables) =
@@ -156,8 +161,7 @@ let base_equals (bs : base) (a : variables) (b : variables) =
         (* find mismatching pair *)
         let (ma, mb) = find (function (x,y) -> x <> y) gab in
         let (i, j) = (min ma mb, max ma mb) in
-        let elem = find (function (x,y,_) -> x = j && y = i) bs in
-        match elem with (_, _, rest) ->
+        match base_find j i bs with (_, _, rest) ->
           base_eq (fun x -> if x = j then (i, rest) else g x)
       with Not_found ->
         false in
