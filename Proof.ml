@@ -21,10 +21,10 @@ let string_of_expression = function
   | Product (ph, pt) -> string_of_variables (ph::pt)
   | Sum (sh, st) -> string_of_variable_rules (sh::st);;
 
-let string_of_equivalence = function (a, b) ->
+let string_of_equivalence (a, b) =
   (string_of_expression a) ^ " = " ^ (string_of_expression b);;
 
-let rec string_of_sequent = function (e, r) ->
+let rec string_of_sequent (e, r) =
   (string_of_equivalence e) ^ " -> " ^ (string_of_rule r) and
 string_of_sequents seqs = String.concat ", " (map string_of_sequent seqs) and
 string_of_rule = function

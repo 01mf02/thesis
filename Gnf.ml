@@ -28,8 +28,8 @@ let string_of_variables (vars : variables) =
   String.concat "" (map string_of_variable vars);;
 
 (* variable_rule -> string *)
-let string_of_variable_rule = function
-  (c, vars) -> (String.make 1 c) ^ string_of_variables vars;;
+let string_of_variable_rule (c, vars) =
+  (String.make 1 c) ^ string_of_variables vars;;
 
 (* variable_rules -> string *)
 let string_of_variable_rules (r : variable_rules) =
@@ -145,7 +145,7 @@ let initial_base (prods : production_rules) =
 (* base -> variables -> variables -> bool *)
 let base_equals (bs : base) (a : variables) (b : variables) =
   let rec base_eq (g : variable -> variable * variable list) =
-    let to_list = function (i, rest) -> i::rest in
+    let to_list (i, rest) = i::rest in
     let gstar = fold_left (fun prev curr -> prev @ to_list (g curr)) [] in
     let ga = gstar a and gb = gstar b in
     if ga = gb then
@@ -166,7 +166,7 @@ let base_equals (bs : base) (a : variables) (b : variables) =
 
 
 let rec refine_base (bs : base) (prods : production_rules) =
-  let valid_pair = function (j, i, rest) ->
+  let valid_pair (j, i, rest) =
       let check p q =
         let vjq = nth (nth prods j) q in
         let vip = nth (nth prods i) p in
