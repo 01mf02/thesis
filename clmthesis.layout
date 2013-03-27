@@ -1,0 +1,17 @@
+#% Do not delete the line below; configure depends on this      
+#  \DeclareLaTeXClass[clmthesis]{CL Master Thesis}
+
+# LyX layout file for CL master thesis class
+
+# because the thesis class is based on the scrreprt class, we derive from it
+Input scrreprt.layout
+
+Style Supervisors
+	CopyStyle             Author
+	LatexName             supervisors
+End
+
+Style Abstract
+	LatexType             Command
+	InTitle               1
+End
