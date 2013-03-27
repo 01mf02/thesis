@@ -52,6 +52,22 @@ let rec norm (v : variable) (prods : production_rules) =
   let vars = snd (hd (rules_of_variable v prods)) in
   fold_left (fun prev_sum curr_var -> prev_sum + (norm curr_var prods)) 1 vars;;
 
+(* verify that production rules adhere to required restrictions:
+   * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
+   * the first rule for each variable generates a norm-reducing transition,
+     i.e. norm(X_i) > norm(alpha_i1) *)
+(* production_rules -> bool *)
+let productions_valid (prods : production_rules) =
+  let rec is_sorted prev_norm = function
+    | [] -> true
+    | (hdv, hdr)::tl ->
+      let curr_norm = norm hdv prods in
+      if curr_norm >= prev_norm then is_sorted curr_norm tl
+      else false in
+
+  is_sorted 0 prods;;
+
+
 
 (************************************************
  **************** Example grammars **************
@@ -83,6 +99,7 @@ let rec ab_grammar n =
     | 0 -> zero_variables [("A", 'a'); ("B", 'b')] @ ab 0 @ ba 0 @ fg 0
     | n -> ab_grammar (n-1) @ aa n @ bb n @ ab n @ ba n @ fg n;;
 
+
 let rec power_two_grammar n =
   let nonprime_var v vf1 vf2 = function
     | 0 -> zero_variables [(v ^ "0", 'a')]
@@ -106,15 +123,53 @@ let rec power_two_grammar n =
     | n -> power_two_grammar (n-1) @ s' n @ t' n @ s n @ t n;;
 
 
+let rec fibonacci_grammar n =
+  let nonprime_var v vf1 vf2 = function
+    | 0 -> zero_variables [(v ^ "0", 'a')]
+    | 1 -> zero_variables [(v ^ "1", 'a')]
+    | 2 -> one_variable [(v ^ "2", 'a', v ^ "1")]
+    | n -> two_variables [(v ^ soi n, 'a', vf1 n, vf2 n)] in
+
+  let prime_var v vf1 vf2 = function
+    | 0 -> []
+    | 1 -> []
+    | 2 -> zero_variables [(v ^ "2'", 'a')]
+    | 3 -> one_variable [(v ^ "3'", 'a', v ^ "2'")]
+    | n -> two_variables [(v ^ soi n ^ "'", 'a', vf1 n, vf2 n)] in
+
+  let f = nonprime_var "F"
+    (fun n -> "F" ^ soi (n-2)) (fun n -> "F" ^ soi (n-1) ^ "'") in
+  let g = nonprime_var "G"
+    (fun n -> "G" ^ soi (n-1) ^ "'") (fun n -> "G" ^ soi (n-2)) in
+
+  let f' = prime_var "F"
+    (fun n -> "F" ^ soi (n-2) ^ "'") (fun n -> "F" ^ soi (n-1) ^ "'") in
+  let g' = prime_var "G"
+    (fun n -> "G" ^ soi (n-1) ^ "'") (fun n -> "G" ^ soi (n-2) ^ "'") in
+
+  match n with
+    | 0 -> f 0 @ g 0
+    | n -> fibonacci_grammar (n-1) @ f' n @ g' n @ f n @ g n;;
+
+
 (************************************************
  ****************** Main function ***************
  ************************************************)
 
 let _ =
-  let prods = ab_grammar 10 in
+  let prods = fibonacci_grammar 10 in
+
+  if productions_valid prods then
+    print_endline "Productions valid."
+  else begin
+    print_endline "Productions invalid!";
+    exit 1
+  end
+
+    
 
   print_endline "Production rules:";
   print_endline (string_of_production_rules prods);
 
-  print_endline ("Norm: " ^ (string_of_int (norm "F10" prods)));
+  print_endline ("Norm: " ^ (string_of_int (norm "F5" prods)));
 ;;
