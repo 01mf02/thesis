@@ -113,6 +113,29 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $F_{0}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 \begin_inset Formula $F_{1}\rightarrow a$
 \end_inset
 
@@ -136,7 +159,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $F_{2}\rightarrow a$
+\begin_inset Formula $F_{2}\rightarrow aF_{1}$
 \end_inset
 
 
@@ -148,30 +171,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{3}\rightarrow aF_{1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{3}^{'}\rightarrow a$
+\begin_inset Formula $F_{2}^{'}\rightarrow a$
 \end_inset
 
 
@@ -185,7 +185,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $F_{n+4}\rightarrow aF_{n+2}F_{n+3}^{'}$
+\begin_inset Formula $F_{n+3}\rightarrow aF_{n+1}F_{n+2}^{'}$
 \end_inset
 
 
@@ -197,7 +197,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $F_{4}^{'}\rightarrow aF_{3}^{'}$
+\begin_inset Formula $F_{3}^{'}\rightarrow aF_{2}^{'}$
 \end_inset
 
 
@@ -220,7 +220,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $F_{n+5}^{'}\rightarrow aF_{n+3}^{'}F_{n+4}^{'}$
+\begin_inset Formula $F_{n+4}^{'}\rightarrow aF_{n+2}^{'}F_{n+3}^{'}$
 \end_inset
 
 
@@ -243,6 +243,29 @@ status open
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{0}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
 <row>
 <cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -271,7 +294,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $G_{2}\rightarrow a$
+\begin_inset Formula $G_{2}\rightarrow aG_{1}$
 \end_inset
 
 
@@ -283,30 +306,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{3}\rightarrow aG_{1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{3}^{'}\rightarrow a$
+\begin_inset Formula $G_{2}^{'}\rightarrow a$
 \end_inset
 
 
@@ -320,7 +320,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $G_{n+4}\rightarrow aG_{n+3}^{'}G_{n+2}$
+\begin_inset Formula $G_{n+3}\rightarrow aG_{n+2}^{'}G_{n+1}$
 \end_inset
 
 
@@ -332,7 +332,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $G_{4}^{'}\rightarrow aG_{3}^{'}$
+\begin_inset Formula $G_{3}^{'}\rightarrow aG_{2}^{'}$
 \end_inset
 
 
@@ -355,7 +355,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $G_{n+5}^{'}\rightarrow aG_{n+4}^{'}G_{n+3}^{'}$
+\begin_inset Formula $G_{n+4}^{'}\rightarrow aG_{n+3}^{'}G_{n+2}^{'}$
 \end_inset
 
 

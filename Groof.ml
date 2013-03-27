@@ -127,7 +127,7 @@ let rec fibonacci_grammar n =
   let nonprime_var v vf1 vf2 = function
     | 0 -> zero_variables [(v ^ "0", 'a')]
     | 1 -> zero_variables [(v ^ "1", 'a')]
-    | 2 -> one_variable [(v ^ "2", 'a', v ^ "1")]
+    | 2 -> one_variable [(v ^ "2", 'a', v ^ "0")]
     | n -> two_variables [(v ^ soi n, 'a', vf1 n, vf2 n)] in
 
   let prime_var v vf1 vf2 = function
@@ -160,16 +160,16 @@ let _ =
   let prods = fibonacci_grammar 10 in
 
   if productions_valid prods then
-    print_endline "Productions valid."
+    print_endline "Productions valid. :)"
   else begin
-    print_endline "Productions invalid!";
+    print_endline "Productions invalid! :@";
     exit 1
-  end
-
-    
+  end;
 
   print_endline "Production rules:";
   print_endline (string_of_production_rules prods);
 
   print_endline ("Norm: " ^ (string_of_int (norm "F5" prods)));
+
+  exit 0;
 ;;
