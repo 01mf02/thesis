@@ -159,7 +159,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $F_{2}\rightarrow aF_{1}$
+\begin_inset Formula $F_{2}\rightarrow aF_{0}$
 \end_inset
 
 
@@ -294,7 +294,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $G_{2}\rightarrow aG_{1}$
+\begin_inset Formula $G_{2}\rightarrow aG_{0}$
 \end_inset
 
 

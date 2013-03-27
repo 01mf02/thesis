@@ -68,7 +68,6 @@ let productions_valid (prods : production_rules) =
   is_sorted 0 prods;;
 
 
-
 (************************************************
  **************** Example grammars **************
  ************************************************)
