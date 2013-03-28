@@ -14,7 +14,10 @@ type production_rule = variable * variable_rules;;
 type production_rules = production_rule list;;
 
 let rules_of_variable (var : variable) (rules : production_rules) =
-  match find (function (v, r) -> v = var) rules with (_, r) -> r;;
+  snd (find (function (v, _) -> v = var) rules);;
+
+let variable_of_terminal (term : terminal) (rules : production_rules) =
+  fst (find (function (_, r) -> r = [(term, [])]) rules);;
 
 
 (************************************************
@@ -66,6 +69,28 @@ let productions_valid (prods : production_rules) =
       else false in
 
   is_sorted 0 prods;;
+
+
+(************************************************
+ ***************** Decomposition ****************
+ ************************************************)
+
+exception Not_decomposable;;
+
+let rec decompose prods final_norm = function
+  | [] -> if final_norm = 0 then [] else raise Not_decomposable
+  | hdv::tlv -> let hd_norm = norm hdv prods in
+    if final_norm = 0 then []
+    else if final_norm >= hd_norm then
+      hdv::decompose prods (final_norm - hd_norm) tlv
+    else begin
+      let rules = rules_of_variable hdv prods in
+      if length rules = 1 then
+        let (term, vars) = hd rules in
+        variable_of_terminal term prods :: decompose prods (final_norm - 1) vars
+      else
+        raise Not_decomposable
+    end;;
 
 
 (************************************************
@@ -168,7 +193,10 @@ let _ =
   print_endline "Production rules:";
   print_endline (string_of_production_rules prods);
 
-  print_endline ("Norm: " ^ (string_of_int (norm "F5" prods)));
+  print_endline ("Norm: " ^ (string_of_int (norm "G10" prods)));
+
+  print_endline ("Decomposition: " ^
+    string_of_variables (decompose prods 88 ["G10"]));
 
   exit 0;
 ;;
