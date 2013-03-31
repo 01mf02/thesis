@@ -83,8 +83,8 @@ exception Not_decomposable;;
 let rec decompose prods final_norm = function
   | [] -> if final_norm = 0 then [] else raise Not_decomposable
   | hdv::tlv -> let hd_norm = norm hdv prods in
-    (* case for negative final_norm? *)
-    if final_norm = 0 then []
+    if final_norm < 0 then raise Not_decomposable
+    else if final_norm = 0 then []
     else if final_norm >= hd_norm then
       hdv::decompose prods (final_norm - hd_norm) tlv
     else begin
@@ -267,7 +267,7 @@ let sum_of_variable_rules = function
   | (rh::rt) -> Sum(rh, rt);;
 
 
-exception No_prefix;;
+exception No_partition;;
 
 let prove_equivalence (eq : equivalence) (prods : production_rules) =
   let pov = product_of_variables in
@@ -276,7 +276,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
     let rec aux prefix postfix =
       if f prefix then prefix, postfix
       else match postfix with
-        | [] -> raise No_prefix
+        | [] -> raise No_partition
         | h::t -> aux (prefix@[h]) t in
     aux [] l in
 
@@ -299,18 +299,30 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
               let (pb1, pb2) =
                 partition (fun l -> nov prods l = npah) (pbh::pbt) in
               e, Times((pov [pah], pov pb1), (pov pat, pov pb2))
-            with No_prefix ->
-              let a' = pov (pbh::norm_reduce npbh [pah] prods @ pat) in
-              e, Trans((a, a'), (a', b))
+            with No_partition ->
+              try
+                let a' = pov ((decompose prods npah (pbh::pbt))@pat) in
+                e, Trans((a, a'), (a', b))
+              with Not_decomposable ->
+                let a' = pov (pbh::norm_reduce npbh [pah] prods @ pat) in
+                e, Trans((a, a'), (a', b))
           else if npah = npbh then
             e, Times((pov [pah], pov [pbh]), (pov pat, pov pbt))
           else
             e, Sym(b, a)
+        | Sum ((sbhc, sbhv), []) ->
+          let rules = rules_of_variable pah prods in
+          if length rules = 1 then
+            let first_rule = hd rules in
+            let a' = Sum((fst first_rule, (snd first_rule)@pat), []) in
+            e, Trans((a, a'), (a', b))
+          else
+            raise Proof_impossible
         | _ -> e, Unsupported
         end
       | Sum ((sahc, sahv), []) ->
           begin match b with
-          | Product (pbh, []) -> e, Sym((b, a))
+          | Product (_, _) -> e, Sym((b, a))
           | Sum ((sbhc, sbhv), []) ->
             if sahc = sbhc then
               let sum_of_terminal t = Sum((t, []), []) in
@@ -343,7 +355,7 @@ let prove_var_eq a b =
  ************************************************)
 
 let _ =
-  let prods = fibonacci_grammar 10 in
+  let prods = fibonacci_grammar 23 in
 
   if productions_valid prods then
     print_endline "Productions valid. :)"
@@ -361,7 +373,7 @@ let _ =
     string_of_variables (decompose prods 88 ["G10"]));
 
   print_endline "Proof:";
-  print_sequents (prove_var_eq "F5" "G5" prods);
+  print_sequents (prove_var_eq "F23" "G23" prods);
 
   exit 0;
 ;;
