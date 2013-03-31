@@ -2,7 +2,7 @@ open Format;;
 open List;;
 
 (************************************************
- **************** Type definitions **************
+ ************ Grammar type definitions **********
  ************************************************)
 
 type variable = string;;
@@ -30,7 +30,7 @@ let string_of_variables (vars : variables) =
 
 (* variable_rule -> string *)
 let string_of_variable_rule (c, vars) =
-  (String.make 1 c) ^ " " ^ string_of_variables vars;;
+  String.concat " " ((String.make 1 c)::vars);;
 
 (* variable_rules -> string *)
 let string_of_variable_rules (r : variable_rules) =
@@ -50,10 +50,13 @@ let string_of_production_rules (r : production_rules) =
  ************************************************)
 
 (* calculate the norm of a variable of a grammar *)
+(* TODO: inverse order of v and prods to be consistent with nov! *)
 (* variable -> production_rules -> int *)
 let rec norm (v : variable) (prods : production_rules) =
   let vars = snd (hd (rules_of_variable v prods)) in
   fold_left (fun prev_sum curr_var -> prev_sum + (norm curr_var prods)) 1 vars;;
+
+let norm_of_variables prods = fold_left (fun n v -> n + norm v prods) 0;;
 
 (* verify that production rules adhere to required restrictions:
    * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
@@ -80,6 +83,7 @@ exception Not_decomposable;;
 let rec decompose prods final_norm = function
   | [] -> if final_norm = 0 then [] else raise Not_decomposable
   | hdv::tlv -> let hd_norm = norm hdv prods in
+    (* case for negative final_norm? *)
     if final_norm = 0 then []
     else if final_norm >= hd_norm then
       hdv::decompose prods (final_norm - hd_norm) tlv
@@ -91,6 +95,24 @@ let rec decompose prods final_norm = function
       else
         raise Not_decomposable
     end;;
+
+exception Negative_norm_reduce
+
+(* int -> variables -> production_rules -> int list *)
+let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
+  if p < 0 then
+    raise Negative_norm_reduce
+  else if p = 0 then
+    vars
+  else
+    match vars with
+    | [] -> raise Negative_norm_reduce
+    | head::tail ->
+        if p >= norm head prods then
+          norm_reduce (p - norm head prods) tail prods
+        else
+          let first_production = snd (hd (rules_of_variable head prods)) in
+          (norm_reduce (p - 1) first_production prods) @ tail;;
 
 
 (************************************************
@@ -177,6 +199,146 @@ let rec fibonacci_grammar n =
 
 
 (************************************************
+ ************* Proof type definitions ***********
+ ************************************************)
+
+type expression =
+    Product of variable * variables
+  | Sum of variable_rule * variable_rules;;
+
+type equivalence = expression * expression;;
+
+type sequent = equivalence * rule and rule =
+  | Refl
+  | Gr
+  | Unsupported
+  | Sym   of equivalence
+  | Plus  of equivalence * equivalence
+  | Times of equivalence * equivalence
+  | Trans of equivalence * equivalence;;
+
+let equivalences_of_rule = function
+  | Refl -> []
+  | Gr -> []
+  | Unsupported -> []
+  | Sym e -> [e]
+  | Plus  (e1, e2) -> [e1; e2]
+  | Times (e1, e2) -> [e1; e2]
+  | Trans (e1, e2) -> [e1; e2];;
+
+let string_of_expression = function
+  | Product (ph, pt) -> string_of_variables (ph::pt)
+  | Sum (sh, st) -> string_of_variable_rules (sh::st);;
+
+let string_of_equivalence (a, b) =
+  (string_of_expression a) ^ " = " ^ (string_of_expression b);;
+
+let string_of_equivalences eqs =
+  String.concat ", " (map string_of_equivalence eqs);;
+
+let string_of_rule = function
+  | Refl -> "Refl"
+  | Gr -> "Gr"
+  | Unsupported -> "Unsupported"
+  | Sym e -> "Sym(" ^ (string_of_equivalence e) ^ ")"
+  | Plus  (e1, e2) -> "Plus("  ^ (string_of_equivalences [e1; e2]) ^ ")"
+  | Times (e1, e2) -> "Times(" ^ (string_of_equivalences [e1; e2]) ^ ")"
+  | Trans (e1, e2) -> "Trans(" ^ (string_of_equivalences [e1; e2]) ^ ")";;
+
+let rec string_of_sequent (e, r) =
+  (string_of_equivalence e) ^ " -> " ^ (string_of_rule r);;
+
+let rec print_sequents =
+  iter (fun s -> print_endline (string_of_sequent s));;
+
+
+exception Empty_variables;;
+exception Empty_variable_rules;;
+exception Proof_impossible;;
+
+let product_of_variable v = Product(v, []);;
+
+let product_of_variables = function
+  | [] -> raise Empty_variables
+  | (vh::vt) -> Product(vh, vt);;
+
+let sum_of_variable_rules = function
+  | [] -> raise Empty_variable_rules
+  | (rh::rt) -> Sum(rh, rt);;
+
+
+exception No_prefix;;
+
+let prove_equivalence (eq : equivalence) (prods : production_rules) =
+  let pov = product_of_variables in
+
+  let partition f l =
+    let rec aux prefix postfix =
+      if f prefix then prefix, postfix
+      else match postfix with
+        | [] -> raise No_prefix
+        | h::t -> aux (prefix@[h]) t in
+    aux [] l in
+
+  let prove_eq (e : equivalence) = match e with (a, b) ->
+    if a = b then
+      e, Refl
+    else match a with
+      | Product (pah, []) ->
+          let gr = sum_of_variable_rules (rules_of_variable pah prods) in
+          if b = gr then e, Gr
+          else e, Trans((a, gr), (gr, b))
+      | Product (pah, pat) ->
+        begin match b with
+        | Product (pbh, []) -> e, Sym(b, a)
+        | Product (pbh, pbt) ->
+          let (npah, npbh) = (norm pah prods, norm pbh prods) in
+          if npah > npbh then
+            try
+              let nov = norm_of_variables in
+              let (pb1, pb2) =
+                partition (fun l -> nov prods l = npah) (pbh::pbt) in
+              e, Times((pov [pah], pov pb1), (pov pat, pov pb2))
+            with No_prefix ->
+              let a' = pov (pbh::norm_reduce npbh [pah] prods @ pat) in
+              e, Trans((a, a'), (a', b))
+          else if npah = npbh then
+            e, Times((pov [pah], pov [pbh]), (pov pat, pov pbt))
+          else
+            e, Sym(b, a)
+        | _ -> e, Unsupported
+        end
+      | Sum ((sahc, sahv), []) ->
+          begin match b with
+          | Product (pbh, []) -> e, Sym((b, a))
+          | Sum ((sbhc, sbhv), []) ->
+            if sahc = sbhc then
+              let sum_of_terminal t = Sum((t, []), []) in
+              e, Times((sum_of_terminal sahc, sum_of_terminal sbhc),
+                       (pov sahv, pov sbhv))
+            else
+              raise Proof_impossible
+          | _ -> e, Unsupported
+          end
+      | _ -> e, Unsupported in
+
+  let rec construct_proof seqs = function
+    | [] -> seqs
+    | (eqh::eqt) ->
+      let seq = prove_eq eqh in
+      let eqs = equivalences_of_rule (snd seq) in
+      let unproven_eqs =
+        filter (fun e -> not (exists (fun (se, _) -> e = se) seqs)) eqs in
+      construct_proof (seq::seqs) (unproven_eqs@eqt) in
+
+  construct_proof [] [eq];;
+
+
+let prove_var_eq a b =
+  prove_equivalence (product_of_variable a, product_of_variable b);;
+
+
+(************************************************
  ****************** Main function ***************
  ************************************************)
 
@@ -197,6 +359,9 @@ let _ =
 
   print_endline ("Decomposition: " ^
     string_of_variables (decompose prods 88 ["G10"]));
+
+  print_endline "Proof:";
+  print_sequents (prove_var_eq "F5" "G5" prods);
 
   exit 0;
 ;;
