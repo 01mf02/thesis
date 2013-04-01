@@ -91,43 +91,39 @@ let rec print_sequents =
  ************************************************)
 
 exception Proof_impossible
-exception No_partition
 exception Circular_sequent
 
 let prove_equivalence (eq : equivalence) (prods : production_rules) =
   let pov = product_of_variables in
 
-  let partition f l =
-    let rec aux prefix postfix =
-      if f prefix then prefix, postfix
-      else match postfix with
-        | [] -> raise No_partition
-        | h::t -> aux (prefix@[h]) t in
-    aux [] l in
-
-  let rule_of_products a b (pah, pat) (pbh, pbt) =
-    let pair_map f (x, y) = (f x, f y) in
-    let (npah, npbh) = pair_map (norm_of_variable prods) (pah, pbh) in
-
-    if npah < npbh then
-      Sym(b, a)
-    else if npah = npbh then
-      Times((pov [pah], pov [pbh]), (pov pat, pov pbt))
-    else
-      try
-        let (pb1, pb2) =
-          partition (fun l -> norm_of_variables prods l = npah) (pbh::pbt) in
-        Times((pov [pah], pov pb1), (pov pat, pov pb2))
-      with No_partition ->
-        try
-          let a' = pov ((decompose prods npah (pbh::pbt))@pat) in
-          Trans((a, a'), (a', b))
-        with Not_decomposable ->
-          let a' = pov (pbh::norm_reduce npbh [pah] prods @ pat) in
-          Trans((a, a'), (a', b)) in
-
+  (* determine whether the first list is a prefix of the second list,
+   * and if so, also return the remaining part of the second list *)
+  let rec is_prefix = function
+    | ([], postfix) -> (true, postfix)
+    | (_::_, []) -> (false, [])
+    | (h1::t1, h2::t2) -> if h1 = h2 then is_prefix (t1, t2) else (false, []) in
 
   let rule_of_equivalence (a, b) =
+    let trans x = Trans((a, x), (x, b)) in
+
+    let rule_of_products (pah, pat) (pbh, pbt) =
+      let pair_map f (x, y) = (f x, f y) in
+      let (npah, npbh) = pair_map (norm_of_variable prods) (pah, pbh) in
+
+      if npah < npbh then
+        Sym(b, a)
+      else
+        try
+          let dec = decompose prods npah (pbh::pbt) in
+          let (dec_is_prefix, postfix) = is_prefix (dec, (pbh::pbt)) in
+          if dec_is_prefix then
+            Times((pov [pah], pov dec), (pov pat, pov postfix))
+          else
+            trans (pov (dec@pat))
+        with Not_decomposable ->
+          trans (pov (pbh::norm_reduce npbh [pah] prods @ pat)) in
+
+
     if expression_equals a b then
       Refl
     else
@@ -135,19 +131,28 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
       | Product (pah, []) ->
         let gr = sum_of_variable_rules (rules_of_variable prods pah) in
         if expression_equals b gr then Gr
-        else Trans((a, gr), (gr, b))
+        else begin match b with
+          | Product (pbh, []) ->
+            trans gr
+          | Product (pbh, pbt) ->
+            let npbh = norm_of_variable prods pbh in
+            let reduct = pbh::norm_reduce npbh [pah] prods in
+            if reduct = pbh::pbt then trans gr
+            else trans (pov reduct)
+          | Sum ((sbhc, sbhv), []) ->
+            trans (Product(variable_of_terminal prods sbhc, sbhv))
+          | _ -> Unsupported
+        end
       | Product (pah, pat) ->
         begin match b with
         | Product (pbh, []) -> Sym(b, a)
         | Product (pbh, pbt) ->
-          rule_of_products a b (pah, pat) (pbh, pbt)
+          rule_of_products (pah, pat) (pbh, pbt)
         | Sum ((sbhc, sbhv), []) ->
           if norm_of_variable prods pah = 1 then
             Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
           else
-            let term_var = variable_of_terminal prods sbhc in
-            let b' = Product(term_var, sbhv) in
-            Trans((a, b'), (b', b))
+            trans (Product(variable_of_terminal prods sbhc, sbhv))
         | _ -> Unsupported
         end
       | Sum ((sahc, sahv), []) ->
@@ -206,7 +211,7 @@ let _ =
     string_of_variables (decompose prods 88 ["G10"]));
 
   print_endline "Proof:";
-  print_sequents (prove_var_eq "F5" "G5" prods);
+  print_sequents (prove_var_eq "F4" "G4" prods);
 
   exit 0;
 ;;

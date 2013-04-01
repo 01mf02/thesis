@@ -33,8 +33,8 @@ let string_of_variables (vars : variables) =
   String.concat " " vars;;
 
 (* variable_rule -> string *)
-let string_of_variable_rule (c, vars) =
-  String.concat " " ((String.make 1 c)::vars);;
+let string_of_variable_rule (term, vars) =
+  String.concat " " ((String.make 1 term)::vars);;
 
 (* variable_rules -> string *)
 let string_of_variable_rules (r : variable_rules) =
