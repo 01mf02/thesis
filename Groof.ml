@@ -170,7 +170,6 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
       let rule = rule_of_equivalence eqh in
       let eqs = equivalences_of_rule rule in
 
-      print_endline (string_of_sequent (eqh, rule));
       if exists (fun e -> e = eqh) eqs then raise Circular_sequent
       else
         let unproven_eqs =
