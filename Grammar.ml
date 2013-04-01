@@ -17,10 +17,10 @@ type production_rules = production_rule list;;
  *************** Auxiliary functions ************
  ************************************************)
 
-let rules_of_variable (var : variable) (rules : production_rules) =
+let rules_of_variable (rules : production_rules) (var : variable) =
   snd (find (function (v, _) -> v = var) rules);;
 
-let variable_of_terminal (term : terminal) (rules : production_rules) =
+let variable_of_terminal (rules : production_rules) (term : terminal) =
   fst (find (function (_, r) -> r = [(term, [])]) rules);;
 
 
@@ -54,13 +54,14 @@ let string_of_production_rules (r : production_rules) =
  ************************************************)
 
 (* calculate the norm of a variable of a grammar *)
-(* TODO: inverse order of v and prods to be consistent with nov! *)
-(* variable -> production_rules -> int *)
-let rec norm (v : variable) (prods : production_rules) =
-  let vars = snd (hd (rules_of_variable v prods)) in
-  fold_left (fun prev_sum curr_var -> prev_sum + (norm curr_var prods)) 1 vars;;
+(* production_rules -> variable -> int *)
+let rec norm_of_variable (prods : production_rules) (var : variable) =
+  let vars = snd (hd (rules_of_variable prods var)) in
+  fold_left (fun n v -> n + (norm_of_variable prods v)) 1 vars;;
 
-let norm_of_variables prods = fold_left (fun n v -> n + norm v prods) 0;;
+(* production_rules -> variable list -> int *)
+let norm_of_variables prods =
+  fold_left (fun n v -> n + norm_of_variable prods v) 0;;
 
 (* verify that production rules adhere to required restrictions:
    * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
@@ -71,7 +72,7 @@ let productions_valid (prods : production_rules) =
   let rec is_sorted prev_norm = function
     | [] -> true
     | (hdv, hdr)::tl ->
-      let curr_norm = norm hdv prods in
+      let curr_norm = norm_of_variable prods hdv in
       if curr_norm >= prev_norm then is_sorted curr_norm tl
       else false in
 
@@ -82,27 +83,29 @@ let productions_valid (prods : production_rules) =
  ***************** Decomposition ****************
  ************************************************)
 
-exception Not_decomposable;;
+exception Negative_decompose
+exception Not_decomposable
 
-let rec decompose prods final_norm = function
-  | [] -> if final_norm = 0 then [] else raise Not_decomposable
-  | hdv::tlv -> let hd_norm = norm hdv prods in
-    if final_norm < 0 then raise Not_decomposable
+(* production_rules -> int -> variables -> variables *)
+let rec decompose (prods : production_rules) (final_norm : int) = function
+  | [] -> if final_norm = 0 then [] else raise Negative_decompose
+  | head::tail -> let head_norm = norm_of_variable prods head in
+    if final_norm < 0 then raise Negative_decompose
     else if final_norm = 0 then []
-    else if final_norm >= hd_norm then
-      hdv::decompose prods (final_norm - hd_norm) tlv
+    else if final_norm >= head_norm then
+      head::decompose prods (final_norm - head_norm) tail
     else begin
-      let rules = rules_of_variable hdv prods in
+      let rules = rules_of_variable prods head in
       if length rules = 1 then
         let (term, vars) = hd rules in
-        variable_of_terminal term prods :: decompose prods (final_norm - 1) vars
+        variable_of_terminal prods term :: decompose prods (final_norm - 1) vars
       else
         raise Not_decomposable
     end;;
 
 exception Negative_norm_reduce
 
-(* int -> variables -> production_rules -> int list *)
+(* int -> variables -> production_rules -> variables *)
 let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
   if p < 0 then
     raise Negative_norm_reduce
@@ -112,9 +115,10 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
     match vars with
     | [] -> raise Negative_norm_reduce
     | head::tail ->
-        if p >= norm head prods then
-          norm_reduce (p - norm head prods) tail prods
-        else
-          let first_production = snd (hd (rules_of_variable head prods)) in
-          (norm_reduce (p - 1) first_production prods) @ tail;;
+      let head_norm = norm_of_variable prods head in
+      if p >= head_norm then
+        norm_reduce (p - head_norm) tail prods
+      else
+        let first_production = snd (hd (rules_of_variable prods head)) in
+        (norm_reduce (p - 1) first_production prods) @ tail;;
 
