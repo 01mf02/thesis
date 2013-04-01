@@ -32,6 +32,7 @@ exception Empty_variables
 exception Empty_variable_rules
 
 let product_of_variable v = Product(v, []);;
+let sum_of_terminal t = Sum((t, []), []);;
 
 let product_of_variables = function
   | [] -> raise Empty_variables
@@ -91,6 +92,7 @@ let rec print_sequents =
 
 exception Proof_impossible
 exception No_partition
+exception Circular_sequent
 
 let prove_equivalence (eq : equivalence) (prods : production_rules) =
   let pov = product_of_variables in
@@ -140,9 +142,12 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
         | Product (pbh, pbt) ->
           rule_of_products a b (pah, pat) (pbh, pbt)
         | Sum ((sbhc, sbhv), []) ->
-          let term_var = variable_of_terminal prods sbhc in
-          let b' = Product(term_var, sbhv) in
-          Trans((a, b'), (b', b))
+          if norm_of_variable prods pah = 1 then
+            Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
+          else
+            let term_var = variable_of_terminal prods sbhc in
+            let b' = Product(term_var, sbhv) in
+            Trans((a, b'), (b', b))
         | _ -> Unsupported
         end
       | Sum ((sahc, sahv), []) ->
@@ -164,10 +169,13 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
     | (eqh::eqt) ->
       let rule = rule_of_equivalence eqh in
       let eqs = equivalences_of_rule rule in
-      (* detect circular proofs *)
-      let unproven_eqs =
-        filter (fun e -> not (exists (fun (se, _) -> e = se) seqs)) eqs in
-      construct_proof ((eqh, rule)::seqs) (unproven_eqs@eqt) in
+
+      print_endline (string_of_sequent (eqh, rule));
+      if exists (fun e -> e = eqh) eqs then raise Circular_sequent
+      else
+        let unproven_eqs =
+          filter (fun e -> not (exists (fun (se, _) -> e = se) seqs)) eqs in
+        construct_proof ((eqh, rule)::seqs) (unproven_eqs@eqt) in
 
   construct_proof [] [eq];;
 
