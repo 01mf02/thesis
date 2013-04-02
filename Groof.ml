@@ -51,9 +51,18 @@ let equivalences_of_rule = function
   | Times (e1, e2) -> [e1; e2]
   | Trans (e1, e2) -> [e1; e2];;
 
-let expression_equals x y =
-  (* TODO *)
-  x = y;;
+let rec expression_equals = function
+  | (Product(pah, pat), Product(pbh, pbt)) -> pah = pbh && pat = pbt
+  | (Product(_, _), Sum(_, _)) -> false
+  | (Sum(_, _), Product(_, _)) -> false
+  | (Sum(sah, sat), Sum(sbh, sbt)) ->
+    for_all (fun (sac, sav) -> exists (fun (sbc, sbv) ->
+      sac = sbc &&
+      if length sav = 0 then length sbv = 0
+      else
+        let pov = product_of_variables in
+        length sbv > 0 &&
+        expression_equals (pov sav, pov sbv)) (sbh::sbt)) (sah::sat);;
 
 
 (************************************************
@@ -124,13 +133,13 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
           trans (pov (pbh::norm_reduce npbh [pah] prods @ pat)) in
 
 
-    if expression_equals a b then
+    if expression_equals (a, b) then
       Refl
     else
       match a with
       | Product (pah, []) ->
         let gr = sum_of_variable_rules (rules_of_variable prods pah) in
-        if expression_equals b gr then Gr
+        if expression_equals (b, gr) then Gr
         else begin match b with
           | Product (pbh, []) ->
             trans gr
