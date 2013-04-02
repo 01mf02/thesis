@@ -51,6 +51,8 @@ let equivalences_of_rule = function
   | Times (e1, e2) -> [e1; e2]
   | Trans (e1, e2) -> [e1; e2];;
 
+let pair_map f (x, y) = (f x, f y);;
+
 let rec expression_equals = function
   | (Product(pah, pat), Product(pbh, pbt)) -> pah = pbh && pat = pbt
   | (Product(_, _), Sum(_, _)) -> false
@@ -60,9 +62,9 @@ let rec expression_equals = function
       sac = sbc &&
       if length sav = 0 then length sbv = 0
       else
-        let pov = product_of_variables in
         length sbv > 0 &&
-        expression_equals (pov sav, pov sbv)) (sbh::sbt)) (sah::sat);;
+        expression_equals (pair_map product_of_variables (sav, sbv)))
+    (sbh::sbt)) (sah::sat);;
 
 
 (************************************************
@@ -116,7 +118,6 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
     let trans x = Trans((a, x), (x, b)) in
 
     let rule_of_products (pah, pat) (pbh, pbt) =
-      let pair_map f (x, y) = (f x, f y) in
       let (npah, npbh) = pair_map (norm_of_variable prods) (pah, pbh) in
 
       if npah < npbh then
@@ -150,7 +151,8 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
             else trans (pov reduct)
           | Sum ((sbhc, sbhv), []) ->
             trans (Product(variable_of_terminal prods sbhc, sbhv))
-          | _ -> Unsupported
+          | Sum(_, _) ->
+            trans gr
         end
       | Product (pah, pat) ->
         begin match b with
@@ -184,7 +186,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
       let rule = rule_of_equivalence eqh in
       let eqs = equivalences_of_rule rule in
 
-      if exists (fun e -> e = eqh) eqs then raise Circular_sequent
+      if exists ((=) eqh) eqs then raise Circular_sequent
       else
         let unproven_eqs =
           filter (fun e -> not (exists (fun (se, _) -> e = se) seqs)) eqs in
