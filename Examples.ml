@@ -83,3 +83,20 @@ let rec fibonacci_grammar n =
     | 0 -> f 0 @ g 0
     | n -> fibonacci_grammar (n-1) @ f' n @ g' n @ f n @ g n;;
 
+let rec branching_grammar n =
+  let rec progression v = function
+    | 0 -> []
+    | n -> (Char.chr (n + 96), [v ^ soi n])::progression v (n-1) in
+
+  let var v = function
+    | 0 -> []
+    | 1 -> zero_variables [(v ^ "1", 'a')]
+    | n -> [(v ^ soi n, rev (progression v (n-1)))] in
+
+  let x = var "X" in
+  let y = var "Y" in
+
+  match n with
+  | 0 -> []
+  | 1 -> x 1 @ y 1
+  | n -> (branching_grammar (n-1)) @ x n @ y n;;
