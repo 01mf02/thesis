@@ -17,7 +17,6 @@ type equivalence = expression * expression;;
 type sequent = equivalence * rule and rule =
   | Refl
   | Gr
-  | Unsupported
   | Sym   of equivalence
   | Plus  of equivalence * equivalence
   | Times of equivalence * equivalence
@@ -45,7 +44,6 @@ let sum_of_variable_rules = function
 let equivalences_of_rule = function
   | Refl -> []
   | Gr -> []
-  | Unsupported -> []
   | Sym e -> [e]
   | Plus  (e1, e2) -> [e1; e2]
   | Times (e1, e2) -> [e1; e2]
@@ -84,7 +82,6 @@ let string_of_equivalences eqs =
 let string_of_rule = function
   | Refl -> "Refl"
   | Gr -> "Gr"
-  | Unsupported -> "Unsupported"
   | Sym e -> "Sym(" ^ (string_of_equivalence e) ^ ")"
   | Plus  (e1, e2) -> "Plus("  ^ (string_of_equivalences [e1; e2]) ^ ")"
   | Times (e1, e2) -> "Times(" ^ (string_of_equivalences [e1; e2]) ^ ")"
@@ -106,6 +103,7 @@ exception Circular_sequent
 
 let prove_equivalence (eq : equivalence) (prods : production_rules) =
   let pov = product_of_variables in
+  let sov = sum_of_variable_rules in
 
   (* determine whether the first list is a prefix of the second list,
    * and if so, also return the remaining part of the second list *)
@@ -113,6 +111,10 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
     | ([], postfix) -> (true, postfix)
     | (_::_, []) -> (false, [])
     | (h1::t1, h2::t2) -> if h1 = h2 then is_prefix (t1, t2) else (false, []) in
+
+  let rewrite_with_grammar vh vt =
+    let gr = rules_of_variable prods vh in
+    sum_of_variable_rules (map (fun (t, v) -> (t, v@vt)) gr) in
 
   let rule_of_equivalence (a, b) =
     let trans x = Trans((a, x), (x, b)) in
@@ -139,7 +141,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
     else
       match a with
       | Product (pah, []) ->
-        let gr = sum_of_variable_rules (rules_of_variable prods pah) in
+        let gr = rewrite_with_grammar pah [] in
         if expression_equals (b, gr) then Gr
         else begin match b with
           | Product (pbh, []) ->
@@ -164,7 +166,12 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
             Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
           else
             trans (Product(variable_of_terminal prods sbhc, sbhv))
-        | _ -> Unsupported
+        | Sum(sbh, sbt) ->
+          let gr = rewrite_with_grammar pah pat in
+          if Sum(sbh, sbt) = gr then
+            Times((pov [pah], rewrite_with_grammar pah []), (pov pat, pov pat))
+          else
+            trans gr
         end
       | Sum ((sahc, sahv), []) ->
         begin match b with
@@ -176,9 +183,18 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
                   (pov sahv, pov sbhv))
           else
             raise Proof_impossible
-        | _ -> Unsupported
+        | Sum(_, _) ->
+          raise Proof_impossible
         end
-      | _ -> Unsupported in
+      | Sum ((sahc, sahv) as sah, sat) ->
+        begin match b with
+        | Product (_, _) -> Sym((b, a))
+        | Sum (sbh, sbt) ->
+          let (eq, noneq) = partition (fun (c, v) -> c = sahc) (sbh::sbt) in
+          match eq with
+          | eh::[] -> Plus((sov [sah], sov [eh]), (sov sat, sov noneq))
+          | _ -> raise Proof_impossible
+        end in
 
   let rec construct_proof seqs = function
     | [] -> seqs
@@ -186,7 +202,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
       let rule = rule_of_equivalence eqh in
       let eqs = equivalences_of_rule rule in
 
-      if exists ((=) eqh) eqs then raise Circular_sequent
+      if mem eqh eqs then raise Circular_sequent
       else
         let unproven_eqs =
           filter (fun e -> not (exists (fun (se, _) -> e = se) seqs)) eqs in
@@ -204,7 +220,7 @@ let prove_var_eq a b =
  ************************************************)
 
 let _ =
-  let prods = Examples.fibonacci_grammar 10 in
+  let prods = Examples.branching_grammar 10 in
 
   if productions_valid prods then
     print_endline "Productions valid. :)"
@@ -216,13 +232,18 @@ let _ =
   print_endline "Production rules:";
   print_endline (string_of_production_rules prods);
 
-  print_endline ("Norm: " ^ (string_of_int (norm_of_variable prods "G10")));
+  print_endline ("Norm: " ^ (string_of_int (norm_of_variable prods "X10")));
 
-  print_endline ("Decomposition: " ^
-    string_of_variables (decompose prods 88 ["G10"]));
+  (*print_endline ("Decomposition: " ^
+    string_of_variables (decompose prods 88 ["G10"]));*)
+
+  let sequents = prove_var_eq "X4" "Y4" prods in
 
   print_endline "Proof:";
-  print_sequents (prove_var_eq "F4" "G4" prods);
+  print_sequents sequents;
+
+  print_endline
+    ("Proof size: " ^ string_of_int (length sequents) ^ " sequents");
 
   exit 0;
 ;;
