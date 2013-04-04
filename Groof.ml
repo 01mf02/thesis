@@ -220,7 +220,7 @@ let prove_var_eq a b =
  ************************************************)
 
 let _ =
-  let prods = Examples.branching_grammar 10 in
+  let prods = Examples.branching_fibonacci_grammar 10 in
 
   if productions_valid prods then
     print_endline "Productions valid. :)"
@@ -237,7 +237,7 @@ let _ =
   (*print_endline ("Decomposition: " ^
     string_of_variables (decompose prods 88 ["G10"]));*)
 
-  let sequents = prove_var_eq "X4" "Y4" prods in
+  let sequents = prove_var_eq "X2" "Y2" prods in
 
   print_endline "Proof:";
   print_sequents sequents;
