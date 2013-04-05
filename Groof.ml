@@ -161,6 +161,8 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
         | Product (pbh, []) -> Sym(b, a)
         | Product (pbh, pbt) ->
           rule_of_products (pah, pat) (pbh, pbt)
+        | Sum ((sbhc, []), []) ->
+          raise Proof_impossible
         | Sum ((sbhc, sbhv), []) ->
           if norm_of_variable prods pah = 1 then
             Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
@@ -168,7 +170,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
             trans (Product(variable_of_terminal prods sbhc, sbhv))
         | Sum(sbh, sbt) ->
           let gr = rewrite_with_grammar pah pat in
-          if Sum(sbh, sbt) = gr then
+          if expression_equals (Sum(sbh, sbt), gr) then
             Times((pov [pah], rewrite_with_grammar pah []), (pov pat, pov pat))
           else
             trans gr
@@ -178,9 +180,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
         | Product (_, _) -> Sym((b, a))
         | Sum ((sbhc, sbhv), []) ->
           if sahc = sbhc then
-            let sum_of_terminal t = Sum((t, []), []) in
-            Times((sum_of_terminal sahc, sum_of_terminal sbhc),
-                  (pov sahv, pov sbhv))
+            Times(pair_map sum_of_terminal (sahc, sbhc), (pov sahv, pov sbhv))
           else
             raise Proof_impossible
         | Sum(_, _) ->
