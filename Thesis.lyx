@@ -4,7 +4,10 @@
 \begin_header
 \textclass clmthesis
 \begin_preamble
-\DeclareMathOperator{\norm}{norm}
+\usepackage{bussproofs}
+
+% make sum/integral limits always appear above/below the operator, not next to it
+\everymath{\displaystyle}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -81,6 +84,16 @@ Géraud Sénizergues, Cezary Kaliszyk
 \begin_layout Abstract
 This abstract is yet to be written, most probably somewhere around in June
  ...
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Includes.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -380,11 +393,11 @@ Two encodings of the Fibonacci numbers
 \end_inset
 
 , where 
-\begin_inset Formula $\norm(F_{n})=\norm(G_{n})=f_{n}$
+\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=f_{n}$
 \end_inset
 
  and 
-\begin_inset Formula $\norm(F_{n}^{'})=\norm(G_{n}^{'})=f_{n}-1$
+\begin_inset Formula $\norm{F_{n}^{'}}=\norm{G_{n}^{'}}=f_{n}-1$
 \end_inset
 
 .
@@ -606,7 +619,7 @@ status open
 
 .
  
-\begin_inset Formula $\norm(F_{n})=\norm(G_{n})=2^{n+2}$
+\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=2^{n+2}$
 \end_inset
 
 .
@@ -807,7 +820,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-\begin_inset Formula $\norm(S_{n})=\norm(T_{n})=2^{n}$
+\begin_inset Formula $\norm{S_{n}}=\norm{T_{n}}=2^{n}$
 \end_inset
 
 .
@@ -822,6 +835,225 @@ status open
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Proof model (Sénizergues)
+\end_layout
+
+\begin_layout Standard
+algebra, equality
+\end_layout
+
+\begin_layout Section
+Proof strategies
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $E$
+\end_inset
+
+ is an expression, 
+\begin_inset Formula $E_{A}$
+\end_inset
+
+ and 
+\begin_inset Formula $E_{B}$
+\end_inset
+
+ the expressions on the left/right sides of an equivalence
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $A_{n},B_{m}\in V$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $P,Q\in V^{+}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $P_{n},Q_{m}\in V^{*}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $a_{n},b_{m}\in T$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+EQ: 
+\begin_inset Formula $\axrule EE{refl}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+GR: 
+\begin_inset Formula $\axrule{A_{1}}{\Gr{A_{1}}}{gr}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pp: 
+\begin_inset Formula $\transrule{\Gr{A_{1}}}{A_{1}}{B_{1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pP: 
+\begin_inset Formula $\transrulecond{B_{1}\left[A\right]_{\norm{B_{1}}}}{A_{1}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+ps: 
+\begin_inset Formula $\transrule{X_{b}Q}{A_{1}}{bQ}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pS: 
+\begin_inset Formula $\transrule{\Gr{A_{1}}}{A_{1}}{\sum_{y=1}^{n_{B}>1}b_{y}Q_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Pp: 
+\begin_inset Formula $\symrule{\prod_{x=1}^{n_{A}>1}A_{x}}{B_{1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP1: 
+\begin_inset Formula $\symrulecond{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}<\norm{B_{1}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP2: 
+\begin_inset Formula $\timesrulecond{A_{1}}{\prod_{y=1}^{c}B_{y}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\,\exists c<n_{B}:\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}=\prod_{y=1}^{c}B_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP3: 
+\begin_inset Formula $\transrulecond{\left\langle E_{B}\right\rangle _{\norm{A_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}\neq\bot,\,\lnot\exists c<n_{B}:\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}=\prod_{y=1}^{c}B_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP4: 
+\begin_inset Formula $\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}=\bot}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Ps1: 
+\begin_inset Formula $\timesrulecond{A_{1}}b{\prod_{x=2}^{n_{A}}A_{x}}B{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}=1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Ps2: 
+\begin_inset Formula $\transrulecond{V_{b}\prod_{y=1}^{n_{B}\geq1}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}>1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PS1: 
+\begin_inset Formula $\timesrulecond{A_{1}}{\Gr{A_{1}}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{E_{B}=\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PS2: 
+\begin_inset Formula $\transrulecond{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{E_{B}\neq\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+sP: 
+\begin_inset Formula $\symrule{a\prod_{x=1}^{n_{A}\geq0}A_{x}}{\prod_{y=1}^{n_{B}\geq1}B_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+ss: 
+\begin_inset Formula $\timesrule aaPQ{aP}{aQ}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SP: 
+\begin_inset Formula $\symrule{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\prod_{y=1}^{n_{B}\geq1}B_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SS: 
+\begin_inset Formula $\timesrulecond{a_{1}A_{1}}{b_{i}B_{i}}{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{x}B_{x}+\sum_{y=i+1}^{n_{B}}b_{x}B_{x}}{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{x}B_{x}}{\exists!i:\, a_{1}=b_{i}}$
 \end_inset
 
 
