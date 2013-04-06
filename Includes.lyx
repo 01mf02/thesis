@@ -78,7 +78,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\Gr}[1]{\operatorname{Gr}(#1)}
+\newcommand{\Gr}[1]{\operatorname{Gr}(#1)}
 {\mathrm{Gr}(#1)}
 \end_inset
 
@@ -87,7 +87,16 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\norm}[1]{\left\Vert #1\right\Vert }
+\newcommand{\length}[1]{\operatorname{length}(#1)}
+{\mathrm{length}(#1)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
 
@@ -118,7 +127,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\unrulecond}[6]{\unrule{#1}{#2}{#3}{#4,\,#5}{#6}}
+\newcommand{\unrulecond}[6]{\unrule{#1}{#2}{#3}{#4,\,#5}{#6}}
 \end_inset
 
 
@@ -126,7 +135,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\binrulecond}[8]{\binrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}{#8}}
+\newcommand{\binrulecond}[8]{\binrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}{#8}}
 \end_inset
 
 
@@ -134,7 +143,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\symrule}[2]{\unrule{E_{B}}{E_{A}}{#1}{#2}{sym}}
+\newcommand{\reflrule}[1]{\axrule{#1}{#1}{refl}}
 \end_inset
 
 
@@ -142,7 +151,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\transrule}[3]{\binrule{E_{A}}{#1}{#1}{E_{B}}{#2}{#3}{trans}}
+\newcommand{\grrule}[1]{\axrule{#1}{\Gr{#1}}{gr}}
 \end_inset
 
 
@@ -150,7 +159,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\timesrule}[6]{\binrule{#1}{#2}{#3}{#4}{#5}{#6}{\ensuremath{\times}}}
+\newcommand{\symrule}[2]{\unrule{E_{B}}{E_{A}}{#1}{#2}{sym}}
 \end_inset
 
 
@@ -158,7 +167,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\symrulecond}[3]{\symrule{#1}{#2,\,#3}}
+\newcommand{\transrule}[3]{\binrule{E_{A}}{#1}{#1}{E_{B}}{#2}{#3}{trans}}
 \end_inset
 
 
@@ -166,7 +175,31 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\transrulecond}[4]{\transrule{#1}{#2}{#3,\,#4}}
+\newcommand{\timesrule}[6]{\binrule{#1}{#2}{#3}{#4}{#5}{#6}{\ensuremath{\times}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\plusrule}[6]{\binrule{#1}{#2}{#3}{#4}{#5}{#6}{\ensuremath{+}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\symrulecond}[3]{\symrule{#1}{#2,\,#3}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\transrulecond}[4]{\transrule{#1}{#2}{#3,\,#4}}
 \end_inset
 
 
@@ -175,6 +208,14 @@ filename "LyXproofs.lyx"
 \begin_layout Standard
 \begin_inset FormulaMacro
 \newcommand{\timesrulecond}[7]{\timesrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\plusrulecond}[7]{\plusrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}}
 \end_inset
 
 

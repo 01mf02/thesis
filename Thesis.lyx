@@ -16,7 +16,7 @@ theorems-ams
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding auto
+\inputencoding utf8
 \fontencoding global
 \font_roman default
 \font_sans default
@@ -102,6 +102,22 @@ Introduction
 
 \begin_layout Standard
 Here goes an introduction of 1-2 pages.
+\end_layout
+
+\begin_layout Section
+Simple deterministic grammars
+\end_layout
+
+\begin_layout Itemize
+compression
+\end_layout
+
+\begin_layout Itemize
+2NF, GNF
+\end_layout
+
+\begin_layout Itemize
+witness of non-equivalence
 \end_layout
 
 \begin_layout Section
@@ -841,15 +857,247 @@ status open
 \end_layout
 
 \begin_layout Section
-Proof model (Sénizergues)
+Existing algorithm
 \end_layout
 
 \begin_layout Standard
-algebra, equality
+Here we present 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+ and explain related concepts, such as a Caucal base.
 \end_layout
 
 \begin_layout Section
+Proof construction strategies
+\end_layout
+
+\begin_layout Subsection
+Adaption of existing algorithm
+\end_layout
+
+\begin_layout Subsection
+Base replacement
+\end_layout
+
+\begin_layout Standard
+counterexample 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $A_{B}$
+\end_inset
+
+-grammar
+\end_layout
+
+\begin_layout Subsection
+Decomposition
+\end_layout
+
+\begin_layout Standard
+note problem when decomposition does not work, caused by non-compression
+ 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ exponential blowup in word branching
+\end_layout
+
+\begin_layout Subsection
+Decomposition + base replacement
+\end_layout
+
+\begin_layout Section
+Proof model (Sénizergues)
+\end_layout
+
+\begin_layout Definition
+Let 
+\begin_inset Formula $G$
+\end_inset
+
+ be a sdg.
+ What is a 
+\begin_inset Formula $G$
+\end_inset
+
+-equality proof?
+\end_layout
+
+\begin_layout Standard
+Schemes of rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\symrule xy$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\transrule yxz$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\plusrule x{x'}y{y'}{x+y}{x'+y'}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Schemes of strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\reflrule x$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\timesrule x{x'}y{y'}{x\cdot y}{x'\cdot y'}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\grrule X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+algebra, equality, soundness/completeness
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Decomposition
+\end_layout
+
+\begin_layout Standard
+The decomposition function is a partial function from 
+\begin_inset Formula $\left(V^{*},\mathbb{N}\right)$
+\end_inset
+
+ to 
+\begin_inset Formula $V^{*}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Definition
+Decomposition function.
+\begin_inset Formula 
+\begin{eqnarray*}
+\left\langle \alpha\right\rangle _{0} & = & \varepsilon\\
+\left\langle X\alpha\right\rangle _{t} & = & \begin{cases}
+V_{a_{x}} & t=1\land\Gr X=a_{x}\alpha_{x}\\
+V_{a_{x}}\left\langle \alpha_{x}\right\rangle _{t-1} & 1<t<\norm X\land\Gr X=a_{x}\alpha_{x}\\
+X\left\langle \alpha\right\rangle _{t-\norm X} & \norm X\leq t\leq\norm{X\alpha}\\
+\bot & \mathrm{else}
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+Properties:
+\end_layout
+
+\begin_layout Theorem
+Decomposition has several properties:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+For 
+\begin_inset Formula $t<\norm{\alpha}$
+\end_inset
+
+, if 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\neq\bot$
+\end_inset
+
+, then there exists 
+\begin_inset Formula $\beta\in V^{+}$
+\end_inset
+
+ such that 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\beta\equiv\alpha$
+\end_inset
+
+.
+ In fact, 
+\begin_inset Formula $\beta\equiv\left[\alpha\right]_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\alpha$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}\leq?$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Computing 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}$
+\end_inset
+
+ takes at most ? steps.
+\end_layout
+
+\end_deeper
+\begin_layout Section
 Proof strategies
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Prove that we don't get invalid circular proofs!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -865,6 +1113,13 @@ Proof strategies
 \end_inset
 
  the expressions on the left/right sides of an equivalence
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $A,B\in V$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -908,16 +1163,16 @@ Proof strategies
 \uwave off
 \noun off
 \color none
-EQ: 
-\begin_inset Formula $\axrule EE{refl}$
+Refl: 
+\begin_inset Formula $\reflrule E$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-GR: 
-\begin_inset Formula $\axrule{A_{1}}{\Gr{A_{1}}}{gr}$
+Gr: 
+\begin_inset Formula $\grrule A$
 \end_inset
 
 
@@ -925,7 +1180,7 @@ GR:
 
 \begin_layout Itemize
 pp: 
-\begin_inset Formula $\transrule{\Gr{A_{1}}}{A_{1}}{B_{1}}$
+\begin_inset Formula $\transrule{\Gr A}AB$
 \end_inset
 
 
@@ -933,7 +1188,7 @@ pp:
 
 \begin_layout Itemize
 pP: 
-\begin_inset Formula $\transrulecond{B_{1}\left[A\right]_{\norm{B_{1}}}}{A_{1}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}}$
+\begin_inset Formula $\transrulecond{B_{1}\left[A\right]_{\norm{B_{1}}}}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}}$
 \end_inset
 
 
@@ -941,7 +1196,7 @@ pP:
 
 \begin_layout Itemize
 ps: 
-\begin_inset Formula $\transrule{X_{b}Q}{A_{1}}{bQ}$
+\begin_inset Formula $\transrule{X_{b}Q}A{bQ}$
 \end_inset
 
 
@@ -949,7 +1204,7 @@ ps:
 
 \begin_layout Itemize
 pS: 
-\begin_inset Formula $\transrule{\Gr{A_{1}}}{A_{1}}{\sum_{y=1}^{n_{B}>1}b_{y}Q_{y}}$
+\begin_inset Formula $\transrule{\Gr A}A{\sum_{y=1}^{n_{B}>1}b_{y}Q_{y}}$
 \end_inset
 
 
@@ -957,7 +1212,7 @@ pS:
 
 \begin_layout Itemize
 Pp: 
-\begin_inset Formula $\symrule{\prod_{x=1}^{n_{A}>1}A_{x}}{B_{1}}$
+\begin_inset Formula $\symrule{\prod_{x=1}^{n_{A}>1}A_{x}}B$
 \end_inset
 
 
@@ -973,7 +1228,7 @@ PP1:
 
 \begin_layout Itemize
 PP2: 
-\begin_inset Formula $\timesrulecond{A_{1}}{\prod_{y=1}^{c}B_{y}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\,\exists c<n_{B}:\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}=\prod_{y=1}^{c}B_{y}}$
+\begin_inset Formula $\timesrulecond{A_{1}}{\prod_{y=1}^{c}B_{y}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D\neq\bot,\,\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}}$
 \end_inset
 
 
@@ -981,7 +1236,7 @@ PP2:
 
 \begin_layout Itemize
 PP3: 
-\begin_inset Formula $\transrulecond{\left\langle E_{B}\right\rangle _{\norm{A_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}\neq\bot,\,\lnot\exists c<n_{B}:\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}=\prod_{y=1}^{c}B_{y}}$
+\begin_inset Formula $\transrulecond{D\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D\neq\bot,\,\lnot\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}}$
 \end_inset
 
 
@@ -989,7 +1244,7 @@ PP3:
 
 \begin_layout Itemize
 PP4: 
-\begin_inset Formula $\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\,\left\langle E_{B}\right\rangle _{\norm{A_{1}}}=\bot}$
+\begin_inset Formula $\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D=\bot}$
 \end_inset
 
 
@@ -1045,7 +1300,7 @@ ss:
 
 \begin_layout Itemize
 SP: 
-\begin_inset Formula $\symrule{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\prod_{y=1}^{n_{B}\geq1}B_{y}}$
+\begin_inset Formula $\symrule{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}Q$
 \end_inset
 
 
@@ -1053,7 +1308,7 @@ SP:
 
 \begin_layout Itemize
 SS: 
-\begin_inset Formula $\timesrulecond{a_{1}A_{1}}{b_{i}B_{i}}{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{x}B_{x}+\sum_{y=i+1}^{n_{B}}b_{x}B_{x}}{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{x}B_{x}}{\exists!i:\, a_{1}=b_{i}}$
+\begin_inset Formula $\plusrulecond{a_{1}A_{1}}{b_{i}B_{i}}{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{x}B_{x}+\sum_{y=i+1}^{n_{B}}b_{x}B_{x}}{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{x}B_{x}}{\exists!i:\, a_{1}=b_{i}}$
 \end_inset
 
 
@@ -1061,6 +1316,18 @@ SS:
 
 \begin_layout Section
 Conclusion
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintAll"
+bibfiles "Literature"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
