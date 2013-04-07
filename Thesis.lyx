@@ -6,8 +6,15 @@
 \begin_preamble
 \usepackage{bussproofs}
 
+% center figures in all float environments
+%\usepackage{floatrow}
+
 % make sum/integral limits always appear above/below the operator, not next to it
 \everymath{\displaystyle}
+
+\makeatletter
+\g@addto@macro\@floatboxreset{\centering}
+\makeatother
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -96,12 +103,16 @@ filename "Includes.lyx"
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Chapter*
 Introduction
 \end_layout
 
 \begin_layout Standard
 Here goes an introduction of 1-2 pages.
+\end_layout
+
+\begin_layout Chapter
+First part
 \end_layout
 
 \begin_layout Section
@@ -116,8 +127,88 @@ compression
 2NF, GNF
 \end_layout
 
+\begin_layout Section
+Proof model (Sénizergues)
+\end_layout
+
+\begin_layout Definition
+Let 
+\begin_inset Formula $G$
+\end_inset
+
+ be a sdg.
+ What is a 
+\begin_inset Formula $G$
+\end_inset
+
+-equality proof?
+\end_layout
+
+\begin_layout Standard
+Schemes of rules:
+\end_layout
+
 \begin_layout Itemize
-witness of non-equivalence
+\begin_inset Formula $\symrule xy$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\transrule yxz$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\plusrule x{x'}y{y'}{x+y}{x'+y'}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Schemes of strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\reflrule x$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\timesrule x{x'}y{y'}{x\cdot y}{x'\cdot y'}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\grrule X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+algebra, equality, soundness/completeness, witness of non-equivalence
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -131,7 +222,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="2">
 <features tabularvalignment="middle">
@@ -433,7 +523,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="1">
 <features tabularvalignment="middle">
@@ -630,6 +719,13 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:AB-grammar-2NF"
+
+\end_inset
+
+
 \begin_inset Formula $F^{n}\equiv G^{n}$
 \end_inset
 
@@ -655,7 +751,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
 <features tabularvalignment="middle">
@@ -847,17 +942,17 @@ status open
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Section
-Existing algorithm
+Proof construction strategies
+\end_layout
+
+\begin_layout Subsection
+Adaption of existing algorithm
 \end_layout
 
 \begin_layout Standard
@@ -871,12 +966,20 @@ key "hirshfeld1996"
  and explain related concepts, such as a Caucal base.
 \end_layout
 
-\begin_layout Section
-Proof construction strategies
-\end_layout
+\begin_layout Definition
+Norm reduction function.
+\begin_inset Formula 
+\begin{eqnarray*}
+\left[\alpha\right]_{0} & = & \alpha;\\
+\left[X_{i}\alpha\right]_{p} & = & \begin{cases}
+\left[\alpha\right]_{p-\norm{X_{i}}} & p\geq\norm{X_{i}};\\
+\left[\alpha_{i1}\right]_{p-1}\alpha & p<\norm{X_{i}}.
+\end{cases}
+\end{eqnarray*}
 
-\begin_layout Subsection
-Adaption of existing algorithm
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -884,111 +987,227 @@ Base replacement
 \end_layout
 
 \begin_layout Standard
-counterexample 
-\begin_inset Formula $\rightarrow$
+\begin_inset Formula 
+\[
+\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}\geq1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}>\norm{B_{1}}}
+\]
+
 \end_inset
 
+
+\end_layout
+
+\begin_layout Lemma
+The base-replacement algorithm may produce proofs of exponential size.
+\end_layout
+
+\begin_layout Proof
+We consider the grammar given in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:AB-grammar-non2NF"
+
+\end_inset
+
+, which is a slightly adapted version of the grammar given in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:AB-grammar-2NF"
+
+\end_inset
+
+.
  
-\begin_inset Formula $A_{B}$
-\end_inset
-
--grammar
-\end_layout
-
-\begin_layout Subsection
-Decomposition
-\end_layout
-
-\begin_layout Standard
-note problem when decomposition does not work, caused by non-compression
- 
-\begin_inset Formula $\rightarrow$
-\end_inset
-
- exponential blowup in word branching
-\end_layout
-
-\begin_layout Subsection
-Decomposition + base replacement
-\end_layout
-
-\begin_layout Section
-Proof model (Sénizergues)
-\end_layout
-
-\begin_layout Definition
-Let 
-\begin_inset Formula $G$
-\end_inset
-
- be a sdg.
- What is a 
-\begin_inset Formula $G$
-\end_inset
-
--equality proof?
-\end_layout
-
-\begin_layout Standard
-Schemes of rules:
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\symrule xy$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\transrule yxz$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\plusrule x{x'}y{y'}{x+y}{x'+y'}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Schemes of strict rules:
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\reflrule x$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\timesrule x{x'}y{y'}{x\cdot y}{x'\cdot y'}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Strict rules:
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\grrule X$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
 
 \begin_layout Plain Layout
-algebra, equality, soundness/completeness
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B\rightarrow b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A_{B}^{0}\rightarrow aB$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A_{B}^{n+1}\rightarrow aBA_{B}^{n}A_{B}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F^{n}\rightarrow aBA_{B}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B\rightarrow b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B_{A}^{0}\rightarrow bA$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B_{A}^{n+1}\rightarrow bAB_{A}^{n}B_{A}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G^{n}\rightarrow aB_{A}^{n}B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:AB-grammar-non2NF"
+
+\end_inset
+
+
+\begin_inset Formula $F^{n}\equiv G^{n}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=2^{n+2}$
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -996,7 +1215,78 @@ algebra, equality, soundness/completeness
 
 \end_layout
 
-\begin_layout Section
+\end_inset
+
+To prove that 
+\begin_inset Formula $F^{n}\equiv G^{n}$
+\end_inset
+
+, we start as follows:
+\begin_inset Formula 
+\[
+\bussproof{\grstar{F^{n}}{G^{n}}{\timesstarinf{aBA_{B}^{n}}{aB_{A}^{n}B}{\axiom{BA_{B}^{n}}{B_{A}^{n}B}}}}
+\]
+
+\end_inset
+
+After this initial step, the base replacement algorithm dictates that we
+ must continuously apply the proof schemes given in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Proof-schemes-base-replacement"
+
+\end_inset
+
+, until we have to apply the reflexivity rule at the very end of the proof.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $\bussproof{\grstar{BA_{B}^{n+1}X}{B_{A}^{n+1}YB}{\timesstarinf{BA_{B}^{n+1}X}{bAB_{A}^{n}B_{A}^{n}YB}{\grstar{A_{B}^{n+1}X}{AB_{A}^{n}B_{A}^{n}YB}{\timesstarinf{aBA_{B}^{n}A_{B}^{n}X}{AB_{A}^{n}B_{A}^{n}YB}{\axiom{BA_{B}^{n}A_{B}^{n}X}{B_{A}^{n}B_{A}^{n}YB}}}}}}$
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Formula $\bussproof{\grstar{BA_{B}^{0}X}{B_{A}^{0}YB}{\timesstarinf{BA_{B}^{0}X}{bAYB}{\grstar{A_{B}^{0}X}{AYB}{\timesstarinf{aBX}{AYB}{\axiom{BX}{YB}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Proof-schemes-base-replacement"
+
+\end_inset
+
+Proof schemes for base replacement algorithm.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ We note that in both proof schemes, the norm of the last equality is by
+ two smaller than the norm of the first equality, which means that we have
+ to apply the proof schemes a number of times linear in the norm of the
+ original equivalence.
+ As the norm is exponential in the number of variables, we obtain a proof
+ of exponential size.
+\end_layout
+
+\begin_layout Subsection
 Decomposition
 \end_layout
 
@@ -1016,12 +1306,12 @@ The decomposition function is a partial function from
 Decomposition function.
 \begin_inset Formula 
 \begin{eqnarray*}
-\left\langle \alpha\right\rangle _{0} & = & \varepsilon\\
-\left\langle X\alpha\right\rangle _{t} & = & \begin{cases}
-V_{a_{x}} & t=1\land\Gr X=a_{x}\alpha_{x}\\
-V_{a_{x}}\left\langle \alpha_{x}\right\rangle _{t-1} & 1<t<\norm X\land\Gr X=a_{x}\alpha_{x}\\
-X\left\langle \alpha\right\rangle _{t-\norm X} & \norm X\leq t\leq\norm{X\alpha}\\
-\bot & \mathrm{else}
+\left\langle \alpha\right\rangle _{0} & = & \varepsilon;\\
+\left\langle X_{i}\alpha\right\rangle _{t} & = & \begin{cases}
+V_{a_{i}} & t=1\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
+V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1} & 1<t<\norm{X_{i}}\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
+X_{i}\left\langle \alpha\right\rangle _{t-\norm{X_{i}}} & \norm{X_{i}}\leq t\leq\norm{X_{i}\alpha};\\
+\bot & \mathrm{else}.
 \end{cases}
 \end{eqnarray*}
 
@@ -1083,6 +1373,32 @@ Computing
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+note problem when decomposition does not work, caused by non-compression
+ 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ exponential blowup in word branching
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Decomposition + base replacement
+\end_layout
+
+\begin_layout Chapter
+Second part
+\end_layout
+
 \begin_layout Section
 Proof strategies
 \end_layout
@@ -1316,6 +1632,47 @@ SS:
 
 \begin_layout Section
 Conclusion
+\end_layout
+
+\begin_layout Section
+Test
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "test.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Proof import test.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
