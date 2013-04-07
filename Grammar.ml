@@ -38,7 +38,7 @@ let string_of_variable_rule (term, vars) =
 
 (* variable_rules -> string *)
 let string_of_variable_rules (r : variable_rules) =
-  String.concat " | " (map string_of_variable_rule r);;
+  String.concat " + " (map string_of_variable_rule r);;
 
 (* production_rule -> string *)
 let string_of_production_rule (v, rules) =

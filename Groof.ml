@@ -64,6 +64,8 @@ let rec expression_equals = function
         expression_equals (pair_map product_of_variables (sav, sbv)))
     (sbh::sbt)) (sah::sat);;
 
+let is_sequent_of_equivalence eq (seq, _) = seq = eq;;
+
 
 (************************************************
  *************** Printing functions *************
@@ -92,6 +94,25 @@ let rec string_of_sequent (e, r) =
 
 let rec print_sequents =
   iter (fun s -> print_endline (string_of_sequent s));;
+
+
+let latex_of_expression e = "{" ^ string_of_expression e ^ "}";;
+let latex_of_equivalence (a, b) =
+  latex_of_expression a ^ latex_of_expression b;;
+
+let rec latex_of_sequents seqs eq =
+  let loeq = latex_of_equivalence in
+  let lose = latex_of_sequents seqs in
+
+  let (_, r) = find (is_sequent_of_equivalence eq) seqs in
+  let str = match r with
+  | Refl -> "\\refl" ^ loeq eq
+  | Gr -> "\\gr" ^ loeq eq
+  | Sym e -> "\\syminf" ^ loeq eq ^ lose e
+  | Plus  (e1, e2) -> "\\plusinf" ^ loeq eq ^ lose e1 ^ lose e2
+  | Times (e1, e2) -> "\\timesinf" ^ loeq eq ^ lose e1 ^ lose e2
+  | Trans (e1, e2) -> "\\transinf" ^ loeq eq ^ lose e1 ^ lose e2 in
+  "{" ^ str ^ "}";;
 
 
 (************************************************
@@ -204,15 +225,11 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
 
       if mem eqh eqs then raise Circular_sequent
       else
-        let unproven_eqs =
-          filter (fun e -> not (exists (fun (se, _) -> e = se) seqs)) eqs in
+        let unproven_eqs = filter
+          (fun e -> not (exists (is_sequent_of_equivalence e) seqs)) eqs in
         construct_proof ((eqh, rule)::seqs) (unproven_eqs@eqt) in
 
   construct_proof [] [eq];;
-
-
-let prove_var_eq a b =
-  prove_equivalence (product_of_variable a, product_of_variable b);;
 
 
 (************************************************
@@ -237,13 +254,16 @@ let _ =
   (*print_endline ("Decomposition: " ^
     string_of_variables (decompose prods 88 ["G10"]));*)
 
-  let sequents = prove_var_eq "X2" "Y2" prods in
+  let eq = pair_map product_of_variable ("X2", "Y2") in
+  let sequents = prove_equivalence eq prods in
 
   print_endline "Proof:";
   print_sequents sequents;
 
   print_endline
     ("Proof size: " ^ string_of_int (length sequents) ^ " sequents");
+
+  print_endline ("LaTeX proof: \\bussproof" ^ latex_of_sequents sequents eq);
 
   exit 0;
 ;;
