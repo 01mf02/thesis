@@ -100,19 +100,32 @@ let latex_of_expression e = "{" ^ string_of_expression e ^ "}";;
 let latex_of_equivalence (a, b) =
   latex_of_expression a ^ latex_of_expression b;;
 
-let rec latex_of_sequents seqs eq =
-  let loeq = latex_of_equivalence in
-  let lose = latex_of_sequents seqs in
+let latex_of_sequents seqs eq_root =
 
-  let (_, r) = find (is_sequent_of_equivalence eq) seqs in
-  let str = match r with
-  | Refl -> "\\refl" ^ loeq eq
-  | Gr -> "\\gr" ^ loeq eq
-  | Sym e -> "\\syminf" ^ loeq eq ^ lose e
-  | Plus  (e1, e2) -> "\\plusinf" ^ loeq eq ^ lose e1 ^ lose e2
-  | Times (e1, e2) -> "\\timesinf" ^ loeq eq ^ lose e1 ^ lose e2
-  | Trans (e1, e2) -> "\\transinf" ^ loeq eq ^ lose e1 ^ lose e2 in
-  "{" ^ str ^ "}";;
+  let rec lose proven eq =
+    let loeq = latex_of_equivalence in
+
+    let aux str eq eqs =
+      let fold_f (s, p) e =
+        let (s', p') = lose p e in
+        (s ^ s', p') in
+
+      let (s, p) = fold_left fold_f ("\\" ^ str ^ loeq eq, eq::proven) eqs in
+      ("{" ^ s ^ "}", p) in
+
+    if mem eq proven then
+      aux "sj" eq []
+    else
+      let (_, r) = find (is_sequent_of_equivalence eq) seqs in
+      match r with
+      | Refl           -> aux "refl"     eq []
+      | Gr             -> aux "gr"       eq []
+      | Sym e          -> aux "syminf"   eq [e]
+      | Plus  (e1, e2) -> aux "plusinf"  eq [e1; e2]
+      | Times (e1, e2) -> aux "timesinf" eq [e1; e2]
+      | Trans (e1, e2) -> aux "transinf" eq [e1; e2] in
+
+  "\\bussproof" ^ (fst (lose [] eq_root));;
 
 
 (************************************************
@@ -237,7 +250,8 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
  ************************************************)
 
 let _ =
-  let prods = Examples.branching_fibonacci_grammar 10 in
+  (*let prods = Examples.branching_fibonacci_grammar 10 in*)
+  let prods = Examples.recursive_grammar in
 
   if productions_valid prods then
     print_endline "Productions valid. :)"
@@ -249,12 +263,12 @@ let _ =
   print_endline "Production rules:";
   print_endline (string_of_production_rules prods);
 
-  print_endline ("Norm: " ^ (string_of_int (norm_of_variable prods "X10")));
+  (*print_endline ("Norm: " ^ (string_of_int (norm_of_variable prods "X10")));*)
 
   (*print_endline ("Decomposition: " ^
     string_of_variables (decompose prods 88 ["G10"]));*)
 
-  let eq = pair_map product_of_variable ("X2", "Y2") in
+  let eq = pair_map product_of_variable ("X", "Y") in
   let sequents = prove_equivalence eq prods in
 
   print_endline "Proof:";
@@ -263,7 +277,8 @@ let _ =
   print_endline
     ("Proof size: " ^ string_of_int (length sequents) ^ " sequents");
 
-  print_endline ("LaTeX proof: \\bussproof" ^ latex_of_sequents sequents eq);
+  print_endline "LaTeX proof: ";
+  print_endline (latex_of_sequents sequents eq);
 
   exit 0;
 ;;

@@ -104,3 +104,8 @@ let rec branching_grammar fx fy n =
 let branching_fibonacci_grammar n =
   branching_grammar (fun n -> ["F" ^ soi n]) (fun n -> ["G" ^ soi n]) n @
   fibonacci_grammar n;;
+
+
+let recursive_grammar =
+  [("X", [('a', []); ('b', ["X"])]);
+   ("Y", [('a', []); ('b', ["Y"])])];;
