@@ -211,6 +211,47 @@ algebra, equality, soundness/completeness, witness of non-equivalence
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "Proofs/induction.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Example of 
+\begin_inset Quotes eld
+\end_inset
+
+induction
+\begin_inset Quotes erd
+\end_inset
+
+ proof.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Examples
 \end_layout
@@ -1308,7 +1349,7 @@ Decomposition function.
 \begin{eqnarray*}
 \left\langle \alpha\right\rangle _{0} & = & \varepsilon;\\
 \left\langle X_{i}\alpha\right\rangle _{t} & = & \begin{cases}
-V_{a_{i}} & t=1\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
+V_{a_{i1}} & t=1\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
 V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1} & 1<t<\norm{X_{i}}\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
 X_{i}\left\langle \alpha\right\rangle _{t-\norm{X_{i}}} & \norm{X_{i}}\leq t\leq\norm{X_{i}\alpha};\\
 \bot & \mathrm{else}.
@@ -1632,47 +1673,6 @@ SS:
 
 \begin_layout Section
 Conclusion
-\end_layout
-
-\begin_layout Section
-Test
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset include
-LatexCommand include
-filename "test.tex"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Proof import test.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
