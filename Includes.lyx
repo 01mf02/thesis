@@ -78,7 +78,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Gr}[1]{\operatorname{Gr}(#1)}
+\renewcommand{\Gr}[1]{\operatorname{Gr}(#1)}
 {\mathrm{Gr}(#1)}
 \end_inset
 
@@ -87,7 +87,34 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\length}[1]{\operatorname{length}(#1)}
+\renewcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
+{\mathrm{Concl}\left(#1\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\renewcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}(#1)}
+{\mathrm{Prem}_{\times}^{*}(#1)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\renewcommand{\Prem}[1]{\operatorname{Prem}(#1)}
+{\mathrm{Prem}(#1)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\renewcommand{\length}[1]{\operatorname{length}(#1)}
 {\mathrm{length}(#1)}
 \end_inset
 
@@ -143,7 +170,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
+\newcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
 \end_inset
 
 
@@ -151,7 +178,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
+\newcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
 \end_inset
 
 
@@ -159,7 +186,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
+\newcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
 \end_inset
 
 
@@ -167,7 +194,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\transinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{trans}}
+\newcommand{\transinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{trans}}
 \end_inset
 
 

@@ -119,16 +119,282 @@ First part
 Simple deterministic grammars
 \end_layout
 
+\begin_layout Definition
+A context-free grammar (CFG) is a triple 
+\begin_inset Formula $(V,T,P)$
+\end_inset
+
+, where
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
-compression
+\begin_inset Formula $V$
+\end_inset
+
+ is a finite set of variables,
 \end_layout
 
 \begin_layout Itemize
-2NF, GNF
+\begin_inset Formula $T$
+\end_inset
+
+ is a finite set of terminals,
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P\subset V\times(V\cup T)^{*}$
+\end_inset
+
+ is a finite set of production rules, written 
+\begin_inset Formula $X\to\alpha$
+\end_inset
+
+ for 
+\begin_inset Formula $(X,\alpha)\in P$
+\end_inset
+
+.
+ For each 
+\begin_inset Formula $X\in V$
+\end_inset
+
+, there must exist some rule 
+\begin_inset Formula $X\to\alpha$
+\end_inset
+
+ in 
+\begin_inset Formula $P$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Definition
+The norm of a variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+, written 
+\begin_inset Formula $\norm X$
+\end_inset
+
+, is the length of the shortest string of terminals which can be generated
+ from 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ A CFG is normed iff all of its variables have finite norm.
+\end_layout
+
+\begin_layout Standard
+In the course of this document, we assume all grammars to be normed.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Why?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+A grammar is in Greibach normal form (GNF) iff all of its production rules
+ are of the form 
+\begin_inset Formula $X\to a\alpha$
+\end_inset
+
+, with 
+\begin_inset Formula $a\in T$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha\in V^{*}$
+\end_inset
+
+.
+ If the length of each 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is maximally 
+\begin_inset Formula $k$
+\end_inset
+
+, then the grammar is in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF.
+\end_layout
+
+\begin_layout Standard
+For each CFG, we can actually always find an equivalent grammar in 2-GNF,
+ which is called second normal form.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Source!
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write later in the article if 2-GNF is of any use.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+A simple deterministic grammar (or simple context-free grammar), short SDG,
+ is a context-free grammar in Greibach normal form, with the condition that
+ for each variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ and each 
+\begin_inset Formula $a\in T$
+\end_inset
+
+, there exists at most one rule 
+\begin_inset Formula $X\to a\alpha$
+\end_inset
+
+ in 
+\begin_inset Formula $P$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Simple deterministic grammars are a subclass of context-free grammars; in
+ fact, the relation between several language classes is 
+\begin_inset Formula 
+\[
+\mathcal{L}(\mathrm{SIMPLE})\subset\mathcal{L}(LL(1))\subset\dots\subset\mathcal{L}(LL(k))\subset\dots\subset\mathcal{L}(\mathrm{DETCF})\subset\mathcal{L}(\mathrm{CF}),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathrm{DETCF}$
+\end_inset
+
+ denotes deterministic context-free grammars and 
+\begin_inset Formula $\mathrm{DETCF}$
+\end_inset
+
+ denotes context-free grammars.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Source!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where simple deterministic grammars can potentially produce several different
+ words 
+\begin_inset Formula $W\subset T^{*}$
+\end_inset
+
+, we also looked at the special case of SDGs where each variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ produces only one single word 
+\begin_inset Formula $w\in T^{*}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Definition
+A compression grammar is a simple deterministic grammar, with the condition
+ that for each variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+, there exists at most one terminal 
+\begin_inset Formula $a\in T$
+\end_inset
+
+ such that 
+\begin_inset Formula $X\to a\alpha$
+\end_inset
+
+ is in 
+\begin_inset Formula $P$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
 Proof model (Sénizergues)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Motivation.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+Let 
+\begin_inset Formula $G=(V,T,P)$
+\end_inset
+
+ be a context-free grammar.
+ The set of polynoms over variables 
+\begin_inset Formula $V$
+\end_inset
+
+ and terminals 
+\begin_inset Formula $T$
+\end_inset
+
+ is defined as 
+\begin_inset Formula $\mathcal{P}=\mathrm{POLY}(V\cup T)^{*}$
+\end_inset
+
+.
+ Based on this, we define the set of judgements as 
+\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+With this definition in place, we can now define equivalence proofs:
 \end_layout
 
 \begin_layout Definition
@@ -136,12 +402,43 @@ Let
 \begin_inset Formula $G$
 \end_inset
 
- be a sdg.
- What is a 
+ be a context-free grammar.
+ We call 
 \begin_inset Formula $G$
 \end_inset
 
--equality proof?
+-equivalence proof every finite set of rules 
+\begin_inset Formula $\mathcal{R}$
+\end_inset
+
+ such that
+\begin_inset Formula 
+\[
+\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Prem{r_{1}}=\Prem{r_{2}}\iff r_{1}=r_{2},
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\forall r\in\mathcal{R},\,\forall p\in\Prem j,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
+\]
+
+\end_inset
+
+In this context, we define
+\begin_inset Formula 
+\[
+\Premstartimes r:=\begin{cases}
+\emptyset & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
+r\cup\bigcup_{r_{p}\in\mathcal{R},\,\Concl{r_{p}}\in\Prem r}\Premstartimes{r_{p}} & \mathrm{else}.
+\end{cases}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -199,11 +496,53 @@ Strict rules:
 \end_layout
 
 \begin_layout Standard
+Given two words 
+\begin_inset Formula $w_{1},w_{2}\in V^{*}$
+\end_inset
+
+, we call 
+\begin_inset Formula $w\in(V\cup T)^{*}$
+\end_inset
+
+ a witness of non-equivalence of 
+\begin_inset Formula $w_{1}$
+\end_inset
+
+and 
+\begin_inset Formula $w_{2}$
+\end_inset
+
+ if
+\begin_inset Formula 
+\[
+w\in\left[\mathcal{L}(w_{2})\backslash\mathcal{L}(w_{1})\right]\cup\left[\mathcal{L}(w_{1})\backslash\mathcal{L}(w_{2})\right].
+\]
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-algebra, equality, soundness/completeness, witness of non-equivalence
+Does there always exist a 
+\begin_inset Formula $w$
+\end_inset
+
+ of non-exponential length?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+algebra, equality, soundness/completeness
 \end_layout
 
 \end_inset
