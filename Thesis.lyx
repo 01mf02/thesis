@@ -124,7 +124,7 @@ A context-free grammar (CFG) is a triple
 \begin_inset Formula $(V,T,P)$
 \end_inset
 
-, where
+ such that
 \end_layout
 
 \begin_deeper
@@ -146,20 +146,21 @@ A context-free grammar (CFG) is a triple
 \begin_inset Formula $P\subset V\times(V\cup T)^{*}$
 \end_inset
 
- is a finite set of production rules, written 
+ is a finite set of production rules.
+ We write 
 \begin_inset Formula $X\to\alpha$
 \end_inset
 
- for 
+ iff 
 \begin_inset Formula $(X,\alpha)\in P$
 \end_inset
 
 .
- For each 
+ For each variable 
 \begin_inset Formula $X\in V$
 \end_inset
 
-, there must exist some rule 
+, there exists at least one production rule 
 \begin_inset Formula $X\to\alpha$
 \end_inset
 
@@ -167,26 +168,95 @@ A context-free grammar (CFG) is a triple
 \begin_inset Formula $P$
 \end_inset
 
-.
+, i.e.
+\begin_inset Formula 
+\[
+\forall X\in V,\,\exists\alpha\in\left(V\cup T\right)^{*}:\,\left(X,\alpha\right)\in P.
+\]
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
 \begin_layout Definition
-The norm of a variable 
+If a word 
+\begin_inset Formula $w\in T^{*}$
+\end_inset
+
+ can be produced from a variable 
 \begin_inset Formula $X\in V$
 \end_inset
 
-, written 
-\begin_inset Formula $\norm X$
-\end_inset
-
-, is the length of the shortest string of terminals which can be generated
- from 
-\begin_inset Formula $X$
+, then we write 
+\begin_inset Formula $X\to^{*}w$
 \end_inset
 
 .
- A CFG is normed iff all of its variables have finite norm.
+\end_layout
+
+\begin_layout Definition
+The variable norm is a function 
+\begin_inset Formula $\norm{\cdot}:V\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
+\end_inset
+
+.
+ Given a variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+, 
+\begin_inset Formula $\norm X$
+\end_inset
+
+ equals the length of the shortest word 
+\begin_inset Formula $w\in T^{*}$
+\end_inset
+
+ which can be produced from 
+\begin_inset Formula $X$
+\end_inset
+
+, or 
+\begin_inset Formula $\infty$
+\end_inset
+
+ if no such word exists, i.e.
+\begin_inset Formula 
+\[
+\norm X:=\inf\left\{ \left|w\right||X\to^{*}w\right\} .
+\]
+
+\end_inset
+
+We extend the norm function to finite sequences of variables, where 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha\in V^{*}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+\norm{\varepsilon}^{*} & := & 0;\\
+\norm{X\alpha}^{*} & := & \norm X\norm{\alpha}^{*}.
+\end{eqnarray*}
+
+\end_inset
+
+A grammar is normed iff all its variables produce at least one finite word,
+ i.e.
+\begin_inset Formula 
+\[
+\forall i:\,\norm{X_{i}}\neq\infty.
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -257,6 +327,11 @@ Write later in the article if 2-GNF is of any use.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Example
+Insert pretty example here.
+ Tikz?
 \end_layout
 
 \begin_layout Definition
@@ -350,6 +425,11 @@ A compression grammar is a simple deterministic grammar, with the condition
 .
 \end_layout
 
+\begin_layout Example
+Pretty compression example here.
+ :)
+\end_layout
+
 \begin_layout Section
 Proof model (Sénizergues)
 \end_layout
@@ -391,6 +471,16 @@ Let
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Rules for polynomials, such as commutativity.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1329,6 +1419,111 @@ status open
 
 \begin_layout Section
 Proof construction strategies
+\end_layout
+
+\begin_layout Subsection
+Restrictions
+\end_layout
+
+\begin_layout Standard
+We impose several restrictions on each SDG grammar 
+\begin_inset Formula $G=\left(V,T,P\right)$
+\end_inset
+
+ we inspect:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $G$
+\end_inset
+
+ must be normed.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $V=\left\{ X_{1},\dots,X_{n}\right\} $
+\end_inset
+
+, where 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ to 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+ are ordered by ascending norm, i.e.
+\begin_inset Formula 
+\[
+\forall i:\,1\leq i<n\implies\norm{X_{i}}\leq\norm{X_{i+1}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P=\left\{ X_{i}\to a_{i,j}\alpha_{i,j}|a_{i,j}\in T\land\alpha_{i,j}\in V^{*}\right\} $
+\end_inset
+
+, where the number of productions for 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+, then
+\begin_inset Formula 
+\[
+\forall i\forall k:\,1<k\leq p_{i}\implies\norm{\alpha_{i,1}}\leq\norm{\alpha_{i,k}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There exists a function 
+\begin_inset Formula $v:T\to V$
+\end_inset
+
+ which associates each terminal 
+\begin_inset Formula $a\in T$
+\end_inset
+
+ to a variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ such that there exists exactly one production rule for 
+\begin_inset Formula $X$
+\end_inset
+
+ in 
+\begin_inset Formula $P$
+\end_inset
+
+ with 
+\begin_inset Formula $X\to a$
+\end_inset
+
+, i.e.
+\begin_inset Formula 
+\[
+\forall a\in T,\,\exists X\in V,\,\exists!\alpha:\,\left[\alpha=a\land\left(X,\alpha\right)\in P\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+Insert example of transformation here.
 \end_layout
 
 \begin_layout Subsection
