@@ -3,6 +3,10 @@
 
 # LyX layout file for CL master thesis class
 
+# If you use the "Example" environment from the theorems module in LyX,
+# make sure to comment out the "example" and "examplename" definitions in
+# clmthesis.cls, because otherwise they collide with the LyX definitions!
+
 # because the thesis class is based on the scrreprt class, we derive from it
 Input scrreprt.layout
 

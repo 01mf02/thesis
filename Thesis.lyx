@@ -6,19 +6,25 @@
 \begin_preamble
 \usepackage{bussproofs}
 
-% center figures in all float environments
-%\usepackage{floatrow}
-
 % make sum/integral limits always appear above/below the operator, not next to it
 \everymath{\displaystyle}
 
+% center figures in all float environments
+% (collides with LyX if we use rotated figures, therefore disabled)
+%\usepackage{floatrow}
+
+% center figures in all float environments
 \makeatletter
 \g@addto@macro\@floatboxreset{\centering}
 \makeatother
+
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
 \end_preamble
 \use_default_options true
 \begin_modules
-theorems-ams
+theorems-ams-bytype
 \end_modules
 \maintain_unincluded_children false
 \language english
@@ -116,7 +122,7 @@ First part
 \end_layout
 
 \begin_layout Section
-Simple deterministic grammars
+Context-free grammars
 \end_layout
 
 \begin_layout Definition
@@ -181,16 +187,28 @@ A context-free grammar (CFG) is a triple
 
 \end_deeper
 \begin_layout Definition
-If a word 
-\begin_inset Formula $w\in T^{*}$
+A variable word denotes a finite sequence of variables 
+\begin_inset Formula $w_{V}\in V^{*}$
 \end_inset
 
- can be produced from a variable 
-\begin_inset Formula $X\in V$
+, and a terminal word denotes a finite sequence of terminals 
+\begin_inset Formula $w_{T}\in T^{*}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Definition
+If a terminal word 
+\begin_inset Formula $w_{T}\in T^{*}$
+\end_inset
+
+ can be produced from a variable word 
+\begin_inset Formula $w_{V}\in V^{+}$
 \end_inset
 
 , then we write 
-\begin_inset Formula $X\to^{*}w$
+\begin_inset Formula $w_{V}\to^{*}w_{T}$
 \end_inset
 
 .
@@ -241,8 +259,8 @@ We extend the norm function to finite sequences of variables, where
 :
 \begin_inset Formula 
 \begin{eqnarray*}
-\norm{\varepsilon}^{*} & := & 0;\\
-\norm{X\alpha}^{*} & := & \norm X\norm{\alpha}^{*}.
+\normstar{\varepsilon} & := & 0;\\
+\normstar{X\alpha} & := & \norm X+\normstar{\alpha}.
 \end{eqnarray*}
 
 \end_inset
@@ -302,6 +320,16 @@ A grammar is in Greibach normal form (GNF) iff all of its production rules
 \end_inset
 
 -GNF.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Rewrite that!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -330,8 +358,230 @@ Write later in the article if 2-GNF is of any use.
 \end_layout
 
 \begin_layout Example
-Insert pretty example here.
- Tikz?
+Consider the grammar in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Example-grammar"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+X & \to & aX+bZ\\
+Y & \to & bZZ+aX\\
+Z & \to & C
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Example-grammar"
+
+\end_inset
+
+Example grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ To visualise it, we may construct a production graph as in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Production-graph"
+
+\end_inset
+
+:
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[->, node distance = 2cm, auto]
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (X)                 {$X$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (Y)  [right of = X] {$Y$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (Z)  [below of = X] {$Z$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (ZZ) [right of = Z] {$ZZ$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (e)  [below of = Z] {$
+\backslash
+varepsilon$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (X)  edge[loop above] node {$a$} (X)
+\end_layout
+
+\begin_layout Plain Layout
+
+             edge             node {$b$} (Z)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (Y)  edge             node {$a$} (X)
+\end_layout
+
+\begin_layout Plain Layout
+
+             edge             node {$b$} (ZZ)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (Z)  edge             node {$c$} (e)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (ZZ) edge             node {$b$} (Z);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Production-graph"
+
+\end_inset
+
+Production graph for example grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ In this graph, we can interpret the paths from each variable sequence 
+\begin_inset Formula $w_{V}\in V^{+}$
+\end_inset
+
+ to 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ as set of terminal words produced by 
+\begin_inset Formula $w_{V}$
+\end_inset
+
+.
+ Furthermore, the length of the shortest path from 
+\begin_inset Formula $w_{V}$
+\end_inset
+
+ to 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is equivalent to 
+\begin_inset Formula $\normstar{w_{V}}$
+\end_inset
+
+.
+ For example, 
+\begin_inset Formula $\norm X=2$
+\end_inset
+
+, 
+\begin_inset Formula $\norm Y=3$
+\end_inset
+
+ and 
+\begin_inset Formula $\norm Z=1$
+\end_inset
+
+.
+ Also, among others, 
+\begin_inset Formula $Y\to^{*}bbc$
+\end_inset
+
+ and 
+\begin_inset Formula $Y\to^{*}aa^{*}bc$
+\end_inset
+
+ hold.
+\end_layout
+
+\begin_layout Section
+Simple deterministic grammars
 \end_layout
 
 \begin_layout Definition
@@ -371,7 +621,7 @@ where
 \end_inset
 
  denotes deterministic context-free grammars and 
-\begin_inset Formula $\mathrm{DETCF}$
+\begin_inset Formula $\mathrm{CF}$
 \end_inset
 
  denotes context-free grammars.
@@ -388,17 +638,17 @@ Source!
 \end_layout
 
 \begin_layout Standard
-Where simple deterministic grammars can potentially produce several different
- words 
-\begin_inset Formula $W\subset T^{*}$
+Where simple deterministic grammars can potentially produce a set of several
+ different terminal words 
+\begin_inset Formula $W_{T}\subset T^{+}$
 \end_inset
 
 , we also looked at the special case of SDGs where each variable 
 \begin_inset Formula $X\in V$
 \end_inset
 
- produces only one single word 
-\begin_inset Formula $w\in T^{*}$
+ produces only one single terminal word 
+\begin_inset Formula $w\in T^{+}$
 \end_inset
 
 .
@@ -425,9 +675,18 @@ A compression grammar is a simple deterministic grammar, with the condition
 .
 \end_layout
 
-\begin_layout Example
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Pretty compression example here.
  :)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -591,7 +850,7 @@ Given two words
 \end_inset
 
 , we call 
-\begin_inset Formula $w\in(V\cup T)^{*}$
+\begin_inset Formula $w\in\left(V\cup T\right)^{*}$
 \end_inset
 
  a witness of non-equivalence of 
@@ -1523,7 +1782,49 @@ There exists a function
 \end_layout
 
 \begin_layout Example
-Insert example of transformation here.
+We consider the example from 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+reference
+\end_layout
+
+\end_inset
+
+.
+ First, we note that for the terminals 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $c$
+\end_inset
+
+, there exist no dedicated variables, so we add
+\begin_inset Formula 
+\begin{eqnarray*}
+A & \to & a\\
+B & \to & b
+\end{eqnarray*}
+
+\end_inset
+
+to the grammar.
+ At this point, we write down all variables with their production rules
+ ordered by ascending norm, i.e.
+\begin_inset Formula 
+\begin{eqnarray*}
+A & \to & a\\
+B & \to & b\\
+Z & \to & C\\
+X & \to & aX+bZ\\
+Y & \to & bZZ+aX
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
