@@ -27,7 +27,7 @@
 theorems-ams-bytype
 \end_modules
 \maintain_unincluded_children false
-\language english
+\language british
 \language_package default
 \inputencoding utf8
 \fontencoding global
@@ -117,8 +117,26 @@ Introduction
 Here goes an introduction of 1-2 pages.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Motivation: Why do we want to construct proofs after all?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
-First part
+Preliminaries
+\end_layout
+
+\begin_layout Standard
+In this chapter, we define some terms we will use throughout the remaining
+ course of the document.
 \end_layout
 
 \begin_layout Section
@@ -186,6 +204,10 @@ A context-free grammar (CFG) is a triple
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+Now we define the different types of words.
+\end_layout
+
 \begin_layout Definition
 A variable word denotes a finite sequence of variables 
 \begin_inset Formula $w_{V}\in V^{*}$
@@ -198,9 +220,13 @@ A variable word denotes a finite sequence of variables
 .
 \end_layout
 
+\begin_layout Standard
+Next, we define the producibility relation.
+\end_layout
+
 \begin_layout Definition
 If a terminal word 
-\begin_inset Formula $w_{T}\in T^{*}$
+\begin_inset Formula $w_{T}\in T^{+}$
 \end_inset
 
  can be produced from a variable word 
@@ -212,6 +238,12 @@ If a terminal word
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+An important property of variables is the length of its shortest producible
+ word.
+ We define a function to calculate this property.
 \end_layout
 
 \begin_layout Definition
@@ -228,8 +260,8 @@ The variable norm is a function
 \begin_inset Formula $\norm X$
 \end_inset
 
- equals the length of the shortest word 
-\begin_inset Formula $w\in T^{*}$
+ equals the length of the shortest terminal word 
+\begin_inset Formula $w\in T^{+}$
 \end_inset
 
  which can be produced from 
@@ -675,35 +707,95 @@ A compression grammar is a simple deterministic grammar, with the condition
 .
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Pretty compression example here.
+\begin_layout Example
+Insert pretty compression example here.
  :)
 \end_layout
 
+\begin_layout Section
+Polynomials
+\end_layout
+
+\begin_layout Standard
+Given a set of variables 
+\begin_inset Formula $V=\left\{ X_{1},\dots,X_{n}\right\} $
+\end_inset
+
+ and a set of terminals 
+\begin_inset Formula $T=\left\{ a_{1},\dots,a_{m}\right\} $
+\end_inset
+
+, we define polynomials over 
+\begin_inset Formula $\left(V,T\right)$
+\end_inset
+
+ with the following Backus-Naur form (BNF), 
+\begin_inset Formula $P$
+\end_inset
+
+ being the start symbol:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+P & ::= & V\:|\: T\:|\: P+P\:|\: P\cdot P\\
+V & ::= & X_{1}\:|\:\dots\:|\: X_{n}\\
+T & ::= & a_{1}\:|\:\dots\:|\: a_{m}
+\end{eqnarray*}
+
+\end_inset
+
+Properties of polynomials:
+\end_layout
+
+\begin_layout Itemize
+Commutativity: 
+\begin_inset Formula $x+y=y+x$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Associativity: 
+\begin_inset Formula $\left(x+y\right)+z=x+\left(y+z\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(x\cdot y\right)\cdot z=x\cdot\left(y\cdot z\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Distributivity: 
+\begin_inset Formula $\left(x+y\right)\cdot z=x\cdot z+y\cdot z$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Section
-Proof model (Sénizergues)
+Proof system (Sénizergues)
 \end_layout
 
 \begin_layout Standard
+In this section, we introduce a system to prove equivalence of simple-determinis
+tic grammars.
+ It is based on a similar proof system by Sénizergues
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Motivation.
+reference!
 \end_layout
 
 \end_inset
 
-
+, which can be used to prove equivalence of strict-deterministic context-free
+ grammars.
 \end_layout
 
 \begin_layout Definition
@@ -711,17 +803,16 @@ Let
 \begin_inset Formula $G=(V,T,P)$
 \end_inset
 
- be a context-free grammar.
- The set of polynoms over variables 
+ be a context-free grammar and 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+ the set of polynomials over variables 
 \begin_inset Formula $V$
 \end_inset
 
  and terminals 
 \begin_inset Formula $T$
-\end_inset
-
- is defined as 
-\begin_inset Formula $\mathcal{P}=\mathrm{POLY}(V\cup T)^{*}$
 \end_inset
 
 .
@@ -730,20 +821,10 @@ Let
 \end_inset
 
 .
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Rules for polynomials, such as commutativity.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
-With this definition in place, we can now define equivalence proofs:
+With this definition in place, we now define equivalence proofs:
 \end_layout
 
 \begin_layout Definition
@@ -845,12 +926,12 @@ Strict rules:
 \end_layout
 
 \begin_layout Standard
-Given two words 
-\begin_inset Formula $w_{1},w_{2}\in V^{*}$
+Given two variable words 
+\begin_inset Formula $w_{1},w_{2}\in V^{+}$
 \end_inset
 
 , we call 
-\begin_inset Formula $w\in\left(V\cup T\right)^{*}$
+\begin_inset Formula $w\in\left(V\cup T\right)^{+}$
 \end_inset
 
  a witness of non-equivalence of 
@@ -940,756 +1021,21 @@ induction
 
 \end_layout
 
-\begin_layout Section
-Examples
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{1}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{2}\rightarrow aF_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{2}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{n+3}\rightarrow aF_{n+1}F_{n+2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{3}^{'}\rightarrow aF_{2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{n+4}^{'}\rightarrow aF_{n+2}^{'}F_{n+3}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{1}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{2}\rightarrow aG_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{2}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{n+3}\rightarrow aG_{n+2}^{'}G_{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{3}^{'}\rightarrow aG_{2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{n+4}^{'}\rightarrow aG_{n+3}^{'}G_{n+2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Two encodings of the Fibonacci numbers 
-\begin_inset Formula $f_{n}$
-\end_inset
-
-, where 
-\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=f_{n}$
-\end_inset
-
- and 
-\begin_inset Formula $\norm{F_{n}^{'}}=\norm{G_{n}^{'}}=f_{n}-1$
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="1">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B\rightarrow b$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{B}^{0}\rightarrow aB$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{B}^{n+1}\rightarrow aB_{B}^{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{B}^{n+1}\rightarrow bA_{B}^{n}A_{B}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F^{n}\rightarrow aBA_{B}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="1">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B\rightarrow b$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{A}^{0}\rightarrow bA$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{A}^{n+1}\rightarrow bA_{A}^{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{A}^{n+1}\rightarrow aB_{A}^{n}B_{A}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G^{n}\rightarrow aB_{A}^{n}B$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:AB-grammar-2NF"
-
-\end_inset
-
-
-\begin_inset Formula $F^{n}\equiv G^{n}$
-\end_inset
-
-.
- 
-\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=2^{n+2}$
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{1}\rightarrow aS_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{1}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{n+2}\rightarrow aS_{n+1}S_{n+1}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{n+2}^{'}\rightarrow aS_{n+1}^{'}S_{n+1}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{1}\rightarrow aT_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{1}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{n+2}\rightarrow aT_{n+1}^{'}T_{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{n+2}^{'}\rightarrow aT_{n+1}^{'}T_{n+1}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset Formula $\norm{S_{n}}=\norm{T_{n}}=2^{n}$
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Proof construction strategies
-\end_layout
-
-\begin_layout Subsection
+\begin_layout Chapter
 Restrictions
 \end_layout
 
+\begin_layout Section
+Restricted SDGs
+\end_layout
+
 \begin_layout Standard
-We impose several restrictions on each SDG grammar 
+For the proof construction algorithms presented in this document, we impose
+ several conditions on employed SDG grammar 
 \begin_inset Formula $G=\left(V,T,P\right)$
 \end_inset
 
- we inspect:
+:
 \end_layout
 
 \begin_layout Itemize
@@ -1817,9 +1163,91 @@ to the grammar.
 \begin{eqnarray*}
 A & \to & a\\
 B & \to & b\\
-Z & \to & C\\
+Z & \to & c\\
 X & \to & aX+bZ\\
 Y & \to & bZZ+aX
+\end{eqnarray*}
+
+\end_inset
+
+Now we need to verify whether the first production rule of each variable
+ has the smallest norm of all production rules for this variable.
+ As 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $B$
+\end_inset
+
+ and 
+\begin_inset Formula $Z$
+\end_inset
+
+ only have one production rule, the property obviously holds for these variables
+, but what about 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+? Looking at the production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+, we note that 
+\begin_inset Formula $\normstar X=2$
+\end_inset
+
+ and 
+\begin_inset Formula $\normstar Z=1$
+\end_inset
+
+, so the property does not hold for 
+\begin_inset Formula $X$
+\end_inset
+
+, which we fix be changing the order of the production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ For 
+\begin_inset Formula $Y$
+\end_inset
+
+, the property holds though, as 
+\begin_inset Formula $\normstar{ZZ}=\normstar X=2$
+\end_inset
+
+.
+ The intermediary result after this transformation step, where we only changed
+ the order of production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+, is:
+\begin_inset Formula 
+\begin{eqnarray*}
+A & \to & a\\
+B & \to & b\\
+Z & \to & c\\
+X & \to & bZ+aX\\
+Y & \to & bZZ+aX
+\end{eqnarray*}
+
+\end_inset
+
+After renaming the variables, the final grammar is:
+\begin_inset Formula 
+\begin{eqnarray*}
+X_{1} & \to & a\\
+X_{2} & \to & b\\
+X_{3} & \to & c\\
+X_{4} & \to & bX_{3}+aX_{4}\\
+X_{5} & \to & bX_{3}X_{3}+aX_{4}
 \end{eqnarray*}
 
 \end_inset
@@ -1827,8 +1255,225 @@ Y & \to & bZZ+aX
 
 \end_layout
 
-\begin_layout Subsection
-Adaption of existing algorithm
+\begin_layout Section
+Restricted polynomials
+\end_layout
+
+\begin_layout Standard
+To reduce the number of proof construction rules and to simplify checking
+ if two polynomials are equivalent, we institute a restricted class of polynomia
+ls with the following BNF, 
+\begin_inset Formula $I$
+\end_inset
+
+ being the start symbol:
+\begin_inset Formula 
+\begin{eqnarray*}
+I & ::= & P\:|\: S\\
+P & ::= & V\:|\: V\cdot P\\
+S & ::= & S+S\:|\: T\:|\: T\cdot P\\
+V & ::= & X_{1}\:|\:\dots\:|\: X_{n}\\
+T & ::= & a_{1}\:|\:\dots\:|\: a_{m}
+\end{eqnarray*}
+
+\end_inset
+
+In a nutshell, a restricted polynomial is:
+\end_layout
+
+\begin_layout Itemize
+a product of variables, or
+\end_layout
+
+\begin_layout Itemize
+a sum of terms, where each term is either:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+a terminal or
+\end_layout
+
+\begin_layout Itemize
+the concatenation of a terminal with a product of variables.
+\end_layout
+
+\end_deeper
+\begin_layout Definition
+Two restricted polynomials 
+\begin_inset Formula $p_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{2}$
+\end_inset
+
+ are equivalent iff:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $p_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{2}$
+\end_inset
+
+ are syntactically equivalent products of variables, i.e.
+ 
+\begin_inset Formula $p_{1}=p_{2}=\prod_{x=1}^{n_{A}}A_{x}$
+\end_inset
+
+, or
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $p_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{2}$
+\end_inset
+
+ are sums of terms, where the number of addends in 
+\begin_inset Formula $p_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{2}$
+\end_inset
+
+ is equal and for each addend of 
+\begin_inset Formula $p_{1}$
+\end_inset
+
+ there exists an equivalent addend in 
+\begin_inset Formula $p_{2}$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $p_{1}=\sum_{x=1}^{n_{A}}a_{x}A_{x}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{2}=\sum_{y=1}^{n_{B}}b_{y}B_{y}$
+\end_inset
+
+, 
+\begin_inset Formula $n_{A}=n_{B}$
+\end_inset
+
+ and 
+\begin_inset Formula $\forall x\,\exists!y:\, a_{x}=b_{y}\land A_{x}=B_{y}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Valid restricted polynomials over the variables 
+\begin_inset Formula $V=\left\{ X_{1},\dots,X_{4}\right\} $
+\end_inset
+
+ and terminals 
+\begin_inset Formula $T=\left\{ a,b,c,d\right\} $
+\end_inset
+
+ include for example:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $b$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X_{3}X_{2}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $a+bX_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Expressions which are 
+\emph on
+not
+\emph default
+ valid polynomials over the same 
+\begin_inset Formula $V$
+\end_inset
+
+ and 
+\begin_inset Formula $T$
+\end_inset
+
+ include:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X_{1}+X_{2}$
+\end_inset
+
+, because the addends start with a variable;
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $a+X_{4}$
+\end_inset
+
+, because the second addend starts with a variable;
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $abX_{2}+cX_{3}$
+\end_inset
+
+, because the first addend starts with multiple terminals instead of only
+ one;
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $a\left(a+bX_{1}cX_{2}\left(c+dX_{3}+e\right)\right)+dX_{4}$
+\end_inset
+
+, because the first addend is a concatenation of a terminal with a sum;
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $e+fX_{5}$
+\end_inset
+
+, because neither 
+\begin_inset Formula $e$
+\end_inset
+
+, 
+\begin_inset Formula $f$
+\end_inset
+
+ nor 
+\begin_inset Formula $X_{5}$
+\end_inset
+
+ are part of 
+\begin_inset Formula $V\cup T$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Chapter
+Existing algorithms
 \end_layout
 
 \begin_layout Standard
@@ -1840,6 +1485,14 @@ key "hirshfeld1996"
 \end_inset
 
  and explain related concepts, such as a Caucal base.
+ Also refer to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lasota2006"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Definition
@@ -1858,7 +1511,20 @@ Norm reduction function.
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Chapter
+Proof construction strategies
+\end_layout
+
+\begin_layout Standard
+In this chapter, we present several considered options to construct equivalence
+ proofs of SDGs.
+\end_layout
+
+\begin_layout Section
+Adaptation of existing algorithms
+\end_layout
+
+\begin_layout Section
 Base replacement
 \end_layout
 
@@ -2162,7 +1828,7 @@ Proof schemes for base replacement algorithm.
  of exponential size.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Decomposition
 \end_layout
 
@@ -2267,12 +1933,12 @@ note problem when decomposition does not work, caused by non-compression
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Decomposition + base replacement
 \end_layout
 
 \begin_layout Chapter
-Second part
+Proof construction algorithm
 \end_layout
 
 \begin_layout Section
@@ -2506,8 +2172,789 @@ SS:
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Extend by 
+\begin_inset Formula $\bot$
+\end_inset
+
+ cases!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
+Witness of non-equivalence
+\end_layout
+
+\begin_layout Standard
+Here we explain how to construct witnesses of non-equivalence.
+\end_layout
+
+\begin_layout Chapter
+Proof verification
+\end_layout
+
+\begin_layout Standard
+Here we show how we may verify the correctness of a given proof.
+\end_layout
+
+\begin_layout Chapter
+Experimental results
+\end_layout
+
+\begin_layout Standard
+Here we say how great our algorithm performs.
+\end_layout
+
+\begin_layout Section
+Benchmark grammars
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{0}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{1}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{2}\rightarrow aF_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{2}^{'}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{n+3}\rightarrow aF_{n+1}F_{n+2}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{3}^{'}\rightarrow aF_{2}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{n+4}^{'}\rightarrow aF_{n+2}^{'}F_{n+3}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{0}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{1}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{2}\rightarrow aG_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{2}^{'}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{n+3}\rightarrow aG_{n+2}^{'}G_{n+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{3}^{'}\rightarrow aG_{2}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{n+4}^{'}\rightarrow aG_{n+3}^{'}G_{n+2}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Two encodings of the Fibonacci numbers 
+\begin_inset Formula $f_{n}$
+\end_inset
+
+, where 
+\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=f_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $\norm{F_{n}^{'}}=\norm{G_{n}^{'}}=f_{n}-1$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B\rightarrow b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A_{B}^{0}\rightarrow aB$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A_{B}^{n+1}\rightarrow aB_{B}^{n+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B_{B}^{n+1}\rightarrow bA_{B}^{n}A_{B}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F^{n}\rightarrow aBA_{B}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B\rightarrow b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B_{A}^{0}\rightarrow bA$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B_{A}^{n+1}\rightarrow bA_{A}^{n+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A_{A}^{n+1}\rightarrow aB_{A}^{n}B_{A}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G^{n}\rightarrow aB_{A}^{n}B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:AB-grammar-2NF"
+
+\end_inset
+
+
+\begin_inset Formula $F^{n}\equiv G^{n}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=2^{n+2}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{0}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{1}\rightarrow aS_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{1}^{'}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{n+2}\rightarrow aS_{n+1}S_{n+1}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{n+2}^{'}\rightarrow aS_{n+1}^{'}S_{n+1}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{0}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{1}\rightarrow aT_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{1}^{'}\rightarrow a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{n+2}\rightarrow aT_{n+1}^{'}T_{n+1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $T_{n+2}^{'}\rightarrow aT_{n+1}^{'}T_{n+1}^{'}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset Formula $\norm{S_{n}}=\norm{T_{n}}=2^{n}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
 Conclusion
+\end_layout
+
+\begin_layout Standard
+Playing Nostradamus here ...
 \end_layout
 
 \begin_layout Standard
