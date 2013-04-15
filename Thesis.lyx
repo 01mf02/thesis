@@ -4,6 +4,9 @@
 \begin_header
 \textclass clmthesis
 \begin_preamble
+% to show DRAFT watermark
+\usepackage[firstpage]{draftwatermark}
+
 \usepackage{bussproofs}
 
 % make sum/integral limits always appear above/below the operator, not next to it
@@ -17,6 +20,8 @@
 \makeatletter
 \g@addto@macro\@floatboxreset{\centering}
 \makeatother
+
+\newcommand{\includesvg}[1]{\input{#1.pdf_tex}}
 
 \usepackage{pgf}
 \usepackage{tikz}
@@ -707,6 +712,12 @@ A compression grammar is a simple deterministic grammar, with the condition
 .
 \end_layout
 
+\begin_layout Standard
+Note that while we can only produce one single terminal word with each variable
+ of a compression grammar, the norm of the variable is still potentially
+ exponential in the number of variables.
+\end_layout
+
 \begin_layout Example
 Insert pretty compression example here.
  :)
@@ -876,6 +887,7 @@ Schemes of rules:
 \end_layout
 
 \begin_layout Itemize
+Symmetry: 
 \begin_inset Formula $\symrule xy$
 \end_inset
 
@@ -883,6 +895,7 @@ Schemes of rules:
 \end_layout
 
 \begin_layout Itemize
+Transitivity: 
 \begin_inset Formula $\transrule yxz$
 \end_inset
 
@@ -890,6 +903,7 @@ Schemes of rules:
 \end_layout
 
 \begin_layout Itemize
+Sum: 
 \begin_inset Formula $\plusrule x{x'}y{y'}{x+y}{x'+y'}$
 \end_inset
 
@@ -901,6 +915,7 @@ Schemes of strict rules:
 \end_layout
 
 \begin_layout Itemize
+Reflexivity: 
 \begin_inset Formula $\reflrule x$
 \end_inset
 
@@ -908,6 +923,7 @@ Schemes of strict rules:
 \end_layout
 
 \begin_layout Itemize
+Product: 
 \begin_inset Formula $\timesrule x{x'}y{y'}{x\cdot y}{x'\cdot y'}$
 \end_inset
 
@@ -919,6 +935,7 @@ Strict rules:
 \end_layout
 
 \begin_layout Itemize
+Grammar: 
 \begin_inset Formula $\grrule X$
 \end_inset
 
@@ -926,6 +943,23 @@ Strict rules:
 \end_layout
 
 \begin_layout Standard
+For each rule 
+\begin_inset Formula $\unrulec{P_{1}\dots P_{n}}C{rule}$
+\end_inset
+
+, we have that 
+\begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
+\end_inset
+
+.
+ For strict rules, we even have 
+\begin_inset Formula $\forall i:\,\norm{P_{i}}<\norm C$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Definition
 Given two variable words 
 \begin_inset Formula $w_{1},w_{2}\in V^{+}$
 \end_inset
@@ -980,45 +1014,115 @@ algebra, equality, soundness/completeness
 
 \end_layout
 
+\begin_layout Example
+Consider the following rules:
+\begin_inset Formula 
+\[
+\bussproof{\syminf XY{\syminf YX{\axiom XY}}}
+\]
+
+\end_inset
+
+This is obviously an invalid proof, as it would allow us to show the equivalence
+ of two variables independently of the grammar.
+\end_layout
+
+\begin_deeper
+\begin_layout Example
+Given the grammar 
+\begin_inset Formula $G$
+\end_inset
+
+ with production rules 
+\begin_inset Formula 
+\begin{eqnarray*}
+X & \to & a+bX\\
+Y & \to & a+bY,
+\end{eqnarray*}
+
+\end_inset
+
+the following is a valid proof:
+\begin_inset Formula 
+\[
+\bussproof{\transinf XY{\gr X{a+bX}}{\syminf{a+bX}Y{\transinf Y{a+bX}{\gr Y{a+bY}}{\plusinf{a+bY}{a+bX}{\refl aa}{\timesinf{bY}{bX}{\refl bb}{\syminf YX{\sj XY}}}}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset include
-LatexCommand include
-filename "Proofs/induction.tex"
-
+We note that in both proofs above, we have a certain circularity, as 
+\begin_inset Formula $X\equiv Y$
 \end_inset
 
-
+ appears once in a conclusion and once in a premise following from the conclusio
+n.
+ This circularity obviously leads to a contradiction for the first proof,
+ whereas we claim that the second proof is correct.
+ Why?
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Example of 
-\begin_inset Quotes eld
+\begin_layout Standard
+To show that the second proof is correct, let us assume that 
+\begin_inset Formula $X\not\equiv Y$
 \end_inset
 
-induction
-\begin_inset Quotes erd
+.
+ Then by definition there exists a smallest witness of non-equivalence of
+ 
+\begin_inset Formula $X$
 \end_inset
 
- proof.
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+, 
+\begin_inset Formula $w_{W}\in T^{+}$
+\end_inset
+
+.
+ However, following the path from the conclusion 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ to the premise 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+, we could find a smaller witness of non-equivalence, as there exists no
+ rule which increases the norm when going from a conclusion to a premise,
+ but there exists a rule which decreases the norm --- the product rule.
+ As we than have a smaller witness of non-equivalence than 
+\begin_inset Formula $w_{W}$
+\end_inset
+
+, this contradicts the fact that 
+\begin_inset Formula $w_{W}$
+\end_inset
+
+ is the smallest witness.
+ From this contradiction it follows that 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ indeed holds.
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+We now generalise the argument employed in the example above.
 \end_layout
 
-\end_inset
+\begin_layout Theorem
+The proof system in definition ?? is sound.
+\end_layout
 
-
+\begin_layout Proof
+TODO!
 \end_layout
 
 \begin_layout Chapter
@@ -1914,8 +2018,77 @@ Computing
  takes at most ? steps.
 \end_layout
 
+\begin_layout Proof
+TODO!
+\end_layout
+
 \end_deeper
 \begin_layout Standard
+For compression grammars, if 
+\begin_inset Formula $t\leq\normstar X$
+\end_inset
+
+, then 
+\begin_inset Formula $\left\langle X\right\rangle _{t}$
+\end_inset
+
+ will always succeed, i.e.
+ not return 
+\begin_inset Formula $\bot$
+\end_inset
+
+.
+ This is because we do not allow sums in compression grammars.
+\end_layout
+
+\begin_layout Standard
+However, if we look at general simple-deterministic grammars, we encounter
+ cases where the decomposition will fail --- example: 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+svgwidth{200pt}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includesvg{Branching_Grammar}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Branching grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
@@ -1935,6 +2108,55 @@ note problem when decomposition does not work, caused by non-compression
 
 \begin_layout Section
 Decomposition + base replacement
+\end_layout
+
+\begin_layout Section
+Other ideas
+\end_layout
+
+\begin_layout Itemize
+If we have for example 
+\begin_inset Formula $A\equiv BCD$
+\end_inset
+
+ and 
+\begin_inset Formula $A\equiv BCE$
+\end_inset
+
+, we might try to prove 
+\begin_inset Formula $D\equiv E$
+\end_inset
+
+ directly.
+ The problem is that we might have several choices to choose from ...
+\end_layout
+
+\begin_layout Itemize
+If we have 
+\begin_inset Formula $X_{1}X_{2}\dots X_{n}\equiv Y_{1}Y_{2}\dots Y_{m}$
+\end_inset
+
+, we might try to figure out 
+\begin_inset Quotes eld
+\end_inset
+
+cut-points
+\begin_inset Quotes erd
+\end_inset
+
+ by looking at the norms.
+\end_layout
+
+\begin_layout Itemize
+Having already proven 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ and faced with the task of proving 
+\begin_inset Formula $Y\equiv X$
+\end_inset
+
+, we might just apply the symmetry rule.
 \end_layout
 
 \begin_layout Chapter
