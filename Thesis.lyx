@@ -4,6 +4,10 @@
 \begin_header
 \textclass clmthesis
 \begin_preamble
+\plainauthor{Michael Färber}
+\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
+
+
 % to show DRAFT watermark
 \usepackage[firstpage]{draftwatermark}
 
