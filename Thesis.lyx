@@ -144,8 +144,7 @@ Preliminaries
 \end_layout
 
 \begin_layout Standard
-In this chapter, we define some terms we will use throughout the remaining
- course of the document.
+In this chapter, we define some terms we will use throughout the document.
 \end_layout
 
 \begin_layout Section
@@ -326,6 +325,24 @@ status open
 
 \begin_layout Plain Layout
 Why?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Put some norm properties here, such as 
+\begin_inset Formula $\norm{AB}=\norm A+\norm B$
+\end_inset
+
+.
+ Reference?
 \end_layout
 
 \end_inset
@@ -1573,7 +1590,7 @@ not
 \begin_inset Formula $X_{5}$
 \end_inset
 
- are part of 
+ are in 
 \begin_inset Formula $V\cup T$
 \end_inset
 
@@ -1624,8 +1641,8 @@ Proof construction strategies
 \end_layout
 
 \begin_layout Standard
-In this chapter, we present several considered options to construct equivalence
- proofs of SDGs.
+In this chapter, we present several options to construct equivalence proofs
+ of SDGs.
 \end_layout
 
 \begin_layout Section
@@ -1976,31 +1993,6 @@ Decomposition has several properties:
 
 \begin_deeper
 \begin_layout Enumerate
-For 
-\begin_inset Formula $t<\norm{\alpha}$
-\end_inset
-
-, if 
-\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\neq\bot$
-\end_inset
-
-, then there exists 
-\begin_inset Formula $\beta\in V^{+}$
-\end_inset
-
- such that 
-\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\beta\equiv\alpha$
-\end_inset
-
-.
- In fact, 
-\begin_inset Formula $\beta\equiv\left[\alpha\right]_{t}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
 \begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\alpha$
 \end_inset
 
@@ -2008,24 +2000,307 @@ For
 \end_layout
 
 \begin_layout Enumerate
-\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}\leq?$
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}\leq\left(j-1\right)k+\length{\alpha}$
+\end_inset
+
+, where 
+\begin_inset Formula $j$
+\end_inset
+
+ denotes the maximal index among all variables in 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ (or 
+\begin_inset Formula $j=1$
+\end_inset
+
+ if 
+\begin_inset Formula $\alpha=\varepsilon$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+If 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\neq\bot$
+\end_inset
+
+, then 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}\equiv\alpha$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Proof
+We prove one by one:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+We prove 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\alpha$
+\end_inset
+
+ by induction on 
+\begin_inset Formula $\alpha$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $\alpha=\varepsilon$
+\end_inset
+
+: 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\left\langle \varepsilon\right\rangle _{0}=\varepsilon.$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Enumerate
-Computing 
-\begin_inset Formula $\left\langle \alpha\right\rangle _{t}$
+\begin_inset Formula $\alpha=X_{i}\beta$
 \end_inset
 
- takes at most ? steps.
+: 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\left\langle X_{i}\beta\right\rangle _{\norm{X_{i}\beta}}=X_{i}\left\langle \beta\right\rangle _{\norm{\beta}}\overset{\text{ind.}}{=}X_{i}\beta.$
+\end_inset
+
+
 \end_layout
 
-\begin_layout Proof
-TODO!
+\end_deeper
+\begin_layout Enumerate
+We prove 
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}\leq\left(j-1\right)k+\length{\alpha}$
+\end_inset
+
+ by induction on 
+\begin_inset Formula $t$
+\end_inset
+
+:
 \end_layout
 
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $t=0$
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=0$
+\end_inset
+
+.
+ As 
+\begin_inset Formula $j$
+\end_inset
+
+ is minimally 
+\begin_inset Formula $1$
+\end_inset
+
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+ minimally 
+\begin_inset Formula $0$
+\end_inset
+
+, we have that 
+\begin_inset Formula $\left(j-1\right)k+\length{\alpha}\geq0$
+\end_inset
+
+.
+ It follows that 
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}\leq\left(j-1\right)k+\length{\alpha}$
+\end_inset
+
+ holds.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $t>0$
+\end_inset
+
+: We set 
+\begin_inset Formula $\alpha=X_{i}\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $t=1\land\Gr{X_{i}}=a_{i1}\alpha_{i1}$
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{V_{a_{i1}}}=1\leq\overbrace{\left(j-1\right)k}^{\geq0}+\overbrace{\length{\alpha}}^{\geq1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $1<t<\norm{X_{i}}\land\Gr{X_{i}}=a_{i1}\alpha_{i1}$
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1}}=1+\length{\left\langle \alpha_{i1}\right\rangle _{t-1}}\overset{\text{ind.}}{\leq}1+\left(i-1-1\right)k+k=1+\left(i-1\right)k\leq\left(i-1\right)k+\length{\alpha}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\norm{X_{i}}\leq t\leq\norm{X_{i}\beta}$
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{X_{i}\left\langle \beta\right\rangle _{t-\norm{X_{i}}}}=1+\length{\left\langle \beta\right\rangle _{t-\norm{X_{i}}}}\overset{\text{ind.}}{\leq}1+\left(j-1\right)k+\overbrace{\length{\alpha}-1}^{\length{\beta}}=\left(j-1\right)k+\length{\alpha}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+If 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\neq\bot$
+\end_inset
+
+, then 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}\equiv\alpha$
+\end_inset
+
+.
+ We prove this by induction on 
+\begin_inset Formula $t$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $t=0$
+\end_inset
+
+: 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{0}\left[\alpha\right]_{0}=\varepsilon\cdot\alpha\equiv\alpha$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $t>0$
+\end_inset
+
+: We set 
+\begin_inset Formula $\alpha=X_{i}\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $t=1\land\Gr{X_{i}}=a_{i1}\alpha_{i1}$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $t\geq\norm{X_{i}}$
+\end_inset
+
+: It follows that 
+\begin_inset Formula $\norm{X_{i}}=1$
+\end_inset
+
+, therefore 
+\begin_inset Formula $\Gr{X_{i}}=a_{i1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{1}\left[\alpha\right]_{1}=\underbrace{V_{a_{i1}}}_{\equiv X_{i}}\cdot\left[\beta\right]_{\underbrace{t-\norm{X_{i}}}_{0}}=V_{a_{i1}}\cdot\beta\equiv X_{i}\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $t<\norm{X_{i}}$
+\end_inset
+
+: 
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=V_{a_{i1}}\cdot\left[\alpha_{i1}\right]_{\underbrace{t-1}_{0}}\cdot\beta=V_{a_{i1}}\alpha_{i1}\beta\equiv X_{i}\beta$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset Formula $1<t<\norm{X_{i}}\land\Gr{X_{i}}=a_{i1}\alpha_{i1}$
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1}\left[\alpha_{i1}\right]_{t-1}\beta\overset{\text{ind.}}{=}V_{a_{i1}}\alpha_{i1}\beta\equiv X_{i}\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\norm{X_{i}}\leq t\leq\norm{X_{i}\beta}$
+\end_inset
+
+:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=X_{i}\left\langle \beta\right\rangle _{t-\norm{X_{i}}}=\left[\beta\right]_{t-\norm{X_{i}}}\overset{\text{ind.}}{=}X_{i}\beta$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\end_deeper
 \end_deeper
 \begin_layout Standard
 For compression grammars, if 
@@ -2047,11 +2322,19 @@ For compression grammars, if
 
 \begin_layout Standard
 However, if we look at general simple-deterministic grammars, we encounter
- cases where the decomposition will fail --- example: 
+ cases where the decomposition will fail --- example: We want to prove 
+\begin_inset Formula $AB\equiv PCD$
+\end_inset
+
+ for the following grammar with 
+\begin_inset Formula $m>0$
+\end_inset
+
+:
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -2093,6 +2376,110 @@ Branching grammar.
 \end_inset
 
 
+\begin_inset Formula 
+\begin{eqnarray*}
+A_{n+1} & \to & aA_{n}+bA_{n}\\
+C_{n+1} & \to & aC_{n}+bC_{n}\\
+A_{0} & \to & a\\
+C_{0} & \to & aX\\
+A & \to & aPA_{m}\\
+C & \to & aC_{m}\\
+P & \to & a
+\end{eqnarray*}
+
+\end_inset
+
+First, we note that
+\begin_inset Formula 
+\[
+\norm A=\overbrace{\norm P}^{1}+\norm C-\norm X,
+\]
+
+\end_inset
+
+so from 
+\begin_inset Formula $\norm A-1=\norm C-\norm X$
+\end_inset
+
+ it follows that
+\begin_inset Formula 
+\[
+\norm A-1<\norm C.
+\]
+
+\end_inset
+
+Looking at the norms of the first variables 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $P$
+\end_inset
+
+ of our equivalence judgement, we see that the 
+\begin_inset Formula $\norm A>\norm P$
+\end_inset
+
+, so we try to replace the first variable on the left side 
+\begin_inset Formula $A$
+\end_inset
+
+ by the decomposition of the variables on the right side, i.e.
+ 
+\begin_inset Formula $\left\langle PCD\right\rangle _{\norm A}$
+\end_inset
+
+.
+ However, if we try to calculate 
+\begin_inset Formula $\left\langle PCD\right\rangle _{\norm A}$
+\end_inset
+
+, we get:
+\begin_inset Formula 
+\begin{eqnarray*}
+\left\langle PCD\right\rangle _{\norm A} & = & P\left\langle CD\right\rangle _{\norm A-1}\\
+ & = & PA_{0}\left\langle C_{m}D\right\rangle _{\norm A-2}\\
+ & = & \bot\text{, because }1<\norm A-2<\norm{C_{m}}\text{, but }\Gr{C_{m}}\text{ is a sum.}
+\end{eqnarray*}
+
+\end_inset
+
+That is a realistic scenario in a proof, so what can we do to remedy this
+ problem? We cannot easily fix the decomposition function to not return
+ 
+\begin_inset Formula $\bot$
+\end_inset
+
+ in such cases, as it would have to return a potentially exponentially big
+ sum of words otherwise, which is certainly not desirable.
+ Our answer to this problem is the base: In cases where the decomposition
+ is not applicable, we employ the base.
+ E.g.
+ in the example above, after determining that 
+\begin_inset Formula $\left\langle PCD\right\rangle _{\norm A}$
+\end_inset
+
+ yields 
+\begin_inset Formula $\bot$
+\end_inset
+
+, we postulate that 
+\begin_inset Formula $A\equiv P\left[C\right]_{\norm P}$
+\end_inset
+
+, and in fact 
+\begin_inset Formula $\left[C\right]_{\norm P}$
+\end_inset
+
+ will be equivalent to 
+\begin_inset Formula $C_{m}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -2271,7 +2658,15 @@ pp:
 \end_layout
 
 \begin_layout Itemize
-pP: 
+pP1: 
+\begin_inset Formula $\transrulecond{\Gr A}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}=\prod_{y=2}^{n_{B}}B_{y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pP2: 
 \begin_inset Formula $\transrulecond{B_{1}\left[A\right]_{\norm{B_{1}}}}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}}$
 \end_inset
 
