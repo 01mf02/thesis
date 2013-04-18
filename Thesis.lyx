@@ -2674,16 +2674,8 @@ pP2:
 \end_layout
 
 \begin_layout Itemize
-ps: 
-\begin_inset Formula $\transrule{X_{b}Q}A{bQ}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-pS: 
-\begin_inset Formula $\transrule{\Gr A}A{\sum_{y=1}^{n_{B}>1}b_{y}Q_{y}}$
+psS: 
+\begin_inset Formula $\transrule{\Gr A}A{\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}}$
 \end_inset
 
 
@@ -2762,8 +2754,8 @@ PS2:
 \end_layout
 
 \begin_layout Itemize
-sP: 
-\begin_inset Formula $\symrule{a\prod_{x=1}^{n_{A}\geq0}A_{x}}{\prod_{y=1}^{n_{B}\geq1}B_{y}}$
+sSpP: 
+\begin_inset Formula $\symrule{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}Q$
 \end_inset
 
 
@@ -2772,14 +2764,6 @@ sP:
 \begin_layout Itemize
 ss: 
 \begin_inset Formula $\timesrule aaPQ{aP}{aQ}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-SP: 
-\begin_inset Formula $\symrule{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}Q$
 \end_inset
 
 
