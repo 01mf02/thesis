@@ -185,8 +185,6 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
             let reduct = pbh::norm_reduce npbh [pah] prods in
             if reduct = pbh::pbt then trans gr
             else trans (pov reduct)
-          | Sum ((sbhc, sbhv), []) ->
-            trans (Product(variable_of_terminal prods sbhc, sbhv))
           | Sum(_, _) ->
             trans gr
         end
@@ -250,8 +248,10 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
  ************************************************)
 
 let _ =
-  (*let prods = Examples.branching_fibonacci_grammar 10 in*)
-  let prods = Examples.recursive_grammar in
+  let p0 = Examples.branching_fibonacci_grammar 25 in
+  let p1 = Examples.recursive_grammar in
+  let ps = [p0; p1] in
+  let prods = nth ps 0 in
 
   if productions_valid prods then
     print_endline "Productions valid. :)"
@@ -268,7 +268,7 @@ let _ =
   (*print_endline ("Decomposition: " ^
     string_of_variables (decompose prods 88 ["G10"]));*)
 
-  let eq = pair_map product_of_variable ("X", "Y") in
+  let eq = pair_map product_of_variable ("F23", "G23") in
   let sequents = prove_equivalence eq prods in
 
   print_endline "Proof:";
@@ -277,8 +277,8 @@ let _ =
   print_endline
     ("Proof size: " ^ string_of_int (length sequents) ^ " sequents");
 
-  print_endline "LaTeX proof: ";
-  print_endline (latex_of_sequents sequents eq);
+  (*print_endline "LaTeX proof: ";
+  print_endline (latex_of_sequents sequents eq);*)
 
   exit 0;
 ;;
