@@ -139,6 +139,39 @@ Motivation: Why do we want to construct proofs after all?
 
 \end_layout
 
+\begin_layout Itemize
+general problem
+\end_layout
+
+\begin_layout Itemize
+what did people so far do about it? (write to here)
+\end_layout
+
+\begin_layout Itemize
+what I did about it
+\end_layout
+
+\begin_layout Itemize
+how is what I've done better than what was done before
+\end_layout
+
+\begin_layout Itemize
+small TOC
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+::= and -> : explain difference !
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Preliminaries
 \end_layout
@@ -390,7 +423,7 @@ Rewrite that!
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Theorem
 For each CFG, we can actually always find an equivalent grammar in 2-GNF,
  which is called second normal form.
 \begin_inset Note Note
@@ -413,6 +446,20 @@ Write later in the article if 2-GNF is of any use.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Proof
+See 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Example
@@ -749,6 +796,20 @@ Polynomials
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Why is this non-standard? Why do we need them? Why do we talk about them?
+ Proof system!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Given a set of variables 
 \begin_inset Formula $V=\left\{ X_{1},\dots,X_{n}\right\} $
 \end_inset
@@ -901,10 +962,30 @@ r\cup\bigcup_{r_{p}\in\mathcal{R},\,\Concl{r_{p}}\in\Prem r}\Premstartimes{r_{p}
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: in union, write subscript in two lines.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Schemes of rules:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Indentation check!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -1046,6 +1127,30 @@ Consider the following rules:
 
 This is obviously an invalid proof, as it would allow us to show the equivalence
  of two variables independently of the grammar.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: this is unclear, write sj over X=Y.
+ Explain sj!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write about induction.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1140,6 +1245,14 @@ We now generalise the argument employed in the example above.
 
 \begin_layout Theorem
 The proof system in definition ?? is sound.
+\end_layout
+
+\begin_layout Proof
+TODO!
+\end_layout
+
+\begin_layout Theorem
+The proof system in definition ?? is complete.
 \end_layout
 
 \begin_layout Proof
@@ -2477,6 +2590,19 @@ That is a realistic scenario in a proof, so what can we do to remedy this
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Explain figure!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
