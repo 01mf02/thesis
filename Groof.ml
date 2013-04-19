@@ -135,9 +135,10 @@ let latex_of_sequents seqs eq_root =
 exception Proof_impossible
 exception Circular_sequent
 
-let prove_equivalence (eq : equivalence) (prods : production_rules) =
+let prove_equivalence (eq : equivalence) (gram : grammar) =
   let pov = product_of_variables in
   let sov = sum_of_variable_rules in
+  let (prods, norms) = gram in
 
   (* determine whether the first list is a prefix of the second list,
    * and if so, also return the remaining part of the second list *)
@@ -154,20 +155,20 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
     let trans x = Trans((a, x), (x, b)) in
 
     let rule_of_products (pah, pat) (pbh, pbt) =
-      let (npah, npbh) = pair_map (norm_of_variable prods) (pah, pbh) in
+      let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
 
       if npah < npbh then
         Sym(b, a)
       else
         try
-          let dec = decompose prods npah (pbh::pbt) in
+          let dec = decompose gram npah (pbh::pbt) in
           let (dec_is_prefix, postfix) = is_prefix (dec, (pbh::pbt)) in
           if dec_is_prefix then
             Times((pov [pah], pov dec), (pov pat, pov postfix))
           else
             trans (pov (dec@pat))
         with Not_decomposable ->
-          trans (pov (pbh::norm_reduce npbh [pah] prods @ pat)) in
+          trans (pov (pbh::norm_reduce npbh [pah] gram @ pat)) in
 
 
     if expression_equals (a, b) then
@@ -181,8 +182,8 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
           | Product (pbh, []) ->
             trans gr
           | Product (pbh, pbt) ->
-            let npbh = norm_of_variable prods pbh in
-            let reduct = pbh::norm_reduce npbh [pah] prods in
+            let npbh = norm_of_variable norms pbh in
+            let reduct = pbh::norm_reduce npbh [pah] gram in
             if reduct = pbh::pbt then trans gr
             else trans (pov reduct)
           | Sum(_, _) ->
@@ -196,7 +197,7 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
         | Sum ((sbhc, []), []) ->
           raise Proof_impossible
         | Sum ((sbhc, sbhv), []) ->
-          if norm_of_variable prods pah = 1 then
+          if norm_of_variable norms pah = 1 then
             Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
           else
             trans (Product(variable_of_terminal prods sbhc, sbhv))
@@ -254,7 +255,7 @@ let _ =
   let p3 = Examples.recursive_grammar in
   let ps = [p0; p1; p2; p3] in
 
-  let v0 = ("F10", "G10") in
+  let v0 = ("F25", "G25") in
   let v1 = ("S25", "T25") in
   let v2 = ("F", "G") in
   let v3 = ("X", "Y") in
@@ -264,25 +265,16 @@ let _ =
   let prods = nth ps index in
   let vars  = nth vs index in
 
-  print_endline "Checking if productions are valid ...";
-  if productions_valid prods then
-    print_endline "Productions valid. :)"
-  else begin
-    print_endline "Productions invalid! :@";
-    exit 1
-  end;
+  print_endline "Calculating norms and checking if productions are valid ...";
+  let gram = grammar_of_production_rules prods in
+  print_endline "Productions valid. :)";
 
   (*print_endline "Production rules:";
   print_endline (string_of_production_rules prods);*)
 
-  (*print_endline ("Norm: " ^ (string_of_int (norm_of_variable prods "X10")));*)
-
-  (*print_endline ("Decomposition: " ^
-    string_of_variables (decompose prods 88 ["G10"]));*)
-
   print_endline "Constructing proof ... ";
   let eq = pair_map product_of_variable vars in
-  let seqs = prove_equivalence eq prods in
+  let seqs = prove_equivalence eq gram in
 
   (*print_endline "Proof:";
   print_sequents sequents;*)

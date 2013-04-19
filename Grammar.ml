@@ -65,21 +65,15 @@ let string_of_production_rules (r : production_rules) =
  ***************** Norm functions ***************
  ************************************************)
 
-(* calculate the norm of a variable of a grammar *)
-(* TODO: delete this! *)
-(* production_rules -> variable -> int *)
-let rec norm_of_variable (prods : production_rules) (var : variable) =
-  let vars = snd (hd (rules_of_variable prods var)) in
-  fold_left (fun n v -> n + (norm_of_variable prods v)) 1 vars;;
-
 exception Norm_not_found;;
 
+(* norm_list -> variable -> int *)
+let norm_of_variable (norms : norm_list) (var : variable) =
+  try assoc var norms with Not_found -> raise Norm_not_found;;
+
 (* norm_list -> variables -> int *)
-let rec norm_of_variables (norms : norm_list) = function
-  | [] -> 0
-  | hd::tl ->
-    try (assoc hd norms) + (norm_of_variables norms tl)
-    with Not_found -> raise Norm_not_found;;
+let rec norm_of_variables (norms : norm_list) =
+  fold_left (fun sum var -> sum + (norm_of_variable norms var)) 0;;
 
 (* calculate norms of all variables in the production rules and
  * verify that production rules adhere to required restrictions:
@@ -113,21 +107,6 @@ let grammar_of_production_rules (prods : production_rules) =
   (prods, norms_of_production_rules prods);;
 
 
-(* production_rules -> bool *)
-(* TODO: delete this! *)
-let productions_valid (prods : production_rules) =
-  let norms = norms_of_production_rules prods in
-
-  let rec is_sorted prev_norm = function
-    | [] -> true
-    | (hdv, hdr)::tl ->
-      let curr_norm = assoc hdv norms (*norm_of_variable prods hdv*) in
-      if curr_norm >= prev_norm then is_sorted curr_norm tl
-      else false in
-
-  is_sorted 0 prods;;
-
-
 (************************************************
  ***************** Decomposition ****************
  ************************************************)
@@ -135,27 +114,29 @@ let productions_valid (prods : production_rules) =
 exception Negative_decompose
 exception Not_decomposable
 
-(* production_rules -> int -> variables -> variables *)
-let rec decompose (prods : production_rules) (final_norm : int) = function
+(* grammar -> int -> variables -> variables *)
+let rec decompose (gram : grammar) (final_norm : int) = function
   | [] -> if final_norm = 0 then [] else raise Negative_decompose
-  | head::tail -> let head_norm = norm_of_variable prods head in
+  | head::tail ->
+    let (prods, norms) = gram in
+    let head_norm = norm_of_variable norms head in
     if final_norm < 0 then raise Negative_decompose
     else if final_norm = 0 then []
     else if final_norm >= head_norm then
-      head::decompose prods (final_norm - head_norm) tail
+      head::decompose gram (final_norm - head_norm) tail
     else begin
       let rules = rules_of_variable prods head in
       if length rules = 1 then
         let (term, vars) = hd rules in
-        variable_of_terminal prods term :: decompose prods (final_norm - 1) vars
+        variable_of_terminal prods term :: decompose gram (final_norm - 1) vars
       else
         raise Not_decomposable
     end;;
 
 exception Negative_norm_reduce
 
-(* int -> variables -> production_rules -> variables *)
-let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
+(* int -> variables -> grammar -> variables *)
+let rec norm_reduce (p : int) (vars : variables) (gram : grammar) =
   if p < 0 then
     raise Negative_norm_reduce
   else if p = 0 then
@@ -164,10 +145,11 @@ let rec norm_reduce (p : int) (vars : variables) (prods : production_rules) =
     match vars with
     | [] -> raise Negative_norm_reduce
     | head::tail ->
-      let head_norm = norm_of_variable prods head in
+      let (prods, norms) = gram in
+      let head_norm = norm_of_variable norms head in
       if p >= head_norm then
-        norm_reduce (p - head_norm) tail prods
+        norm_reduce (p - head_norm) tail gram
       else
         let first_production = snd (hd (rules_of_variable prods head)) in
-        (norm_reduce (p - 1) first_production prods) @ tail;;
+        (norm_reduce (p - 1) first_production gram) @ tail;;
 
