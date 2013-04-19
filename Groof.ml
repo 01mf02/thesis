@@ -248,11 +248,23 @@ let prove_equivalence (eq : equivalence) (prods : production_rules) =
  ************************************************)
 
 let _ =
-  let p0 = Examples.branching_fibonacci_grammar 25 in
-  let p1 = Examples.recursive_grammar in
-  let ps = [p0; p1] in
-  let prods = nth ps 0 in
+  let p0 = Examples.ab_grammar 25 in
+  let p1 = Examples.power_two_grammar 25 in
+  let p2 = Examples.branching_fibonacci_grammar 25 in
+  let p3 = Examples.recursive_grammar in
+  let ps = [p0; p1; p2; p3] in
 
+  let v0 = ("F10", "G10") in
+  let v1 = ("S25", "T25") in
+  let v2 = ("F", "G") in
+  let v3 = ("X", "Y") in
+  let vs = [v0; v1; v2; v3] in
+
+  let index = 0 in
+  let prods = nth ps index in
+  let vars  = nth vs index in
+
+  print_endline "Checking if productions are valid ...";
   if productions_valid prods then
     print_endline "Productions valid. :)"
   else begin
@@ -260,25 +272,26 @@ let _ =
     exit 1
   end;
 
-  print_endline "Production rules:";
-  print_endline (string_of_production_rules prods);
+  (*print_endline "Production rules:";
+  print_endline (string_of_production_rules prods);*)
 
   (*print_endline ("Norm: " ^ (string_of_int (norm_of_variable prods "X10")));*)
 
   (*print_endline ("Decomposition: " ^
     string_of_variables (decompose prods 88 ["G10"]));*)
 
-  let eq = pair_map product_of_variable ("F23", "G23") in
-  let sequents = prove_equivalence eq prods in
+  print_endline "Constructing proof ... ";
+  let eq = pair_map product_of_variable vars in
+  let seqs = prove_equivalence eq prods in
 
-  print_endline "Proof:";
-  print_sequents sequents;
-
-  print_endline
-    ("Proof size: " ^ string_of_int (length sequents) ^ " sequents");
+  (*print_endline "Proof:";
+  print_sequents sequents;*)
 
   (*print_endline "LaTeX proof: ";
   print_endline (latex_of_sequents sequents eq);*)
+
+  print_endline "Done.";
+  print_endline ("Proof size: " ^ string_of_int (length seqs) ^ " sequents");
 
   exit 0;
 ;;
