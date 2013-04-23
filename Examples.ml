@@ -1,3 +1,4 @@
+open Grammar;;
 open List;;
 
 
@@ -10,26 +11,34 @@ let one_variable = map (fun (v, c, v1) -> (v, [(c, [v1])]));;
 let two_variables = map (fun (v, c, v1, v2) -> (v, [(c, [v1; v2])]));;
 let soi = string_of_int;;
 
-let rec ab_grammar n =
+
+let n_variables_br =
+  map (fun ((v : variable), t, (vs : variables)) ->
+    (v, map (fun (c : terminal) -> (c, vs)) t));;
+let zero_variables_br l = n_variables_br (map (fun (v, t) -> (v, t, [])) l);;
+let one_variable_br l = n_variables_br (map (fun (v, t, w) -> (v, t, [w])) l);;
+
+
+let rec ab_grammar ta tb n =
   let unequal_var vu ve t vt = function
-    | 0 -> one_variable [(vu ^ "0", t, vt)]
-    | n -> one_variable [(vu ^ soi n, t, ve ^ soi n)] in
+    | 0 -> one_variable_br [(vu ^ "0", t, vt)]
+    | n -> one_variable_br [(vu ^ soi n, t, ve ^ soi n)] in
 
   let equal_var ve vu t = function
     | 0 -> []
-    | n -> two_variables [(ve ^ soi n, t, vu ^ soi (n-1), vu ^ soi (n-1))] in
+    | n -> n_variables_br [(ve ^ soi n, t, [vu ^ soi (n-1); vu ^ soi (n-1)])] in
 
-  let ab = unequal_var "AB" "BB" 'a' "B" in
-  let ba = unequal_var "BA" "AA" 'b' "A" in
-  let aa = equal_var "AA" "BA" 'a' in
-  let bb = equal_var "BB" "AB" 'b' in
+  let ab = unequal_var "AB" "BB" ta "B" in
+  let ba = unequal_var "BA" "AA" tb "A" in
+  let aa = equal_var "AA" "BA" ta in
+  let bb = equal_var "BB" "AB" tb in
 
-  let fg n = two_variables [("F" ^ soi n, 'a', "B", "AB" ^ soi n);
-                            ("G" ^ soi n, 'a', "BA" ^ soi n, "B")] in
+  let fg n = n_variables_br [("F" ^ soi n, ta, ["B"; "AB" ^ soi n]);
+                             ("G" ^ soi n, ta, ["BA" ^ soi n; "B"])] in
 
   match n with
-    | 0 -> zero_variables [("A", 'a'); ("B", 'b')] @ ab 0 @ ba 0 @ fg 0
-    | n -> ab_grammar (n-1) @ aa n @ bb n @ ab n @ ba n @ fg n;;
+    | 0 -> zero_variables_br [("A", ta); ("B", tb)] @ ab 0 @ ba 0 @ fg 0
+    | n -> ab_grammar ta tb (n-1) @ aa n @ bb n @ ab n @ ba n @ fg n;;
 
 
 let rec power_two_grammar n =
@@ -82,6 +91,7 @@ let rec fibonacci_grammar n =
   match n with
     | 0 -> f 0 @ g 0
     | n -> fibonacci_grammar (n-1) @ f' n @ g' n @ f n @ g n;;
+
 
 let rec branching_grammar fx fy n =
   let rec summands v f = function
