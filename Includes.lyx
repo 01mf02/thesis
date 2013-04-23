@@ -78,7 +78,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Gr}[1]{\operatorname{Gr}\left(#1\right)}
+\renewcommand{\Gr}[1]{\operatorname{Gr}\left(#1\right)}
 {\mathrm{Gr}\left(#1\right)}
 \end_inset
 
@@ -87,7 +87,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
+\renewcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
 {\mathrm{Concl}\left(#1\right)}
 \end_inset
 
@@ -96,7 +96,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}\left(#1\right)}
+\renewcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}\left(#1\right)}
 {\mathrm{Prem}_{\times}^{*}\left(#1\right)}
 \end_inset
 
@@ -105,7 +105,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
+\renewcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
 {\mathrm{Prem}\left(#1\right)}
 \end_inset
 
@@ -114,7 +114,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\length}[1]{\operatorname{length}\left(#1\right)}
+\renewcommand{\length}[1]{\operatorname{length}\left(#1\right)}
 {\mathrm{length}\left(#1\right)}
 \end_inset
 
@@ -123,15 +123,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\norm}[1]{\left\Vert #1\right\Vert }
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\normstar}[1]{\left\Vert #1\right\Vert ^{*}}
+\renewcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
 
@@ -162,7 +154,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
+\renewcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
 \end_inset
 
 
@@ -170,7 +162,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
+\renewcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
 \end_inset
 
 
@@ -178,7 +170,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
+\renewcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
 \end_inset
 
 
@@ -186,7 +178,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
+\renewcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
 \end_inset
 
 
@@ -194,7 +186,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
+\renewcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
 \end_inset
 
 
@@ -227,102 +219,6 @@ filename "LyXproofs.lyx"
 \begin_layout Standard
 \begin_inset FormulaMacro
 \newcommand{\plusinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{\ensuremath{+}}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\unrulecond}[6]{\unrule{#1}{#2}{#3}{#4,\,#5}{#6}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\binrulecond}[8]{\binrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}{#8}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\reflrule}[1]{\axrule{#1}{#1}{refl}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\grrule}[1]{\axrule{#1}{\Gr{#1}}{gr}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\symrule}[2]{\unrule{E_{B}}{E_{A}}{#1}{#2}{sym}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\transrule}[3]{\binrule{E_{A}}{#1}{#1}{E_{B}}{#2}{#3}{trans}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\timesrule}[6]{\binrule{#1}{#2}{#3}{#4}{#5}{#6}{\ensuremath{\times}}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\plusrule}[6]{\binrule{#1}{#2}{#3}{#4}{#5}{#6}{\ensuremath{+}}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\symrulecond}[3]{\symrule{#1}{#2,\,#3}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\transrulecond}[4]{\transrule{#1}{#2}{#3,\,#4}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\timesrulecond}[7]{\timesrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset FormulaMacro
-\newcommand{\plusrulecond}[7]{\plusrule{#1}{#2}{#3}{#4}{#5}{#6,\,#7}}
 \end_inset
 
 

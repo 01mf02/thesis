@@ -289,7 +289,7 @@ An important property of variables is the length of its shortest producible
 
 \begin_layout Definition
 The variable norm is a function 
-\begin_inset Formula $\norm{\cdot}:V\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
+\begin_inset Formula $\norm{\cdot}_{1}:V\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
 \end_inset
 
 .
@@ -298,7 +298,7 @@ The variable norm is a function
 \end_inset
 
 , 
-\begin_inset Formula $\norm X$
+\begin_inset Formula $\norm X_{1}$
 \end_inset
 
  equals the length of the shortest terminal word 
@@ -316,7 +316,7 @@ The variable norm is a function
  if no such word exists, i.e.
 \begin_inset Formula 
 \[
-\norm X:=\inf\left\{ \left|w\right||X\to^{*}w\right\} .
+\norm X_{1}:=\inf\left\{ \left|w\right||X\to^{*}w\right\} .
 \]
 
 \end_inset
@@ -332,12 +332,27 @@ We extend the norm function to finite sequences of variables, where
 :
 \begin_inset Formula 
 \begin{align*}
-\normstar{\varepsilon} & :=0;\\
-\normstar{X\alpha} & :=\norm X+\normstar{\alpha}.
+\norm{\varepsilon} & :=0;\\
+\norm{X\alpha} & :=\norm X_{1}+\norm{\alpha}.
 \end{align*}
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+The following lemma is an obvious conclusion.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset Formula $\norm{AB}=\norm A+\norm B.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
 A grammar is normed iff all its variables produce at least one finite word,
  i.e.
 \begin_inset Formula 
@@ -365,31 +380,21 @@ Why?
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Put some norm properties here, such as 
-\begin_inset Formula $\norm{AB}=\norm A+\norm B$
-\end_inset
-
-.
- Reference?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Definition
-A grammar is in Greibach normal form (GNF) iff all of its production rules
- are of the form 
+A grammar 
+\begin_inset Formula $G$
+\end_inset
+
+ is in Greibach normal form (GNF) iff each production rule has the form
+ 
 \begin_inset Formula $X\to a\alpha$
 \end_inset
 
-, with 
+, where 
+\begin_inset Formula $X\in V$
+\end_inset
+
+, 
 \begin_inset Formula $a\in T$
 \end_inset
 
@@ -398,29 +403,23 @@ A grammar is in Greibach normal form (GNF) iff all of its production rules
 \end_inset
 
 .
- If the length of each 
+ If the length of the longest 
 \begin_inset Formula $\alpha$
 \end_inset
 
- is maximally 
+ is 
 \begin_inset Formula $k$
 \end_inset
 
-, then the grammar is in 
+, then 
+\begin_inset Formula $G$
+\end_inset
+
+ is in 
 \begin_inset Formula $k$
 \end_inset
 
 -GNF.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Rewrite that!
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Theorem
@@ -450,12 +449,9 @@ Write later in the article if 2-GNF is of any use.
 
 \begin_layout Proof
 See 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "harrison1978"
 
 \end_inset
 
@@ -657,7 +653,7 @@ Production graph for example grammar.
 \end_inset
 
  is equivalent to 
-\begin_inset Formula $\normstar{w_{V}}$
+\begin_inset Formula $\norm{w_{V}}$
 \end_inset
 
 .
@@ -990,7 +986,7 @@ Indentation check!
 
 \begin_layout Itemize
 Symmetry: 
-\begin_inset Formula $\symrule xy$
+\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
 \end_inset
 
 
@@ -998,7 +994,7 @@ Symmetry:
 
 \begin_layout Itemize
 Transitivity: 
-\begin_inset Formula $\transrule yxz$
+\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
 \end_inset
 
 
@@ -1006,7 +1002,7 @@ Transitivity:
 
 \begin_layout Itemize
 Sum: 
-\begin_inset Formula $\plusrule x{x'}y{y'}{x+y}{x'+y'}$
+\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
 \end_inset
 
 
@@ -1018,7 +1014,7 @@ Schemes of strict rules:
 
 \begin_layout Itemize
 Reflexivity: 
-\begin_inset Formula $\reflrule x$
+\begin_inset Formula $\bussproof{\refl xx}$
 \end_inset
 
 
@@ -1026,7 +1022,7 @@ Reflexivity:
 
 \begin_layout Itemize
 Product: 
-\begin_inset Formula $\timesrule x{x'}y{y'}{x\cdot y}{x'\cdot y'}$
+\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
 \end_inset
 
 
@@ -1038,7 +1034,7 @@ Strict rules:
 
 \begin_layout Itemize
 Grammar: 
-\begin_inset Formula $\grrule X$
+\begin_inset Formula $\bussproof{\gr X{\Gr X}}$
 \end_inset
 
 
@@ -1436,11 +1432,11 @@ Now we need to verify whether the first production rule of each variable
 \end_inset
 
 , we note that 
-\begin_inset Formula $\normstar X=2$
+\begin_inset Formula $\norm X=2$
 \end_inset
 
  and 
-\begin_inset Formula $\normstar Z=1$
+\begin_inset Formula $\norm Z=1$
 \end_inset
 
 , so the property does not hold for 
@@ -1457,7 +1453,7 @@ Now we need to verify whether the first production rule of each variable
 \end_inset
 
 , the property holds though, as 
-\begin_inset Formula $\normstar{ZZ}=\normstar X=2$
+\begin_inset Formula $\norm{ZZ}=\norm X=2$
 \end_inset
 
 .
@@ -1796,9 +1792,11 @@ Base replacement
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}\geq1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}>\norm{B_{1}}}
-\]
+\begin{gather*}
+\norm{A_{1}}>\norm{B_{1}},\\
+R=B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies\\
+\bussproof{\transinf{\prod_{x=1}^{n_{A}\geq1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}}
+\end{gather*}
 
 \end_inset
 
@@ -2445,7 +2443,7 @@ If
 \end_deeper
 \begin_layout Standard
 For compression grammars, if 
-\begin_inset Formula $t\leq\normstar X$
+\begin_inset Formula $t\leq\norm X$
 \end_inset
 
 , then 
@@ -2720,87 +2718,52 @@ Proof strategies
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Prove that we don't get invalid circular proofs!
+We use the following conventions for variable names:
 \end_layout
 
+\begin_layout Itemize
+\begin_inset Formula $A,B,A_{n},B_{m}\in V$
 \end_inset
 
-
+ are variables,
 \end_layout
 
-\begin_layout Standard
-\begin_inset Formula $E$
-\end_inset
-
- is an expression, 
-\begin_inset Formula $E_{A}$
-\end_inset
-
- and 
-\begin_inset Formula $E_{B}$
-\end_inset
-
- the expressions on the left/right sides of an equivalence
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $A,B\in V$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $A_{n},B_{m}\in V$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset Formula $P,Q\in V^{+}$
 \end_inset
 
-
+ are non-empty variable words,
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset Formula $P_{n},Q_{m}\in V^{*}$
 \end_inset
 
-
+ are (possibly empty) variable words, and
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 \begin_inset Formula $a_{n},b_{m}\in T$
 \end_inset
 
-
+ are terminals.
 \end_layout
 
 \begin_layout Standard
-We use the following abbreviations, where 
+Furthermore, we use the following abbreviations, where 
 \begin_inset Formula $n_{A}$
 \end_inset
 
- and 
-\begin_inset Formula $n_{B}$
-\end_inset
-
- designate the number of factors in the respective products:
+ designates the number of factors/addends in the respective products/sums:
 \begin_inset Formula 
 \begin{align*}
-\prod A_{x} & \equiv\prod_{x=1}^{n_{A}}A_{x},\\
-\prod B_{y} & \equiv\prod_{y=1}^{n_{B}}B_{y}.
+\prod A_{x} & \equiv\prod_{x=1}^{n_{A}>1}A_{x},\\
+\sum a_{x}A_{x} & \equiv\sum_{x=1}^{n_{A}>1}a_{x}A_{x}.
 \end{align*}
 
 \end_inset
 
-The rules are named according to the judgement to prove:
+The rules are named according to the type of judgement to prove:
 \end_layout
 
 \begin_layout Itemize
@@ -2820,11 +2783,37 @@ The rules are named according to the judgement to prove:
 \end_layout
 
 \begin_layout Standard
-If there are several possibilities for one constellation, then we distinguish:
+For example, if we have to prove 
+\begin_inset Formula $A\equiv aB_{1}+bB_{2}$
+\end_inset
+
+, we look for the rule pS, because 
+\begin_inset Formula $A$
+\end_inset
+
+ is a single variable ('p') and 
+\begin_inset Formula $aB_{1}+bB_{2}$
+\end_inset
+
+ is a sum of multiple terms ('S').
+ In this case, however, there exists no rule pS, but only the rule psS,
+ which indicates that it handles the cases ps and pS.
+ Similarly the rule sSpP, which handles the cases sp, sP, Sp and SP.
+\end_layout
+
+\begin_layout Standard
+For several judgement types, there exist multiple rules, which we apply
+ depending on if their conditions are fulfilled.
+ If there are several rules for one judgement type, we name them accordingly
+ based on the performed action:
 \end_layout
 
 \begin_layout Itemize
 B: base replacement
+\end_layout
+
+\begin_layout Itemize
+D: decomposition replacement
 \end_layout
 
 \begin_layout Itemize
@@ -2836,22 +2825,18 @@ S: symmetry
 \end_layout
 
 \begin_layout Itemize
+V: variable replacement
+\end_layout
+
+\begin_layout Itemize
 \begin_inset Formula $\times$
 \end_inset
 
 : product
 \end_layout
 
-\begin_layout Itemize
-D: decomposition replacement
-\end_layout
-
-\begin_layout Itemize
-V: variable replacement
-\end_layout
-
 \begin_layout Standard
-Without further ado the rules:
+Now without further ado the rules:
 \end_layout
 
 \begin_layout Itemize
@@ -2867,16 +2852,27 @@ Without further ado the rules:
 \uwave off
 \noun off
 \color none
-Refl: 
-\begin_inset Formula $\reflrule E$
+Refl: If we encounter a judgement where both sides are equal, we apply this
+ rule.
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiomc{}}EE{\text{refl (Refl)}}}
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-Gr: 
-\begin_inset Formula $\grrule A$
+Gr: If the right-hand side equals the grammar of the variable on the left-hand
+ side, we apply this rule.
+ 
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}
+\]
+
 \end_inset
 
 
@@ -2944,7 +2940,7 @@ Pp: To avoid having rules like Pp-B and Pp-G, which would be symmetrical
  will be treated by a pP rule.
 \begin_inset Formula 
 \[
-\bussproof{\unaryinf{\axiom BA}{\prod A_{x}}B{\text{sym (Pp)}}}
+\bussproof{\unaryinf{\axiom B{\prod A_{x}}}{\prod A_{x}}B{\text{sym (Pp)}}}
 \]
 
 \end_inset
@@ -2953,8 +2949,34 @@ Pp: To avoid having rules like Pp-B and Pp-G, which would be symmetrical
 \end_layout
 
 \begin_layout Itemize
-PP-S: 
-\begin_inset Formula $\symrulecond{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}<\norm{B_{1}}}$
+PP-S: In all following PP rules, we assume that the first variable on the
+ left-hand side has a greater or equal norm than the first variable on the
+ right-hand side; we assure that condition with this rule.
+ 
+\begin_inset Formula 
+\begin{gather*}
+\norm{A_{1}}<\norm{B_{1}}\implies\\
+\bussproof{\unaryinf{\axiom{\prod B_{y}}{\prod A_{x}}}{\prod A_{x}}{\prod B_{y}}{\text{sym (PP-S)}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP-D: If the decomposition of the right-hand side with the norm of the first
+ variable on the left-hand side is defined and we can replace the first
+ variable on the left-hand side with the decomposition, we apply this rule.
+\begin_inset Formula 
+\begin{gather*}
+\norm{A_{1}}\geq\norm{B_{1}},\\
+D=\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
+D\neq\bot,\\
+\lnot\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}\implies\\
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{D\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{D\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-D)}}}
+\end{gather*}
+
 \end_inset
 
 
@@ -2965,38 +2987,51 @@ PP-
 \begin_inset Formula $\times$
 \end_inset
 
-: 
-\begin_inset Formula $\timesrulecond{A_{1}}{\prod_{y=1}^{c}B_{y}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D\neq\bot,\,\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}}$
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-also includes the case where 
-\begin_inset Formula $AB\equiv AC$
-\end_inset
-
-
-\end_layout
+: If the decomposition of the right-hand side with the norm of the first
+ variable on the left-hand side is defined, but is equal to a part of the
+ right-hand side, we use the product rule.
+\begin_inset Formula 
+\begin{gather*}
+\norm{A_{1}}\geq\norm{B_{1}},\\
+D=\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
+D\neq\bot,\\
+\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}\implies\\
+\bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}
+\end{gather*}
 
 \end_inset
 
+Note that this rule also handles the case where 
+\begin_inset Formula $A_{1}$
+\end_inset
 
+ is equal to 
+\begin_inset Formula $B_{1}$
+\end_inset
+
+, e.g.
+ 
+\begin_inset Formula $XY\equiv XZ$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
-PP-D: 
-\begin_inset Formula $\transrulecond{D\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D\neq\bot,\,\lnot\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}}$
+PP-B: If the decomposition yields 
+\begin_inset Formula $\bot$
 \end_inset
 
+, we have to resort to the base replacement.
+\begin_inset Formula 
+\begin{gather*}
+\norm{A_{1}}\geq\norm{B_{1}},\\
+D=\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
+D=\bot,\\
+R=B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies\\
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
+\end{gather*}
 
-\end_layout
-
-\begin_layout Itemize
-PP-B: 
-\begin_inset Formula $\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D=\bot}$
 \end_inset
 
 
@@ -3007,16 +3042,56 @@ Ps-
 \begin_inset Formula $\times$
 \end_inset
 
-: 
-\begin_inset Formula $\timesrulecond{A_{1}}b{\prod_{x=2}^{n_{A}}A_{x}}B{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}=1}$
+: If the norm of the first variable on the left-hand side is 1 and the right-han
+d side is a sum of a single term, then we can split the product and the
+ sum.
+ 
+\begin_inset Formula 
+\begin{gather*}
+\norm{A_{1}}=1\implies\\
+\bussproof{\binaryinf{\axiom{A_{1}}b}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}Q}{\prod A_{x}}{bQ}{\ensuremath{\times}\text{ (Ps-\ensuremath{\times})}}}
+\end{gather*}
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-Ps-V: 
-\begin_inset Formula $\transrulecond{V_{b}Q}{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}>1}$
+Ps-V: If the norm of the first variable on the left-hand side is greater
+ than 1, then we replace the sum on the right-hand side with an equivalent
+ product.
+ To achieve that, we use the terminal morphism to associate 
+\begin_inset Formula $b$
+\end_inset
+
+ with an equivalent variable having exactly one production rule, namely
+ 
+\begin_inset Formula $V_{b}\to b$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{gather*}
+\norm{A_{1}}>1\implies\\
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{V_{b}Q}}{\axiom{V_{b}Q}{bQ}}{\prod A_{x}}{bQ}{\text{trans (Ps-V)}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PS-G: We replace the first variable on the left-hand side with its grammar,
+ unless the result would be equal to the right-hand side.
+\begin_inset Formula 
+\begin{gather*}
+\sum b_{y}B_{y}\neq\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}\implies\\
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\sum b_{y}B_{y}}}{\prod A_{x}}{\sum b_{y}B_{y}}{\text{trans (PS-G)}}}
+\end{gather*}
+
 \end_inset
 
 
@@ -3027,40 +3102,60 @@ PS-
 \begin_inset Formula $\times$
 \end_inset
 
-: 
-\begin_inset Formula $\timesrulecond{A_{1}}{\Gr{A_{1}}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{E_{B}=\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}$
+: If the sum on the right-hand side is equal to the left-hand side, after
+ its first variable has been replaced by its grammar, we can apply the 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule.
+ This is normally a result of the PS-G rule.
+ 
+\begin_inset Formula 
+\begin{gather*}
+\sum b_{y}B_{y}=\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}\implies\\
+\bussproof{\binaryinf{\axiom{A_{1}}{\Gr{A_{1}}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=2}^{n_{A}}A_{x}}}{\prod A_{x}}{\sum b_{y}B_{y}}{\ensuremath{\times}\text{ (PS-\ensuremath{\times})}}}
+\end{gather*}
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-PS-G: 
-\begin_inset Formula $\transrulecond{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{E_{B}\neq\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}$
+sSpP: We resort to the pPsS rules to treat this case.
+\begin_inset Formula 
+\[
+\unaryinf{\axiom Q{\sum a_{x}A_{x}}}{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}Q{\text{sym (sSpP)}}
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-sSpP: 
-\begin_inset Formula $\symrule{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}Q$
+ss: If the first terminals of the two sums are equivalent, we split the
+ sums.
+\begin_inset Formula 
+\[
+\binaryinf{\axiom aa}{\axiom PQ}{aP}{aQ}{\ensuremath{\times}\text{ (ss)}}
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-ss: 
-\begin_inset Formula $\timesrule aaPQ{aP}{aQ}$
-\end_inset
+SS: If we find a terminal on the right-hand side which is equivalent to
+ the first terminal on the left-hand side, we split the sums.
+ 
+\begin_inset Formula 
+\begin{gather*}
+\exists!i:\, a_{1}=b_{i}\implies\\
+\bussproof{\binaryinf{\axiom{a_{1}A_{1}}{b_{i}B_{i}}}{\axiom{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\text{ (SS)}}}
+\end{gather*}
 
-
-\end_layout
-
-\begin_layout Itemize
-SS: 
-\begin_inset Formula $\plusrulecond{a_{1}A_{1}}{b_{i}B_{i}}{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{\exists!i:\, a_{1}=b_{i}}$
 \end_inset
 
 
@@ -3080,7 +3175,7 @@ Extend by
 
 \end_inset
 
-
+The validity of the proof strategies is proven in the appendix.
 \end_layout
 
 \begin_layout Section
@@ -3525,14 +3620,14 @@ times$};
 
   
 \backslash
-node (Ps-V)  [above right =  0.5cm and 0.5cm of sSP]  {Ps-V};
+node (Ps-V)  [above right =  0.75cm and 0.5cm of sSP]  {Ps-V};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PS-G)  [below right =  0.5cm and 0.5cm of sSP]  {PS-G};
+node (PS-G)  [below right =  0.75cm and 0.5cm of sSP]  {PS-G};
 \end_layout
 
 \begin_layout Plain Layout

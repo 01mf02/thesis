@@ -22,6 +22,9 @@ type sequent = equivalence * rule and rule =
   | Times of equivalence * equivalence
   | Trans of equivalence * equivalence;;
 
+type side = Left | Right and
+type witness = side * variables;;
+
 
 (************************************************
  *************** Auxiliary functions ************
