@@ -249,17 +249,19 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
  ************************************************)
 
 let _ =
-  let p0 = Examples.ab_grammar 25 in
+  let p0 = Examples.ab_grammar ['a'] ['b'] 25 in
   let p1 = Examples.power_two_grammar 25 in
   let p2 = Examples.branching_fibonacci_grammar 25 in
   let p3 = Examples.recursive_grammar in
-  let ps = [p0; p1; p2; p3] in
+  let p4 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] 25 in
+  let ps = [p0; p1; p2; p3; p4] in
 
   let v0 = ("F25", "G25") in
   let v1 = ("S25", "T25") in
   let v2 = ("F", "G") in
   let v3 = ("X", "Y") in
-  let vs = [v0; v1; v2; v3] in
+  let v4 = ("F25", "G25") in
+  let vs = [v0; v1; v2; v3; v4] in
 
   let index = 0 in
   let prods = nth ps index in
@@ -269,15 +271,19 @@ let _ =
   let gram = grammar_of_production_rules prods in
   print_endline "Productions valid. :)";
 
-  (*print_endline "Production rules:";
-  print_endline (string_of_production_rules prods);*)
+  if false then begin
+    print_endline "Production rules:";
+    print_endline (string_of_production_rules prods)
+  end;
 
   print_endline "Constructing proof ... ";
   let eq = pair_map product_of_variable vars in
   let seqs = prove_equivalence eq gram in
 
-  (*print_endline "Proof:";
-  print_sequents sequents;*)
+  if false then begin
+    print_endline "Proof:";
+    print_sequents seqs
+  end;
 
   (*print_endline "LaTeX proof: ";
   print_endline (latex_of_sequents sequents eq);*)
