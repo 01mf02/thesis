@@ -2782,6 +2782,78 @@ Prove that we don't get invalid circular proofs!
 
 \end_layout
 
+\begin_layout Standard
+We use the following abbreviations, where 
+\begin_inset Formula $n_{A}$
+\end_inset
+
+ and 
+\begin_inset Formula $n_{B}$
+\end_inset
+
+ designate the number of factors in the respective products:
+\begin_inset Formula 
+\begin{align*}
+\prod A_{x} & \equiv\prod_{x=1}^{n_{A}}A_{x},\\
+\prod B_{y} & \equiv\prod_{y=1}^{n_{B}}B_{y}.
+\end{align*}
+
+\end_inset
+
+The rules are named according to the judgement to prove:
+\end_layout
+
+\begin_layout Itemize
+'p' stands for product of a single variable,
+\end_layout
+
+\begin_layout Itemize
+'P' for product of multiple variables,
+\end_layout
+
+\begin_layout Itemize
+'s' for sum of one term, and
+\end_layout
+
+\begin_layout Itemize
+'S' for sum of multiple terms.
+\end_layout
+
+\begin_layout Standard
+If there are several possibilities for one constellation, then we distinguish:
+\end_layout
+
+\begin_layout Itemize
+B: base replacement
+\end_layout
+
+\begin_layout Itemize
+G: grammar replacement
+\end_layout
+
+\begin_layout Itemize
+S: symmetry
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\times$
+\end_inset
+
+: product
+\end_layout
+
+\begin_layout Itemize
+D: decomposition replacement
+\end_layout
+
+\begin_layout Itemize
+V: variable replacement
+\end_layout
+
+\begin_layout Standard
+Without further ado the rules:
+\end_layout
+
 \begin_layout Itemize
 
 \family roman
@@ -2811,40 +2883,70 @@ Gr:
 \end_layout
 
 \begin_layout Itemize
-pp: 
-\begin_inset Formula $\transrule{\Gr A}AB$
+pp: This rule replaces the variable on the left-hand side by its grammar.
+ 
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}AB{\text{trans (pp)}}}
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-pP-G: 
-\begin_inset Formula $\transrulecond{\Gr A}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}=\prod_{y=2}^{n_{B}}B_{y}}$
+pP-B: If the right-hand side has not been subject to a previous base replacement
+, we use the base to substitute the variable on the left-hand side.
+\begin_inset Formula 
+\begin{gather*}
+\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}\implies\\
+\bussproof{\binaryinf{\axiom A{B_{1}\left[A\right]_{\norm{B_{1}}}}}{\axiom{B_{1}\left[A\right]_{\norm{B_{1}}}}B}A{\prod B_{y}}{\text{trans (pP-B)}}}
+\end{gather*}
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-pP-B: 
-\begin_inset Formula $\transrulecond{B_{1}\left[A\right]_{\norm{B_{1}}}}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}}$
+pP-G: If we cannot replace the right-hand side with the base (possibly because
+ we have executed a base replacement before), we replace the variable on
+ the left-hand side with its grammar.
+\begin_inset Formula 
+\begin{gather*}
+\left[A\right]_{\norm{B_{1}}}=\prod_{y=2}^{n_{B}}B_{y}\implies\\
+\bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}A{\prod B_{y}}{\text{trans (pP-B)}}}
+\end{gather*}
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-psS: 
-\begin_inset Formula $\transrule{\Gr A}A{\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}}$
+psS: If we encounter a sum of one or multiple terms on the right-hand side
+ and a single variable on the left hand-side, we replace the single variable
+ by its grammar:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}A{\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}}{\text{trans (psS)}}}
+\]
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-Pp: 
-\begin_inset Formula $\symrule{\prod_{x=1}^{n_{A}>1}A_{x}}B$
+Pp: To avoid having rules like Pp-B and Pp-G, which would be symmetrical
+ to pP-B and pP-G, we use the symmetry rule, after which the resulting judgement
+ will be treated by a pP rule.
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiom BA}{\prod A_{x}}B{\text{sym (Pp)}}}
+\]
+
 \end_inset
 
 
