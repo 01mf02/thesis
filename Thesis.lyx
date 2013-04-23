@@ -29,7 +29,7 @@
 
 \usepackage{pgf}
 \usepackage{tikz}
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows, positioning}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -520,7 +520,7 @@ reference "fig:Production-graph"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -1487,6 +1487,34 @@ X_{3} & \to & c\\
 X_{4} & \to & bX_{3}+aX_{4}\\
 X_{5} & \to & bX_{3}X_{3}+aX_{4}
 \end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The restricted form of SDGs also allows us to calculate the norm of each
+ variable easily in an inductive way:
+\begin_inset Formula 
+\begin{eqnarray*}
+\norm{X_{j}} & = & \begin{cases}
+1+\sum_{X_{k}\in\alpha_{j,1}}\norm{X_{k}} & \forall X_{k}\in\alpha_{j,1}:\, k<j;\\
+\bot & \text{else}.
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+In addition to then checking that the variables are sorted by ascending
+ norm, we have to verify that the first production rule of each variable
+ produces the smallest terminal word among all production rules of the variable;
+ i.e.
+ 
+\begin_inset Formula 
+\[
+\forall X_{j}\in V:\,\forall i:\,\left(\forall X_{k}\in\alpha_{j,i}:\, k<j\right)\implies\left(\sum_{X_{k}\in\alpha_{j,i}}\norm{X_{k}}\right)\geq\norm{X_{j}}.
+\]
 
 \end_inset
 
@@ -2784,7 +2812,7 @@ pp:
 \end_layout
 
 \begin_layout Itemize
-pP1: 
+pP-G: 
 \begin_inset Formula $\transrulecond{\Gr A}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}=\prod_{y=2}^{n_{B}}B_{y}}$
 \end_inset
 
@@ -2792,7 +2820,7 @@ pP1:
 \end_layout
 
 \begin_layout Itemize
-pP2: 
+pP-B: 
 \begin_inset Formula $\transrulecond{B_{1}\left[A\right]_{\norm{B_{1}}}}A{\prod_{y=1}^{n_{B}>1}B_{y}}{\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}}$
 \end_inset
 
@@ -2816,7 +2844,7 @@ Pp:
 \end_layout
 
 \begin_layout Itemize
-PP1: 
+PP-S: 
 \begin_inset Formula $\symrulecond{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}<\norm{B_{1}}}$
 \end_inset
 
@@ -2824,15 +2852,33 @@ PP1:
 \end_layout
 
 \begin_layout Itemize
-PP2: 
+PP-
+\begin_inset Formula $\times$
+\end_inset
+
+: 
 \begin_inset Formula $\timesrulecond{A_{1}}{\prod_{y=1}^{c}B_{y}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D\neq\bot,\,\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}}$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+also includes the case where 
+\begin_inset Formula $AB\equiv AC$
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-PP3: 
+PP-D: 
 \begin_inset Formula $\transrulecond{D\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D\neq\bot,\,\lnot\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}}$
 \end_inset
 
@@ -2840,7 +2886,7 @@ PP3:
 \end_layout
 
 \begin_layout Itemize
-PP4: 
+PP-B: 
 \begin_inset Formula $\transrulecond{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\norm{A_{1}}\geq\norm{B_{1}},\, D=\left\langle E_{B}\right\rangle _{\norm{A_{1}}},\, D=\bot}$
 \end_inset
 
@@ -2848,7 +2894,11 @@ PP4:
 \end_layout
 
 \begin_layout Itemize
-Ps1: 
+Ps-
+\begin_inset Formula $\times$
+\end_inset
+
+: 
 \begin_inset Formula $\timesrulecond{A_{1}}b{\prod_{x=2}^{n_{A}}A_{x}}B{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}=1}$
 \end_inset
 
@@ -2856,15 +2906,19 @@ Ps1:
 \end_layout
 
 \begin_layout Itemize
-Ps2: 
-\begin_inset Formula $\transrulecond{V_{b}\prod_{y=1}^{n_{B}\geq1}B_{y}}{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}>1}$
+Ps-V: 
+\begin_inset Formula $\transrulecond{V_{b}Q}{\prod_{x=1}^{n_{A}>1}A_{x}}{bQ}{\norm{A_{1}}>1}$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-PS1: 
+PS-
+\begin_inset Formula $\times$
+\end_inset
+
+: 
 \begin_inset Formula $\timesrulecond{A_{1}}{\Gr{A_{1}}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{E_{B}=\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}$
 \end_inset
 
@@ -2872,7 +2926,7 @@ PS1:
 \end_layout
 
 \begin_layout Itemize
-PS2: 
+PS-G: 
 \begin_inset Formula $\transrulecond{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}{\prod_{x=1}^{n_{A}>1}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{E_{B}\neq\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}>1}A_{x}}$
 \end_inset
 
@@ -2897,7 +2951,7 @@ ss:
 
 \begin_layout Itemize
 SS: 
-\begin_inset Formula $\plusrulecond{a_{1}A_{1}}{b_{i}B_{i}}{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{x}B_{x}+\sum_{y=i+1}^{n_{B}}b_{x}B_{x}}{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{x}B_{x}}{\exists!i:\, a_{1}=b_{i}}$
+\begin_inset Formula $\plusrulecond{a_{1}A_{1}}{b_{i}B_{i}}{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}{\sum_{x=1}^{n_{A}>1}a_{x}A_{x}}{\sum_{y=1}^{n_{B}>1}b_{y}B_{y}}{\exists!i:\, a_{1}=b_{i}}$
 \end_inset
 
 
@@ -3686,6 +3740,496 @@ Conclusion
 
 \begin_layout Standard
 Playing Nostradamus here ...
+\end_layout
+
+\begin_layout Chapter*
+Appendix
+\end_layout
+
+\begin_layout Standard
+Here we prove that our proof rules are sound.
+\end_layout
+
+\begin_layout Itemize
+pp:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\unaryinf{\binaryinf{\unaryinf{\axiomc{}}B{\Gr B}{\text{gr (Gr)}}}{\axiom{\Gr B}{\Gr A}}B{\Gr A}{\text{trans (psS)}}}{\Gr A}B{\text{sym (sSpP)}}}AB{\text{trans (pp)}}}
+\]
+
+\end_inset
+
+When we have to prove 
+\begin_inset Formula $\Gr B\equiv\Gr A$
+\end_inset
+
+, we either have to apply ss or SS.
+\end_layout
+
+\begin_layout Itemize
+pP-G:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\unaryinf{\axiom{\prod B_{y}}{\Gr A}}{\Gr A}{\prod B_{y}}{\text{sym (sSpP)}}}A{\prod B_{y}}{\text{trans (pP-G)}}}
+\]
+
+\end_inset
+
+To prove 
+\begin_inset Formula $\prod B_{y}\equiv\Gr A$
+\end_inset
+
+, we have to distinguish the cases where 
+\begin_inset Formula $\Gr A$
+\end_inset
+
+ is a sum of a single or of multiple elements: If 
+\begin_inset Formula $\Gr A$
+\end_inset
+
+ is a sum of a single element, we have the choice between applying Ps-
+\begin_inset Formula $\times$
+\end_inset
+
+ and Ps-V; if it is a sum of multiple elements, we may apply PS-
+\begin_inset Formula $\times$
+\end_inset
+
+ or PS-G.
+ The cases for Ps-
+\begin_inset Formula $\times$
+\end_inset
+
+ and PS-
+\begin_inset Formula $\times$
+\end_inset
+
+ are trivial, so we refer to Ps-V and PS-G only.
+\end_layout
+
+\begin_layout Itemize
+pP-B:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}A{B_{1}\left[A\right]_{\norm{B_{1}}}}{\text{trans (pP-G)}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{B_{1}\left[A\right]_{\norm{B_{1}}}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}A{\prod B_{y}}{\text{trans (pP-B)}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+psS:
+\begin_inset Formula 
+\[
+\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\Gr A}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}A{\sum b_{y}B_{y}}{\text{trans (psS)}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP-D:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\prod A_{x}}{D\prod_{x=2}^{n_{A}}A_{x}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{D\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-D)}}}
+\]
+
+\end_inset
+
+Because of 
+\begin_inset Formula $\norm D=\norm{A_{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $D=B_{1}\dots$
+\end_inset
+
+, the applications of PP-
+\begin_inset Formula $\times$
+\end_inset
+
+ are justified.
+\end_layout
+
+\begin_layout Itemize
+PP-B: 
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\prod A_{x}}{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
+\]
+
+\end_inset
+
+Because of 
+\begin_inset Formula $\norm{B_{1}\left[A_{1}\right]_{\norm{B_{1}}}}=\norm{A_{1}}$
+\end_inset
+
+, the left application of PP-
+\begin_inset Formula $\times$
+\end_inset
+
+ is justified.
+\end_layout
+
+\begin_layout Itemize
+Ps-V:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{V_{b}Q}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{V_{b}Q}{bQ}{\ensuremath{\times}\text{ (Ps-\ensuremath{\times})}}}{\prod A_{x}}{bQ}{\text{trans (Ps-V)}}}
+\]
+
+\end_inset
+
+To prove 
+\begin_inset Formula $\prod A_{x}\equiv V_{b}Q$
+\end_inset
+
+, we have to apply PP-D or PP-B.
+\end_layout
+
+\begin_layout Itemize
+PS-G:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\prod A_{x}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\ensuremath{\times}\text{ (PS-\ensuremath{\times})}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\prod A_{x}}{\sum b_{y}B_{y}}{\text{trans (PS-G)}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SS:
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{1}A_{1}}{b_{i}B_{i}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{2}A_{2}}{b_{j}B_{j}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinfc{\axiomc{\dots}}{\unaryinfc{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{n_{A}}A_{n_{A}}}{b_{l}B_{l}}{\ensuremath{\times}\text{ (ss)}}}{\iddots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\dots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum_{x=2}^{n_{A}}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% the >=stealth parameter draws arrows for all edges, not only straight
+ ones
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[->, >=stealth, node distance = 1cm, auto]
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (Pp)                                             {Pp};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (pP-B)  [above right = 0.5cm of Pp]              {pP-B};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (pP-G)  [below right = 0.5cm of Pp]              {pP-G};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (sSP)   [right = of pP-G]                        {sSP};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (Ps-x)  [above right = -0.2cm and 0.5cm of sSP]  {Ps-$
+\backslash
+times$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (PS-x)  [below right = -0.2cm and 0.5cm of sSP]  {PS-$
+\backslash
+times$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (Ps-V)  [above right =  0.5cm and 0.5cm of sSP]  {Ps-V};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (PS-G)  [below right =  0.5cm and 0.5cm of sSP]  {PS-G};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (PP-D)  [above right =  0.2cm and 0.5cm of Ps-V] {PP-D};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (PP-B)  [below right =  0.2cm and 0.5cm of Ps-V] {PP-B};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (PP-x)  [right = 0.5cm of Ps-V]                  {PP-$
+\backslash
+times$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (PP-S)  [right = of PP-x]                        {PP-S};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (Gr)    [below = of pP-G]      {Gr};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (sSp)   [below = of Gr]        {sSp};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (pp)    [left = of sSp]        {pp};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (psS)   [right = of sSp]       {psS};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (SS)    [right = of psS]       {SS};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node (ss)    [right = of SS]        {ss};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (Pp)    edge (pP-B)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (pP-G)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (pP-B)  edge (pP-G)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PP-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (pP-G)  edge (Gr)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (sSP)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (sSP)   edge (Ps-V)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (Ps-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PS-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PS-G)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (Ps-V)  edge (Ps-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PP-D)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PP-B)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (PS-G)  edge (PS-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (PP-D)  edge (PP-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (PP-B)  edge (PP-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (PP-S)  edge (PP-D)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PP-x)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (PP-B)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (pp)    edge (Gr)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (sSp)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (sSp)   edge (psS)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (psS)   edge (Gr)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (SS)
+\end_layout
+
+\begin_layout Plain Layout
+
+        (SS)    edge[loop below] (SS)
+\end_layout
+
+\begin_layout Plain Layout
+
+                edge (ss);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Dependency graph for proof rules.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
