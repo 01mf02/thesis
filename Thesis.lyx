@@ -331,10 +331,10 @@ We extend the norm function to finite sequences of variables, where
 
 :
 \begin_inset Formula 
-\begin{eqnarray*}
-\normstar{\varepsilon} & := & 0;\\
-\normstar{X\alpha} & := & \norm X+\normstar{\alpha}.
-\end{eqnarray*}
+\begin{align*}
+\normstar{\varepsilon} & :=0;\\
+\normstar{X\alpha} & :=\norm X+\normstar{\alpha}.
+\end{align*}
 
 \end_inset
 
@@ -478,11 +478,11 @@ status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Formula 
-\begin{eqnarray*}
-X & \to & aX+bZ\\
-Y & \to & bZZ+aX\\
-Z & \to & C
-\end{eqnarray*}
+\begin{align*}
+X & \to aX+bZ\\
+Y & \to bZZ+aX\\
+Z & \to C
+\end{align*}
 
 \end_inset
 
@@ -520,7 +520,7 @@ reference "fig:Production-graph"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -831,11 +831,11 @@ Given a set of variables
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{eqnarray*}
-P & ::= & V\:|\: T\:|\: P+P\:|\: P\cdot P\\
-V & ::= & X_{1}\:|\:\dots\:|\: X_{n}\\
-T & ::= & a_{1}\:|\:\dots\:|\: a_{m}
-\end{eqnarray*}
+\begin{align*}
+P & ::=V\:|\: T\:|\: P+P\:|\: P\cdot P\\
+V & ::=X_{1}\:|\:\dots\:|\: X_{n}\\
+T & ::=a_{1}\:|\:\dots\:|\: a_{m}
+\end{align*}
 
 \end_inset
 
@@ -1161,10 +1161,10 @@ Given the grammar
 
  with production rules 
 \begin_inset Formula 
-\begin{eqnarray*}
-X & \to & a+bX\\
-Y & \to & a+bY,
-\end{eqnarray*}
+\begin{align*}
+X & \to a+bX\\
+Y & \to a+bY,
+\end{align*}
 
 \end_inset
 
@@ -1387,10 +1387,10 @@ reference
 
 , there exist no dedicated variables, so we add
 \begin_inset Formula 
-\begin{eqnarray*}
-A & \to & a\\
-B & \to & b
-\end{eqnarray*}
+\begin{align*}
+A & \to a\\
+B & \to b
+\end{align*}
 
 \end_inset
 
@@ -1398,13 +1398,13 @@ to the grammar.
  At this point, we write down all variables with their production rules
  ordered by ascending norm, i.e.
 \begin_inset Formula 
-\begin{eqnarray*}
-A & \to & a\\
-B & \to & b\\
-Z & \to & c\\
-X & \to & aX+bZ\\
-Y & \to & bZZ+aX
-\end{eqnarray*}
+\begin{align*}
+A & \to a\\
+B & \to b\\
+Z & \to c\\
+X & \to aX+bZ\\
+Y & \to bZZ+aX
+\end{align*}
 
 \end_inset
 
@@ -1468,25 +1468,25 @@ Now we need to verify whether the first production rule of each variable
 
 , is:
 \begin_inset Formula 
-\begin{eqnarray*}
-A & \to & a\\
-B & \to & b\\
-Z & \to & c\\
-X & \to & bZ+aX\\
-Y & \to & bZZ+aX
-\end{eqnarray*}
+\begin{align*}
+A & \to a\\
+B & \to b\\
+Z & \to c\\
+X & \to bZ+aX\\
+Y & \to bZZ+aX
+\end{align*}
 
 \end_inset
 
 After renaming the variables, the final grammar is:
 \begin_inset Formula 
-\begin{eqnarray*}
-X_{1} & \to & a\\
-X_{2} & \to & b\\
-X_{3} & \to & c\\
-X_{4} & \to & bX_{3}+aX_{4}\\
-X_{5} & \to & bX_{3}X_{3}+aX_{4}
-\end{eqnarray*}
+\begin{align*}
+X_{1} & \to a\\
+X_{2} & \to b\\
+X_{3} & \to c\\
+X_{4} & \to bX_{3}+aX_{4}\\
+X_{5} & \to bX_{3}X_{3}+aX_{4}
+\end{align*}
 
 \end_inset
 
@@ -1497,12 +1497,12 @@ X_{5} & \to & bX_{3}X_{3}+aX_{4}
 The restricted form of SDGs also allows us to calculate the norm of each
  variable easily in an inductive way:
 \begin_inset Formula 
-\begin{eqnarray*}
-\norm{X_{j}} & = & \begin{cases}
+\[
+\norm{X_{j}}=\begin{cases}
 1+\sum_{X_{k}\in\alpha_{j,1}}\norm{X_{k}} & \forall X_{k}\in\alpha_{j,1}:\, k<j;\\
 \bot & \text{else}.
 \end{cases}
-\end{eqnarray*}
+\]
 
 \end_inset
 
@@ -1534,13 +1534,13 @@ ls with the following BNF,
 
  being the start symbol:
 \begin_inset Formula 
-\begin{eqnarray*}
-I & ::= & P\:|\: S\\
-P & ::= & V\:|\: V\cdot P\\
-S & ::= & S+S\:|\: T\:|\: T\cdot P\\
-V & ::= & X_{1}\:|\:\dots\:|\: X_{n}\\
-T & ::= & a_{1}\:|\:\dots\:|\: a_{m}
-\end{eqnarray*}
+\begin{align*}
+I & ::=P\:|\: S\\
+P & ::=V\:|\: V\cdot P\\
+S & ::=S+S\:|\: T\:|\: T\cdot P\\
+V & ::=X_{1}\:|\:\dots\:|\: X_{n}\\
+T & ::=a_{1}\:|\:\dots\:|\: a_{m}
+\end{align*}
 
 \end_inset
 
@@ -1764,13 +1764,13 @@ key "lasota2006"
 \begin_layout Definition
 Norm reduction function.
 \begin_inset Formula 
-\begin{eqnarray*}
-\left[\alpha\right]_{0} & = & \alpha;\\
-\left[X_{i}\alpha\right]_{p} & = & \begin{cases}
+\begin{align*}
+\left[\alpha\right]_{0} & =\alpha;\\
+\left[X_{i}\alpha\right]_{p} & =\begin{cases}
 \left[\alpha\right]_{p-\norm{X_{i}}} & p\geq\norm{X_{i}};\\
 \left[\alpha_{i1}\right]_{p-1}\alpha & p<\norm{X_{i}}.
 \end{cases}
-\end{eqnarray*}
+\end{align*}
 
 \end_inset
 
@@ -2113,15 +2113,15 @@ The decomposition function is a partial function from
 \begin_layout Definition
 Decomposition function.
 \begin_inset Formula 
-\begin{eqnarray*}
-\left\langle \alpha\right\rangle _{0} & = & \varepsilon;\\
-\left\langle X_{i}\alpha\right\rangle _{t} & = & \begin{cases}
+\begin{align*}
+\left\langle \alpha\right\rangle _{0} & =\varepsilon;\\
+\left\langle X_{i}\alpha\right\rangle _{t} & =\begin{cases}
 V_{a_{i1}} & t=1\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
 V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1} & 1<t<\norm{X_{i}}\land\Gr{X_{i}}=a_{i1}\alpha_{i1};\\
 X_{i}\left\langle \alpha\right\rangle _{t-\norm{X_{i}}} & \norm{X_{i}}\leq t\leq\norm{X_{i}\alpha};\\
 \bot & \mathrm{else}.
 \end{cases}
-\end{eqnarray*}
+\end{align*}
 
 \end_inset
 
@@ -2457,13 +2457,16 @@ For compression grammars, if
 \begin_inset Formula $\bot$
 \end_inset
 
-.
- This is because we do not allow sums in compression grammars.
+, because we do not allow sums in compression grammars.
 \end_layout
 
 \begin_layout Standard
 However, if we look at general simple-deterministic grammars, we encounter
- cases where the decomposition will fail --- example: We want to prove 
+ cases where the decomposition will fail.
+\end_layout
+
+\begin_layout Example
+We want to prove 
 \begin_inset Formula $AB\equiv PCD$
 \end_inset
 
@@ -2518,15 +2521,15 @@ Branching grammar.
 
 
 \begin_inset Formula 
-\begin{eqnarray*}
-A_{n+1} & \to & aA_{n}+bA_{n}\\
-C_{n+1} & \to & aC_{n}+bC_{n}\\
-A_{0} & \to & a\\
-C_{0} & \to & aX\\
-A & \to & aPA_{m}\\
-C & \to & aC_{m}\\
-P & \to & a
-\end{eqnarray*}
+\begin{align*}
+A_{n+1} & \to aA_{n}+bA_{n}\\
+C_{n+1} & \to aC_{n}+bC_{n}\\
+A_{0} & \to a\\
+C_{0} & \to aX\\
+A & \to aPA_{m}\\
+C & \to aC_{m}\\
+P & \to a
+\end{align*}
 
 \end_inset
 
@@ -2578,14 +2581,18 @@ Looking at the norms of the first variables
 
 , we get:
 \begin_inset Formula 
-\begin{eqnarray*}
-\left\langle PCD\right\rangle _{\norm A} & = & P\left\langle CD\right\rangle _{\norm A-1}\\
- & = & PA_{0}\left\langle C_{m}D\right\rangle _{\norm A-2}\\
- & = & \bot\text{, because }1<\norm A-2<\norm{C_{m}}\text{, but }\Gr{C_{m}}\text{ is a sum.}
-\end{eqnarray*}
+\begin{align*}
+\left\langle PCD\right\rangle _{\norm A} & =P\left\langle CD\right\rangle _{\norm A-1}\\
+ & =PA_{0}\left\langle C_{m}D\right\rangle _{\norm A-2}\\
+ & =\bot\text{, because }1<\norm A-2<\norm{C_{m}}\text{, but }\Gr{C_{m}}\text{ is a sum.}
+\end{align*}
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
 That is a realistic scenario in a proof, so what can we do to remedy this
  problem? We cannot easily fix the decomposition function to not return
  
@@ -3009,268 +3016,26 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{1}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{2}\rightarrow aF_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{2}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{n+3}\rightarrow aF_{n+1}F_{n+2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{3}^{'}\rightarrow aF_{2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F_{n+4}^{'}\rightarrow aF_{n+2}^{'}F_{n+3}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Formula 
+\begin{align*}
+F_{0} & \to a\\
+F_{1} & \to a\\
+F_{2} & \to aF_{0} & F_{2}^{'} & \to a\\
+F_{n+3} & \to aF_{n+1}F_{n+2}^{'} & F_{3}^{'} & \to aF_{2}^{'}\\
+ &  & F_{n+4}^{'} & \to aF_{n+2}^{'}F_{n+3}^{'}
+\end{align*}
 
 \end_inset
 
 
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{1}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{2}\rightarrow aG_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{2}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{n+3}\rightarrow aG_{n+2}^{'}G_{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{3}^{'}\rightarrow aG_{2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G_{n+4}^{'}\rightarrow aG_{n+3}^{'}G_{n+2}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Formula 
+\begin{align*}
+G_{0} & \to a\\
+G_{1} & \to a\\
+G_{2} & \to aG_{0} & G_{2}^{'} & \to a\\
+G_{n+3} & \to aG_{n+2}^{'}G_{n+1} & G_{3}^{'} & \to aG_{2}^{'}\\
+ &  & G_{n+4}^{'} & \to aG_{n+3}^{'}G_{n+2}^{'}
+\end{align*}
 
 \end_inset
 
@@ -3310,192 +3075,15 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="1">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B\rightarrow b$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{B}^{0}\rightarrow aB$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{B}^{n+1}\rightarrow aB_{B}^{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{B}^{n+1}\rightarrow bA_{B}^{n}A_{B}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F^{n}\rightarrow aBA_{B}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="1">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B\rightarrow b$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{A}^{0}\rightarrow bA$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{A}^{n+1}\rightarrow bA_{A}^{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{A}^{n+1}\rightarrow aB_{A}^{n}B_{A}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G^{n}\rightarrow aB_{A}^{n}B$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Formula 
+\begin{align*}
+A & \to a & A & \to a\\
+B & \to b & B & \to b\\
+A_{B}^{0} & \rightarrow aB & B_{A}^{0} & \to bA\\
+A_{B}^{n+1} & \to aB_{B}^{n+1} & B_{A}^{n+1} & \to bA_{A}^{n+1}\\
+B_{B}^{n+1} & \to bA_{B}^{n}A_{B}^{n} & A_{A}^{n+1} & \to aB_{A}^{n}B_{A}^{n}\\
+F^{n} & \to aBA_{B}^{n} & G^{n} & \to aB_{A}^{n}B
+\end{align*}
 
 \end_inset
 
@@ -3538,176 +3126,22 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{1}\rightarrow aS_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{1}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{n+2}\rightarrow aS_{n+1}S_{n+1}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $S_{n+2}^{'}\rightarrow aS_{n+1}^{'}S_{n+1}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Formula 
+\begin{align*}
+S_{0} & \to a\\
+S_{1} & \to aS_{0} & S_{1}^{'} & \to a\\
+S_{n+2} & \to aS_{n+1}S_{n+1}^{'} & S_{n+2}^{'} & \to aS_{n+1}^{'}S_{n+1}^{'}
+\end{align*}
 
 \end_inset
 
 
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
-<column alignment="left" valignment="top" width="0">
-<row>
-<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{0}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{1}\rightarrow aT_{0}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{1}^{'}\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{n+2}\rightarrow aT_{n+1}^{'}T_{n+1}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $T_{n+2}^{'}\rightarrow aT_{n+1}^{'}T_{n+1}^{'}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Formula 
+\begin{align*}
+T_{0} & \to a\\
+T_{1} & \to aT_{0} & T_{1}^{'} & \to a\\
+T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
+\end{align*}
 
 \end_inset
 
@@ -3919,7 +3353,7 @@ SS:
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
