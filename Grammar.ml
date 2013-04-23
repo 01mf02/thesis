@@ -80,21 +80,29 @@ let rec norm_of_variables (norms : norm_list) =
    * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
    * the first rule for each variable generates a norm-reducing transition,
      i.e. norm(X_i) > norm(alpha_i1)
-   * norm(alpha_i1) <= norm(alpha_ij) *)
+   * norm(alpha_i1) <= norm(alpha_ij)
+   * X_i -> a alpha_ij /\ X_i -> a alpha_ik => j = k
+ *)
 (* production_rules -> norm_list *)
 let norms_of_production_rules (prods : production_rules) =
-  let rec norm_list norms = function
+  let rec norm_list_of_rules norms = function
     | [] -> []
     | (_, hdv)::tl ->
-      try (norm_of_variables norms hdv)::norm_list norms tl
-      with Norm_not_found -> norm_list norms tl in
+      try (norm_of_variables norms hdv)::norm_list_of_rules norms tl
+      with Norm_not_found -> norm_list_of_rules norms tl in
+
+  let rec unique f = function
+    | [] -> true
+    | hd::tl -> (for_all (f hd) tl) && unique f tl in
 
   let rec nopr norms prev_min_norm = function
     | [] -> norms
     | (hdv, hdr)::tl ->
       let first_norm = norm_of_variables norms (snd (hd hdr)) in
-      let min_norm = min_list (norm_list norms hdr) in
-      if first_norm > min_norm then
+      let min_norm = min_list (norm_list_of_rules norms hdr) in
+      if not (unique (fun (t1, _) (t2, _) -> t1 <> t2) hdr) then
+        failwith "Terminals are not unique!"
+      else if first_norm > min_norm then
         failwith "Norm of first production rule is not the smallest norm!"
       else if prev_min_norm > min_norm then
         failwith "Norm of current variable is smaller than previous variable!"
