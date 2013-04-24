@@ -180,6 +180,19 @@ Preliminaries
 In this chapter, we define some terms we will use throughout the document.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+define also stuff like A*, concatenation, alphabet?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Context-free grammars
 \end_layout
@@ -1715,6 +1728,14 @@ key "lasota2006"
 \end_inset
 
 .
+ And while we are at it, also present 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "plandowski1994"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Definition
@@ -1731,6 +1752,58 @@ Norm reduction function.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Theorem
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Fine and Wilf
+\end_layout
+
+\end_inset
+
+If a word 
+\begin_inset Formula $w$
+\end_inset
+
+ has periods 
+\begin_inset Formula $p$
+\end_inset
+
+ and 
+\begin_inset Formula $q$
+\end_inset
+
+ with 
+\begin_inset Formula $p\geq q$
+\end_inset
+
+ and 
+\begin_inset Formula $\length w+\gcd\left(p,q\right)\geq p+q$
+\end_inset
+
+, then 
+\begin_inset Formula $\gcd\left(p,q\right)$
+\end_inset
+
+ is a period of 
+\begin_inset Formula $w$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+See 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lothaire2002"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Chapter
