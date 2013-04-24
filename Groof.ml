@@ -22,9 +22,6 @@ type sequent = equivalence * rule and rule =
   | Times of equivalence * equivalence
   | Trans of equivalence * equivalence;;
 
-type side = Left | Right and
-type witness = side * variables;;
-
 
 (************************************************
  *************** Auxiliary functions ************
@@ -160,6 +157,7 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
     let rule_of_products (pah, pat) (pbh, pbt) =
       let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
 
+      (* TODO: check if any of the operations below can raise an exception *)
       if npah < npbh then
         Sym(b, a)
       else
@@ -185,10 +183,14 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
           | Product (pbh, []) ->
             trans gr
           | Product (pbh, pbt) ->
-            let npbh = norm_of_variable norms pbh in
-            let reduct = pbh::norm_reduce npbh [pah] gram in
-            if reduct = pbh::pbt then trans gr
-            else trans (pov reduct)
+            let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
+            if npah <= npbh then
+              raise Proof_impossible
+            else begin
+              let reduct = pbh::norm_reduce npbh [pah] gram in
+              if reduct = pbh::pbt then trans gr
+              else trans (pov reduct)
+            end
           | Sum(_, _) ->
             trans gr
         end
@@ -211,9 +213,15 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
           else
             trans gr
         end
+      | Sum ((sahc, []), []) ->
+        begin match b with
+        | Product (_, []) -> Sym((b, a))
+        | _ -> raise Proof_impossible
+        end
       | Sum ((sahc, sahv), []) ->
         begin match b with
         | Product (_, _) -> Sym((b, a))
+        | Sum ((sbhc, []), []) -> Sym((b, a))
         | Sum ((sbhc, sbhv), []) ->
           if sahc = sbhc then
             Times(pair_map sum_of_terminal (sahc, sbhc), (pov sahv, pov sbhv))
@@ -225,6 +233,7 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
       | Sum ((sahc, sahv) as sah, sat) ->
         begin match b with
         | Product (_, _) -> Sym((b, a))
+        | Sum (sbh,  []) -> Sym((b, a))
         | Sum (sbh, sbt) ->
           let (eq, noneq) = partition (fun (c, v) -> c = sahc) (sbh::sbt) in
           match eq with
