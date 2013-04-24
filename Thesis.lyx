@@ -459,53 +459,23 @@ key "harrison1978"
 \end_layout
 
 \begin_layout Example
-Consider the grammar in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Example-grammar"
+\begin_inset CommandInset label
+LatexCommand label
+name "Example-grammar"
 
 \end_inset
 
-.
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
+Consider the following grammar:
 \begin_inset Formula 
 \begin{align*}
 X & \to aX+bZ\\
 Y & \to bZZ+aX\\
-Z & \to C
+Z & \to c
 \end{align*}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Example-grammar"
-
-\end_inset
-
-Example grammar.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
- To visualise it, we may construct a production graph as in 
+To visualise it, we may construct a production graph as in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "fig:Production-graph"
@@ -932,17 +902,17 @@ Let
 
  such that
 \begin_inset Formula 
-\[
+\begin{equation}
 \forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Prem{r_{1}}=\Prem{r_{2}}\iff r_{1}=r_{2},
-\]
+\end{equation}
 
 \end_inset
 
 
 \begin_inset Formula 
-\[
+\begin{equation}
 \forall r\in\mathcal{R},\,\forall p\in\Prem j,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
-\]
+\end{equation}
 
 \end_inset
 
@@ -951,19 +921,12 @@ In this context, we define
 \[
 \Premstartimes r:=\begin{cases}
 \emptyset & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
-r\cup\bigcup_{r_{p}\in\mathcal{R},\,\Concl{r_{p}}\in\Prem r}\Premstartimes{r_{p}} & \mathrm{else}.
+r\cup\bigcup_{\begin{aligned}r_{p} & \in\mathcal{R},\\
+\Concl{r_{p}} & \in\Prem r
+\end{aligned}
+}\Premstartimes{r_{p}} & \mathrm{else}.
 \end{cases}
 \]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: in union, write subscript in two lines.
-\end_layout
 
 \end_inset
 
@@ -1353,7 +1316,7 @@ There exists a function
 , i.e.
 \begin_inset Formula 
 \[
-\forall a\in T,\,\exists X\in V,\,\exists!\alpha:\,\left[\alpha=a\land\left(X,\alpha\right)\in P\right].
+\forall a\in T,\,\exists X\in V:\,\left[\exists!\alpha:\,\left(X,\alpha\right)\in P\right]\land\left(X,a\right)\in P.
 \]
 
 \end_inset
@@ -1362,23 +1325,20 @@ There exists a function
 \end_layout
 
 \begin_layout Example
-We consider the example from 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-reference
-\end_layout
+We consider the grammar from example 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "Example-grammar"
 
 \end_inset
 
 .
  First, we note that for the terminals 
-\begin_inset Formula $b$
+\begin_inset Formula $a$
 \end_inset
 
  and 
-\begin_inset Formula $c$
+\begin_inset Formula $b$
 \end_inset
 
 , there exist no dedicated variables, so we add
@@ -1443,7 +1403,7 @@ Now we need to verify whether the first production rule of each variable
 \begin_inset Formula $X$
 \end_inset
 
-, which we fix be changing the order of the production rules of 
+, which we fix by changing the order of the production rules of 
 \begin_inset Formula $X$
 \end_inset
 
@@ -1452,7 +1412,7 @@ Now we need to verify whether the first production rule of each variable
 \begin_inset Formula $Y$
 \end_inset
 
-, the property holds though, as 
+, though, the property holds, as 
 \begin_inset Formula $\norm{ZZ}=\norm X=2$
 \end_inset
 
@@ -2970,10 +2930,12 @@ PP-D: If the decomposition of the right-hand side with the norm of the first
  variable on the left-hand side with the decomposition, we apply this rule.
 \begin_inset Formula 
 \begin{gather*}
-\norm{A_{1}}\geq\norm{B_{1}},\\
-D=\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
-D\neq\bot,\\
-\lnot\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}\implies\\
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+D & =\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
+D & \neq\bot,\\
+\lnot\exists c<n_{B}:\, D & =\prod_{y=1}^{c}B_{y}\implies
+\end{aligned}
+\\
 \bussproof{\binaryinf{\axiom{\prod A_{x}}{D\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{D\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-D)}}}
 \end{gather*}
 
@@ -2992,10 +2954,12 @@ PP-
  right-hand side, we use the product rule.
 \begin_inset Formula 
 \begin{gather*}
-\norm{A_{1}}\geq\norm{B_{1}},\\
-D=\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
-D\neq\bot,\\
-\exists c<n_{B}:\, D=\prod_{y=1}^{c}B_{y}\implies\\
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+D & =\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
+D & \neq\bot,\\
+\exists c<n_{B}:\, D & =\prod_{y=1}^{c}B_{y}\implies
+\end{aligned}
+\\
 \bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}
 \end{gather*}
 
@@ -3025,10 +2989,12 @@ PP-B: If the decomposition yields
 , we have to resort to the base replacement.
 \begin_inset Formula 
 \begin{gather*}
-\norm{A_{1}}\geq\norm{B_{1}},\\
-D=\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
-D=\bot,\\
-R=B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies\\
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+D & =\left\langle \prod B_{y}\right\rangle _{\norm{A_{1}}},\\
+D & =\bot,\\
+R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies
+\end{aligned}
+\\
 \bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
 \end{gather*}
 
