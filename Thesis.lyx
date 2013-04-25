@@ -123,7 +123,78 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Here goes an introduction of 1-2 pages.
+Imagine you are tranquilly riding the tramway, when a ticket inspector suddenly
+ steps up to you and demands to see your transport ticket.
+ You, proud owner of an annual public transport subscription, suddenly realize
+ that you left your ticket at home.
+ At this point you might try to convince the inspector that you possess
+ a valid ticket, but in general, you will end up paying a fine, because
+ the inspector will only accept a valid ticket.
+ This is because she can not trust your oral statement, but requires a 
+\emph on
+proof
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+In computer science, there exist many algorithms behaving like the unfortunate
+ tram passenger in our example: These algorithms return a certain result,
+ such as 
+\begin_inset Quotes eld
+\end_inset
+
+yes
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+no
+\begin_inset Quotes erd
+\end_inset
+
+, but do not certify their answer with an easily verifiable proof.
+ Unlike the ticket inspector, users usually trust these algorithms nonetheless,
+ because their correctness is proven, but it is still possible that an implement
+ation of an algorithm may be erroneous, or the machine executing the algorithm
+ misbehaves, thus possibly producing a wrong result despite a flawless algorithm.
+\end_layout
+
+\begin_layout Standard
+A remedy for this problem is to generate proofs for the results.
+ This way, users can validate the proofs and detect possible errors in the
+ execution of the algorithm.
+\end_layout
+
+\begin_layout Standard
+In this document, we considered the problem of equivalence of simple determinist
+ic grammars, for which there exist algorithms which do not give proofs of
+ their results: In 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+, such an algorithm is presented, which is in P.
+ Ten years later, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lasota2006"
+
+\end_inset
+
+ showed another algorithm in P for the problem, which improves performance
+ over the former algorithm.
+\end_layout
+
+\begin_layout Standard
+We studied the existing algorithms for the problem and researched possibilities
+ to construct equivalence proofs based on them.
+ Then we devised an algorithm constructing such equivalence proofs automatically.
 \end_layout
 
 \begin_layout Standard
@@ -131,7 +202,7 @@ Here goes an introduction of 1-2 pages.
 status open
 
 \begin_layout Plain Layout
-Motivation: Why do we want to construct proofs after all?
+how is what I've done better than what was done before
 \end_layout
 
 \end_inset
@@ -139,24 +210,87 @@ Motivation: Why do we want to construct proofs after all?
 
 \end_layout
 
-\begin_layout Itemize
-general problem
-\end_layout
+\begin_layout Standard
+This document is structured as follows: In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Preliminaries"
 
-\begin_layout Itemize
-what did people so far do about it? (write to here)
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-what I did about it
-\end_layout
+, we explain basic concepts, such as grammars.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Restrictions"
 
-\begin_layout Itemize
-how is what I've done better than what was done before
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-small TOC
+, we show restricted forms of the concepts presented in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Preliminaries"
+
+\end_inset
+
+.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Existing-algorithms"
+
+\end_inset
+
+, we explain the function of the existing algorithms to determine equivalence
+ of simple deterministic grammars.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Equivalence-proof-system"
+
+\end_inset
+
+, we explain our proof system to prove equivalences.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Proof-construction-strategies"
+
+\end_inset
+
+, we discuss several possible options to construct equivalence proofs, showing
+ our chosen path later in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Proof-construction-algorithm"
+
+\end_inset
+
+.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Proof-verification"
+
+\end_inset
+
+, we concern ourselves with the verification of our proofs.
+ How our algorithm performs, is the subject of 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Experimental-results"
+
+\end_inset
+
+, and we conclude our study in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Conclusion"
+
+\end_inset
+
+.
+ The appendix contains some longer proofs.
 \end_layout
 
 \begin_layout Standard
@@ -174,6 +308,13 @@ status open
 
 \begin_layout Chapter
 Preliminaries
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Preliminaries"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -435,19 +576,22 @@ A grammar
 -GNF.
 \end_layout
 
-\begin_layout Theorem
-For each CFG, we can actually always find an equivalent grammar in 2-GNF,
- which is called second normal form.
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Source!
+when are two grammars equivalent? what is the language of a grammar?
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Theorem
+For each CFG, we can find an equivalent grammar in 2-GNF, which is called
+ second normal form.
 \begin_inset Note Note
 status open
 
@@ -695,7 +839,7 @@ Simple deterministic grammars are a subclass of context-free grammars; in
  fact, the relation between several language classes is 
 \begin_inset Formula 
 \[
-\mathcal{L}(\mathrm{SIMPLE})\subset\mathcal{L}(LL(1))\subset\dots\subset\mathcal{L}(LL(k))\subset\dots\subset\mathcal{L}(\mathrm{DETCF})\subset\mathcal{L}(\mathrm{CF}),
+\mathcal{L}(\mathrm{SDG})\subset\mathcal{L}(LL(1))\subset\dots\subset\mathcal{L}(LL(k))\subset\dots\subset\mathcal{L}(\mathrm{DETCF})\subset\mathcal{L}(\mathrm{CF}),
 \]
 
 \end_inset
@@ -849,390 +993,15 @@ Distributivity:
 
 \end_layout
 
-\begin_layout Section
-Proof system (Sénizergues)
-\end_layout
-
-\begin_layout Standard
-In this section, we introduce a system to prove equivalence of simple-determinis
-tic grammars.
- It is based on a similar proof system by Sénizergues
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-reference!
-\end_layout
-
-\end_inset
-
-, which can be used to prove equivalence of strict-deterministic context-free
- grammars.
-\end_layout
-
-\begin_layout Definition
-Let 
-\begin_inset Formula $G=(V,T,P)$
-\end_inset
-
- be a context-free grammar and 
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
- the set of polynomials over variables 
-\begin_inset Formula $V$
-\end_inset
-
- and terminals 
-\begin_inset Formula $T$
-\end_inset
-
-.
- Based on this, we define the set of judgements as 
-\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-With this definition in place, we now define equivalence proofs:
-\end_layout
-
-\begin_layout Definition
-Let 
-\begin_inset Formula $G$
-\end_inset
-
- be a context-free grammar.
- We call 
-\begin_inset Formula $G$
-\end_inset
-
--equivalence proof every finite set of rules 
-\begin_inset Formula $\mathcal{R}$
-\end_inset
-
- such that
-\begin_inset Formula 
-\begin{equation}
-\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Prem{r_{1}}=\Prem{r_{2}}\iff r_{1}=r_{2},
-\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{equation}
-\forall r\in\mathcal{R},\,\forall p\in\Prem j,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
-\end{equation}
-
-\end_inset
-
-In this context, we define
-\begin_inset Formula 
-\[
-\Premstartimes r:=\begin{cases}
-\emptyset & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
-r\cup\bigcup_{\begin{aligned}r_{p} & \in\mathcal{R},\\
-\Concl{r_{p}} & \in\Prem r
-\end{aligned}
-}\Premstartimes{r_{p}} & \mathrm{else}.
-\end{cases}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Schemes of rules:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Indentation check!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Symmetry: 
-\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Transitivity: 
-\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Sum: 
-\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Schemes of strict rules:
-\end_layout
-
-\begin_layout Itemize
-Reflexivity: 
-\begin_inset Formula $\bussproof{\refl xx}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Product: 
-\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Strict rules:
-\end_layout
-
-\begin_layout Itemize
-Grammar: 
-\begin_inset Formula $\bussproof{\gr X{\Gr X}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For each rule 
-\begin_inset Formula $\unrulec{P_{1}\dots P_{n}}C{rule}$
-\end_inset
-
-, we have that 
-\begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
-\end_inset
-
-.
- For strict rules, we even have 
-\begin_inset Formula $\forall i:\,\norm{P_{i}}<\norm C$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Definition
-Given two variable words 
-\begin_inset Formula $w_{1},w_{2}\in V^{+}$
-\end_inset
-
-, we call 
-\begin_inset Formula $w\in\left(V\cup T\right)^{+}$
-\end_inset
-
- a witness of non-equivalence of 
-\begin_inset Formula $w_{1}$
-\end_inset
-
-and 
-\begin_inset Formula $w_{2}$
-\end_inset
-
- if
-\begin_inset Formula 
-\[
-w\in\left[\mathcal{L}(w_{2})\backslash\mathcal{L}(w_{1})\right]\cup\left[\mathcal{L}(w_{1})\backslash\mathcal{L}(w_{2})\right].
-\]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Does there always exist a 
-\begin_inset Formula $w$
-\end_inset
-
- of non-exponential length?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-algebra, equality, soundness/completeness
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Example
-Consider the following rules:
-\begin_inset Formula 
-\[
-\bussproof{\syminf XY{\syminf YX{\axiom XY}}}
-\]
-
-\end_inset
-
-This is obviously an invalid proof, as it would allow us to show the equivalence
- of two variables independently of the grammar.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: this is unclear, write sj over X=Y.
- Explain sj!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Example
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write about induction.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Example
-Given the grammar 
-\begin_inset Formula $G$
-\end_inset
-
- with production rules 
-\begin_inset Formula 
-\begin{align*}
-X & \to a+bX\\
-Y & \to a+bY,
-\end{align*}
-
-\end_inset
-
-the following is a valid proof:
-\begin_inset Formula 
-\[
-\bussproof{\transinf XY{\gr X{a+bX}}{\syminf{a+bX}Y{\transinf Y{a+bX}{\gr Y{a+bY}}{\plusinf{a+bY}{a+bX}{\refl aa}{\timesinf{bY}{bX}{\refl bb}{\syminf YX{\sj XY}}}}}}}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-We note that in both proofs above, we have a certain circularity, as 
-\begin_inset Formula $X\equiv Y$
-\end_inset
-
- appears once in a conclusion and once in a premise following from the conclusio
-n.
- This circularity obviously leads to a contradiction for the first proof,
- whereas we claim that the second proof is correct.
- Why?
-\end_layout
-
-\begin_layout Standard
-To show that the second proof is correct, let us assume that 
-\begin_inset Formula $X\not\equiv Y$
-\end_inset
-
-.
- Then by definition there exists a smallest witness of non-equivalence of
- 
-\begin_inset Formula $X$
-\end_inset
-
- and 
-\begin_inset Formula $Y$
-\end_inset
-
-, 
-\begin_inset Formula $w_{W}\in T^{+}$
-\end_inset
-
-.
- However, following the path from the conclusion 
-\begin_inset Formula $X\equiv Y$
-\end_inset
-
- to the premise 
-\begin_inset Formula $X\equiv Y$
-\end_inset
-
-, we could find a smaller witness of non-equivalence, as there exists no
- rule which increases the norm when going from a conclusion to a premise,
- but there exists a rule which decreases the norm --- the product rule.
- As we than have a smaller witness of non-equivalence than 
-\begin_inset Formula $w_{W}$
-\end_inset
-
-, this contradicts the fact that 
-\begin_inset Formula $w_{W}$
-\end_inset
-
- is the smallest witness.
- From this contradiction it follows that 
-\begin_inset Formula $X\equiv Y$
-\end_inset
-
- indeed holds.
-\end_layout
-
-\begin_layout Standard
-We now generalise the argument employed in the example above.
-\end_layout
-
-\begin_layout Theorem
-The proof system in definition ?? is sound.
-\end_layout
-
-\begin_layout Proof
-TODO!
-\end_layout
-
-\begin_layout Theorem
-The proof system in definition ?? is complete.
-\end_layout
-
-\begin_layout Proof
-TODO!
-\end_layout
-
 \begin_layout Chapter
 Restrictions
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Restrictions"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1709,6 +1478,13 @@ not
 
 \begin_layout Chapter
 Existing algorithms
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Existing-algorithms"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1807,7 +1583,403 @@ key "lothaire2002"
 \end_layout
 
 \begin_layout Chapter
+Equivalence proof system
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Equivalence-proof-system"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, we introduce a system to prove equivalence of simple-determinis
+tic grammars.
+ It is based on a similar proof system by Sénizergues
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+reference!
+\end_layout
+
+\end_inset
+
+, which can be used to prove equivalence of strict-deterministic context-free
+ grammars.
+\end_layout
+
+\begin_layout Definition
+Let 
+\begin_inset Formula $G=(V,T,P)$
+\end_inset
+
+ be a context-free grammar and 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+ the set of polynomials over variables 
+\begin_inset Formula $V$
+\end_inset
+
+ and terminals 
+\begin_inset Formula $T$
+\end_inset
+
+.
+ Based on this, we define the set of judgements as 
+\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+With this definition in place, we now define equivalence proofs:
+\end_layout
+
+\begin_layout Definition
+Let 
+\begin_inset Formula $G$
+\end_inset
+
+ be a context-free grammar.
+ We call 
+\begin_inset Formula $G$
+\end_inset
+
+-equivalence proof every finite set of rules 
+\begin_inset Formula $\mathcal{R}$
+\end_inset
+
+ such that
+\begin_inset Formula 
+\begin{equation}
+\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Prem{r_{1}}=\Prem{r_{2}}\iff r_{1}=r_{2},
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\forall r\in\mathcal{R},\,\forall p\in\Prem j,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
+\end{equation}
+
+\end_inset
+
+In this context, we define
+\begin_inset Formula 
+\[
+\Premstartimes r:=\begin{cases}
+\emptyset & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
+r\cup\bigcup_{\begin{aligned}r_{p} & \in\mathcal{R},\\
+\Concl{r_{p}} & \in\Prem r
+\end{aligned}
+}\Premstartimes{r_{p}} & \mathrm{else}.
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Schemes of rules:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Indentation check!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Symmetry: 
+\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Transitivity: 
+\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sum: 
+\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Schemes of strict rules:
+\end_layout
+
+\begin_layout Itemize
+Reflexivity: 
+\begin_inset Formula $\bussproof{\refl xx}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Product: 
+\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Strict rules:
+\end_layout
+
+\begin_layout Itemize
+Grammar: 
+\begin_inset Formula $\bussproof{\gr X{\Gr X}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For each rule 
+\begin_inset Formula $\unrulec{P_{1}\dots P_{n}}C{rule}$
+\end_inset
+
+, we have that 
+\begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
+\end_inset
+
+.
+ For strict rules, we even have 
+\begin_inset Formula $\forall i:\,\norm{P_{i}}<\norm C$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Definition
+Given two variable words 
+\begin_inset Formula $w_{1},w_{2}\in V^{+}$
+\end_inset
+
+, we call 
+\begin_inset Formula $w\in\left(V\cup T\right)^{+}$
+\end_inset
+
+ a witness of non-equivalence of 
+\begin_inset Formula $w_{1}$
+\end_inset
+
+and 
+\begin_inset Formula $w_{2}$
+\end_inset
+
+ if
+\begin_inset Formula 
+\[
+w\in\left[\mathcal{L}(w_{2})\backslash\mathcal{L}(w_{1})\right]\cup\left[\mathcal{L}(w_{1})\backslash\mathcal{L}(w_{2})\right].
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Does there always exist a 
+\begin_inset Formula $w$
+\end_inset
+
+ of non-exponential length?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+algebra, equality, soundness/completeness
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+Consider the following rules:
+\begin_inset Formula 
+\[
+\bussproof{\syminf XY{\syminf YX{\axiom XY}}}
+\]
+
+\end_inset
+
+This is obviously an invalid proof, as it would allow us to show the equivalence
+ of two variables independently of the grammar.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: this is unclear, write sj over X=Y.
+ Explain sj!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write about induction.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Example
+Given the grammar 
+\begin_inset Formula $G$
+\end_inset
+
+ with production rules 
+\begin_inset Formula 
+\begin{align*}
+X & \to a+bX\\
+Y & \to a+bY,
+\end{align*}
+
+\end_inset
+
+the following is a valid proof:
+\begin_inset Formula 
+\[
+\bussproof{\transinf XY{\gr X{a+bX}}{\syminf{a+bX}Y{\transinf Y{a+bX}{\gr Y{a+bY}}{\plusinf{a+bY}{a+bX}{\refl aa}{\timesinf{bY}{bX}{\refl bb}{\syminf YX{\sj XY}}}}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+We note that in both proofs above, we have a certain circularity, as 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ appears once in a conclusion and once in a premise following from the conclusio
+n.
+ This circularity obviously leads to a contradiction for the first proof,
+ whereas we claim that the second proof is correct.
+ Why?
+\end_layout
+
+\begin_layout Standard
+To show that the second proof is correct, let us assume that 
+\begin_inset Formula $X\not\equiv Y$
+\end_inset
+
+.
+ Then by definition there exists a smallest witness of non-equivalence of
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+, 
+\begin_inset Formula $w_{W}\in T^{+}$
+\end_inset
+
+.
+ However, following the path from the conclusion 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ to the premise 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+, we could find a smaller witness of non-equivalence, as there exists no
+ rule which increases the norm when going from a conclusion to a premise,
+ but there exists a rule which decreases the norm --- the product rule.
+ As we than have a smaller witness of non-equivalence than 
+\begin_inset Formula $w_{W}$
+\end_inset
+
+, this contradicts the fact that 
+\begin_inset Formula $w_{W}$
+\end_inset
+
+ is the smallest witness.
+ From this contradiction it follows that 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ indeed holds.
+\end_layout
+
+\begin_layout Standard
+We now generalise the argument employed in the example above.
+\end_layout
+
+\begin_layout Theorem
+The proof system in definition ?? is sound.
+\end_layout
+
+\begin_layout Proof
+TODO!
+\end_layout
+
+\begin_layout Theorem
+The proof system in definition ?? is complete.
+\end_layout
+
+\begin_layout Proof
+TODO!
+\end_layout
+
+\begin_layout Chapter
 Proof construction strategies
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Proof-construction-strategies"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2744,6 +2916,13 @@ Having already proven
 
 \begin_layout Chapter
 Proof construction algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Proof-construction-algorithm"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -3227,6 +3406,13 @@ Here we explain how to construct witnesses of non-equivalence.
 
 \begin_layout Chapter
 Proof verification
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Proof-verification"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3235,6 +3421,13 @@ Here we show how we may verify the correctness of a given proof.
 
 \begin_layout Chapter
 Experimental results
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Experimental-results"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3406,6 +3599,13 @@ T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
 
 \begin_layout Chapter
 Conclusion
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Conclusion"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
