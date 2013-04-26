@@ -123,6 +123,15 @@ Introduction
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Remove first paragraph, or move into second paragraph.
+\end_layout
+
+\end_inset
+
 Imagine you are tranquilly riding the tramway, when a ticket inspector suddenly
  steps up to you and demands to see your transport ticket.
  You, proud owner of an annual public transport subscription, suddenly realize
@@ -180,7 +189,7 @@ key "hirshfeld1996"
 \end_inset
 
 , such an algorithm is presented, which is in P.
- Ten years later, 
+ Ten years later,
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lasota2006"
@@ -189,6 +198,21 @@ key "lasota2006"
 
  showed another algorithm in P for the problem, which improves performance
  over the former algorithm.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Those algorithms could be expressed in a stronger proof system, 
+\begin_inset Formula $\lambda-\Pi$
+\end_inset
+
+.
+ Conclusion!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -909,6 +933,16 @@ status open
 
 \begin_layout Plain Layout
 Source!
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+explain LL(k)
 \end_layout
 
 \end_inset
@@ -1865,7 +1899,7 @@ Let
  such that
 \begin_inset Formula 
 \begin{equation}
-\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Prem{r_{1}}=\Prem{r_{2}}\iff r_{1}=r_{2},
+\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Concl{r_{1}}=\Concl{r_{2}}\iff r_{1}=r_{2},
 \end{equation}
 
 \end_inset
@@ -1873,7 +1907,7 @@ Let
 
 \begin_inset Formula 
 \begin{equation}
-\forall r\in\mathcal{R},\,\forall p\in\Prem j,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
+\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
 \end{equation}
 
 \end_inset
@@ -2345,16 +2379,6 @@ reference "Proof-definition"
 \end_inset
 
  is complete.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Define Gr()!
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Proof
