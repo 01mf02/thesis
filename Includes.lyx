@@ -130,6 +130,15 @@ Operators:
 \end_layout
 
 \begin_layout Standard
+\begin_inset FormulaMacro
+\renewcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
+{\mathcal{L}\left(#1\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -170,7 +179,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
+\newcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
 \end_inset
 
 
@@ -178,7 +187,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
+\newcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
 \end_inset
 
 
@@ -186,7 +195,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
+\newcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
 \end_inset
 
 
