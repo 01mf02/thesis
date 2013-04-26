@@ -4234,125 +4234,84 @@ node (Pp)                                             {Pp};
 
   
 \backslash
-node (pP-B)  [above right = 0.5cm of Pp]              {pP-B};
+node (pP-B)  [above right = of Pp]   {pP-B};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (pP-G)  [below right = 0.5cm of Pp]              {pP-G};
+node (pP-G)  [below right = of Pp]   {pP-G};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (sSP)   [right = of pP-G]                        {sSP};
+node (sSP)   [right       = of pP-G] {sSP};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (Ps-x)  [above right = -0.2cm and 0.5cm of sSP]  {Ps-$
-\backslash
-times$};
+node (Ps-V)  [above right = of sSP]  {Ps-V};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PS-x)  [below right = -0.2cm and 0.5cm of sSP]  {PS-$
-\backslash
-times$};
+node (PS-G)  [below right = of sSP]  {PS-G};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (Ps-V)  [above right =  0.75cm and 0.5cm of sSP]  {Ps-V};
+node (PP-D)  [above right = of Ps-V] {PP-D};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PS-G)  [below right =  0.75cm and 0.5cm of sSP]  {PS-G};
+node (PP-B)  [below right = of Ps-V] {PP-B};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PP-D)  [above right =  0.2cm and 0.5cm of Ps-V] {PP-D};
+node (PP-S)  [below right = of PP-D] {PP-S};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PP-B)  [below right =  0.2cm and 0.5cm of Ps-V] {PP-B};
+node (pp)    [above       = of pP-B] {pp};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PP-x)  [right = 0.5cm of Ps-V]                  {PP-$
-\backslash
-times$};
+node (sSp)   [right       = of pp]   {sSp};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (PP-S)  [right = of PP-x]                        {PP-S};
+node (psS)   [right       = of sSp]  {psS};
 \end_layout
 
 \begin_layout Plain Layout
 
   
 \backslash
-node (Gr)    [below = of pP-G]      {Gr};
-\end_layout
-
-\begin_layout Plain Layout
-
-  
-\backslash
-node (sSp)   [below = of Gr]        {sSp};
-\end_layout
-
-\begin_layout Plain Layout
-
-  
-\backslash
-node (pp)    [left = of sSp]        {pp};
-\end_layout
-
-\begin_layout Plain Layout
-
-  
-\backslash
-node (psS)   [right = of sSp]       {psS};
-\end_layout
-
-\begin_layout Plain Layout
-
-  
-\backslash
-node (SS)    [right = of psS]       {SS};
-\end_layout
-
-\begin_layout Plain Layout
-
-  
-\backslash
-node (ss)    [right = of SS]        {ss};
+node (SS)    [right       = of psS]  {SS};
 \end_layout
 
 \begin_layout Plain Layout
@@ -4374,17 +4333,7 @@ path (Pp)    edge (pP-B)
 
 \begin_layout Plain Layout
 
-                edge (PP-x)
-\end_layout
-
-\begin_layout Plain Layout
-
-        (pP-G)  edge (Gr)
-\end_layout
-
-\begin_layout Plain Layout
-
-                edge (sSP)
+        (pP-G)  edge (sSP)
 \end_layout
 
 \begin_layout Plain Layout
@@ -4394,47 +4343,17 @@ path (Pp)    edge (pP-B)
 
 \begin_layout Plain Layout
 
-                edge (Ps-x)
-\end_layout
-
-\begin_layout Plain Layout
-
-                edge (PS-x)
-\end_layout
-
-\begin_layout Plain Layout
-
                 edge (PS-G)
 \end_layout
 
 \begin_layout Plain Layout
 
-        (Ps-V)  edge (Ps-x)
-\end_layout
-
-\begin_layout Plain Layout
-
-                edge (PP-D)
+        (Ps-V)  edge (PP-D)
 \end_layout
 
 \begin_layout Plain Layout
 
                 edge (PP-B)
-\end_layout
-
-\begin_layout Plain Layout
-
-        (PS-G)  edge (PS-x)
-\end_layout
-
-\begin_layout Plain Layout
-
-        (PP-D)  edge (PP-x)
-\end_layout
-
-\begin_layout Plain Layout
-
-        (PP-B)  edge (PP-x)
 \end_layout
 
 \begin_layout Plain Layout
@@ -4444,22 +4363,12 @@ path (Pp)    edge (pP-B)
 
 \begin_layout Plain Layout
 
-                edge (PP-x)
-\end_layout
-
-\begin_layout Plain Layout
-
                 edge (PP-B)
 \end_layout
 
 \begin_layout Plain Layout
 
-        (pp)    edge (Gr)
-\end_layout
-
-\begin_layout Plain Layout
-
-                edge (sSp)
+        (pp)    edge (sSp)
 \end_layout
 
 \begin_layout Plain Layout
@@ -4469,22 +4378,12 @@ path (Pp)    edge (pP-B)
 
 \begin_layout Plain Layout
 
-        (psS)   edge (Gr)
+        (psS)   edge (SS)
 \end_layout
 
 \begin_layout Plain Layout
 
-                edge (SS)
-\end_layout
-
-\begin_layout Plain Layout
-
-        (SS)    edge[loop below] (SS)
-\end_layout
-
-\begin_layout Plain Layout
-
-                edge (ss);
+        (SS)    edge[loop below] (SS);
 \end_layout
 
 \begin_layout Plain Layout
