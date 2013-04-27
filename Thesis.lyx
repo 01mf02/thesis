@@ -25,11 +25,19 @@
 \g@addto@macro\@floatboxreset{\centering}
 \makeatother
 
+% importing SVG files with LaTeX code in it, as created by Inkscape
 \newcommand{\includesvg}[1]{\input{#1.pdf_tex}}
 
+% graph drawing
 \usepackage{pgf}
 \usepackage{tikz}
 \usetikzlibrary{arrows, positioning}
+
+% algorithms
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{fixltx2e}
+\MakeRobust{\Call}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -1697,6 +1705,20 @@ not
 .
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+A restricted polynomial is valid iff a sum contains each non-terminal maximally
+ once.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Existing algorithms
 \begin_inset CommandInset label
@@ -1761,6 +1783,20 @@ Norm reduction function.
 \left[\alpha_{i1}\right]_{p-1}\alpha & p<\norm{X_{i}}.
 \end{cases}
 \end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Research if output can be non-defined for negative values of 
+\begin_inset Formula $p$
+\end_inset
+
+.
+\end_layout
 
 \end_inset
 
@@ -1923,6 +1959,16 @@ r\cup\bigcup_{\begin{aligned}r_{p} & \in\mathcal{R},\\
 }\Premstartimes{r_{p}} & \mathrm{else}.
 \end{cases}
 \]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make a pretty example to explain premstartimes.
+\end_layout
 
 \end_inset
 
@@ -3337,6 +3383,145 @@ name "chap:Proof-construction-algorithm"
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Proof algorithm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}[1]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{Prove}{$seqs, toprove$}
+\backslash
+Comment{TODO: Comment!}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+If{$toprove=
+\backslash
+emptyset$}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State 
+\backslash
+textbf{return} $seqs$
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+Else
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State $r
+\backslash
+gets 
+\backslash
+Call{Rule}{
+\backslash
+Call{hd}{toprove}}$
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State $p
+\backslash
+gets 
+\backslash
+Call{Premises}{r} 
+\backslash
+backslash 
+\backslash
+Call{Conclusions}{seqs}$
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State 
+\backslash
+textbf{return} $
+\backslash
+Call{Prove}{seqs 
+\backslash
+cup r, p 
+\backslash
+cup 
+\backslash
+Call{tl}{toprove}}$
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+EndIf
+\backslash
+label{euclidendwhile}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Proof strategies
 \end_layout
@@ -3367,7 +3552,7 @@ We use the following conventions for variable names:
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Formula $a_{n},b_{m}\in T$
+\begin_inset Formula $a,b,a_{n},b_{m}\in T$
 \end_inset
 
  are terminals.
@@ -3478,6 +3663,8 @@ Now without further ado the rules:
 \color none
 Refl: If we encounter a judgement where both sides are equal, we apply this
  rule.
+ This rule has highest precedence, which means that for all other rules,
+ we can assume left- and right-hand sides of the conclusion to be inequivalent.
 \begin_inset Formula 
 \[
 \bussproof{\unaryinf{\axiomc{}}EE{\text{refl (Refl)}}}
@@ -3516,11 +3703,44 @@ pp: This rule replaces the variable on the left-hand side by its grammar.
 \end_layout
 
 \begin_layout Itemize
+pP-
+\begin_inset Formula $\bot$
+\end_inset
+
+: If the norm 
+\begin_inset Formula $\norm A$
+\end_inset
+
+ of the variable on the left-hand side is smaller/equal the norm 
+\begin_inset Formula $\norm{B_{1}}$
+\end_inset
+
+ of the first variable on the right-hand side, then 
+\begin_inset Formula $\norm A<\norm{\prod B_{y}}$
+\end_inset
+
+, which is a contradiction.
+ 
+\begin_inset Formula 
+\begin{gather*}
+\norm A\leq\norm{B_{1}}\implies\\
+\bussproof{\unaryinf{\axiomc{\bot}}A{\prod B_{y}}{\ensuremath{\bot}\text{ (pP-\ensuremath{\bot})}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
 pP-B: If the right-hand side has not been subject to a previous base replacement
 , we use the base to substitute the variable on the left-hand side.
 \begin_inset Formula 
 \begin{gather*}
-\left[A\right]_{\norm{B_{1}}}\neq\prod_{y=2}^{n_{B}}B_{y}\implies\\
+\begin{aligned}\norm A & >\norm{B_{1}},\\
+\left[A\right]_{\norm{B_{1}}} & \neq\prod_{y=2}^{n_{B}}B_{y}\implies
+\end{aligned}
+\\
 \bussproof{\binaryinf{\axiom A{B_{1}\left[A\right]_{\norm{B_{1}}}}}{\axiom{B_{1}\left[A\right]_{\norm{B_{1}}}}B}A{\prod B_{y}}{\text{trans (pP-B)}}}
 \end{gather*}
 
@@ -3535,7 +3755,10 @@ pP-G: If we cannot replace the right-hand side with the base (possibly because
  the left-hand side with its grammar.
 \begin_inset Formula 
 \begin{gather*}
-\left[A\right]_{\norm{B_{1}}}=\prod_{y=2}^{n_{B}}B_{y}\implies\\
+\begin{aligned}\norm A & >\norm{B_{1}},\\
+\left[A\right]_{\norm{B_{1}}} & =\prod_{y=2}^{n_{B}}B_{y}\implies
+\end{aligned}
+\\
 \bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}A{\prod B_{y}}{\text{trans (pP-B)}}}
 \end{gather*}
 
@@ -3615,7 +3838,7 @@ PP-
 
 : If the decomposition of the right-hand side with the norm of the first
  variable on the left-hand side is defined, but is equal to a part of the
- right-hand side, we use the product rule.
+ right-hand side, then we use the product rule.
 \begin_inset Formula 
 \begin{gather*}
 \begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
@@ -3661,6 +3884,18 @@ R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies
 \\
 \bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
 \end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Ps-S: This gets picked up by the ssSP rule, which will produce a contradiction.
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiom b{\prod A_{x}}}{\prod A_{x}}b{\text{sym (Ps-S)}}}
+\]
 
 \end_inset
 
@@ -3755,7 +3990,7 @@ PS-
 sSpP: We resort to the pPsS rules to treat this case.
 \begin_inset Formula 
 \[
-\unaryinf{\axiom Q{\sum a_{x}A_{x}}}{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}Q{\text{sym (sSpP)}}
+\bussproof{\unaryinf{\axiom Q{\sum a_{x}A_{x}}}{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}Q{\text{sym (sSpP)}}}
 \]
 
 \end_inset
@@ -3764,11 +3999,41 @@ sSpP: We resort to the pPsS rules to treat this case.
 \end_layout
 
 \begin_layout Itemize
-ss: If the first terminals of the two sums are equivalent, we split the
- sums.
+ssSP:
+\begin_inset Formula 
+\begin{gather*}
+E\neq B\implies\\
+\bussproof{\unaryinf{\axiomc{\bot}}aE{\ensuremath{\bot}\text{ (ssSP)}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+ss-
+\begin_inset Formula $\bot$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{gather*}
+a\neq b\implies\\
+\bussproof{\unaryinf{\axiomc{\bot}}{aP}{bQ}{\ensuremath{\bot}\text{ (ss-\bot)}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+ss-S: We push this particular case to the ssSP rule, where it will cause
+ a contradiction.
 \begin_inset Formula 
 \[
-\binaryinf{\axiom aa}{\axiom PQ}{aP}{aQ}{\ensuremath{\times}\text{ (ss)}}
+\bussproof{\unaryinf{\axiom b{aP}}{aP}b{\text{sym (ss-S)}}}
 \]
 
 \end_inset
@@ -3777,13 +4042,67 @@ ss: If the first terminals of the two sums are equivalent, we split the
 \end_layout
 
 \begin_layout Itemize
-SS: If we find a terminal on the right-hand side which is equivalent to
- the first terminal on the left-hand side, we split the sums.
+ss-
+\begin_inset Formula $\times$
+\end_inset
+
+: If the first terminals of the two sums are equivalent, we split the sums.
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\axiom aa}{\axiom PQ}{aP}{aQ}{\ensuremath{\times}\text{ (ss-\times)}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+sS-
+\begin_inset Formula $\bot$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiomc{\bot}}{aP}{\sum b_{y}Q_{y}}{\ensuremath{\bot}\text{ (ss-\bot)}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SS-
+\begin_inset Formula $\bot$
+\end_inset
+
+: If the first terminal on the left-hand side does not match any terminal
+ on the right-hand side, we fail.
+\begin_inset Formula 
+\begin{gather*}
+\lnot\left(\exists!i:\, a_{1}=b_{i}\right)\implies\\
+\bussproof{\unaryinf{\axiomc{\bot}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{\bot}\text{ (SS-\bot)}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+SS-
+\begin_inset Formula $+$
+\end_inset
+
+: If we find a terminal on the right-hand side which is equivalent to the
+ first terminal on the left-hand side, we split the sums.
  
 \begin_inset Formula 
 \begin{gather*}
 \exists!i:\, a_{1}=b_{i}\implies\\
-\bussproof{\binaryinf{\axiom{a_{1}A_{1}}{b_{i}B_{i}}}{\axiom{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\text{ (SS)}}}
+\bussproof{\binaryinf{\axiom{a_{1}A_{1}}{b_{i}B_{i}}}{\axiom{\sum_{x=2}^{n_{A}}a_{x}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\text{ (SS-\ensuremath{+})}}}
 \end{gather*}
 
 \end_inset
@@ -3792,19 +4111,6 @@ SS: If we find a terminal on the right-hand side which is equivalent to
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Extend by 
-\begin_inset Formula $\bot$
-\end_inset
-
- cases!
-\end_layout
-
-\end_inset
-
 The validity of the proof strategies is proven in the appendix.
 \end_layout
 
@@ -4134,7 +4440,15 @@ When we have to prove
 \begin_inset Formula $\Gr A\equiv\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}$
 \end_inset
 
-, we either have to apply ss or SS.
+, we either have to apply ss-
+\begin_inset Formula $\times$
+\end_inset
+
+ or SS-
+\begin_inset Formula $+$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -4222,7 +4536,7 @@ To prove
 PS-G:
 \begin_inset Formula 
 \[
-\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\prod A_{x}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\ensuremath{\times}\text{ (PS-\ensuremath{\times})}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\prod A_{x}}{\sum b_{y}B_{y}}{\text{trans (PS-G)}}}
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\prod A_{x}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\ensuremath{\times}\text{ (PS-\ensuremath{\times})}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\Gr{A_{1}}\cdot\prod_{x=2}^{n_{A}}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS-\ensuremath{+})}}}}{\prod A_{x}}{\sum b_{y}B_{y}}{\text{trans (PS-G)}}}
 \]
 
 \end_inset
@@ -4285,10 +4599,14 @@ To prove
 \end_layout
 
 \begin_layout Itemize
-SS:
+SS-
+\begin_inset Formula $+$
+\end_inset
+
+:
 \begin_inset Formula 
 \[
-\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{1}P_{1}}{b_{i}Q_{i}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{2}P_{2}}{b_{j}Q_{j}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinfc{\axiomc{\dots}}{\unaryinfc{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{n_{A}}P_{n_{A}}}{b_{l}Q_{l}}{\ensuremath{\times}\text{ (ss)}}}{\iddots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\dots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum_{x=2}^{n_{A}}a_{x}P_{x}}{\sum_{y=1}^{i-1}b_{y}Q_{y}+\sum_{y=i+1}^{n_{B}}b_{y}Q_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum a_{x}P_{x}}{\sum b_{y}Q_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\vphantom{\sum_{y}^{1}}a_{1}P_{1}}{b_{i}Q_{i}}{\ensuremath{\times}\text{ (ss-\ensuremath{\times})}}}{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{2}P_{2}}{b_{j}Q_{j}}{\ensuremath{\times}\text{ (ss-\ensuremath{\times})}}}{\binaryinfc{\axiomc{\dots}}{\unaryinfc{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{n_{A}}P_{n_{A}}}{b_{l}Q_{l}}{\ensuremath{\times}\text{ (ss-\ensuremath{\times})}}}{\iddots}{\ensuremath{+}\mbox{\text{ (SS-\ensuremath{+})}}}}{\vphantom{P}\dots}{\ensuremath{+}\mbox{\text{ (SS-\ensuremath{+})}}}}{\sum_{x=2}^{n_{A}}a_{x}P_{x}}{\sum_{y=1}^{i-1}b_{y}Q_{y}+\sum_{y=i+1}^{n_{B}}b_{y}Q_{y}}{\ensuremath{+}\mbox{\text{ (SS-\ensuremath{+})}}}}{\sum a_{x}P_{x}}{\sum b_{y}Q_{y}}{\ensuremath{+}\mbox{\text{ (SS-\ensuremath{+})}}}}
 \]
 
 \end_inset
@@ -4408,7 +4726,7 @@ node (psS)   [right       = of sSp]  {psS};
 
   
 \backslash
-node (SS)    [right       = of psS]  {SS};
+node (SS-+)  [right       = of psS]  {SS-$+$};
 \end_layout
 
 \begin_layout Plain Layout
@@ -4475,12 +4793,12 @@ path (Pp)    edge (pP-B)
 
 \begin_layout Plain Layout
 
-        (psS)   edge (SS)
+        (psS)   edge (SS-+)
 \end_layout
 
 \begin_layout Plain Layout
 
-        (SS)    edge[loop below] (SS);
+        (SS-+)  edge[loop below] (SS-+);
 \end_layout
 
 \begin_layout Plain Layout
@@ -4499,6 +4817,12 @@ end{tikzpicture}
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Dependency-graph"
+
+\end_inset
+
 Dependency graph for non-strict proof rules.
 \end_layout
 
@@ -4509,8 +4833,15 @@ Dependency graph for non-strict proof rules.
 
 \end_inset
 
-From this rule unfolding process, we construct a rule dependency graph:
- This dependency graph visualises which non-strict proof rules are candidates
+From this rule unfolding process, we construct the rule dependency graph
+ in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Dependency-graph"
+
+\end_inset
+
+: This dependency graph visualises which non-strict proof rules are candidates
  for direct consequences of other non-strict proof rules.
  For example, we see that from the Ps-V node in the graph, two outgoing
  edges to PP-D and PP-B exist: This indicates that after using the Ps-V
@@ -4519,9 +4850,17 @@ From this rule unfolding process, we construct a rule dependency graph:
 \end_layout
 
 \begin_layout Standard
-We note that there are no circularities in this graph, except for the SS
- rule.
- However, the SS rule can only be applied maximally 
+We note that there are no circularities in this graph, except for the rule
+ SS-
+\begin_inset Formula $+$
+\end_inset
+
+.
+ However, SS-
+\begin_inset Formula $+$
+\end_inset
+
+ can only be applied maximally 
 \begin_inset Formula $k$
 \end_inset
 
@@ -4531,11 +4870,15 @@ We note that there are no circularities in this graph, except for the SS
 
 -GNF.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Actually, if the proof construction algorithm is called to prove equivalence
- between two sums, then the SS rule might even be executed 
+ between two sums, then SS-
+\begin_inset Formula $+$
+\end_inset
+
+ might even be executed 
 \begin_inset Formula $d$
 \end_inset
 
@@ -4561,7 +4904,11 @@ Proving
 \begin_inset Formula $\min\left(n_{A},n_{B}\right)-1$
 \end_inset
 
- subsequent applications of SS.
+ subsequent applications of SS-
+\begin_inset Formula $+$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Proof
@@ -4581,7 +4928,11 @@ By induction on
 \begin_inset Formula $\min\left(n_{A},n_{B}\right)=1$
 \end_inset
 
-, so we cannot apply the SS rule here at all, because it requires that 
+, so we cannot apply the SS-
+\begin_inset Formula $+$
+\end_inset
+
+ rule here at all, because it requires that 
 \begin_inset Formula $n_{A}>1$
 \end_inset
 
@@ -4609,7 +4960,11 @@ By induction on
 \end_inset
 
 .
- Therefore one application of SS yields the new judgements 
+ Therefore one application of SS-
+\begin_inset Formula $+$
+\end_inset
+
+ yields the new judgements 
 \begin_inset Formula $a_{1}P_{1}\equiv b_{i}Q_{i}$
 \end_inset
 
@@ -4644,12 +4999,24 @@ By induction on
 \begin_inset Formula $\min\left(n_{A}^{'},n_{B}^{'}\right)-1=j^{'}-1=j$
 \end_inset
 
- subsequent applications of SS.
- Together with the first SS application, that makes 
+ subsequent applications of SS-
+\begin_inset Formula $+$
+\end_inset
+
+.
+ Together with the first SS-
+\begin_inset Formula $+$
+\end_inset
+
+ application, that makes 
 \begin_inset Formula $j+1=j'$
 \end_inset
 
- SS applications, which concludes the proof.
+ SS-
+\begin_inset Formula $+$
+\end_inset
+
+ applications, which concludes the proof.
 \end_layout
 
 \end_deeper
