@@ -36,6 +36,7 @@
 % algorithms
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+% to fix nested calls in algorithms --- if not, nested calls produce LaTeX errors
 \usepackage{fixltx2e}
 \MakeRobust{\Call}
 \end_preamble
