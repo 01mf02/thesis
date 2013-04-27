@@ -1899,7 +1899,7 @@ Let
  such that
 \begin_inset Formula 
 \begin{equation}
-\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Concl{r_{1}}=\Concl{r_{2}}\iff r_{1}=r_{2},
+\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Concl{r_{1}}=\Concl{r_{2}}\iff r_{1}=r_{2},\label{eq:Unique-conclusions}
 \end{equation}
 
 \end_inset
@@ -1907,7 +1907,7 @@ Let
 
 \begin_inset Formula 
 \begin{equation}
-\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].
+\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].\label{eq:Premstartimes}
 \end{equation}
 
 \end_inset
@@ -2370,19 +2370,17 @@ Grammar:
 \end_layout
 
 \end_deeper
-\begin_layout Theorem
-The proof system in definition 
+\begin_layout Standard
+We show completeness constructively, presenting our proof construction algorithm
+ in 
 \begin_inset CommandInset ref
-LatexCommand ref
-reference "Proof-definition"
+LatexCommand formatted
+reference "chap:Proof-construction-algorithm"
 
 \end_inset
 
- is complete.
-\end_layout
-
-\begin_layout Proof
-TODO!
+ which we prove to find an equivalence proof of two polynomials if the languages
+ of the polynomials are equivalent.
 \end_layout
 
 \begin_layout Chapter
@@ -4031,64 +4029,84 @@ Appendix
 \end_layout
 
 \begin_layout Standard
-Here we prove that our proof rules are sound.
+Here we prove that our proof construction rules are sound and complete.
+ To show soundness, we have to verify that the conditions in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Unique-conclusions"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Premstartimes"
+
+\end_inset
+
+ are met.
+ To show completeness, we have to assure that each construction rule preserves
+ truth when going from conclusion to the premises, and that each proof construct
+ion terminates.
+\end_layout
+
+\begin_layout Section*
+Soundness
+\end_layout
+
+\begin_layout Standard
+As our proof construction algorithm takes care of the condition in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Unique-conclusions"
+
+\end_inset
+
+, we only have to verify at this point whether 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Premstartimes"
+
+\end_inset
+
+ is met.
+ Informally, that means we have to make sure that in any proof tree constructed
+ by our rules, all paths between equivalent judgements have to pass at least
+ once a 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule.
+\end_layout
+
+\begin_layout Standard
+First, we develop the proof rules until we encounter a judgement where we
+ cannot determine a unique rule in advance, and describe which rules might
+ be applicable at that point:
 \end_layout
 
 \begin_layout Itemize
 pp:
 \begin_inset Formula 
 \[
-\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\unaryinf{\binaryinf{\unaryinf{\axiomc{}}B{\Gr B}{\text{gr (Gr)}}}{\axiom{\Gr B}{\Gr A}}B{\Gr A}{\text{trans (psS)}}}{\Gr A}B{\text{sym (sSpP)}}}AB{\text{trans (pp)}}}
+\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\unaryinf{\axiomc{\dots}}{\Gr A}B{\text{sym (sSp)}}}AB{\text{trans (pp)}}}
 \]
 
 \end_inset
 
-When we have to prove 
-\begin_inset Formula $\Gr B\equiv\Gr A$
-\end_inset
-
-, we either have to apply ss or SS.
+We have to consider only sSp as subsequent non-strict rule.
 \end_layout
 
 \begin_layout Itemize
 pP-G:
 \begin_inset Formula 
 \[
-\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\unaryinf{\axiom{\prod B_{y}}{\Gr A}}{\Gr A}{\prod B_{y}}{\text{sym (sSpP)}}}A{\prod B_{y}}{\text{trans (pP-G)}}}
+\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\unaryinf{\axiomc{\dots}}{\Gr A}{\prod B_{y}}{\text{sym (sSP)}}}A{\prod B_{y}}{\text{trans (pP-G)}}}
 \]
 
 \end_inset
 
-To prove 
-\begin_inset Formula $\prod B_{y}\equiv\Gr A$
-\end_inset
-
-, we have to distinguish the cases where 
-\begin_inset Formula $\Gr A$
-\end_inset
-
- is a sum of a single or of multiple elements: If 
-\begin_inset Formula $\Gr A$
-\end_inset
-
- is a sum of a single element, we have the choice between applying Ps-
-\begin_inset Formula $\times$
-\end_inset
-
- and Ps-V; if it is a sum of multiple elements, we may apply PS-
-\begin_inset Formula $\times$
-\end_inset
-
- or PS-G.
- The cases for Ps-
-\begin_inset Formula $\times$
-\end_inset
-
- and PS-
-\begin_inset Formula $\times$
-\end_inset
-
- are trivial, so we refer to Ps-V and PS-G only.
+We consider sSP.
 \end_layout
 
 \begin_layout Itemize
@@ -4100,19 +4118,39 @@ pP-B:
 
 \end_inset
 
-
+We have to consider pP-G as subsequent rule.
 \end_layout
 
 \begin_layout Itemize
-psS:
+psS: 
 \begin_inset Formula 
 \[
-\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{\Gr A}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}A{\sum b_{y}B_{y}}{\text{trans (psS)}}
+\bussproof{\binaryinf{\unaryinf{\axiomc{}}A{\Gr A}{\text{gr (Gr)}}}{\axiom{\Gr A}{\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}}}A{\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}}{\text{trans (psS)}}}
 \]
 
 \end_inset
 
+When we have to prove 
+\begin_inset Formula $\Gr A\equiv\sum_{y=1}^{n_{B}\geq1}b_{y}Q_{y}$
+\end_inset
 
+, we either have to apply ss or SS.
+\end_layout
+
+\begin_layout Itemize
+Pp:
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiom B{\prod A_{x}}}{\prod A_{x}}B{\text{sym (Pp)}}}
+\]
+
+\end_inset
+
+To prove 
+\begin_inset Formula $B\equiv\prod A_{x}$
+\end_inset
+
+, we have to consider pP-G and pP-B.
 \end_layout
 
 \begin_layout Itemize
@@ -4157,6 +4195,11 @@ Because of
 \end_inset
 
  is justified.
+ The right application of PP-
+\begin_inset Formula $\times$
+\end_inset
+
+ is obvious.
 \end_layout
 
 \begin_layout Itemize
@@ -4188,10 +4231,64 @@ PS-G:
 \end_layout
 
 \begin_layout Itemize
+sSp: 
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}B{\sum a_{x}A_{x}}{\text{trans (psS)}}}{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}B{\text{sym (sSp)}}}
+\]
+
+\end_inset
+
+We have to consider psS.
+\end_layout
+
+\begin_layout Itemize
+sSP:
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiom Q{\sum a_{x}A_{x}}}{\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}}Q{\text{sym (sSp)}}}
+\]
+
+\end_inset
+
+To prove 
+\begin_inset Formula $Q\equiv\sum_{x=1}^{n_{A}\geq1}a_{x}A_{x}$
+\end_inset
+
+, we have to distinguish the cases where we have a sum of a single (
+\begin_inset Formula $n_{A}=1$
+\end_inset
+
+) or of multiple (
+\begin_inset Formula $n_{A}>1$
+\end_inset
+
+) elements: If we have a sum of a single element, we have the choice between
+ applying Ps-
+\begin_inset Formula $\times$
+\end_inset
+
+ and Ps-V; if we have a sum of multiple elements, we may apply PS-
+\begin_inset Formula $\times$
+\end_inset
+
+ or PS-G.
+ The cases for Ps-
+\begin_inset Formula $\times$
+\end_inset
+
+ and PS-
+\begin_inset Formula $\times$
+\end_inset
+
+ are trivial, so we only have to consider Ps-V and PS-G as subsequent rules.
+\end_layout
+
+\begin_layout Itemize
 SS:
 \begin_inset Formula 
 \[
-\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{1}A_{1}}{b_{i}B_{i}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{2}A_{2}}{b_{j}B_{j}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinfc{\axiomc{\dots}}{\unaryinfc{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{n_{A}}A_{n_{A}}}{b_{l}B_{l}}{\ensuremath{\times}\text{ (ss)}}}{\iddots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\dots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum_{x=2}^{n_{A}}A_{x}}{\sum_{y=1}^{i-1}b_{y}B_{y}+\sum_{y=i+1}^{n_{B}}b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}
+\bussproof{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{1}P_{1}}{b_{i}Q_{i}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinf{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{2}P_{2}}{b_{j}Q_{j}}{\ensuremath{\times}\text{ (ss)}}}{\binaryinfc{\axiomc{\dots}}{\unaryinfc{\binaryinf{\axiomc{\dots}}{\axiomc{\dots}}{a_{n_{A}}P_{n_{A}}}{b_{l}Q_{l}}{\ensuremath{\times}\text{ (ss)}}}{\iddots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\dots}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum_{x=2}^{n_{A}}a_{x}P_{x}}{\sum_{y=1}^{i-1}b_{y}Q_{y}+\sum_{y=i+1}^{n_{B}}b_{y}Q_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}{\sum a_{x}P_{x}}{\sum b_{y}Q_{y}}{\ensuremath{+}\mbox{\text{ (SS)}}}}
 \]
 
 \end_inset
@@ -4227,7 +4324,7 @@ begin{tikzpicture}[->, >=stealth, node distance = 1cm, auto]
 
   
 \backslash
-node (Pp)                                             {Pp};
+node (Pp)                            {Pp};
 \end_layout
 
 \begin_layout Plain Layout
@@ -4402,7 +4499,7 @@ end{tikzpicture}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Dependency graph for proof rules.
+Dependency graph for non-strict proof rules.
 \end_layout
 
 \end_inset
@@ -4412,7 +4509,204 @@ Dependency graph for proof rules.
 
 \end_inset
 
+From this rule unfolding process, we construct a rule dependency graph:
+ This dependency graph visualises which non-strict proof rules are candidates
+ for direct consequences of other non-strict proof rules.
+ For example, we see that from the Ps-V node in the graph, two outgoing
+ edges to PP-D and PP-B exist: This indicates that after using the Ps-V
+ rule, the only non-strict rules we might have to apply in the subsequent
+ step are PP-D and PP-B.
+\end_layout
 
+\begin_layout Standard
+We note that there are no circularities in this graph, except for the SS
+ rule.
+ However, the SS rule can only be applied maximally 
+\begin_inset Formula $k$
+\end_inset
+
+ subsequent times, where the grammar is in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Actually, if the proof construction algorithm is called to prove equivalence
+ between two sums, then the SS rule might even be executed 
+\begin_inset Formula $d$
+\end_inset
+
+ subsequent times, where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the number of terms of the sum with fewer elements.
+\end_layout
+
+\end_inset
+
+ This means that after a fixed number of rule applications, we always reach
+ a strict rule.
+\end_layout
+
+\begin_layout Lemma
+Proving 
+\begin_inset Formula $\sum_{x=1}^{n_{A}>1}a_{x}P_{x}\equiv\sum_{y=1}^{n_{B}>1}$
+\end_inset
+
+ requires 
+\begin_inset Formula $\min\left(n_{A},n_{B}\right)-1$
+\end_inset
+
+ subsequent applications of SS.
+\end_layout
+
+\begin_layout Proof
+By induction on 
+\begin_inset Formula $j=\min\left(n_{A},n_{B}\right)-1$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $j=0$
+\end_inset
+
+: 
+\begin_inset Formula $\min\left(n_{A},n_{B}\right)=1$
+\end_inset
+
+, so we cannot apply the SS rule here at all, because it requires that 
+\begin_inset Formula $n_{A}>1$
+\end_inset
+
+ and 
+\begin_inset Formula $n_{B}>1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $j^{'}=j+1$
+\end_inset
+
+: 
+\begin_inset Formula $\min\left(n_{A},n_{B}\right)=j^{'}+1$
+\end_inset
+
+, and wlog 
+\begin_inset Formula $n_{A}=j^{'}+1$
+\end_inset
+
+ and 
+\begin_inset Formula $n_{B}\geq j^{'}+1$
+\end_inset
+
+.
+ Therefore one application of SS yields the new judgements 
+\begin_inset Formula $a_{1}P_{1}\equiv b_{i}Q_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{x=2}^{j^{'}+1}a_{x}P_{x}\equiv\sum_{y=1}^{i-1}b_{y}Q_{y}\equiv\sum_{y=i+1}^{n_{B}}b_{y}Q_{y}$
+\end_inset
+
+.
+ We see that the sum on the left side consists of 
+\begin_inset Formula $n_{A}^{'}=j^{'}$
+\end_inset
+
+ elements, and the sum on the right side consists of 
+\begin_inset Formula $n_{B}^{'}=n_{B}-1$
+\end_inset
+
+ elements.
+ As 
+\begin_inset Formula $n_{B}\geq j^{'}+1$
+\end_inset
+
+, 
+\begin_inset Formula $n_{B}^{'}\geq j^{'}$
+\end_inset
+
+, therefore 
+\begin_inset Formula $\min\left(n_{A}^{'},n_{B}^{'}\right)=j^{'}$
+\end_inset
+
+.
+ By induction, the new sum requires 
+\begin_inset Formula $\min\left(n_{A}^{'},n_{B}^{'}\right)-1=j^{'}-1=j$
+\end_inset
+
+ subsequent applications of SS.
+ Together with the first SS application, that makes 
+\begin_inset Formula $j+1=j'$
+\end_inset
+
+ SS applications, which concludes the proof.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section*
+Completeness
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "Proof-EXP"
+
+\end_inset
+
+For two polynomials 
+\begin_inset Formula $p_{1},p_{2}\in\mathcal{P}$
+\end_inset
+
+ with 
+\begin_inset Formula $\lang{p_{1}}=\lang{p_{2}}$
+\end_inset
+
+, we can construct a proof not containing 
+\begin_inset Formula $\bot$
+\end_inset
+
+ in EXP.
+\end_layout
+
+\begin_layout Proof
+Comme toujours, TODO.
+\end_layout
+
+\begin_layout Theorem
+The proof system in definition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Proof-definition"
+
+\end_inset
+
+ is complete.
+\end_layout
+
+\begin_layout Proof
+Is a direct consequence of theorem 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "Proof-EXP"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
