@@ -85,11 +85,13 @@ let rec norm_of_variables (norms : norm_list) =
  *)
 (* production_rules -> norm_list *)
 let norms_of_production_rules (prods : production_rules) =
-  let rec norm_list_of_rules norms = function
-    | [] -> []
+  let rec norm_list_of_rules norms acc = function
+    | [] -> acc
     | (_, hdv)::tl ->
-      try (norm_of_variables norms hdv)::norm_list_of_rules norms tl
-      with Norm_not_found -> norm_list_of_rules norms tl in
+      let acc' =
+        try (norm_of_variables norms hdv)::acc
+        with Norm_not_found -> acc in
+      norm_list_of_rules norms acc' tl in
 
   let rec unique f = function
     | [] -> true
@@ -99,7 +101,7 @@ let norms_of_production_rules (prods : production_rules) =
     | [] -> norms
     | (hdv, hdr)::tl ->
       let first_norm = norm_of_variables norms (snd (hd hdr)) in
-      let min_norm = min_list (norm_list_of_rules norms hdr) in
+      let min_norm = min_list (norm_list_of_rules norms [] hdr) in
       if not (unique (fun (t1, _) (t2, _) -> t1 <> t2) hdr) then
         failwith "Terminals are not unique!"
       else if first_norm > min_norm then
