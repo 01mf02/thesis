@@ -42,11 +42,11 @@ let sum_of_variable_rules = function
   | (rh::rt) -> Sum(rh, rt);;
 
 let equivalences_of_rule = function
-  | Refl -> []
+  | Refl
   | Gr -> []
   | Sym e -> [e]
-  | Plus  (e1, e2) -> [e1; e2]
-  | Times (e1, e2) -> [e1; e2]
+  | Plus  (e1, e2)
+  | Times (e1, e2)
   | Trans (e1, e2) -> [e1; e2];;
 
 let pair_map f (x, y) = (f x, f y);;
@@ -64,8 +64,14 @@ let rec expression_equals = function
         expression_equals (pair_map product_of_variables (sav, sbv)))
     (sbh::sbt)) (sah::sat);;
 
-let is_sequent_of_equivalence eq (seq, _) = seq = eq;;
+let sequent_of_equivalence seqs eq =
+  find (fun (eq', _) -> eq = eq') seqs;;
 
+let exists_sequent_of_equivalence seqs eq =
+  exists (fun (eq', _) -> eq = eq') seqs;;
+
+let sequents_of_rule seqs rl =
+  map (sequent_of_equivalence seqs) (equivalences_of_rule rl);;
 
 (************************************************
  *************** Printing functions *************
@@ -116,7 +122,7 @@ let latex_of_sequents seqs eq_root =
     if mem eq proven then
       aux "sj" eq []
     else
-      let (_, r) = find (is_sequent_of_equivalence eq) seqs in
+      let (_, r) = sequent_of_equivalence seqs eq in
       match r with
       | Refl           -> aux "refl"     eq []
       | Gr             -> aux "gr"       eq []
@@ -250,10 +256,38 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
       if mem eqh eqs then raise Circular_sequent
       else
         let unproven_eqs = filter
-          (fun e -> not (exists (is_sequent_of_equivalence e) seqs)) eqs in
+          (fun e -> not (exists_sequent_of_equivalence seqs e)) eqs in
         construct_proof ((eqh, rule)::seqs) (unproven_eqs@eqt) in
 
   construct_proof [] [eq];;
+
+
+(************************************************
+ *************** Proof verification *************
+ ************************************************)
+
+let verify_proof seqs =
+
+  let unique_conclusions =
+    for_all (fun (e1, r1) -> for_all (fun (e2, r2) ->
+      if e1 = e2 then r1 = r2 else true) seqs) seqs in
+
+  let rec premstartimes acc = function
+    | (_, Times (_)) -> acc
+    | (eq, rl) as seq ->
+      if mem seq acc then
+        []
+      else
+        fold_left premstartimes (seq::acc) (sequents_of_rule seqs rl) in
+
+  let conclusions_proved =
+    for_all (fun seq ->
+      let premises = equivalences_of_rule (snd seq) in
+      for_all (fun eq ->
+        let sp = sequent_of_equivalence seqs eq in
+        not (mem seq (premstartimes [] sp))) premises) seqs in
+
+  unique_conclusions && conclusions_proved;;
 
 
 (************************************************
