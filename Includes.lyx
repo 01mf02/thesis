@@ -78,7 +78,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\Gr}[1]{\operatorname{Gr}\left(#1\right)}
+\newcommand{\Gr}[1]{\operatorname{Gr}\left(#1\right)}
 {\mathrm{Gr}\left(#1\right)}
 \end_inset
 
@@ -87,7 +87,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
+\newcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
 {\mathrm{Concl}\left(#1\right)}
 \end_inset
 
@@ -96,7 +96,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}\left(#1\right)}
+\newcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}\left(#1\right)}
 {\mathrm{Prem}_{\times}^{*}\left(#1\right)}
 \end_inset
 
@@ -105,7 +105,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
+\newcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
 {\mathrm{Prem}\left(#1\right)}
 \end_inset
 
@@ -114,7 +114,16 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\length}[1]{\operatorname{length}\left(#1\right)}
+\newcommand{\PremR}[1]{\operatorname{Prem_{\mathcal{R}}}\left(#1\right)}
+{\mathrm{Prem}_{\mathcal{R}}\left(#1\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\length}[1]{\operatorname{length}\left(#1\right)}
 {\mathrm{length}\left(#1\right)}
 \end_inset
 
@@ -123,7 +132,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\norm}[1]{\left\Vert #1\right\Vert }
+\newcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
 
@@ -131,7 +140,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
+\newcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
 {\mathcal{L}\left(#1\right)}
 \end_inset
 
@@ -163,7 +172,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
+\newcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
 \end_inset
 
 
@@ -171,7 +180,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
+\newcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
 \end_inset
 
 
@@ -179,7 +188,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\sj}[2]{\unaryinf{\axiomc{}}{#1}{#2}{sj}}
+\newcommand{\sj}[2]{\axiomc{\boxed{#1\proofsep#2}}}
 \end_inset
 
 

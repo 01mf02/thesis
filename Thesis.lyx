@@ -132,32 +132,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Remove first paragraph, or move into second paragraph.
-\end_layout
-
-\end_inset
-
-Imagine you are tranquilly riding the tramway, when a ticket inspector suddenly
- steps up to you and demands to see your transport ticket.
- You, proud owner of an annual public transport subscription, suddenly realize
- that you left your ticket at home.
- At this point you might try to convince the inspector that you possess
- a valid ticket, but in general, you will end up paying a fine, because
- the inspector will only accept a valid ticket.
- This is because she can not trust your oral statement, but requires a 
-\emph on
-proof
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-In computer science, there exist many algorithms behaving like the unfortunate
- tram passenger in our example: These algorithms return a certain result,
+In computer science, there exist many algorithms that return a certain result,
  such as 
 \begin_inset Quotes eld
 \end_inset
@@ -174,11 +149,15 @@ no
 \begin_inset Quotes erd
 \end_inset
 
-, but do not certify their answer with an easily verifiable proof.
- Unlike the ticket inspector, users usually trust these algorithms nonetheless,
- because their correctness is proven, but it is still possible that an implement
-ation of an algorithm may be erroneous, or the machine executing the algorithm
- misbehaves, thus possibly producing a wrong result despite a flawless algorithm.
+, but do not certify their answer with an easily verifiable 
+\emph on
+proof
+\emph default
+.
+ Nonetheless, users usually trust these algorithms, because their correctness
+ is proven, but it is still possible that an implementation of an algorithm
+ may be erroneous, or the machine executing the algorithm misbehaves, thus
+ possibly producing a wrong result despite a flawless algorithm.
 \end_layout
 
 \begin_layout Standard
@@ -198,7 +177,7 @@ key "hirshfeld1996"
 \end_inset
 
 , such an algorithm is presented, which is in P.
- Ten years later,
+ Ten years later, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lasota2006"
@@ -1486,9 +1465,114 @@ In addition to then checking that the variables are sorted by ascending
 
 \end_inset
 
+We can show that the norms of grammar variables 
+\begin_inset Formula $X_{i}$
+\end_inset
 
+ are exponentially bounded by their index 
+\begin_inset Formula $i$
+\end_inset
+
+.
 \end_layout
 
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "Norm-bounded"
+
+\end_inset
+
+Given a restricted SDG 
+\begin_inset Formula $G=\left(V,T,P\right)$
+\end_inset
+
+ in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF, the norm of each variable 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is bounded by 
+\begin_inset Formula $\sum_{x=0}^{i}k^{x}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+We prove this by induction on 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $i=1$
+\end_inset
+
+: By definition, for all production rules 
+\begin_inset Formula $X_{1}\to a_{1j}\alpha_{1j}$
+\end_inset
+
+ it holds that 
+\begin_inset Formula $\alpha_{1j}\overset{!}{=}\emptyset$
+\end_inset
+
+, therefore 
+\begin_inset Formula $\norm{X_{1}}=1\leq\sum_{x=0}^{1}k^{x}=1+k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $i+1$
+\end_inset
+
+: The production rules of 
+\begin_inset Formula $X_{i+1}$
+\end_inset
+
+ may contain only variables of degree 
+\begin_inset Formula $i$
+\end_inset
+
+ or smaller.
+ The greatest norm of 
+\begin_inset Formula $X_{i+1}$
+\end_inset
+
+ can therefore be achieved by a production rule with a maximum number of
+ appearances of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+, so 
+\begin_inset Formula $X_{i+1}\to a\left(X_{i}\right)^{k}$
+\end_inset
+
+.
+ With our induction hypothesis 
+\begin_inset Formula $\norm{X_{i}}\leq\sum_{x=0}^{i}k^{x}$
+\end_inset
+
+, we calculate the norm of 
+\begin_inset Formula $X_{i+1}$
+\end_inset
+
+ to be 
+\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}=1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Restricted polynomials
 \end_layout
@@ -1884,299 +1968,112 @@ reference!
  grammars.
 \end_layout
 
-\begin_layout Definition
-Let 
-\begin_inset Formula $G=(V,T,P)$
-\end_inset
-
- be a context-free grammar and 
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
- the set of polynomials over variables 
-\begin_inset Formula $V$
-\end_inset
-
- and terminals 
-\begin_inset Formula $T$
-\end_inset
-
-.
- Based on this, we define the set of judgements as 
-\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
-\end_inset
-
-.
-\end_layout
-
 \begin_layout Standard
-With this definition in place, we now define equivalence proofs:
-\end_layout
-
-\begin_layout Definition
-\begin_inset CommandInset label
-LatexCommand label
-name "Proof-definition"
-
-\end_inset
-
-Let 
-\begin_inset Formula $G$
-\end_inset
-
- be a context-free grammar.
- We call 
-\begin_inset Formula $G$
-\end_inset
-
--equivalence proof every finite set of rules 
-\begin_inset Formula $\mathcal{R}$
-\end_inset
-
- such that
-\begin_inset Formula 
-\begin{equation}
-\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Concl{r_{1}}=\Concl{r_{2}}\iff r_{1}=r_{2},\label{eq:Unique-conclusions}
-\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{equation}
-\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right].\label{eq:Premstartimes}
-\end{equation}
-
-\end_inset
-
-In this context, we define
-\begin_inset Formula 
-\[
-\Premstartimes r:=\begin{cases}
-\emptyset & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
-r\cup\bigcup_{\begin{aligned}r_{p} & \in\mathcal{R},\\
-\Concl{r_{p}} & \in\Prem r
-\end{aligned}
-}\Premstartimes{r_{p}} & \mathrm{else}.
-\end{cases}
-\]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Make a pretty example to explain premstartimes.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Schemes of rules:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Indentation check!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Symmetry: 
-\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Transitivity: 
-\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Sum: 
-\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Schemes of strict rules:
-\end_layout
-
-\begin_layout Itemize
-Reflexivity: 
-\begin_inset Formula $\bussproof{\refl xx}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Product: 
-\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Strict rules:
-\end_layout
-
-\begin_layout Itemize
-Grammar: 
-\begin_inset Formula $\bussproof{\gr X{\Gr X}}$
-\end_inset
-
-, for each variable 
-\begin_inset Formula $X\in V$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-For each rule 
-\begin_inset Formula $\unrulec{P_{1}\dots P_{n}}C{rule}$
-\end_inset
-
-, we have that 
-\begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
-\end_inset
-
-.
- For strict rules, we even have 
-\begin_inset Formula $\forall i:\,\norm{P_{i}}<\norm C$
-\end_inset
-
-.
- This is the main distinguishing feature between the two types of rules;
- we will see later why it is important.
-\end_layout
-
-\begin_layout Definition
-Given two variable words 
-\begin_inset Formula $w_{1},w_{2}\in V^{+}$
-\end_inset
-
-, we call 
-\begin_inset Formula $w\in\left(V\cup T\right)^{+}$
-\end_inset
-
- a witness of non-equivalence of 
-\begin_inset Formula $w_{1}$
-\end_inset
-
-and 
-\begin_inset Formula $w_{2}$
-\end_inset
-
- if
-\begin_inset Formula 
-\[
-w\in\left[\mathcal{L}(w_{2})\backslash\mathcal{L}(w_{1})\right]\cup\left[\mathcal{L}(w_{1})\backslash\mathcal{L}(w_{2})\right].
-\]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Does there always exist a 
-\begin_inset Formula $w$
-\end_inset
-
- of non-exponential length?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-algebra, equality, soundness/completeness
-\end_layout
-
-\end_inset
-
-
+To give an intuition of our proof system, we first present some simple example
+ proofs, then define the system rigorously.
 \end_layout
 
 \begin_layout Example
-Consider the following rules:
-\begin_inset Formula 
-\[
-\bussproof{\syminf XY{\syminf YX{\axiom XY}}}
-\]
-
-\end_inset
-
-This is obviously an invalid proof, as it would allow us to show the equivalence
- of two variables independently of the grammar.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: this is unclear, write sj over X=Y.
- Explain sj!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Example
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write about induction.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Example
-Given the grammar 
-\begin_inset Formula $G$
-\end_inset
-
- with production rules 
+Consider the following grammar:
 \begin_inset Formula 
 \begin{align*}
-X & \to a+bX\\
-Y & \to a+bY,
+X & \to a+bC_{1}\\
+Y & \to a+bC_{2}\\
+C_{1} & \to c\\
+C_{2} & \to c
 \end{align*}
 
 \end_inset
 
-the following is a valid proof:
+We see at a glance that 
+\begin_inset Formula $C_{1}\equiv C_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ hold.
+ Let us begin with a proof of 
+\begin_inset Formula $C_{1}\equiv C_{2}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\bussproof{\transinf{C_{1}}{C_{2}}{\gr{C_{1}}c}{\syminf c{C_{2}}{\gr{C_{2}}c}}}
+\]
+
+\end_inset
+
+In this proof, we used the transitivity and symmetry properties of the equivalen
+ce relation, as well as the grammar rule, which states that a variable is
+ equivalent with its production rules.
+\end_layout
+
+\begin_layout Example
+Now we prove 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\bussproof{\transinf XY{\gr X{a+bC_{1}}}{\syminf{a+bC_{1}}Y{\transinf Y{a+bC_{1}}{\gr Y{a+bC_{2}}}{\plusinf{a+bC_{2}}{a+bC_{1}}{\refl aa}{\timesinf{bC_{2}}{bC_{1}}{\refl bb}{\transinf{C_{2}}{C_{1}}{\gr{C_{2}}c}{\syminf c{C_{1}}{\gr{C_{1}}c}}}}}}}}
+\]
+
+\end_inset
+
+In addition to the rules already presented in the previous proof, we used
+ some new rules in this proof, namely the reflexivity property of the equivalenc
+e relation, as well as the 
+\begin_inset Formula $+$
+\end_inset
+
+ and 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules: The latter two basically signify that sums and products can be split
+ up in smaller parts whose equivalence is proven separately --- divide et
+ impera.
+\end_layout
+
+\begin_layout Standard
+Up to this point, we only considered grammars with a fixed number of producible
+ words.
+ That changes with the next example grammar, which produces an arbitrary
+ number of different words.
+\end_layout
+
+\begin_layout Example
+Consider the following grammar: 
+\begin_inset Formula 
+\begin{align*}
+X & \to a+bX\\
+Y & \to a+bY.
+\end{align*}
+
+\end_inset
+
+We see that 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ produce the language 
+\begin_inset Formula $\lang X=\lang Y=b^{*}a$
+\end_inset
+
+.
+ Therefore we prove 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+:
 \begin_inset Formula 
 \[
 \bussproof{\transinf XY{\gr X{a+bX}}{\syminf{a+bX}Y{\transinf Y{a+bX}{\gr Y{a+bY}}{\plusinf{a+bY}{a+bX}{\refl aa}{\timesinf{bY}{bX}{\refl bb}{\syminf YX{\sj XY}}}}}}}
@@ -2184,10 +2081,51 @@ the following is a valid proof:
 
 \end_inset
 
+The boxed judgement 
+\begin_inset Formula $\boxed{X\equiv Y}$
+\end_inset
 
+ signifies that this judgement was already proven at a different place,
+ which allows us to prove the equivalence of variables inductively.
 \end_layout
 
-\end_deeper
+\begin_layout Standard
+While references as in the example above allow use to reason inductively,
+ it should be clear that we need to restrict such references in our proofs
+ to keep our proof system sound; see the next example.
+\end_layout
+
+\begin_layout Example
+Consider the following 
+\begin_inset Quotes eld
+\end_inset
+
+proof
+\begin_inset Quotes erd
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\bussproof{\syminf XY{\syminf YX{\sj XY}}}
+\]
+
+\end_inset
+
+This is obviously an invalid proof, as it would allow us otherwise to show
+ the equivalence of any two variables.
+ The reason why it is invalid is of course the boxed judgement 
+\begin_inset Formula $\boxed{X\equiv Y}$
+\end_inset
+
+, which should not be applicable in such a context.
+\end_layout
+
+\begin_layout Standard
+So the question is as follows: At which points may we refer to a judgement
+ appearing in a conclusion at a different place?
+\end_layout
+
 \begin_layout Standard
 We note that in both proofs above, we have a certain circularity, as 
 \begin_inset Formula $X\equiv Y$
@@ -2195,13 +2133,13 @@ We note that in both proofs above, we have a certain circularity, as
 
  appears once in a conclusion and once in a premise following from the conclusio
 n.
- This circularity obviously leads to a contradiction for the first proof,
- whereas we claim that the second proof is correct.
+ This circularity obviously leads to a contradiction for the second proof,
+ whereas we claim that the first proof is correct.
  Why?
 \end_layout
 
 \begin_layout Standard
-To show that the second proof is correct, let us assume that 
+To show that the first proof is correct, let us assume that 
 \begin_inset Formula $X\not\equiv Y$
 \end_inset
 
@@ -2231,7 +2169,7 @@ To show that the second proof is correct, let us assume that
 , we could find a smaller witness of non-equivalence, as there exists no
  rule which increases the norm when going from a conclusion to a premise,
  but there exists a rule which decreases the norm --- the product rule.
- As we than have a smaller witness of non-equivalence than 
+ As we then have a smaller witness of non-equivalence than 
 \begin_inset Formula $w_{W}$
 \end_inset
 
@@ -2248,7 +2186,400 @@ To show that the second proof is correct, let us assume that
 \end_layout
 
 \begin_layout Standard
-We now generalise the argument employed in the example above.
+From this argumentation, we deduce that we can refer from one judgement
+ to another judgement only if on all paths between the two judgements, there
+ is at least one instance of the 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+Schemes of non-strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+Schemes of strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\refl xx}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\gr X{\Gr X}}$
+\end_inset
+
+, 
+\begin_inset Formula $\forall X\in V$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Proof-rules"
+
+\end_inset
+
+Proof rules.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset CommandInset label
+LatexCommand label
+name "Proof-definition"
+
+\end_inset
+
+Let 
+\begin_inset Formula $G=(V,T,P)$
+\end_inset
+
+ be a context-free grammar, 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+ the set of polynomials over variables 
+\begin_inset Formula $V$
+\end_inset
+
+ and terminals 
+\begin_inset Formula $T$
+\end_inset
+
+, and 
+\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
+\end_inset
+
+ the set of judgements over 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+.
+ We call 
+\begin_inset Formula $G$
+\end_inset
+
+-equivalence proof every finite set of rules 
+\begin_inset Formula $\mathcal{R}$
+\end_inset
+
+, being instances of the proof rules in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Proof-rules"
+
+\end_inset
+
+, such that
+\begin_inset Formula 
+\begin{equation}
+\forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Concl{r_{1}}=\Concl{r_{2}}\iff r_{1}=r_{2},\label{eq:Unique-conclusions}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right],\label{eq:Conclusions-proved}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\Prem r$
+\end_inset
+
+ and 
+\begin_inset Formula $\Concl r$
+\end_inset
+
+ denote the set of premises respectively conclusions of a rule 
+\begin_inset Formula $r\in\mathcal{R}$
+\end_inset
+
+, and
+\begin_inset Formula 
+\[
+\PremR r:=\left\{ r_{p}|r_{p}\in\mathcal{R}\land\Concl{r_{p}}\in\Prem r\right\} ,
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\Premstartimes r:=\begin{cases}
+\emptyset & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
+r\cup\bigcup_{r_{p}\in\PremR r}\Premstartimes{r_{p}} & \mathrm{else}.
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make a pretty example to explain premstartimes.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us dissect this definition.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Unique-conclusions"
+
+\end_inset
+
+ we demand that there can not exist two different rules in the same proof
+ having equal conclusions.
+ This makes it possible to always find one unique proof rule given a judgement,
+ thus simplifying matters.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Conclusions-proved"
+
+\end_inset
+
+, we demand that for each premise 
+\begin_inset Formula $p$
+\end_inset
+
+ of a rule 
+\begin_inset Formula $r$
+\end_inset
+
+, there exists another rule 
+\begin_inset Formula $r_{p}$
+\end_inset
+
+ having the premise 
+\begin_inset Formula $p$
+\end_inset
+
+ as conclusion.
+ Furthermore, all possible 
+\begin_inset Quotes eld
+\end_inset
+
+paths
+\begin_inset Quotes erd
+\end_inset
+
+ from 
+\begin_inset Formula $r$
+\end_inset
+
+ to 
+\begin_inset Formula $r_{p}$
+\end_inset
+
+ have to pass at least one instance of the 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule.
+ We express the latter property with the help of two functions:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\PremR r$
+\end_inset
+
+ denotes all rules whose conclusions are equal to a premise of 
+\begin_inset Formula $r$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\Premstartimes r$
+\end_inset
+
+ informally returns all rules 
+\begin_inset Quotes eld
+\end_inset
+
+above
+\begin_inset Quotes erd
+\end_inset
+
+ a rule until an instance of the 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule is encountered.
+\end_layout
+
+\begin_layout Standard
+Now we shall discuss another important matter which we have not touched
+ so far; namely the difference between strict and non-strict rules: For
+ each rule 
+\begin_inset Formula $\unrulec{P_{1}\dots P_{n}}C{rule}$
+\end_inset
+
+, we have that 
+\begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
+\end_inset
+
+.
+ For strict rules, however, we even have 
+\begin_inset Formula $\forall i:\,\norm{P_{i}}<\norm C$
+\end_inset
+
+.
+ This is the main difference between the two types of rules; we will see
+ later why it is important.
+\end_layout
+
+\begin_layout Definition
+Given two variable words 
+\begin_inset Formula $w_{1},w_{2}\in V^{+}$
+\end_inset
+
+, we call 
+\begin_inset Formula $w\in\left(V\cup T\right)^{+}$
+\end_inset
+
+ a witness of non-equivalence of 
+\begin_inset Formula $w_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{2}$
+\end_inset
+
+ if
+\begin_inset Formula 
+\[
+w\in\left[\mathcal{L}(w_{2})\backslash\mathcal{L}(w_{1})\right]\cup\left[\mathcal{L}(w_{1})\backslash\mathcal{L}(w_{2})\right].
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Does there always exist a 
+\begin_inset Formula $w$
+\end_inset
+
+ of non-exponential length?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Theorem
@@ -2417,6 +2748,19 @@ Grammar:
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Formally prove that proofs with premstartimes are correct.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 We show completeness constructively, presenting our proof construction algorithm
  in 
@@ -3385,22 +3729,59 @@ name "chap:Proof-construction-algorithm"
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+In this chapter, we present our proof algorithm, which works in a recursive
+ fashion: It accepts a sequence 
+\begin_inset Formula $rules$
+\end_inset
+
+ of given proof rules, and a sequence 
+\begin_inset Formula $toprove$
+\end_inset
+
+ consisting of judgements to prove.
+ If there are no judgements left to prove, we return 
+\begin_inset Formula $rules$
+\end_inset
+
+, which contains the final proof.
+ Otherwise, we look at the first judgement to prove and construct a proof
+ rule 
+\begin_inset Formula $r$
+\end_inset
+
+ for it, whose conclusion 
+\begin_inset Formula $\Concl r$
+\end_inset
+
+ will be equivalent to the judgement.
+ From this proof rule 
+\begin_inset Formula $r$
+\end_inset
+
+, we now take its premises and sort out those which have already been proven
+ by other already existing proof rules.
+ We add the remaining unproven premises 
+\begin_inset Formula $p$
+\end_inset
+
+ of 
+\begin_inset Formula $r$
+\end_inset
+
+ to the rest of the judgements to prove and call the algorithm again, with
+ our new rule added to the previous 
+\begin_inset Formula $rules$
+\end_inset
+
+.
+\begin_inset Float algorithm
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-
-
-\backslash
-begin{algorithm}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-caption{Proof algorithm}
-\end_layout
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
@@ -3413,9 +3794,9 @@ begin{algorithmic}[1]
 
 
 \backslash
-Function{Prove}{$seqs, toprove$}
+Function{prove}{$rules, toprove$}
 \backslash
-Comment{TODO: Comment!}
+Comment{construct proof}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3433,7 +3814,7 @@ emptyset$}
 \backslash
 State 
 \backslash
-textbf{return} $seqs$
+textbf{return} $rules$
 \end_layout
 
 \begin_layout Plain Layout
@@ -3451,7 +3832,7 @@ State $r
 \backslash
 gets 
 \backslash
-Call{Rule}{
+Call{rule}{
 \backslash
 Call{hd}{toprove}}$
 \end_layout
@@ -3464,11 +3845,13 @@ State $p
 \backslash
 gets 
 \backslash
-Call{Premises}{r} 
+Call{premises}{r} 
 \backslash
 backslash 
 \backslash
-Call{Conclusions}{seqs}$
+Call{conclusions}{rules}$ 
+\backslash
+Comment{unproven premises}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3479,11 +3862,7 @@ State
 \backslash
 textbf{return} $
 \backslash
-Call{Prove}{seqs 
-\backslash
-cup r, p 
-\backslash
-cup 
+Call{prove}{rules @ r, p @ 
 \backslash
 Call{tl}{toprove}}$
 \end_layout
@@ -3511,16 +3890,90 @@ EndFunction
 end{algorithmic}
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Plain Layout
+\begin_inset Caption
 
-
-\backslash
-end{algorithm}
+\begin_layout Plain Layout
+Proof algorithm.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+The functions used in our algorithm are:
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+rule
+\noun default
+ returns a proof rule for a given judgement, which will be the conclusion
+ of the new proof rule.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+hd
+\noun default
+ and 
+\noun on
+tl
+\noun default
+ return the head respectively tail of a sequence.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+premises
+\noun default
+ returns all premises of a given rule.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+conclusions
+\noun default
+ returns the set of all conclusions of a sequence of rules.
+\end_layout
+
+\begin_layout Itemize
+The operator @ concatenates two sequences.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $a\backslash b$
+\end_inset
+
+ returns all items of 
+\begin_inset Formula $a$
+\end_inset
+
+ which are not in 
+\begin_inset Formula $b$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The only non-trivial function of the algorithm is 
+\noun on
+rule
+\noun default
+, to which the next section is dedicated.
 \end_layout
 
 \begin_layout Section
@@ -4347,7 +4800,7 @@ reference "eq:Unique-conclusions"
  and 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Premstartimes"
+reference "eq:Conclusions-proved"
 
 \end_inset
 
@@ -4372,7 +4825,7 @@ reference "eq:Unique-conclusions"
 , we only have to verify at this point whether 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Premstartimes"
+reference "eq:Conclusions-proved"
 
 \end_inset
 
@@ -5115,7 +5568,7 @@ The only difference between PS-
 However, this violates the condition in 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Premstartimes"
+reference "eq:Conclusions-proved"
 
 \end_inset
 
@@ -5130,7 +5583,7 @@ reference "eq:Premstartimes"
 Even if a proof rule locally satisfies 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Premstartimes"
+reference "eq:Conclusions-proved"
 
 \end_inset
 
@@ -5191,7 +5644,16 @@ For two polynomials
 \end_layout
 
 \begin_layout Proof
-Comme toujours, TODO.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO.
+\end_layout
+
+\end_inset
+
+As mentioned before, we can 
 \end_layout
 
 \begin_layout Theorem
