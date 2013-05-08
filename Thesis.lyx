@@ -4687,6 +4687,24 @@ SS-
 The validity of the proof strategies is proven in the appendix.
 \end_layout
 
+\begin_layout Lemma
+The presented proof strategy constructs a rule from a given judgement in
+ polynomial time.
+\end_layout
+
+\begin_layout Proof
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Witness of non-equivalence
 \end_layout
@@ -5755,11 +5773,25 @@ For two polynomials
 \begin_inset Formula $\lang{p_{1}}=\lang{p_{2}}$
 \end_inset
 
-, we can construct a proof not containing 
+, we can construct a valid proof of 
+\begin_inset Formula $p_{1}\equiv p_{2}$
+\end_inset
+
+ not containing 
 \begin_inset Formula $\bot$
 \end_inset
 
  in EXP.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+EXPTIME? EXPSPACE? ...?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Proof
@@ -5772,7 +5804,180 @@ TODO.
 
 \end_inset
 
+A cluster 
+\begin_inset Formula $C\subset\mathcal{R}$
+\end_inset
 
+ is a set of proof rules, having exactly one root rule 
+\begin_inset Formula $r$
+\end_inset
+
+.
+ The conclusion of the root rule must be equivalent to 
+\begin_inset Formula $p_{1}\equiv p_{2}$
+\end_inset
+
+ or equivalent to a premise of an 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule not in 
+\begin_inset Formula $C$
+\end_inset
+
+.
+ For each rule in 
+\begin_inset Formula $C$
+\end_inset
+
+ except for 
+\begin_inset Formula $r$
+\end_inset
+
+, its conclusion must be equal to some premise of another rule in 
+\begin_inset Formula $C$
+\end_inset
+
+.
+ For each 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule in 
+\begin_inset Formula $C$
+\end_inset
+
+, there must not exist any rule in 
+\begin_inset Formula $C$
+\end_inset
+
+ whose conclusion is equal to any premise of aforementioned 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule.
+\end_layout
+
+\begin_layout Proof
+Each proof can be uniquely decomposed into a set of clusters.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Prove?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+We can represent each cluster as a tree, and we can also find a bound 
+\begin_inset Formula $h$
+\end_inset
+
+ for the height of the tree, which is:
+\begin_inset Formula 
+\[
+h=\max_{r\in\mathcal{R}}\left(\Heightstartimes r\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\Heightstartimes r:=\begin{cases}
+1 & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
+1+\max_{r_{p}\in\PremR r}\left(\Heightstartimes{r_{p}}\right) & \mathrm{else}.
+\end{cases}
+\]
+
+\end_inset
+
+We can in fact find a maximal value of 
+\begin_inset Formula $h$
+\end_inset
+
+ independent of grammar.
+\end_layout
+
+\begin_layout Proof
+As each proof rule has maximally two premises, we calculate the maximum
+ number of rules in a cluster to be 
+\begin_inset Formula $2^{h+1}$
+\end_inset
+
+, and the maximal number of 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules (which, by definition, can only appear in the leaves of the cluster
+ tree) in the cluster equals 
+\begin_inset Formula $2^{h}$
+\end_inset
+
+.
+ As each cluster may thus produce maximally 
+\begin_inset Formula $2^{h}$
+\end_inset
+
+ new judgements to prove, and these judgements will have a strictly smaller
+ norm than the conclusion of the root node of the cluster due to being premises
+ of 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules, we obtain a tree of clusters of height 
+\begin_inset Formula $n_{m}$
+\end_inset
+
+, where 
+\begin_inset Formula $n_{m}$
+\end_inset
+
+ is the maximal norm possible.
+ As 
+\begin_inset Formula $n_{m}\leq\left(k+1\right)^{n}$
+\end_inset
+
+, we have the final maximal number of clusters 
+\begin_inset Formula $\left(2^{h}\right)^{\left(k+1\right)^{n}}$
+\end_inset
+
+.
+ As each cluster contains maximally 
+\begin_inset Formula $2^{h+1}$
+\end_inset
+
+ rules, we have the maximal number of rules
+\begin_inset Formula 
+\[
+2^{h+1}\cdot\left(2^{h}\right)^{\left(k+1\right)^{n}}.
+\]
+
+\end_inset
+
+Now we only have to verify the size of the judgements in our proofs.
+ They are bounded by 
+\begin_inset Formula $k\cdot\left(k+1\right)^{n}$
+\end_inset
+
+, as in a 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF, there appear sums of maximally 
+\begin_inset Formula $k$
+\end_inset
+
+ addends, which have a maximal length of the longest norm, which is bounded
+ by 
+\begin_inset Formula $\left(k+1\right)^{n}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Theorem

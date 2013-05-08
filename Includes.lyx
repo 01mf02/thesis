@@ -105,6 +105,15 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
+\newcommand{\Heightstartimes}[1]{\operatorname{Height}_{\times}^{*}\left(#1\right)}
+{\mathrm{Height}_{\times}^{*}\left(#1\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
 \newcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
 {\mathrm{Prem}\left(#1\right)}
 \end_inset
