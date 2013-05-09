@@ -30,6 +30,7 @@ type sequent = equivalence * rule and rule =
   | Trans of equivalence * equivalence;;
 
 
+
 (************************************************
  *************** Auxiliary functions ************
  ************************************************)
@@ -79,6 +80,20 @@ let exists_sequent_of_equivalence seqs eq =
 
 let sequents_of_rule seqs rl =
   map (sequent_of_equivalence seqs) (equivalences_of_rule rl);;
+
+let size_of_variable_rule (term, vars) = 1 + length vars;;
+
+let sum = fold_left (+) 0;;
+
+let size_of_expression = function
+  | Product (_, vt) -> 1 + length vt
+  | Sum (rh, rt) ->
+    (size_of_variable_rule rh) + (sum (map size_of_variable_rule rt));;
+
+let size_of_equivalence (ex1, ex2) =
+  size_of_expression ex1 + size_of_expression ex2;;
+
+let size_of_sequent (eq, _) = size_of_equivalence eq;;
 
 
 (************************************************

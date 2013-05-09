@@ -61,24 +61,30 @@ let procedure prods vars =
   end;
 
   print_endline "Done.";
-  print_endline ("Proof size: " ^ string_of_int (length seqs) ^ " sequents");
+  let n_sequents = length seqs in
+  let n_symbols = sum (map size_of_sequent seqs) in
+  print_endline ("Proof size: " ^
+    string_of_int (n_sequents) ^ " sequents with " ^
+    string_of_int (n_symbols ) ^ " symbols");
 
-  print_endline "Verifying proof ...";
-  if verify_proof seqs then
-    print_endline "Proof valid. :)"
-  else begin
-    print_endline "Proof invalid!";
-    exit 1
+  if false then begin
+    print_endline "Verifying proof ...";
+    if verify_proof seqs then
+      print_endline "Proof valid. :)"
+    else begin
+      print_endline "Proof invalid!";
+      exit 1
+    end
   end;
 
-  length seqs;;
+  (n_sequents, n_symbols);;
 
 let save_proof_sizes sizes i =
   let prefix = "sizes_" ^ if enable_decomposition then "d" else "b" in
   let output = open_out (prefix ^ (string_of_int i) ^ ".dat") in
   let lines =
-    map (fun (n, s) -> (string_of_int n) ^ " " ^ (string_of_int s) ^ "\n")
-    sizes in
+    map (fun (n, (seq, sym)) ->
+      (String.concat " " (map string_of_int [n; seq; sym])) ^ "\n") sizes in
   iter (output_string output) lines;
   close_out output;;
 
