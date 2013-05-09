@@ -39,6 +39,8 @@
 % to fix nested calls in algorithms --- if not, nested calls produce LaTeX errors
 \usepackage{fixltx2e}
 \MakeRobust{\Call}
+
+\usepackage{gnuplot-lua-tikz}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -5036,6 +5038,74 @@ name "chap:Experimental-results"
 
 \begin_layout Standard
 Here we say how great our algorithm performs.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Fibonacci grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+To compare, we used following rules:
+\end_layout
+
+\begin_layout Itemize
+PP-
+\begin_inset Formula $\times$
+\end_inset
+
+':
+\begin_inset Formula 
+\begin{gather*}
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
+\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
+\end{aligned}
+\\
+\bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP-B:
+\begin_inset Formula 
+\begin{gather*}
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
+\lnot\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
+\end{aligned}
+\\
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
+\end{gather*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
