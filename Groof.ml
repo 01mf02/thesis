@@ -5,6 +5,13 @@ open Grammar;;
 
 
 (************************************************
+ ******************** Constants *****************
+ ************************************************)
+
+let enable_decomposition = true;;
+
+
+(************************************************
  **************** Type definitions **************
  ************************************************)
 
@@ -72,6 +79,7 @@ let exists_sequent_of_equivalence seqs eq =
 
 let sequents_of_rule seqs rl =
   map (sequent_of_equivalence seqs) (equivalences_of_rule rl);;
+
 
 (************************************************
  *************** Printing functions *************
@@ -163,19 +171,22 @@ let prove_equivalence (eq : equivalence) (gram : grammar) =
     let rule_of_products (pah, pat) (pbh, pbt) =
       let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
 
-      (* TODO: check if any of the operations below can raise an exception *)
       if npah < npbh then
         Sym(b, a)
       else
-        try
-          let dec = decompose gram npah (pbh::pbt) in
-          let (dec_is_prefix, postfix) = is_prefix (dec, (pbh::pbt)) in
-          if dec_is_prefix then
-            Times((pov [pah], pov dec), (pov pat, pov postfix))
+        let base_repl = pbh::norm_reduce npbh [pah] gram in
+        let pah_repl =
+          if enable_decomposition then
+            try decompose gram npah (pbh::pbt)
+            with Not_decomposable -> base_repl
           else
-            trans (pov (dec@pat))
-        with Not_decomposable ->
-          trans (pov (pbh::norm_reduce npbh [pah] gram @ pat)) in
+            base_repl in
+
+          let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
+          if repl_is_prefix then
+            Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
+          else
+            trans (pov (pah_repl@pat)) in
 
 
     if expression_equals (a, b) then
