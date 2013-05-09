@@ -23,6 +23,14 @@ let tests =
 
 
 (************************************************
+ *************** Auxiliary functions ************
+ ************************************************)
+
+(* returns [i; i+1; ...; j] *)
+let rec range i j = if i > j then [] else i::(range (i+1) j);;
+
+
+(************************************************
  ****************** Main function ***************
  ************************************************)
 
@@ -57,32 +65,56 @@ let procedure prods vars =
 
   print_endline "Verifying proof ...";
   if verify_proof seqs then
-    print_endline "Done."
+    print_endline "Proof valid. :)"
   else begin
     print_endline "Proof invalid!";
     exit 1
-  end;;
+  end;
+
+  length seqs;;
+
+let save_proof_sizes sizes i =
+  let prefix = "sizes_" ^ if enable_decomposition then "d" else "b" in
+  let output = open_out (prefix ^ (string_of_int i) ^ ".dat") in
+  let lines =
+    map (fun (n, s) -> (string_of_int n) ^ " " ^ (string_of_int s) ^ "\n")
+    sizes in
+  iter (output_string output) lines;
+  close_out output;;
 
 
 let _ =
   tests;
 
-  let p0 = Examples.ab_grammar ['a'] ['b'] 25 in
-  let p1 = Examples.power_two_grammar 25 in
-  let p2 = Examples.branching_fibonacci_grammar 25 in
-  let p3 = Examples.recursive_grammar in
-  let p4 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] 25 in
+  let n0 = 25 in
+  let n1 = 25 in
+  let n2 = 23 in
+  let n3 = 25 in
+  let n4 = 0 in
+  let ns = [n0; n1; n2; n3; n4] in
+
+  let p0 = Examples.ab_grammar ['a'] ['b'] n0 in
+  let p1 = Examples.power_two_grammar n1 in
+  let p2 = Examples.branching_fibonacci_grammar n2 in
+  let p3 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] n3 in
+  let p4 = Examples.recursive_grammar in
   let ps = [p0; p1; p2; p3; p4] in
 
-  let v0 = ("F25", "G25") in
-  let v1 = ("S25", "T25") in
-  let v2 = ("X23", "Y23") in
-  let v3 = ("X", "Y") in
-  let v4 = ("F25", "G25") in
+  let v0 = fun i -> ("F" ^ i, "G" ^ i) in
+  let v1 = fun i -> ("S" ^ i, "T" ^ i) in
+  let v2 = fun i -> ("X" ^ i, "Y" ^ i) in
+  let v3 = fun i -> ("F" ^ i, "G" ^ i) in
+  let v4 = fun i -> ("X", "Y") in
   let vs = [v0; v1; v2; v3; v4] in
 
-  let es = combine ps vs in
-  List.iter (fun (p, v) -> procedure p v) es;
+  let es = combine (combine ps vs) ns in
+  let proof_sizes =
+    map (fun ((p, vf), n) ->
+      map (fun i -> (i, procedure p (vf (string_of_int i)))) (range 1 n)) es in
+
+  for i = 0 to (length proof_sizes) - 1 do
+    save_proof_sizes (nth proof_sizes i) i
+  done;
 
   exit 0;
 ;;
