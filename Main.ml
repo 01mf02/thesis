@@ -81,7 +81,10 @@ let procedure prods vars =
 
 let save_proof_sizes sizes i =
   let prefix = "sizes_" ^ if enable_decomposition then "d" else "b" in
-  let output = open_out (prefix ^ (string_of_int i) ^ ".dat") in
+  let filename = (prefix ^ (string_of_int i) ^ ".dat") in
+
+  print_endline ("Writing " ^ filename ^ " ...");
+  let output = open_out filename in
   let lines =
     map (fun (n, (seq, sym)) ->
       (String.concat " " (map string_of_int [n; seq; sym])) ^ "\n") sizes in
@@ -94,9 +97,9 @@ let _ =
 
   let n0 = 25 in
   let n1 = 25 in
-  let n2 = 23 in
+  let n2 = 30 in
   let n3 = 25 in
-  let n4 = 0 in
+  let n4 = 1 in
   let ns = [n0; n1; n2; n3; n4] in
 
   let p0 = Examples.ab_grammar ['a'] ['b'] n0 in
@@ -118,9 +121,14 @@ let _ =
     map (fun ((p, vf), n) ->
       map (fun i -> (i, procedure p (vf (string_of_int i)))) (range 1 n)) es in
 
-  for i = 0 to (length proof_sizes) - 1 do
-    save_proof_sizes (nth proof_sizes i) i
-  done;
+  if true then begin
+    print_newline ();
+    print_endline "Writing proof sizes ...";
+    for i = 0 to (length proof_sizes) - 1 do
+      save_proof_sizes (nth proof_sizes i) i
+    done;
+    print_endline "Done."
+  end;
 
   exit 0;
 ;;
