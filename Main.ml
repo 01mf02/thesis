@@ -34,7 +34,7 @@ let rec range i j = if i > j then [] else i::(range (i+1) j);;
  ****************** Main function ***************
  ************************************************)
 
-let procedure prods vars =
+let procedure prods vars enable_decomposition =
   print_newline ();
 
   if false then begin
@@ -46,9 +46,10 @@ let procedure prods vars =
   let gram = grammar_of_production_rules prods in
   print_endline "Productions valid. :)";
 
-  print_endline "Constructing proof ... ";
+  let mode = if enable_decomposition then "with" else "without" in
+  print_endline ("Constructing proof " ^ mode ^ " decomposition ... ");
   let eq = pair_map product_of_variable vars in
-  let seqs = prove_equivalence eq gram in
+  let seqs = prove_equivalence eq gram enable_decomposition in
 
   if false then begin
     print_endline "Proof:";
@@ -79,25 +80,30 @@ let procedure prods vars =
 
   (n_sequents, n_symbols);;
 
-let save_proof_sizes sizes i =
-  let prefix = "sizes_" ^ if enable_decomposition then "d" else "b" in
-  let filename = (prefix ^ (string_of_int i) ^ ".dat") in
+let calc_proof_sizes prods vars_f max_i enable_decomposition =
+  map (fun i ->
+    let vars = vars_f (string_of_int i) in
+    (i, procedure prods vars enable_decomposition)) (range 1 max_i);;
 
+let save_proof_sizes sizes filename =
+  print_newline ();
   print_endline ("Writing " ^ filename ^ " ...");
+
   let output = open_out filename in
   let lines =
     map (fun (n, (seq, sym)) ->
       (String.concat " " (map string_of_int [n; seq; sym])) ^ "\n") sizes in
   iter (output_string output) lines;
-  close_out output;;
+  close_out output;
 
+  print_endline "Done.";;
 
 let _ =
   tests;
 
   let n0 = 25 in
   let n1 = 25 in
-  let n2 = 30 in
+  let n2 = 25 in
   let n3 = 25 in
   let n4 = 1 in
   let ns = [n0; n1; n2; n3; n4] in
@@ -117,18 +123,17 @@ let _ =
   let vs = [v0; v1; v2; v3; v4] in
 
   let es = combine (combine ps vs) ns in
-  let proof_sizes =
-    map (fun ((p, vf), n) ->
-      map (fun i -> (i, procedure p (vf (string_of_int i)))) (range 1 n)) es in
 
-  if true then begin
-    print_newline ();
-    print_endline "Writing proof sizes ...";
-    for i = 0 to (length proof_sizes) - 1 do
-      save_proof_sizes (nth proof_sizes i) i
-    done;
-    print_endline "Done."
-  end;
+  for e = 0 to (length es) - 1 do
+    let ((p, v), n) = nth es e in
+    iter (fun enable_decomposition ->
+      let proof_sizes = calc_proof_sizes p v n enable_decomposition in
+
+      let prefix = "sizes_" ^ if enable_decomposition then "d" else "b" in
+      let filename = (prefix ^ (string_of_int e) ^ ".dat") in
+
+      save_proof_sizes proof_sizes filename) [true; false];
+  done;
 
   exit 0;
 ;;
