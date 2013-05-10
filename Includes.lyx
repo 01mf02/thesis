@@ -141,6 +141,15 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
+\newcommand{\size}[1]{\operatorname{size}\left(#1\right)}
+{\mathrm{size}\left(#1\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
 \newcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
