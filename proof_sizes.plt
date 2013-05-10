@@ -7,7 +7,7 @@ set output "proof_sizes.tex"
 set key above
 
 set xlabel "Variables"
-set xrange [0:25]
+set xrange [0:30]
 set xtics 5
 
 # show numbers like "500k", "5G", ...
