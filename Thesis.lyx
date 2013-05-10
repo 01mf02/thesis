@@ -4409,7 +4409,7 @@ rule
 \end_layout
 
 \begin_layout Section
-Proof strategies
+Proof strategy 1
 \end_layout
 
 \begin_layout Standard
@@ -4997,7 +4997,7 @@ SS-
 \end_layout
 
 \begin_layout Standard
-The validity of the proof strategies is proven in the appendix.
+The validity of the proof strategy is proven in the appendix.
 \end_layout
 
 \begin_layout Lemma
@@ -5019,11 +5019,58 @@ TODO!
 \end_layout
 
 \begin_layout Section
-Witness of non-equivalence
+Proof strategy 2
 \end_layout
 
 \begin_layout Standard
-Here we explain how to construct witnesses of non-equivalence.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO.
+\end_layout
+
+\end_inset
+
+To compare, we used following rules:
+\end_layout
+
+\begin_layout Itemize
+PP-
+\begin_inset Formula $\times$
+\end_inset
+
+':
+\begin_inset Formula 
+\begin{gather*}
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
+\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
+\end{aligned}
+\\
+\bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}
+\end{gather*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+PP-B:
+\begin_inset Formula 
+\begin{gather*}
+\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
+R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
+\lnot\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
+\end{aligned}
+\\
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
+\end{gather*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -5075,10 +5122,6 @@ reference "Recursive-grammar"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 Here we show how we may verify the correctness of a given proof.
 \end_layout
 
@@ -5098,12 +5141,12 @@ Here we say how great our algorithm performs.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes.tex"
+filename "proof_sizes0.tex"
 
 \end_inset
 
@@ -5114,7 +5157,7 @@ filename "proof_sizes.tex"
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Fibonacci grammar.
+Results for ??? grammar.
 \end_layout
 
 \end_inset
@@ -5124,41 +5167,63 @@ Fibonacci grammar.
 
 \end_inset
 
-To compare, we used following rules:
-\end_layout
 
-\begin_layout Itemize
-PP-
-\begin_inset Formula $\times$
-\end_inset
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
 
-':
-\begin_inset Formula 
-\begin{gather*}
-\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
-R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
-\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
-\end{aligned}
-\\
-\bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}
-\end{gather*}
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes1.tex"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-PP-B:
-\begin_inset Formula 
-\begin{gather*}
-\begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
-R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
-\lnot\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
-\end{aligned}
-\\
-\bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
-\end{gather*}
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for ??? grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes2.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for Fibonacci grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
