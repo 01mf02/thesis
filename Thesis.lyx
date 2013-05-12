@@ -320,6 +320,22 @@ status open
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+show grammar s.t.
+ decomp.
+ always performs badly, and show that proof will be polynomial in size of
+ grammar! also reason why it is the hardest case for decomp.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Preliminaries
 \begin_inset CommandInset label
@@ -4161,6 +4177,15 @@ name "chap:Proof-construction-algorithm"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+DFS! relation to other work ...
+\end_layout
+
+\end_inset
+
 In this chapter, we present our proof algorithm, which works in a recursive
  fashion: It accepts a sequence 
 \begin_inset Formula $rules$
@@ -5137,6 +5162,27 @@ name "chap:Experimental-results"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Merge impl.
+ & exp.
+ results
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+embed funcs like n² in graphs to approximate curves
+\end_layout
+
+\end_inset
+
 Here we say how great our algorithm performs.
 \begin_inset Float figure
 wide false
