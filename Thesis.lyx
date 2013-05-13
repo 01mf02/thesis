@@ -2410,18 +2410,18 @@ name "chap:Equivalence-proof-system"
 \begin_layout Standard
 In this section, we introduce a system to prove equivalence of simple-determinis
 tic grammars.
- It is based on a similar proof system by Sénizergues
-\begin_inset Note Note
-status open
+ It is based on the proof system 
+\begin_inset Formula $\mathcal{D}_{5}$
+\end_inset
 
-\begin_layout Plain Layout
-reference!
-\end_layout
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "senizergues2001"
 
 \end_inset
 
-, which can be used to prove equivalence of strict-deterministic context-free
- grammars.
+, which can be used to prove equivalence of deterministic context-free grammars.
 \end_layout
 
 \begin_layout Section
@@ -2453,7 +2453,7 @@ We see at a glance that
 \begin_inset Formula $X\equiv Y$
 \end_inset
 
- hold.
+ holds.
  Let us begin with a proof of 
 \begin_inset Formula $C_{1}\equiv C_{2}$
 \end_inset
@@ -2468,7 +2468,7 @@ We see at a glance that
 
 In this proof, we used the transitivity and symmetry properties of the equivalen
 ce relation, as well as the grammar rule, which states that a variable is
- equivalent with its production rules.
+ equivalent to its production rules.
 \end_layout
 
 \begin_layout Example
@@ -3099,7 +3099,32 @@ Sum:
 \begin_inset Newline newline
 \end_inset
 
-TODO!
+From 
+\begin_inset Formula $x\equiv x'$
+\end_inset
+
+ and 
+\begin_inset Formula $y\equiv y'$
+\end_inset
+
+, it follows that 
+\begin_inset Formula $\lang x=\lang{x'}$
+\end_inset
+
+ and 
+\begin_inset Formula $\lang y=\lang{y'}$
+\end_inset
+
+.
+ Therefore, 
+\begin_inset Formula $\lang{x+y}=\lang x\cup\lang y=\lang{x'}\cup\lang{y'}=\lang{x'+y'}$
+\end_inset
+
+ implies 
+\begin_inset Formula $x+y\equiv x'+y'$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
