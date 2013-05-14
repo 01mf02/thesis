@@ -1,0 +1,1636 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+
+\usepackage{bussproofs}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title (Plain Frame)
+Equivalence proofs of simple deterministic grammars
+\end_layout
+
+\begin_layout Author
+Michael Färber
+\end_layout
+
+\begin_layout Institute
+Université Bordeaux 1, LaBRI
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "IncludesP.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Scenario
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Tram Bx.jpg
+	lyxscale 25
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tram at Bordeaux.
+ Copyright by 
+\begin_inset CommandInset href
+LatexCommand href
+name "Peter Gugerell"
+target "http://commons.wikimedia.org/wiki/File:Frankreich_2007.10.23_142442_.jpg"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+A Matter of Trust
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Premise}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<1->
+\end_layout
+
+\end_inset
+
+Many algorithms give only yes/no answers.
+ We trust them usually because they are proven to be correct.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Problems}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<2->
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+An algorithm might be correct, but its implementation might be erroneous.
+\end_layout
+
+\begin_layout Itemize
+The machine executing an algorithm might misbehave.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Solution: Proofs}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<3->
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+An algorithm can certify its response with a proof, which the user can check
+ afterwards.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Our problem
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Task}
+\end_layout
+
+\end_inset
+
+Are two given simple deterministic grammars (sdgs) equivalent?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Existing solution}
+\end_layout
+
+\end_inset
+
+The equivalence of sdgs is decidable in P, but the algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+ does not produce an equivalence proof.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Question}
+\end_layout
+
+\end_inset
+
+Can we find an algorithm to construct equivalence proofs of sdgs in time
+ P?
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Simple deterministic grammars
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Grammar}
+\end_layout
+
+\end_inset
+
+A simple deterministic grammar is a context-free grammar in Greibach normal
+ form such that for each terminal 
+\begin_inset Formula $a$
+\end_inset
+
+, there exists at most one production rule 
+\begin_inset Formula $X\to a\alpha$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Norm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\norm X$
+\end_inset
+
+ equals the length of the shortest word producible by variable 
+\begin_inset Formula $X$
+\end_inset
+
+, or 
+\begin_inset Formula $\infty$
+\end_inset
+
+ if no such word exists.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Strictly normed grammars}
+\end_layout
+
+\end_inset
+
+A grammar is strictly normed iff all its variables have a finite norm.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Equivalence}
+\end_layout
+
+\end_inset
+
+Two variables are equivalent iff they generate the same language.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example grammar
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+X & \to a+bC_{1}\\
+Y & \to a+bC_{2}\\
+C_{1} & \to c\\
+C_{2} & \to c
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\bussproof{\transinf{C_{1}}{C_{2}}{\gr{C_{1}}c}{\syminf c{C_{2}}{\gr{C_{2}}c}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Full example proof
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide<3->{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\bussproof{\transinf{C_{2}}{C_{1}}{\gr{C_{2}}c}{\syminf c{C_{1}}{\gr{C_{1}}c}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide<2->{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bussproof{\plusinf{a+bC_{2}}{a+bC_{1}}{\refl aa}{\timesinf{bC_{2}}{bC_{1}}{\refl bb}{\axiom{C_{2}}{C_{1}}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bussproof{\transinf XY{\gr X{a+bC_{1}}}{\syminf{a+bC_{1}}Y{\transinf Y{a+bC_{1}}{\gr Y{a+bC_{2}}}{\axiom{a+bC_{2}}{a+bC_{1}}}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Recursive grammar
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+X & \to a+bX\\
+Y & \to a+bY.
+\end{align*}
+
+\end_inset
+
+We see that 
+\begin_inset Formula $\lang X=\lang Y=b^{*}a$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Implicit induction proof
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onslide<2->{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\bussproof{\plusinf{a+bY}{a+bX}{\refl aa}{\timesinf{bY}{bX}{\refl bb}{\syminf YX{\sj XY}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bussproof{\transinf XY{\gr X{a+bX}}{\syminf{a+bX}Y{\transinf Y{a+bX}{\gr Y{a+bY}}{\axiom{a+bY}{a+bX}}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+What is not a proof?
+\end_layout
+
+\begin_layout Example
+\begin_inset Formula 
+\[
+\bussproof{\syminf XY{\syminf YX{\sj XY}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Why is that an invalid proof?}
+\end_layout
+
+\end_inset
+
+On paths between two equivalent rules, there must be at least one product
+ (
+\begin_inset Formula $\times$
+\end_inset
+
+) rule.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Proof system
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+Schemes of non-strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+Schemes of strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\refl xx}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Strict rules:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\gr X{\Gr X}}$
+\end_inset
+
+, 
+\begin_inset Formula $\forall X\in V$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Proof-rules"
+
+\end_inset
+
+Proof rules.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+explain strict rules?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Automatic proof construction
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Algorithm}
+\end_layout
+
+\end_inset
+
+Depth-first search with information which rules have already been constructed,
+ to avoid proving the same judgement multiple times.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Bibliography
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "Literature"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+SDSTs
+\end_layout
+
+\begin_layout BeginFrame
+Introduction
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{SDSTs}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<1->
+\end_layout
+
+\end_inset
+
+Streaming Data String Transducers (SDSTs) are: a class of automata which
+ map input strings to output strings in a single left-to-right pass
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<2->
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{SDSTs are interesting because:}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+equivalence is decidable
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<3->
+\end_layout
+
+\end_inset
+
+class of list processing programs exists, which is equivalent to SDSTs 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ equivalence is decidable for it too
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Strings
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Strings:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<1->
+\end_layout
+
+\end_inset
+
+Strings have the form
+\begin_inset Formula 
+\[
+w=\left(\sigma_{1},d_{1}\right),\left(\sigma_{2},d_{2}\right),\dots,\left(\sigma_{k},d_{k}\right),
+\]
+
+\end_inset
+
+where each 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ is an element of a finite alphabet and each 
+\begin_inset Formula $d$
+\end_inset
+
+ is an element of an infinite totally ordered data domain.
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<2->
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset Formula 
+\[
+w=\left(red,1\right)\left(blue,2\right)\left(green,42\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ExampleBlock
+Here, the finite alphabet might be 
+\begin_inset Formula $\left\{ red,blue,green\right\} $
+\end_inset
+
+ and the data domain might be 
+\begin_inset Formula $\mathbb{N}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Variables
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Each SDST has a finite number of variables:}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<1->
+\end_layout
+
+\end_inset
+
+data variables, which save elements from the data domain
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<2->
+\end_layout
+
+\end_inset
+
+data string variables, which save data strings
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<3->
+\end_layout
+
+\end_inset
+
+In each transition, the SDST can access the current input data via the data
+ variable 
+\begin_inset Formula $curr$
+\end_inset
+
+, and it can access the data from the finite alphabet via the symbol 
+\begin_inset Formula $\sigma$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example 1
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[->, node distance = 5cm, auto]
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node[initial,state] (A)                {$q$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (A) edge [loop above] node {$
+\backslash
+sigma = red 
+\backslash
+longrightarrow$ $x := x(curr,
+\backslash
+sigma)$} (A);
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (A) edge [loop below] node {$
+\backslash
+sigma 
+\backslash
+neq red 
+\backslash
+longrightarrow$ $x := x$} (A);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SDST outputting only red elements.
+ 
+\begin_inset Formula $O(q)=x$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example 2
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[->, node distance = 5cm, auto]
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node[initial,state] (A)                {$q_0$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node[state]         (B) [right of = A] {$q_1$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (A) edge node {${[x,u]:= [(
+\backslash
+sigma,curr),curr}]$} (B);  
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (B) edge [loop above] node {$curr > u 
+\backslash
+longrightarrow$ ${[x,u]:= [x(curr,
+\backslash
+sigma),curr}]$} (B);
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (B) edge [loop below] node {$curr 
+\backslash
+leq u 
+\backslash
+longrightarrow$ ${[x,u]:= [x,u}]$} (B);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SDST outputting only data greater than previous data.
+ 
+\begin_inset Formula $O(q_{0})=O(q_{1})=x$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example 3
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                     semithick]   
+\backslash
+tikzstyle{every state}=[fill=white,draw=black,text=black]
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+node[initial,state] (A)                    {$q$};
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+path (A) edge [loop above]  node {$[x,y]:= [y(curr,
+\backslash
+sigma),x]$} (A); 
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SDST outputting all elements at even positions if input length even, or
+ all elements at uneven positions if input length uneven.
+ 
+\begin_inset Formula $O(q)=x$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Restrictions
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<1->
+\end_layout
+
+\end_inset
+
+In each transition, each data string variable must appear maximally once
+ on the right-hand side of an assignment.
+ Therefore, the length of the output string is linear in the length of the
+ input string.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<2->
+\end_layout
+
+\end_inset
+
+In each state, there is maximally one possible transition for each possible
+ input.
+ Therefore, SDSTs are deterministic.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Expressivity
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Examples of functions we can represent with SDSTs:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<1->
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+reversing a list
+\end_layout
+
+\begin_layout Itemize
+sorting a list by input from finite alphabet
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Examples of functions we can not represent with SDSTs:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<2->
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+outputting a list of input length duplicating the last input element
+\end_layout
+
+\begin_layout Itemize
+sorting a list by input from infinite data domain
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
