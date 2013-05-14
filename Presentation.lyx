@@ -905,6 +905,95 @@ Depth-first search with information which rules have already been constructed,
  to avoid proving the same judgement multiple times.
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Proving one judgement}
+\end_layout
+
+\end_inset
+
+Given a certain judgement 
+\begin_inset Formula $j$
+\end_inset
+
+ to prove, we construct a rule in P with this judgement 
+\begin_inset Formula $j$
+\end_inset
+
+ as conclusion.
+ This new rule may have up to two premises, which in turn we try to prove
+ recursively.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Obvious construction rules
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}AB{\text{trans (pp)}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\binaryinf{\axiom aa}{\axiom PQ}{aP}{aQ}{\ensuremath{\times}\text{ (ss-\times)}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\bussproof{\binaryinf{\axiom{a\alpha}{a\alpha'}}{\axiom{\beta}{\beta'}}{a\alpha+\beta}{a\alpha'+\beta'}{\ensuremath{+}}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+PP rules
+\end_layout
+
+\begin_layout Standard
+What to do when we encounter products of variables on both sides of a judgement?
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset Formula 
+\[
+AB\equiv CD,\text{ with \ensuremath{\norm A>\norm C}}
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout EndFrame
 
 \end_layout
