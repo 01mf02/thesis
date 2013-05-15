@@ -1,3 +1,4 @@
+# i denotes the index of the data file for the current plot
 # i will be set from calling batch.plt; uncomment line below if you want to
 # run this plot file without batch.plt
 #i = 2
@@ -17,7 +18,7 @@ set xtics 5
 # different axes for different data sets
 if (i == 0) { rules_max =  5000; symbs_max = 150000 }
 if (i == 1) { rules_max =  5000; symbs_max =  60000 }
-if (i == 2) { rules_max = 25000; symbs_max = 300000 }
+if (i == 2) { rules_max = 50000; symbs_max = 700000 }
 if (i == 3) { rules_max =  1000; symbs_max =  10000 }
 
 # filenames
@@ -37,17 +38,39 @@ set style line 2 pi -1 pt 1
 set size square 1,0.5
 set multiplot layout 1,2
 
-set origin 0,0
-set ylabel "Rules"
-set yrange [0:rules_max]
-plot file_b using 1:2 ls 1 title 'Base', \
-	 file_d using 1:2 ls 2 title 'Dec.'
+# polynomials to approximate base/decomposition curves
+b(x) = b1 + b2*x + b3*x**2 + b4*x**3
+d(x) = d1 + d2*x + d3*x**2 + d4*x**3
 
-set origin 0.5,0
-set ylabel "Symbols"
-set yrange [0:symbs_max]
-plot file_b using 1:3 ls 1 title 'Base', \
-	 file_d using 1:3 ls 2 title 'Dec.'
+# exponential function to approximate base curve in special case
+if (i == 2) { b(x) = b1 + b2*b3**x + b4*x**2 }
+
+# n denotes the column number in the data file
+# (n = 2 -> rules, n = 3 -> symbols)
+do for [n = 2:3] {
+	if (n == 2) {
+		set origin 0,0
+		set ylabel "Rules"
+		set yrange [0:rules_max]
+	}
+	if (n == 3) {
+		set origin 0.5,0
+		set ylabel "Symbols"
+		set yrange [0:symbs_max]
+	}
+
+	fit b(x) file_b using 1:n via b1, b2, b3, b4
+	fit d(x) file_d using 1:n via d1, d2, d3, d4
+
+	plot file_b using 1:n ls 1 title 'Base', \
+	     file_d using 1:n ls 2 title 'Dec.', \
+	     b(x) title 'BF', \
+	     d(x) title 'DF'
+	
+	# reset the coefficients from the fitting functions
+	# in case we do not do that, the fitting process may go awry!
+	undefine b* d*
+}
 
 set nomultiplot
 
