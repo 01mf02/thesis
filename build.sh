@@ -1,13 +1,17 @@
 #!/bin/sh
 
+echo Writing OCaml program size to programsize.txt ...
+wc -l *.ml | tail -n 1 | cut -d " " -f 3 > programsize.txt
+echo Cumulative program size: `cat programsize.txt`
+
 echo Building OCaml files ...
 ocamlbuild Main.d.byte
 
-echo Generating statistics from OCaml program ...
-./Main.d.byte > /dev/null
+#echo Generating statistics from OCaml program ...
+#./Main.d.byte > /dev/null
 
 echo Creating plots ...
-gnuplot batch.plt
+gnuplot batch.plt 2> /dev/null
 
 echo Converting SVG to PDF/LaTeX ...
 for i in *.svg
