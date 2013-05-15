@@ -5138,7 +5138,7 @@ name "chap:Proof-verification"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Formula $\bussproof{\transinf XY{\gr X{a+bX}}{\syminf{a+bX}Y{\transinf Y{a+bX}{\gr Y{a+bY}}{\plusinf{a+bY}{a+bX}{\refl aa}{\timesinf{bY}{bX}{\refl bb}{\transinf YX{\sj Y{a+bY}}{\syminf{a+bY}X{\transinf X{a+bY}{\sj X{a+bX}}{\plusinf{a+bX}{a+bY}{\sj aa}{\timesinf{bX}{bY}{\sj bb}{\sj XY}}}}}}}}}}}$
@@ -5186,119 +5186,86 @@ name "chap:Experimental-results"
 
 \end_layout
 
+\begin_layout Section
+Implementation
+\end_layout
+
 \begin_layout Standard
-\begin_inset Note Note
+We wrote an OCaml program called 
+\noun on
+Groof
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Merge impl.
- & exp.
- results
+The name 
+\noun on
+Groof
+\noun default
+ is of course a clever pun referring to grammar proofs and to its respective
+ homophone.
+ Coincidentally, there also exists an Austrian musician named Carl de Groof
+ (1923-2007), thereby further enriching the different significations of
+ the name.
 \end_layout
 
 \end_inset
 
 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-embed funcs like n² in graphs to approximate curves
-\end_layout
-
-\end_inset
-
-Here we say how great our algorithm performs.
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
+\noun default
+ (
 \begin_inset CommandInset include
-LatexCommand include
-filename "proof_sizes0.tex"
+LatexCommand input
+filename "programsize.txt"
 
 \end_inset
 
-
+lines of code) doing the following tasks:
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Results for ??? grammar.
+\begin_layout Itemize
+Grammar generation: The program constructs several different grammars with
+ an adaptable number of variables, to compare the sizes of the resulting
+ equivalence proofs.
 \end_layout
+
+\begin_layout Itemize
+Grammar verification & norm calculation: The program verifies that the input
+ grammar is simple deterministic, and in the same turn calculates the norm
+ of each variable.
+\end_layout
+
+\begin_layout Itemize
+Proof construction: The program constructs an equivalence proof for a given
+ judgement.
+ For this, it may use any of the two strategies presented in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Proof-construction-algorithm"
 
 \end_inset
 
-
+.
 \end_layout
+
+\begin_layout Itemize
+Proof verification: The program verifies whether the constructed proof is
+ a valid proof according to definition 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "Proof-definition"
 
 \end_inset
 
-
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset CommandInset include
-LatexCommand include
-filename "proof_sizes1.tex"
-
-\end_inset
-
-
+.
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Results for ??? grammar.
+\begin_layout Itemize
+Proof output: The program outputs the final proof as LaTeX code.
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset CommandInset include
-LatexCommand include
-filename "proof_sizes2.tex"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Results for Fibonacci grammar.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+\begin_layout Itemize
+Statistics: The program saves the proof sizes for each considered grammar.
 \end_layout
 
 \begin_layout Section
@@ -5475,6 +5442,163 @@ T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+To measure the size of a proof, we considered two factors:
+\end_layout
+
+\begin_layout Enumerate
+the total number of proof rules, and
+\end_layout
+
+\begin_layout Enumerate
+the cumulative size of all conclusion polynomials, i.e.
+ 
+\begin_inset Formula $\sum_{r\in\mathcal{R}}\size{\Concl r}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is interesting to consider both of these factors, as we might have a
+ small total number of proof rules on the one hand, however at the same
+ time containing exponential-size polynomials on the other hand.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Merge impl.
+ & exp.
+ results
+\end_layout
+
+\end_inset
+
+Here we say how great our algorithm performs.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes0.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for AB grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes1.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for 
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes2.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for Fibonacci grammar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We fitted our data with the following functions as needed:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+poly(x) & =p_{1}+p_{2}x+p_{3}x^{2}+p_{4}x^{3},\\
+exp(x) & =e_{1}+e_{2}\left(e_{3}\right)^{x}+e_{4}x^{2}.
+\end{align*}
+
+\end_inset
+
+It turned out that only the curves for the base replacement strategy for
+ the Fibonacci grammar needed 
+\begin_inset Formula $exp(x)$
+\end_inset
+
+; all other curves were fitted with 
+\begin_inset Formula $poly(x)$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Chapter
