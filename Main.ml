@@ -34,7 +34,7 @@ let rec range i j = if i > j then [] else i::(range (i+1) j);;
  ****************** Main function ***************
  ************************************************)
 
-let procedure prods vars enable_decomposition =
+let procedure prods vars strat =
   print_newline ();
 
   if false then begin
@@ -46,10 +46,13 @@ let procedure prods vars enable_decomposition =
   let gram = grammar_of_production_rules prods in
   print_endline "Productions valid. :)";
 
-  let mode = if enable_decomposition then "with" else "without" in
-  print_endline ("Constructing proof " ^ mode ^ " decomposition ... ");
+  let mode = match strat with
+  | Grammar       -> "grammar replacement"
+  | Base          -> "base replacement"
+  | Decomposition -> "decomposition" in
+  print_endline ("Constructing proof with " ^ mode ^ " ... ");
   let eq = pair_map product_of_variable vars in
-  let seqs = prove_equivalence eq gram enable_decomposition in
+  let seqs = prove_equivalence eq gram strat in
 
   if false then begin
     print_endline "Proof:";
@@ -110,14 +113,14 @@ let _ =
 
   let p0 = Examples.ab_grammar ['a'] ['b'] n0 in
   let p1 = Examples.power_two_grammar n1 in
-  let p2 = Examples.branching_fibonacci_grammar n2 in
+  let p2 = Examples.fibonacci_grammar n2 in
   let p3 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] n3 in
   let p4 = Examples.recursive_grammar in
   let ps = [p0; p1; p2; p3; p4] in
 
   let v0 = fun i -> ("F" ^ i, "G" ^ i) in
   let v1 = fun i -> ("S" ^ i, "T" ^ i) in
-  let v2 = fun i -> ("X" ^ i, "Y" ^ i) in
+  let v2 = fun i -> ("F" ^ i, "G" ^ i) in
   let v3 = fun i -> ("F" ^ i, "G" ^ i) in
   let v4 = fun i -> ("X", "Y") in
   let vs = [v0; v1; v2; v3; v4] in
@@ -126,13 +129,17 @@ let _ =
 
   for e = 0 to (length es) - 1 do
     let ((p, v), n) = nth es e in
-    iter (fun enable_decomposition ->
-      let proof_sizes = calc_proof_sizes p v n enable_decomposition in
+    iter (fun strat ->
+      let proof_sizes = calc_proof_sizes p v n strat in
 
-      let prefix = "sizes_" ^ if enable_decomposition then "d" else "b" in
+      let mode = match strat with
+      | Grammar       -> "g"
+      | Base          -> "b"
+      | Decomposition -> "d" in
+      let prefix = "sizes_" ^ mode in
       let filename = (prefix ^ (string_of_int e) ^ ".dat") in
 
-      save_proof_sizes proof_sizes filename) [true; false];
+      save_proof_sizes proof_sizes filename) [Grammar; Base; Decomposition];
   done;
 
   exit 0;

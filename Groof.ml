@@ -22,6 +22,10 @@ type sequent = equivalence * rule and rule =
   | Times of equivalence * equivalence
   | Trans of equivalence * equivalence;;
 
+type strategy =
+  | Grammar
+  | Base
+  | Decomposition;;
 
 
 (************************************************
@@ -157,7 +161,7 @@ let latex_of_sequents seqs eq_root =
 exception Proof_impossible
 exception Circular_sequent
 
-let prove_equivalence (eq : equivalence) (gram : grammar) enable_decomposition =
+let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
   let pov = product_of_variables in
   let sov = sum_of_variable_rules in
   let (prods, norms) = gram in
@@ -182,18 +186,21 @@ let prove_equivalence (eq : equivalence) (gram : grammar) enable_decomposition =
       if npah < npbh then
         Sym(b, a)
       else
-        let base_repl = pbh::norm_reduce npbh [pah] gram in
-        let pah_repl =
-          if enable_decomposition then
-            try decompose gram npah (pbh::pbt)
-            with Not_decomposable -> base_repl
-          else
-            base_repl in
+        match strat with
+        | Grammar -> trans (rewrite_with_grammar pah pat)
+        | Base | Decomposition -> 
+          let base_repl = pbh::norm_reduce npbh [pah] gram in
+          let pah_repl =
+            if strat = Decomposition then
+              try decompose gram npah (pbh::pbt)
+              with Not_decomposable -> base_repl
+            else
+              base_repl in
 
-          let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
-          if repl_is_prefix then
-            Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
-          else
+            let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
+            if repl_is_prefix then
+              Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
+            else
             trans (pov (pah_repl@pat)) in
 
 
