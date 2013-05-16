@@ -983,17 +983,6 @@ PP rules
 What to do when we encounter products of variables on both sides of a judgement?
 \end_layout
 
-\begin_layout ExampleBlock
-\begin_inset Formula 
-\[
-AB\equiv CD,\text{ with \ensuremath{\norm A>\norm C}}
-\]
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout EndFrame
 
 \end_layout
