@@ -23,7 +23,6 @@ type sequent = equivalence * rule and rule =
   | Trans of equivalence * equivalence;;
 
 type strategy =
-  | Grammar
   | Base
   | Decomposition;;
 
@@ -186,22 +185,18 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
       if npah < npbh then
         Sym(b, a)
       else
-        match strat with
-        | Grammar -> trans (rewrite_with_grammar pah pat)
-        | Base | Decomposition -> 
-          let base_repl = pbh::norm_reduce npbh [pah] gram in
-          let pah_repl =
-            if strat = Decomposition then
-              try decompose gram npah (pbh::pbt)
-              with Not_decomposable -> base_repl
-            else
-              base_repl in
+        let base_repl = pbh::norm_reduce npbh [pah] gram in
+        let pah_repl = match strat with
+          | Base -> base_repl
+          | Decomposition ->
+            try decompose gram npah (pbh::pbt)
+            with Not_decomposable -> base_repl in
 
-            let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
-            if repl_is_prefix then
-              Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
-            else
-            trans (pov (pah_repl@pat)) in
+          let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
+          if repl_is_prefix then
+            Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
+          else
+          trans (pov (pah_repl@pat)) in
 
 
     if expression_equals (a, b) then

@@ -22,6 +22,23 @@ let one_variable_br l = n_variables_br (map (fun (v, t, w) -> (v, t, [w])) l);;
 let rec ab_grammar ta tb n =
   let unequal_var vu ve t vt = function
     | 0 -> one_variable_br [(vu ^ "0", t, vt)]
+    | n -> let vepn = ve ^ soi (n-1) in
+    n_variables_br  [(vu ^ soi n, t, [vt; vepn; vepn])] in
+
+  let ab = unequal_var "AB" "AB" ta "B" in
+  let ba = unequal_var "BA" "BA" tb "A" in
+
+  let fg n = n_variables_br [("F" ^ soi n, ta, ["B"; "AB" ^ soi n]);
+                             ("G" ^ soi n, ta, ["BA" ^ soi n; "B"])] in
+
+  match n with
+    | 0 -> zero_variables_br [("A", ta); ("B", tb)] @ ab 0 @ ba 0 @ fg 0
+    | n -> ab_grammar ta tb (n-1) @ ab n @ ba n @ fg n;;
+
+
+let rec ab_2_grammar ta tb n =
+  let unequal_var vu ve t vt = function
+    | 0 -> one_variable_br [(vu ^ "0", t, vt)]
     | n -> one_variable_br [(vu ^ soi n, t, ve ^ soi n)] in
 
   let equal_var ve vu t = function
@@ -38,7 +55,7 @@ let rec ab_grammar ta tb n =
 
   match n with
     | 0 -> zero_variables_br [("A", ta); ("B", tb)] @ ab 0 @ ba 0 @ fg 0
-    | n -> ab_grammar ta tb (n-1) @ aa n @ bb n @ ab n @ ba n @ fg n;;
+    | n -> ab_2_grammar ta tb (n-1) @ aa n @ bb n @ ab n @ ba n @ fg n;;
 
 
 let rec power_two_grammar n =

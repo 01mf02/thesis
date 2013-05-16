@@ -47,7 +47,6 @@ let procedure prods vars strat =
   print_endline "Productions valid. :)";
 
   let mode = match strat with
-  | Grammar       -> "grammar replacement"
   | Base          -> "base replacement"
   | Decomposition -> "decomposition" in
   print_endline ("Constructing proof with " ^ mode ^ " ... ");
@@ -104,26 +103,29 @@ let save_proof_sizes sizes filename =
 let _ =
   tests;
 
-  let n0 = 25 in
-  let n1 = 25 in
-  let n2 = 25 in
-  let n3 = 25 in
-  let n4 = 1 in
-  let ns = [n0; n1; n2; n3; n4] in
+  let n0 = 20 in
+  let n1 = 20 in
+  let n2 = 20 in
+  let n3 = 9 in
+  let n4 = 9 in
+  let n5 = 1 in
+  let ns = [n0; n1; n2; n3; n4; n5] in
 
-  let p0 = Examples.ab_grammar ['a'] ['b'] n0 in
-  let p1 = Examples.power_two_grammar n1 in
-  let p2 = Examples.fibonacci_grammar n2 in
-  let p3 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] n3 in
-  let p4 = Examples.recursive_grammar in
-  let ps = [p0; p1; p2; p3; p4] in
+  let p0 = Examples.power_two_grammar                n0 in
+  let p1 = Examples.fibonacci_grammar                n1 in
+  let p2 = Examples.ab_2_grammar ['a'] ['b']         n2 in
+  let p3 = Examples.ab_grammar ['a'] ['b']           n3 in
+  let p4 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] n4 in
+  let p5 = Examples.recursive_grammar in
+  let ps = [p0; p1; p2; p3; p4; p5] in
 
-  let v0 = fun i -> ("F" ^ i, "G" ^ i) in
-  let v1 = fun i -> ("S" ^ i, "T" ^ i) in
+  let v0 = fun i -> ("S" ^ i, "T" ^ i) in
+  let v1 = fun i -> ("F" ^ i, "G" ^ i) in
   let v2 = fun i -> ("F" ^ i, "G" ^ i) in
   let v3 = fun i -> ("F" ^ i, "G" ^ i) in
-  let v4 = fun i -> ("X", "Y") in
-  let vs = [v0; v1; v2; v3; v4] in
+  let v4 = fun i -> ("F" ^ i, "G" ^ i) in
+  let v5 = fun i -> ("X", "Y") in
+  let vs = [v0; v1; v2; v3; v4; v5] in
 
   let es = combine (combine ps vs) ns in
 
@@ -133,13 +135,12 @@ let _ =
       let proof_sizes = calc_proof_sizes p v n strat in
 
       let mode = match strat with
-      | Grammar       -> "g"
       | Base          -> "b"
       | Decomposition -> "d" in
       let prefix = "sizes_" ^ mode in
       let filename = (prefix ^ (string_of_int e) ^ ".dat") in
 
-      save_proof_sizes proof_sizes filename) [Grammar; Base; Decomposition];
+      save_proof_sizes proof_sizes filename) [Base; Decomposition];
   done;
 
   exit 0;
