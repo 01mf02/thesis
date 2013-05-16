@@ -120,7 +120,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\PremR}[1]{\operatorname{Prem_{\mathcal{R}}}\left(#1\right)}
+\newcommand{\PremR}[1]{\operatorname{Prem_{\mathcal{R}}}\left(#1\right)}
 {\mathrm{Prem}_{\mathcal{R}}\left(#1\right)}
 \end_inset
 
@@ -129,7 +129,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\length}[1]{\operatorname{length}\left(#1\right)}
+\newcommand{\length}[1]{\operatorname{length}\left(#1\right)}
 {\mathrm{length}\left(#1\right)}
 \end_inset
 
@@ -138,7 +138,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\size}[1]{\operatorname{size}\left(#1\right)}
+\newcommand{\size}[1]{\operatorname{size}\left(#1\right)}
 {\mathrm{size}\left(#1\right)}
 \end_inset
 
@@ -147,7 +147,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\norm}[1]{\left\Vert #1\right\Vert }
+\newcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
 
@@ -155,7 +155,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
+\newcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
 {\mathcal{L}\left(#1\right)}
 \end_inset
 
@@ -177,7 +177,7 @@ Proofs:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\proofsep}{\mathbin{\equiv}}
+\newcommand{\proofsep}{\mathbin{\equiv}}
 {\equiv}
 \end_inset
 
@@ -209,7 +209,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\fCenter}{\proofsep}
+\newcommand{\fCenter}{\proofsep}
 \end_inset
 
 
@@ -217,7 +217,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\binaryprimitive}[2]{\BinaryInf$#1\fCenter#2$}
+\newcommand{\binaryprimitive}[2]{\BinaryInf$#1\fCenter#2$}
 {#1\fCenter#2}
 \end_inset
 
@@ -226,7 +226,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\axiomprimitive}[2]{\Axiom$#1\fCenter#2$}
+\newcommand{\axiomprimitive}[2]{\Axiom$#1\fCenter#2$}
 {#1\fCenter#2}
 \end_inset
 
@@ -235,7 +235,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\unaryprimitive}[2]{\UnaryInf$#1\fCenter#2$}
+\newcommand{\unaryprimitive}[2]{\UnaryInf$#1\fCenter#2$}
 {#1\fCenter#2}
 \end_inset
 
@@ -244,7 +244,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\trinaryprimitive}[2]{\TrinaryInf$#1\fCenter#2$}
+\newcommand{\trinaryprimitive}[2]{\TrinaryInf$#1\fCenter#2$}
 {#1\fCenter#2}
 \end_inset
 
@@ -253,7 +253,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\bussproof}[1]{#1\DisplayProof}
+\newcommand{\bussproof}[1]{#1\DisplayProof}
 {{\scriptscriptstyle \texttt{bp}}\left.#1\right.}
 \end_inset
 
@@ -262,7 +262,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\binaryinfc}[4]{#1#2\RightLabel{\ensuremath{{\scriptstyle \textrm{#4}}}}\BinaryInfC{\ensuremath{#3}}}
+\newcommand{\binaryinfc}[4]{#1#2\RightLabel{\ensuremath{{\scriptstyle \textrm{#4}}}}\BinaryInfC{\ensuremath{#3}}}
 {\cfrac{#1 #2}{#3}{\scriptstyle \textrm{#4}}}
 \end_inset
 
@@ -271,7 +271,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\trinaryinfc}[5]{#1#2#3\RightLabel{\ensuremath{{\scriptstyle \textrm{#5}}}}\TrinaryInfC{\ensuremath{#4}}}
+\newcommand{\trinaryinfc}[5]{#1#2#3\RightLabel{\ensuremath{{\scriptstyle \textrm{#5}}}}\TrinaryInfC{\ensuremath{#4}}}
 {\cfrac{#1 #2 #3}{#4}{\scriptstyle \textrm{#5}}}
 \end_inset
 
@@ -280,7 +280,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\unaryinfc}[3]{#1\RightLabel{\ensuremath{{\scriptstyle \textrm{#3}}}}\UnaryInfC{\ensuremath{#2}}}
+\newcommand{\unaryinfc}[3]{#1\RightLabel{\ensuremath{{\scriptstyle \textrm{#3}}}}\UnaryInfC{\ensuremath{#2}}}
 {\cfrac{#1}{#2}{\scriptstyle \textrm{#3}}}
 \end_inset
 
@@ -289,7 +289,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\axiomc}[1]{\AxiomC{\ensuremath{#1}}}
+\newcommand{\axiomc}[1]{\AxiomC{\ensuremath{#1}}}
 {{\scriptscriptstyle \texttt{axc}}\left.#1\right.}
 \end_inset
 
@@ -298,7 +298,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\binaryinf}[5]{#1#2\RightLabel{\ensuremath{{\scriptstyle \textrm{#5}}}}\binaryprimitive{#3}{#4}}
+\newcommand{\binaryinf}[5]{#1#2\RightLabel{\ensuremath{{\scriptstyle \textrm{#5}}}}\binaryprimitive{#3}{#4}}
 {\cfrac{#1 #2}{#3\proofsep#4}{\scriptstyle \textrm{#5}}}
 \end_inset
 
@@ -307,7 +307,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\trinaryinf}[6]{#1#2#3\RightLabel{\ensuremath{{\scriptstyle \textrm{#6}}}}\trinaryprimitive{#4}{#5}}
+\newcommand{\trinaryinf}[6]{#1#2#3\RightLabel{\ensuremath{{\scriptstyle \textrm{#6}}}}\trinaryprimitive{#4}{#5}}
 {\cfrac{#1 #2 #3}{#4\proofsep#5}{\scriptstyle \textrm{#6}}}
 \end_inset
 
@@ -316,7 +316,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\unaryinf}[4]{#1\RightLabel{\ensuremath{{\scriptstyle \textrm{#4}}}}\unaryprimitive{#2}{#3}}
+\newcommand{\unaryinf}[4]{#1\RightLabel{\ensuremath{{\scriptstyle \textrm{#4}}}}\unaryprimitive{#2}{#3}}
 {\cfrac{#1}{#2\proofsep#3}{\scriptstyle \textrm{#4}}}
 \end_inset
 
@@ -325,7 +325,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\axiom}[2]{\axiomprimitive{#1}{#2}}
+\newcommand{\axiom}[2]{\axiomprimitive{#1}{#2}}
 {{\scriptscriptstyle \texttt{ax}}\left.#1\proofsep#2\right.}
 \end_inset
 
@@ -334,7 +334,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\axrulesp}[4]{\bussproof{\unaryinf{\axiomc{\vphantom{#4}}}{#1}{#2}{#3}}}
+\newcommand{\axrulesp}[4]{\bussproof{\unaryinf{\axiomc{\vphantom{#4}}}{#1}{#2}{#3}}}
 {\cfrac{\vphantom{#4}}{#1\proofsep#2}{\scriptstyle \textrm{#3}}}
 \end_inset
 
@@ -343,7 +343,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\axrule}[3]{\axrulesp{#1}{#2}{#3}{\proofsep\Gamma,\Delta}}
+\newcommand{\axrule}[3]{\axrulesp{#1}{#2}{#3}{\proofsep\Gamma,\Delta}}
 {\overline{#1\proofsep#2}^{{\scriptstyle \textrm{#3}}}}
 \end_inset
 
@@ -352,7 +352,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\unrule}[5]{\bussproof{\unaryinf{\axiom{#1}{#2}}{#3}{#4}{#5}}}
+\newcommand{\unrule}[5]{\bussproof{\unaryinf{\axiom{#1}{#2}}{#3}{#4}{#5}}}
 {\cfrac{#1\proofsep#2}{#3\proofsep#4}{\scriptstyle \textrm{#5}}}
 \end_inset
 
@@ -361,7 +361,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\unrulec}[3]{\bussproof{\unaryinfc{\axiomc{#1}}{#2}{#3}}}
+\newcommand{\unrulec}[3]{\bussproof{\unaryinfc{\axiomc{#1}}{#2}{#3}}}
 {\cfrac{#1}{#2}{\scriptstyle \textrm{#3}}}
 \end_inset
 
@@ -370,7 +370,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\binrule}[7]{\bussproof{\binaryinf{\axiom{#1}{#2}}{\axiom{#3}{#4}}{#5}{#6}{#7}}}
+\newcommand{\binrule}[7]{\bussproof{\binaryinf{\axiom{#1}{#2}}{\axiom{#3}{#4}}{#5}{#6}{#7}}}
 {\cfrac{#1\proofsep#2  #3\proofsep#4}{#5\proofsep#6}{\scriptstyle \textrm{#7}}}
 \end_inset
 
@@ -379,7 +379,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
+\newcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
 \end_inset
 
 
@@ -387,7 +387,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
+\newcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
 \end_inset
 
 
@@ -395,7 +395,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\sj}[2]{\axiomc{\boxed{#1\proofsep#2}}}
+\newcommand{\sj}[2]{\axiomc{\boxed{#1\proofsep#2}}}
 \end_inset
 
 
@@ -403,7 +403,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
+\newcommand{\grstar}[3]{\unaryinf{#3}{#1}{#2}{gr*}}
 \end_inset
 
 
@@ -411,7 +411,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
+\newcommand{\syminf}[3]{\unaryinf{#3}{#1}{#2}{sym}}
 \end_inset
 
 
@@ -419,7 +419,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\transinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{trans}}
+\newcommand{\transinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{trans}}
 \end_inset
 
 
@@ -427,7 +427,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\timesinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{\ensuremath{\times}}}
+\newcommand{\timesinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{\ensuremath{\times}}}
 \end_inset
 
 
@@ -435,7 +435,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\timesstarinf}[3]{\unaryinf{#3}{#1}{#2}{\ensuremath{\times^{*}}}}
+\newcommand{\timesstarinf}[3]{\unaryinf{#3}{#1}{#2}{\ensuremath{\times^{*}}}}
 \end_inset
 
 
@@ -443,7 +443,7 @@ ensuremath.
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\plusinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{\ensuremath{+}}}
+\newcommand{\plusinf}[4]{\binaryinf{#3}{#4}{#1}{#2}{\ensuremath{+}}}
 \end_inset
 
 

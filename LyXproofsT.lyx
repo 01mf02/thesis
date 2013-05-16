@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass article
+\textclass clmthesis
 \use_default_options false
 \maintain_unincluded_children false
 \language english
@@ -76,7 +76,7 @@
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\proofsep}{\mathbin{\equiv}}
+\newcommand{\proofsep}{\mathbin{\equiv}}
 {\equiv}
 \end_inset
 

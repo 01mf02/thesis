@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass article
+\textclass clmthesis
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -178,7 +178,7 @@ Proofs:
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
-filename "LyXproofs.lyx"
+filename "LyXproofsT.lyx"
 
 \end_inset
 
