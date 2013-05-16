@@ -1,5 +1,5 @@
 # maximal dataset number
-n = 3
+n = 4
 
 do for [i=0:n] {
   load "proof_sizes.plt"
