@@ -719,7 +719,7 @@ key "harrison1978"
 \begin_layout Example
 \begin_inset CommandInset label
 LatexCommand label
-name "Example-grammar"
+name "ex:Example-grammar"
 
 \end_inset
 
@@ -1023,7 +1023,7 @@ Note that while we can only produce one single terminal word with each variable
 \begin_layout Example
 \begin_inset CommandInset label
 LatexCommand label
-name "2^n-grammar"
+name "ex:2^n-grammar"
 
 \end_inset
 
@@ -1045,7 +1045,7 @@ All variables of this grammar produce exactly one word.
 For the grammar from example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "2^n-grammar"
+reference "ex:2^n-grammar"
 
 \end_inset
 
@@ -1369,7 +1369,7 @@ There exists a function
 We consider the grammar from example 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "Example-grammar"
+reference "ex:Example-grammar"
 
 \end_inset
 
@@ -1529,7 +1529,7 @@ We can show that the norms of grammar variables
 \begin_layout Lemma
 \begin_inset CommandInset label
 LatexCommand label
-name "Norm-bounded"
+name "lem:Norm-bounded"
 
 \end_inset
 
@@ -1631,7 +1631,7 @@ Because we need the bound of the norm later in the bound of proof size,
 \begin_layout Lemma
 \begin_inset CommandInset label
 LatexCommand label
-name "Poly-bound"
+name "lem:Poly-bound"
 
 \end_inset
 
@@ -1702,14 +1702,14 @@ Given a restricted SDG
 By lemmas 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Norm-bounded"
+reference "lem:Norm-bounded"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Poly-bound"
+reference "lem:Poly-bound"
 
 \end_inset
 
@@ -2509,7 +2509,7 @@ Up to this point, we only considered grammars with a fixed number of producible
 \begin_layout Example
 \begin_inset CommandInset label
 LatexCommand label
-name "Recursive-grammar"
+name "ex:Recursive-grammar"
 
 \end_inset
 
@@ -2791,7 +2791,7 @@ Proof definition
 \begin_layout Definition
 \begin_inset CommandInset label
 LatexCommand label
-name "Proof-definition"
+name "def:Proof-definition"
 
 \end_inset
 
@@ -3018,7 +3018,7 @@ Soundness
 The proof system in definition 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Proof-definition"
+reference "def:Proof-definition"
 
 \end_inset
 
@@ -3287,7 +3287,7 @@ R=B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies\\
 \begin_layout Lemma
 \begin_inset CommandInset label
 LatexCommand label
-name "Base-replacement-exp"
+name "lem:Base-replacement-exp"
 
 \end_inset
 
@@ -5004,7 +5004,7 @@ status collapsed
 Equivalence proof of example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Recursive-grammar"
+reference "ex:Recursive-grammar"
 
 \end_inset
 
@@ -5116,7 +5116,7 @@ Proof verification: The program verifies whether the constructed proof is
  a valid proof according to definition 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "Proof-definition"
+reference "def:Proof-definition"
 
 \end_inset
 
@@ -5942,7 +5942,7 @@ Again, here the base produces an exponential-size proof (as expected with
  the result from lemma 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Base-replacement-exp"
+reference "lem:Base-replacement-exp"
 
 \end_inset
 
@@ -7099,7 +7099,7 @@ In a
 \begin_layout Theorem
 \begin_inset CommandInset label
 LatexCommand label
-name "Proof-EXP"
+name "th:Proof-EXP"
 
 \end_inset
 
@@ -7142,7 +7142,7 @@ As each cluster contains maximally
 The proof system in definition 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Proof-definition"
+reference "def:Proof-definition"
 
 \end_inset
 
@@ -7153,7 +7153,7 @@ reference "Proof-definition"
 Is a direct consequence of theorem 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "Proof-EXP"
+reference "th:Proof-EXP"
 
 \end_inset
 
