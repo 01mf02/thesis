@@ -3285,6 +3285,12 @@ R=B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies\\
 \end_layout
 
 \begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "Base-replacement-exp"
+
+\end_inset
+
 The base-replacement algorithm may produce proofs of exponential size.
 \end_layout
 
@@ -3296,13 +3302,6 @@ reference "tab:AB-grammar-non2NF"
 
 \end_inset
 
-, which is a slightly adapted version of the grammar given in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "tab:AB-grammar-2NF"
-
-\end_inset
-
 .
  
 \begin_inset Float table
@@ -3311,164 +3310,15 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="1">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B\rightarrow b$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{B}^{0}\rightarrow aB$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A_{B}^{n+1}\rightarrow aBA_{B}^{n}A_{B}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $F^{n}\rightarrow aBA_{B}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\begin_inset space \qquad{}
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="1">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $A\rightarrow a$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B\rightarrow b$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{A}^{0}\rightarrow bA$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $B_{A}^{n+1}\rightarrow bAB_{A}^{n}B_{A}^{n}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $G^{n}\rightarrow aB_{A}^{n}B$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Formula 
+\[
+\begin{aligned}A & \to a & A & \to a\\
+B & \to b & B & \to b\\
+A_{B}^{0} & \to aB & B_{A}^{0} & \to bA\\
+A_{B}^{n+1} & \to aBA_{B}^{n}A_{B}^{n} & B_{A}^{n+1} & \to bAB_{A}^{n}B_{A}^{n}\\
+F^{n} & \to aBA_{B}^{n} & G^{n} & \to aB_{A}^{n}B
+\end{aligned}
+\]
 
 \end_inset
 
@@ -5175,6 +5025,19 @@ reference "Recursive-grammar"
 Here we show how we may verify the correctness of a given proof.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+write about considered grammar replacement strategy
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Experimental results
 \begin_inset CommandInset label
@@ -5195,7 +5058,7 @@ We wrote an OCaml program called
 \noun on
 Groof
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 The name 
@@ -5273,6 +5136,129 @@ Benchmark grammars
 \end_layout
 
 \begin_layout Standard
+Here we present the performance of our proof strategies with the aid of
+ five different grammars, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is a parameter to adjust the grammar size:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ grammar (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:2^n-grammar"
+
+\end_inset
+
+): 
+\begin_inset Formula $S_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{n}$
+\end_inset
+
+ describe the language 
+\begin_inset Formula $a^{2^{n}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Fibonacci grammar (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:Fib-grammar"
+
+\end_inset
+
+): 
+\begin_inset Formula $F_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $G_{n}$
+\end_inset
+
+ describe the language 
+\begin_inset Formula $a^{f_{n}}$
+\end_inset
+
+, where 
+\begin_inset Formula $f_{n}$
+\end_inset
+
+ is the 
+\begin_inset Formula $n$
+\end_inset
+
+-th Fibonacci number.
+\end_layout
+
+\begin_layout Enumerate
+AB grammar in 2NF (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:AB-grammar-2NF"
+
+\end_inset
+
+): 
+\begin_inset Formula $F_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $G_{n}$
+\end_inset
+
+ describe the language 
+\begin_inset Formula $\left(ab\right)^{2^{n+1}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+AB grammar without branching (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:AB-grammar-non2NF"
+
+\end_inset
+
+): As previous grammar.
+\end_layout
+
+\begin_layout Enumerate
+AB grammar with branching (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:AB-grammar-non2NF-br"
+
+\end_inset
+
+): 
+\begin_inset Formula $F^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $G^{n}$
+\end_inset
+
+ describe the language 
+\begin_inset Formula $\left(a+b\right)^{2^{n+2}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -5286,6 +5272,59 @@ Explain examples.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+S_{0} & \to a\\
+S_{1} & \to aS_{0} & S_{1}^{'} & \to a\\
+S_{n+2} & \to aS_{n+1}S_{n+1}^{'} & S_{n+2}^{'} & \to aS_{n+1}^{'}S_{n+1}^{'}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+T_{0} & \to a\\
+T_{1} & \to aT_{0} & T_{1}^{'} & \to a\\
+T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:2^n-grammar"
+
+\end_inset
+
+
+\begin_inset Formula $\norm{S_{n}}=\norm{T_{n}}=2^{n}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset Float table
 wide false
 sideways false
@@ -5322,6 +5361,12 @@ G_{n+3} & \to aG_{n+2}^{'}G_{n+1} & G_{3}^{'} & \to aG_{2}^{'}\\
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Fib-grammar"
+
+\end_inset
+
 Two encodings of the Fibonacci numbers 
 \begin_inset Formula $f_{n}$
 \end_inset
@@ -5403,21 +5448,14 @@ status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Formula 
-\begin{align*}
-S_{0} & \to a\\
-S_{1} & \to aS_{0} & S_{1}^{'} & \to a\\
-S_{n+2} & \to aS_{n+1}S_{n+1}^{'} & S_{n+2}^{'} & \to aS_{n+1}^{'}S_{n+1}^{'}
-\end{align*}
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{align*}
-T_{0} & \to a\\
-T_{1} & \to aT_{0} & T_{1}^{'} & \to a\\
-T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
-\end{align*}
+\[
+\begin{aligned}A & \to a+b & A & \to a+b\\
+B & \to b+a & B & \to b+a\\
+A_{B}^{0} & \to\left(a+b\right)B & B_{A}^{0} & \to\left(b+a\right)A\\
+A_{B}^{n+1} & \to\left(a+b\right)BA_{B}^{n}A_{B}^{n} & B_{A}^{n+1} & \to\left(b+a\right)AB_{A}^{n}B_{A}^{n}\\
+F^{n} & \to\left(a+b\right)BA_{B}^{n} & G^{n} & \to\left(a+b\right)B_{A}^{n}B
+\end{aligned}
+\]
 
 \end_inset
 
@@ -5428,7 +5466,19 @@ T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-\begin_inset Formula $\norm{S_{n}}=\norm{T_{n}}=2^{n}$
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:AB-grammar-non2NF-br"
+
+\end_inset
+
+
+\begin_inset Formula $F^{n}\equiv G^{n}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\norm{F_{n}}=\norm{G_{n}}=2^{n+2}$
 \end_inset
 
 .
@@ -5442,6 +5492,10 @@ T_{n+2} & \to aT_{n+1}^{'}T_{n+1} & T_{n+2}^{'} & \to aT_{n+1}^{'}T_{n+1}^{'}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Results
 \end_layout
 
 \begin_layout Standard
@@ -5463,32 +5517,253 @@ the cumulative size of all conclusion polynomials, i.e.
 
 \begin_layout Standard
 It is interesting to consider both of these factors, as we might have a
- small total number of proof rules on the one hand, however at the same
- time containing exponential-size polynomials on the other hand.
+ linear number of proof rules on the one hand, however at the same time
+ containing polynomials of cubic size on the other hand.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Merge impl.
- & exp.
- results
+We fitted our data, both proof rules and polynomial sizes, with the following
+ functions as needed:
 \end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+poly(x) & =p_{1}+p_{2}x+p_{3}x^{2}+p_{4}x^{3},\\
+exp(x) & =e_{1}+e_{2}\left(e_{3}\right)^{x}+e_{4}x^{2}.
+\end{align*}
 
 \end_inset
 
-Here we say how great our algorithm performs.
-\begin_inset Float figure
+In the graphs, the data points 
+\begin_inset Quotes eld
+\end_inset
+
+Base
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Decomp.
+\begin_inset Quotes erd
+\end_inset
+
+ signify the measured proof sizes for the respective strategies, while the
+ dotted lines 
+\begin_inset Quotes eld
+\end_inset
+
+BF
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+DF
+\begin_inset Quotes erd
+\end_inset
+
+ signify the fitted functions for each strategy.
+\end_layout
+
+\begin_layout Standard
+Now for the results, summarised in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:Results"
+
+\end_inset
+
+: 
+\begin_inset Float table
 wide false
 sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset CommandInset include
-LatexCommand include
-filename "proof_sizes0.tex"
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Grammar/Strategy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Base
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Decomposition
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
 \end_inset
 
@@ -5499,7 +5774,14 @@ filename "proof_sizes0.tex"
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Results for AB grammar.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Results"
+
+\end_inset
+
+Results for the five benchmark grammars.
+ P means polynomial- and E means exponential-size proofs.
 \end_layout
 
 \end_inset
@@ -5510,6 +5792,13 @@ Results for AB grammar.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $2^{n}$
+\end_inset
+
+ grammar: 
 \begin_inset Float figure
 wide false
 sideways false
@@ -5518,7 +5807,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes1.tex"
+filename "proof_sizes0.tex"
 
 \end_inset
 
@@ -5543,7 +5832,13 @@ Results for
 
 \end_inset
 
+For this grammar, both base and decomposition strategy seem to produce polynomia
+l-size proofs.
+ Interestingly, the base produces more rules with less symbols overall.
+\end_layout
 
+\begin_layout Enumerate
+Fibonacci grammar: 
 \begin_inset Float figure
 wide false
 sideways false
@@ -5552,7 +5847,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes2.tex"
+filename "proof_sizes1.tex"
 
 \end_inset
 
@@ -5573,32 +5868,123 @@ Results for Fibonacci grammar.
 
 \end_inset
 
+Here we see that the base produces exponential-size proofs, both for rules
+ and symbols, while decomposition stays polynomial.
+\end_layout
+
+\begin_layout Enumerate
+AB grammar in 2NF: 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes2.tex"
+
+\end_inset
+
 
 \end_layout
 
-\begin_layout Standard
-We fitted our data with the following functions as needed:
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for AB grammar in 2NF.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-poly(x) & =p_{1}+p_{2}x+p_{3}x^{2}+p_{4}x^{3},\\
-exp(x) & =e_{1}+e_{2}\left(e_{3}\right)^{x}+e_{4}x^{2}.
-\end{align*}
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
-It turned out that only the curves for the base replacement strategy for
- the Fibonacci grammar needed 
-\begin_inset Formula $exp(x)$
+Both strategies seem to produce polynomial-size proofs, with the base outperform
+ing the decomposition with apparently linear proof sizes.
+\end_layout
+
+\begin_layout Enumerate
+AB grammar without branching: 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes3.tex"
+
 \end_inset
 
-; all other curves were fitted with 
-\begin_inset Formula $poly(x)$
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for AB grammar without branching.
+\end_layout
+
 \end_inset
 
-.
+
+\end_layout
+
+\end_inset
+
+Again, here the base produces an exponential-size proof (as expected with
+ the result from lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Base-replacement-exp"
+
+\end_inset
+
+), while the decomposition remains polynomial.
+\end_layout
+
+\begin_layout Enumerate
+AB grammar with branching: 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "proof_sizes4.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Results for AB grammar with branching.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+As all production rules for this grammar are (strict) sums, we cannot apply
+ decomposition here, so the decomposition strategy will always fall back
+ to the base strategy.
+ As the latter produces exponential-size proofs, the decomposition also
+ produces exponential-size proofs.
 \end_layout
 
 \begin_layout Chapter
