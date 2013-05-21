@@ -1,7 +1,7 @@
 # i denotes the index of the data file for the current plot
 # i will be set from calling batch.plt; uncomment line below if you want to
 # run this plot file without batch.plt
-#i = 2
+#i = 5
 
 #set terminal pdf
 #set output "proof_sizes".i.".pdf"
@@ -21,6 +21,7 @@ if (i == 1) { rules_max = 50000; symbs_max = 700000 }
 if (i == 2) { rules_max =  5000; symbs_max = 200000 }
 if (i == 3) { rules_max = 50000; symbs_max = 500000 }
 if (i == 4) { rules_max = 50000; symbs_max = 500000 }
+if (i == 5) { rules_max = 50000; symbs_max = 500000 }
 
 # filenames
 file_b = "sizes_b".i.".dat"
@@ -43,9 +44,9 @@ set multiplot layout 1,2
 b(x) = b1 + b2*x + b3*x**2 + b4*x**3
 d(x) = d1 + d2*x + d3*x**2 + d4*x**3
 
-# exponential function to approximate base curve in special case
-if (i == 1 || i == 3 || i == 4) { b(x) = b1 + b2*x**2 + b3*b4**x }
-if (                    i == 4) { d(x) = d1 + d2*x**2 + d3*d4**x }
+# exponential function to approximate base curve in special cases
+if (i == 1 || i == 3 || i == 4 || i == 5) { b(x) = b1 + b2*x**2 + b3*b4**x }
+if (                    i == 4 || i == 5) { d(x) = d1 + d2*x**2 + d3*d4**x }
 
 # n denotes the column number in the data file
 # (n = 2 -> rules, n = 3 -> symbols)
