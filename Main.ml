@@ -108,24 +108,27 @@ let _ =
   let n2 = 20 in
   let n3 = 9 in
   let n4 = 9 in
-  let n5 = 1 in
-  let ns = [n0; n1; n2; n3; n4; n5] in
+  let n5 = 22 in
+  let n6 = 1 in
+  let ns = [n0; n1; n2; n3; n4; n5; n6] in
 
   let p0 = Examples.power_two_grammar                n0 in
-  let p1 = Examples.fibonacci_grammar                n1 in
+  let p1 = Examples.fibonacci_grammar ['a']          n1 in
   let p2 = Examples.ab_2_grammar ['a'] ['b']         n2 in
   let p3 = Examples.ab_grammar ['a'] ['b']           n3 in
   let p4 = Examples.ab_grammar ['a'; 'b'] ['b'; 'a'] n4 in
-  let p5 = Examples.recursive_grammar in
-  let ps = [p0; p1; p2; p3; p4; p5] in
+  let p5 = Examples.fibonacci_grammar ['a'; 'b']     n5 in
+  let p6 = Examples.recursive_grammar in
+  let ps = [p0; p1; p2; p3; p4; p5; p6] in
 
   let v0 = fun i -> ("S" ^ i, "T" ^ i) in
   let v1 = fun i -> ("F" ^ i, "G" ^ i) in
   let v2 = fun i -> ("F" ^ i, "G" ^ i) in
   let v3 = fun i -> ("F" ^ i, "G" ^ i) in
   let v4 = fun i -> ("F" ^ i, "G" ^ i) in
-  let v5 = fun i -> ("X", "Y") in
-  let vs = [v0; v1; v2; v3; v4; v5] in
+  let v5 = fun i -> ("F" ^ i, "G" ^ i) in
+  let v6 = fun i -> ("X", "Y") in
+  let vs = [v0; v1; v2; v3; v4; v5; v6] in
 
   let es = combine (combine ps vs) ns in
 

@@ -81,19 +81,19 @@ let rec power_two_grammar n =
     | n -> power_two_grammar (n-1) @ s' n @ t' n @ s n @ t n;;
 
 
-let rec fibonacci_grammar n =
+let rec fibonacci_grammar ta n =
   let nonprime_var v vf1 vf2 = function
-    | 0 -> zero_variables [(v ^ "0", 'a')]
-    | 1 -> zero_variables [(v ^ "1", 'a')]
-    | 2 -> one_variable [(v ^ "2", 'a', v ^ "0")]
-    | n -> two_variables [(v ^ soi n, 'a', vf1 n, vf2 n)] in
+    | 0 -> zero_variables_br [(v ^ "0", ta)]
+    | 1 -> zero_variables_br [(v ^ "1", ta)]
+    | 2 -> one_variable_br [(v ^ "2", ta, v ^ "0")]
+    | n -> n_variables_br [(v ^ soi n, ta, [vf1 n; vf2 n])] in
 
   let prime_var v vf1 vf2 = function
     | 0 -> []
     | 1 -> []
-    | 2 -> zero_variables [(v ^ "2'", 'a')]
-    | 3 -> one_variable [(v ^ "3'", 'a', v ^ "2'")]
-    | n -> two_variables [(v ^ soi n ^ "'", 'a', vf1 n, vf2 n)] in
+    | 2 -> zero_variables_br [(v ^ "2'", ta)]
+    | 3 -> one_variable_br [(v ^ "3'", ta, v ^ "2'")]
+    | n -> n_variables_br [(v ^ soi n ^ "'", ta, [vf1 n; vf2 n])] in
 
   let f = nonprime_var "F"
     (fun n -> "F" ^ soi (n-2)) (fun n -> "F" ^ soi (n-1) ^ "'") in
@@ -107,7 +107,7 @@ let rec fibonacci_grammar n =
 
   match n with
     | 0 -> f 0 @ g 0
-    | n -> fibonacci_grammar (n-1) @ f' n @ g' n @ f n @ g n;;
+    | n -> fibonacci_grammar ta (n-1) @ f' n @ g' n @ f n @ g n;;
 
 
 let rec branching_grammar fx fy n =
