@@ -845,11 +845,7 @@ Strict rules:
 \begin_inset Formula $\bussproof{\gr X{\Gr X}}$
 \end_inset
 
-, 
-\begin_inset Formula $\forall X\in V$
-\end_inset
 
-.
 \end_layout
 
 \end_inset
