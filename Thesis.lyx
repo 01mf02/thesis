@@ -314,6 +314,19 @@ research witnesses in Hirshfeld paper ...
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+manual to Gérauds algorithm
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Preliminaries
 \begin_inset CommandInset label
@@ -327,14 +340,157 @@ name "chap:Preliminaries"
 
 \begin_layout Standard
 In this chapter, we define some terms we will use throughout the document,
- see 
+ see the first chapters of 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "hopcroft1979"
+key "hopcroft1979,carton2008"
 
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Itemize
+Alphabet: An alphabet 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is a finite set of symbols.
+\end_layout
+
+\begin_layout Itemize
+Word: A word 
+\begin_inset Formula $w$
+\end_inset
+
+ over an alphabet 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is a sequence 
+\begin_inset Formula $w_{1}w_{2}\dots w_{n}$
+\end_inset
+
+, where each 
+\begin_inset Formula $w_{i}$
+\end_inset
+
+ is a symbol in 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+.
+ The empty word 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is defined to be the empty sequence.
+\end_layout
+
+\begin_layout Itemize
+Language: A language 
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+ over the alphabet 
+\begin_inset Formula $A$
+\end_inset
+
+ is a set of words over 
+\begin_inset Formula $A$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Concatenation of words: The concatenation of two words 
+\begin_inset Formula $u=u_{1}\dots u_{m}$
+\end_inset
+
+ and 
+\begin_inset Formula $v=v_{1}\dots v_{n}$
+\end_inset
+
+ is the new word 
+\begin_inset Formula $u\cdot v=u_{1}\dots u_{m}v_{1}\dots v_{n}$
+\end_inset
+
+.
+ This operation is associative, i.e.
+ 
+\begin_inset Formula $\left(u\cdot v\right)\cdot w=u\cdot\left(v\cdot w\right)$
+\end_inset
+
+, and the empty word 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is its neutral element, i.e.
+ 
+\begin_inset Formula $w\cdot\varepsilon=\varepsilon\cdot w=w$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Product of languages: The product of two languages 
+\begin_inset Formula $\mathcal{L}_{1},\,\mathcal{L}_{2}$
+\end_inset
+
+ is defined to be the concatenation of each of its words, i.e.
+ 
+\begin_inset Formula 
+\[
+\mathcal{L}_{1}\cdot\mathcal{L}_{2}=\bigcup_{\left\{ \left(x,y\right)|x\in\mathcal{L}_{1},\, y\in\mathcal{L}_{2}\right\} }x\cdot y.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Exponentiation: Given an alphabet 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, define 
+\begin_inset Formula $\Sigma^{n}$
+\end_inset
+
+ inductively by
+\begin_inset Formula 
+\begin{align*}
+\Sigma^{0} & :=\varepsilon,\\
+\Sigma^{n+1} & :=A\cdot A^{n+1}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Kleene operators: Given an alphabet 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, the Kleene star and Kleene plus of 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ are defined as
+\begin_inset Formula 
+\begin{align*}
+\Sigma^{*} & :=\bigcup_{i\geq0}\Sigma^{i},\\
+\Sigma^{+} & :=\bigcup_{i>0}\Sigma^{i}.
+\end{align*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -351,75 +507,6 @@ Symmetrical difference: For two sets
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Itemize
-Concatenation: The concatenation of 
-\begin_inset Formula $a\in A$
-\end_inset
-
- and 
-\begin_inset Formula $b\in B$
-\end_inset
-
- is defined as 
-\begin_inset Formula $a\cdot b$
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Is that sufficient?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Exponentiation: Given a finite set 
-\begin_inset Formula $A$
-\end_inset
-
-, 
-\begin_inset Formula $A^{n}:=\prod_{i=0}^{n}A$
-\end_inset
-
-, with 
-\begin_inset Formula $A^{0}=\varepsilon$
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Is that sufficient?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Kleene operators: Given a finite set 
-\begin_inset Formula $A$
-\end_inset
-
-, the Kleene star and Kleene plus are defined as
-\begin_inset Formula 
-\begin{align*}
-A^{*} & :=\bigcup_{i\in\mathbb{N}}A^{i},\\
-A^{+} & :=\bigcup_{i\in\mathbb{N}^{+}}A^{i}.
-\end{align*}
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -1175,21 +1262,6 @@ For a grammar
 \begin_inset Formula 
 \[
 \Gr X=\sum_{\left(X,\alpha\right)\in P}\alpha.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-At this point, we need to define the concatenation of two languages.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Formula 
-\[
-\lang{p_{1}}\cdot\lang{p_{2}}=\bigcup_{\left\{ \left(x,y\right)|x\in\lang{p_{1}},\, y\in\lang{p_{2}}\right\} }x\cdot y.
 \]
 
 \end_inset
@@ -2044,10 +2116,41 @@ key "harrison1978"
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+In chapter ?? of harrison, they introduce the concept ...
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+isomorphism between trees/graphs/sets of rules ...
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Definition
 Norm reduction function.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+function is undefined if p > input argument.
+ -> sufficient
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{align*}
 \left[\alpha\right]_{0} & =\alpha;\\
@@ -5624,7 +5727,7 @@ reference "tab:AB-grammar-non2NF-br"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Formula 
@@ -6236,6 +6339,16 @@ ion terminates.
 
 \begin_layout Section*
 Soundness
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+rest in appendix
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7043,6 +7156,16 @@ This is an invalid proof as well, as there is no single application of
 
 \begin_layout Section*
 Completeness
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+move to main
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Definition
