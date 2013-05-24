@@ -128,9 +128,9 @@ let rec branching_grammar fx fy n =
   | n -> (branching_grammar fx fy (n-1)) @ x n @ y n;;
 
 
-let branching_fibonacci_grammar n =
+(*let branching_fibonacci_grammar n =
   branching_grammar (fun n -> ["F" ^ soi n]) (fun n -> ["G" ^ soi n]) n @
-  fibonacci_grammar n;;
+  fibonacci_grammar n;;*)
 
 
 let recursive_grammar =
