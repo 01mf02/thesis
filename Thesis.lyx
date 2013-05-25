@@ -3047,7 +3047,11 @@ Let
 \begin_inset Formula $G$
 \end_inset
 
--equivalence proof every finite set of rules 
+-equivalence proof of a judgement 
+\begin_inset Formula $j\in\mathcal{J}$
+\end_inset
+
+ every finite set of rules 
 \begin_inset Formula $\mathcal{R}$
 \end_inset
 
@@ -3061,6 +3065,14 @@ reference "fig:Proof-rules"
 , such that
 \begin_inset Formula 
 \begin{equation}
+\forall r\in\mathcal{R}:\,\left(\Concl r=j\lor\exists r'\in\mathcal{R}:\,\Concl{r'}\in\Prem r\right),\label{eq:Goal-proved}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
 \forall r_{1}\in\mathcal{R},\,\forall r_{2}\in\mathcal{R}:\,\Concl{r_{1}}=\Concl{r_{2}}\iff r_{1}=r_{2},\label{eq:Unique-conclusions}
 \end{equation}
 
@@ -3069,7 +3081,7 @@ reference "fig:Proof-rules"
 
 \begin_inset Formula 
 \begin{equation}
-\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right],\label{eq:Conclusions-proved}
+\forall r\in\mathcal{R},\,\forall p\in\Prem r,\,\exists r_{p}\in\mathcal{R}:\,\left[p=\Concl{r_{p}}\land r\notin\Premstartimes{r_{p}}\right],\label{eq:Premises-proved}
 \end{equation}
 
 \end_inset
@@ -3122,8 +3134,42 @@ Make a pretty example to explain premstartimes.
 \end_layout
 
 \begin_layout Standard
-Let us dissect this definition.
- In 
+Let us dissect this definition:
+\end_layout
+
+\begin_layout Enumerate
+In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Goal-proved"
+
+\end_inset
+
+, we demand that the conclusion of each proof rule must be either the judgement
+ 
+\begin_inset Formula $j$
+\end_inset
+
+ (our final proof goal), or it must be in the premises of another proof
+ rule.
+ This ensures that there are no 
+\begin_inset Quotes eld
+\end_inset
+
+dangling
+\begin_inset Quotes erd
+\end_inset
+
+ rules, i.e.
+ rules which are not related to the proof of 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+In 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "eq:Unique-conclusions"
@@ -3134,10 +3180,13 @@ reference "eq:Unique-conclusions"
  having equal conclusions.
  This makes it possible to always find one unique proof rule given a judgement,
  thus simplifying matters.
- In 
+\end_layout
+
+\begin_layout Enumerate
+In 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Conclusions-proved"
+reference "eq:Premises-proved"
 
 \end_inset
 
@@ -3179,7 +3228,10 @@ paths
 \end_inset
 
  rule.
- We express the latter property with the help of two functions:
+\end_layout
+
+\begin_layout Standard
+We express the last property with the help of two functions:
 \end_layout
 
 \begin_layout Itemize
@@ -3452,7 +3504,7 @@ reference "eq:Unique-conclusions"
  and 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Conclusions-proved"
+reference "eq:Premises-proved"
 
 \end_inset
 
@@ -4546,13 +4598,28 @@ name "chap:Proof-construction-algorithm"
 status open
 
 \begin_layout Plain Layout
-DFS! relation to other work ...
+relation to other work ...
 \end_layout
 
 \end_inset
 
-In this chapter, we present our proof algorithm, which works in a recursive
- fashion: It accepts a sequence 
+In this chapter, we present our proof construction algorithm, which tries
+ to construct an equivalence proof given a grammar and a judgement.
+\end_layout
+
+\begin_layout Standard
+The main algorithm basically implements a depth-first search
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+reference?
+\end_layout
+
+\end_inset
+
+, during which it keeps a growing list of already proven judgements.
+ The algorithm works recursively: It accepts a sequence 
 \begin_inset Formula $rules$
 \end_inset
 
@@ -6564,7 +6631,7 @@ reference "eq:Unique-conclusions"
  and 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Conclusions-proved"
+reference "eq:Premises-proved"
 
 \end_inset
 
@@ -6599,7 +6666,7 @@ reference "eq:Unique-conclusions"
 , we only have to verify at this point whether 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Conclusions-proved"
+reference "eq:Premises-proved"
 
 \end_inset
 
@@ -7342,7 +7409,7 @@ The only difference between PS-
 However, this violates the condition in 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Conclusions-proved"
+reference "eq:Premises-proved"
 
 \end_inset
 
@@ -7357,7 +7424,7 @@ reference "eq:Conclusions-proved"
 Even if a proof rule locally satisfies 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "eq:Conclusions-proved"
+reference "eq:Premises-proved"
 
 \end_inset
 
@@ -7499,6 +7566,10 @@ From each proof
 \begin_inset Formula $\mathcal{R}$
 \end_inset
 
+ of 
+\begin_inset Formula $j$
+\end_inset
+
 , we can construct a set of clusters such that each proof rule in 
 \begin_inset Formula $\mathcal{R}$
 \end_inset
@@ -7513,6 +7584,93 @@ status open
 \begin_layout Plain Layout
 TODO.
 \end_layout
+
+\end_inset
+
+First, let 
+\begin_inset Formula 
+\[
+\mathcal{R}_{\times}:=\left\{ r|r\in\mathcal{R}\land\exists r':\, r'=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}}\land\Concl r\in\Prem{\left\{ P_{1}\right\} \cup\left\{ P_{2}\right\} }\right\} 
+\]
+
+\end_inset
+
+the set of rules whose conclusions are contained in premises of 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules.
+ Then, let
+\begin_inset Formula 
+\[
+\mathrm{Prem}_{\mathcal{R},\times}:=\bigcup_{r\in\mathcal{R}_{\times}}\PremR r
+\]
+
+\end_inset
+
+the set of rules whose conclusions appear in at least one premise of at
+ least one rule in 
+\begin_inset Formula $\mathcal{R}_{\times}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+With this machinery in place, we finally define
+\begin_inset Formula 
+\[
+\mathrm{Cluster}\left(r\right):=\begin{cases}
+r & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
+r\cup\bigcup_{r_{p}\in\PremR r}\mathrm{Leafs}\left(r_{p}\right) & \mathrm{else}.
+\end{cases}
+\]
+
+\end_inset
+
+ to obtain a cluster given a root rule 
+\begin_inset Formula $r$
+\end_inset
+
+.
+ This function is similar to 
+\begin_inset Formula $\Premstartimes r$
+\end_inset
+
+, with the difference that 
+\begin_inset Formula $\Premstartimes r$
+\end_inset
+
+ returns all rules up to 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules (excluding them), while 
+\begin_inset Formula $\mathrm{Cluster}\left(r\right)$
+\end_inset
+
+ returns also the 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules at the top, which represent the leafs of the cluster.
+\end_layout
+
+\begin_layout Proof
+Now let 
+\begin_inset Formula $r_{j}\in\mathcal{R}$
+\end_inset
+
+ denote the rule which has 
+\begin_inset Formula $j$
+\end_inset
+
+ as conclusion.
+ Then we can find the set of clusters with
+\begin_inset Formula 
+\[
+\mathrm{Clusters}\left(\mathcal{R}\right):=\bigcup_{r\in\left(\mathrm{Prem}_{\mathcal{R},\times}\cup r_{j}\right)}\mathrm{Cluster}\left(r\right).
+\]
 
 \end_inset
 
