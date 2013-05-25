@@ -2076,15 +2076,7 @@ name "chap:Existing-algorithms"
 \end_layout
 
 \begin_layout Standard
-Here we present 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hirshfeld1996"
-
-\end_inset
-
- and explain related concepts, such as a Caucal base.
- Also refer to 
+Also refer to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lasota2006"
@@ -2138,19 +2130,39 @@ isomorphism between trees/graphs/sets of rules ...
 
 \end_layout
 
-\begin_layout Definition
-Norm reduction function.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-function is undefined if p > input argument.
- -> sufficient
-\end_layout
+\begin_layout Section
+Hirshfeld algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Hirshfeld-algorithm"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Here we present 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+ and explain related concepts, such as a Caucal base.
+\end_layout
+
+\begin_layout Definition
+Norm reduction is a partial function from 
+\begin_inset Formula $\left(X^{*},\mathbb{N}\right)$
+\end_inset
+
+ to 
+\begin_inset Formula $X^{*}$
+\end_inset
+
+, which is undefined if the supplied natural number is greater than the
+ norm of the supplied variable word.
 \begin_inset Formula 
 \begin{align*}
 \left[\alpha\right]_{0} & =\alpha;\\
@@ -2165,27 +2177,108 @@ function is undefined if p > input argument.
 
 \end_layout
 
-\begin_layout Definition
-\begin_inset Note Note
-status open
+\begin_layout Standard
+Informally, the norm reduction function attempts to determine a postfix
+ of a given variable word, by 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
-Research if output can be non-defined for negative values of 
+cutting away
+\begin_inset Quotes erd
+\end_inset
+
+ the first 
 \begin_inset Formula $p$
 \end_inset
 
+ characters of its longest producible terminal word and returning the remaining
+ variables.
+ For example, if we know that 
+\begin_inset Formula $AB\equiv CD$
+\end_inset
+
+ and 
+\begin_inset Formula $\norm A>\norm C$
+\end_inset
+
+, then we conclude that 
+\begin_inset Formula $C$
+\end_inset
+
+ is a prefix of 
+\begin_inset Formula $A$
+\end_inset
+
+ and there has to exist a postfix 
+\begin_inset Formula $\alpha=\left[A\right]_{\norm C}$
+\end_inset
+
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+ such that 
+\begin_inset Formula $A\equiv C\alpha$
+\end_inset
+
+ --- see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Motivation-Base"
+
+\end_inset
+
 .
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+svgwidth{200pt}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includesvg{ABCD-base}
 \end_layout
 
 \end_inset
 
 
-\begin_inset Note Note
-status open
+\end_layout
 
 \begin_layout Plain Layout
-Explain norm red.
- function informally.
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Motivation-Base"
+
+\end_inset
+
+Motivation of Caucal base.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -2194,19 +2287,18 @@ Explain norm red.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Still in early concept phase.
-\end_layout
-
-\end_inset
-
-The core of the Hirshfeld algorithm is the 
+That idea is utilised at the core of the Hirshfeld algorithm, namely in
+ the 
 \emph on
 Caucal base
 \emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "caucal1990"
+
+\end_inset
+
 : It is a set storing the information which variables are prefixes of other
  variables.
  At first, the algorithm assumes every variable to be a prefix of each variable
@@ -3707,7 +3799,145 @@ X_{i}\left\langle \alpha\right\rangle _{t-\norm{X_{i}}} & \norm{X_{i}}\leq t\leq
 
 \end_inset
 
-Properties:
+
+\end_layout
+
+\begin_layout Definition
+Unlike the norm reduction function from 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Hirshfeld-algorithm"
+
+\end_inset
+
+, the decomposition function tries not to determine the postfix, but the
+ 
+\emph on
+prefix
+\emph default
+ of a variable word with a certain norm.
+ For example, if we know that 
+\begin_inset Formula $AB\equiv CD$
+\end_inset
+
+ holds and 
+\begin_inset Formula $\norm A>\norm C$
+\end_inset
+
+, then the algorithm in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Hirshfeld-algorithm"
+
+\end_inset
+
+ would try to find a postfix 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+ such that 
+\begin_inset Formula $A\equiv C\alpha$
+\end_inset
+
+.
+ In contrast to this, we would use the decomposition function to calculate
+ a prefix 
+\begin_inset Formula $\beta=\left\langle D\right\rangle _{\norm A-\norm C}$
+\end_inset
+
+ of 
+\begin_inset Formula $D$
+\end_inset
+
+ instead, such that 
+\begin_inset Formula $A\equiv C\beta$
+\end_inset
+
+.
+ Again, the main difference is that we derive 
+\begin_inset Formula $\beta$
+\end_inset
+
+ using the grammar of 
+\begin_inset Formula $D$
+\end_inset
+
+, not of 
+\begin_inset Formula $A$
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+svgwidth{200pt}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includesvg{ABCD-decomposition}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Motivation for the decomposition function.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+Now we prove some properties of the decomposition function, analogous to
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+.
+ The most important properties are that decomposition returns valid prefixes
+ of variables in case it does not return 
+\begin_inset Formula $\bot$
+\end_inset
+
+, and that it returns only output of polynomial size.
 \end_layout
 
 \begin_layout Theorem
@@ -4052,11 +4282,44 @@ We want to prove
 \begin_inset Formula $AB\equiv PCD$
 \end_inset
 
- for the following grammar with 
+ for the following grammar
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Note that this grammar lacks the definition of some variables, but it should
+ serve only the educational purpose of understanding the limitations of
+ the decomposition function, for which the lacking variables play no role.
+\end_layout
+
+\end_inset
+
+ with 
 \begin_inset Formula $m>0$
 \end_inset
 
 :
+\begin_inset Formula 
+\begin{align*}
+A_{n+1} & \to aA_{n}+bA_{n}\\
+C_{n+1} & \to aC_{n}+bC_{n}\\
+A_{0} & \to a\\
+C_{0} & \to aX\\
+A & \to aPA_{m}\\
+C & \to aC_{m}\\
+P & \to a
+\end{align*}
+
+\end_inset
+
+The grammar is depicted in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Branching-grammar"
+
+\end_inset
+
+: 
 \begin_inset Float figure
 wide false
 sideways false
@@ -4091,6 +4354,12 @@ includesvg{Branching_Grammar}
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Branching-grammar"
+
+\end_inset
+
 Branching grammar.
 \end_layout
 
@@ -4101,67 +4370,52 @@ Branching grammar.
 
 \end_inset
 
-
-\begin_inset Formula 
-\begin{align*}
-A_{n+1} & \to aA_{n}+bA_{n}\\
-C_{n+1} & \to aC_{n}+bC_{n}\\
-A_{0} & \to a\\
-C_{0} & \to aX\\
-A & \to aPA_{m}\\
-C & \to aC_{m}\\
-P & \to a
-\end{align*}
-
-\end_inset
-
-First, we note that
-\begin_inset Formula 
-\[
-\norm A=\overbrace{\norm P}^{1}+\norm C-\norm X,
-\]
-
-\end_inset
-
-so from 
-\begin_inset Formula $\norm A-1=\norm C-\norm X$
-\end_inset
-
- it follows that
-\begin_inset Formula 
-\[
-\norm A-1<\norm C.
-\]
-
-\end_inset
-
-Looking at the norms of the first variables 
-\begin_inset Formula $A$
+ In the upper and lower half of the image, there are graphical representations
+ of 
+\begin_inset Formula $PCD$
 \end_inset
 
  and 
-\begin_inset Formula $P$
+\begin_inset Formula $AB$
 \end_inset
 
- of our equivalence judgement, we see that the 
-\begin_inset Formula $\norm A>\norm P$
+, respectively.
+ In the upper half, we see by the tree structure that 
+\begin_inset Formula $C$
 \end_inset
 
-, so we try to replace the first variable on the left side 
+ produces an exponential number of different words, which also holds true
+ for 
 \begin_inset Formula $A$
 \end_inset
 
- by the decomposition of the variables on the right side, i.e.
- 
-\begin_inset Formula $\left\langle PCD\right\rangle _{\norm A}$
+ in the lower half.
+ However, we note that 
+\begin_inset Formula $PC$
+\end_inset
+
+ produces longer words than 
+\begin_inset Formula $A$
+\end_inset
+
+, while 
+\begin_inset Formula $P$
+\end_inset
+
+ alone produces a word smaller than 
+\begin_inset Formula $A$
+\end_inset
+
+, which is why we want to calculate the prefix of 
+\begin_inset Formula $PCD$
+\end_inset
+
+ with the norm of the variable 
+\begin_inset Formula $A$
 \end_inset
 
 .
- However, if we try to calculate 
-\begin_inset Formula $\left\langle PCD\right\rangle _{\norm A}$
-\end_inset
-
-, we get:
+ What happens now if we try to do that? We get:
 \begin_inset Formula 
 \begin{align*}
 \left\langle PCD\right\rangle _{\norm A} & =P\left\langle CD\right\rangle _{\norm A-1}\\
@@ -4171,7 +4425,25 @@ Looking at the norms of the first variables
 
 \end_inset
 
+From the image, we get an intuition why the decomposition is bound to fail
+ in this case: If we try to determine a prefix of 
+\begin_inset Formula $C$
+\end_inset
 
+ which should be by 
+\begin_inset Formula $\norm X$
+\end_inset
+
+ smaller than 
+\begin_inset Formula $\norm C$
+\end_inset
+
+, we are bound to return an exponential number of different words.
+ In that case it is better to fail directly by returning 
+\begin_inset Formula $\bot$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -4207,41 +4479,6 @@ That is a realistic scenario in a proof, so what can we do to remedy this
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Explain figure!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-note problem when decomposition does not work, caused by non-compression
- 
-\begin_inset Formula $\rightarrow$
-\end_inset
-
- exponential blowup in word branching
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Decomposition + base replacement
 \end_layout
 
 \begin_layout Section
