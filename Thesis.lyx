@@ -111,12 +111,34 @@ Michael Färber
 \end_layout
 
 \begin_layout Supervisors
-Géraud Sénizergues, Cezary Kaliszyk
+Géraud Sénizergues
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Université Bordeaux 1
+\end_layout
+
+\end_inset
+
+, Cezary Kaliszyk
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Universität Innsbruck
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
-This abstract is yet to be written, most probably somewhere around in June
- ...
+Equivalence of simple deterministic grammar is decidable in PTIME.
+ We created an algorithm in 2-EXPTIME to solve the problem and to issue
+ a complimentary equivalence proof in a simple proof system, which can then
+ be verified automatically.
 \end_layout
 
 \begin_layout Standard
@@ -127,6 +149,89 @@ filename "IncludesT.lyx"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section*
+Acknowledgements
+\end_layout
+
+\begin_layout Standard
+My thanks go to:
+\end_layout
+
+\begin_layout Itemize
+My supervisor Géraud, first for your excellent logic lecture, then for your
+ continuous support towards me and this thesis, but also for introducing
+ me to the French academic world at Île de Ré.
+\end_layout
+
+\begin_layout Itemize
+My supervisor Cezary, for supporting me and my studies since we met in 2012,
+ and for giving me additional helpful advice for my thesis.
+ Furthermore, for enduring the long-distance calls of dubious quality.
+\end_layout
+
+\begin_layout Itemize
+Aart Middeldorp, Georg Moser, Pierre Castéran, Marc Zeitoun and Anca Muscholl
+ for your amazing logic lectures, of which I had to joy to attend at least
+ four different ones during the last two years.
+\end_layout
+
+\begin_layout Itemize
+Walter for introducing me to the field of logic and therefore motivating
+ the choice of my master studies.
+ I wish you all the best for your so far highly promising acting career
+ in German blockbusters!
+\end_layout
+
+\begin_layout Itemize
+Noël, Romaric and Robin for our delightful lunchs at the restaurant universitair
+e, thereby easing my days otherwise plain of work --- vive le poulpe
+\begin_inset space ~
+\end_inset
+
+!
+\end_layout
+
+\begin_layout Itemize
+Simon for our common bicycle tours, museum and concert visits, and especially
+ for your interest in my work --- I wish you the best on your way to becoming
+ the Poincaré of the 21th century.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+Chœur Voyageur
+\begin_inset Quotes erd
+\end_inset
+
+ for letting me sing with you for the greater good of the music, thereby
+ providing me a great diversion from my studies, as well as for the awesome
+ voyages as far away as Seville.
+\end_layout
+
+\begin_layout Itemize
+All my other friends which I met during my year in France --- I can not
+ enumerate all of you here, as the thesis would be about twice as big that
+ way, but I assure you made my year rock!
+\end_layout
+
+\begin_layout Itemize
+Of course my family, to which I owe my greatest thanks for supporting my
+ studies up to this point, and for being there for me whenever I needed
+ you, sometimes even going so far as to abandon the dinner table for an
+ incoming call.
+ :)
+\end_layout
+
+\begin_layout Itemize
+Last but not least an extended member of my family, namely my cousin Mino,
+ for your most gentle invitation to the south of France and for your most
+ continuous interest in my thesis, which was unique among my extrauniversitary
+ circles and motivated me greatly.
 \end_layout
 
 \begin_layout Chapter*
@@ -206,22 +311,12 @@ Those algorithms could be expressed in a stronger proof system,
 \end_layout
 
 \begin_layout Standard
-We studied the existing algorithms for the problem and researched possibilities
- to construct equivalence proofs based on them.
- Then we devised an algorithm constructing such equivalence proofs automatically.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-how is what I've done better than what was done before
-\end_layout
-
-\end_inset
-
-
+We created a relatively simple proof system to prove equivalences of simple
+ deterministic grammars, and attempted to find algorithms based on ideas
+ of the existing algorithms to construct equivalence proofs automatically.
+ Furthermore, we constructed a test suite of non-trivially equivalent grammars.
+ Based on this test suite, we compared the performances of our algorithms,
+ and the best algorithm we found so far has complexity 2-EXPTIME.
 \end_layout
 
 \begin_layout Standard
@@ -320,6 +415,19 @@ status open
 
 \begin_layout Plain Layout
 manual to Gérauds algorithm
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+isomorphism between trees/graphs/sets of rules ...
 \end_layout
 
 \end_inset
@@ -755,32 +863,6 @@ A grammar
 -GNF.
 \end_layout
 
-\begin_layout Theorem
-For each CFG, we can find an equivalent grammar in 2-GNF, which is called
- second normal form.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write later in the article if 2-GNF is of any use.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Proof
-See 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "harrison1978"
-
-\end_inset
-
-.
-\end_layout
-
 \begin_layout Example
 \begin_inset CommandInset label
 LatexCommand label
@@ -798,7 +880,13 @@ Z & \to c
 
 \end_inset
 
-To visualise it, we may construct a production graph as in 
+This is a simple deterministic grammar in 2-GNF, as there are maximally
+ two variables on the right side of a production rule, namely in 
+\begin_inset Formula $Y\to bZZ$
+\end_inset
+
+.
+ To visualise the grammar, we may construct a production graph as in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "fig:Production-graph"
@@ -1884,6 +1972,13 @@ the concatenation of a terminal with a product of variables.
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+Additionally, we impose that all terminals of a sum have to be pairwise
+ different.
+ This restriction ensures compatibility of polynomials with simple deterministic
+ grammars.
+\end_layout
+
 \begin_layout Definition
 Two restricted polynomials 
 \begin_inset Formula $p_{1}$
@@ -2028,6 +2123,17 @@ not
 \end_layout
 
 \begin_layout Itemize
+\begin_inset Formula $aX_{1}+aX_{2}$
+\end_inset
+
+, because the terminal 
+\begin_inset Formula $a$
+\end_inset
+
+ appears several times in the same sum;
+\end_layout
+
+\begin_layout Itemize
 \begin_inset Formula $a\left(a+bX_{1}cX_{2}\left(c+dX_{3}+e\right)\right)+dX_{4}$
 \end_inset
 
@@ -2082,16 +2188,56 @@ name "chap:Existing-algorithms"
 
 \end_layout
 
+\begin_layout Section
+Harrison equivalence trees
+\end_layout
+
 \begin_layout Standard
-Also refer to 
+In chapter 11.10 of 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "lasota2006"
+key "harrison1978"
+
+\end_inset
+
+, Harrison discusses the equivalence problem for simple languages.
+ He presents so-called 
+\emph on
+equivalence trees
+\emph default
+, which resemble the proof trees of our proof system presented later in
+ 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Equivalence-proof-system"
 
 \end_inset
 
 .
- And while we are at it, also present 
+ These equivalence trees are constructed through a series of transformations,
+ which are applied on the proof tree nondeterministically.
+ In corollary 3 of the chapter, Harrison shows that each equivalence tree
+ has at most a number of nodes exponential in the length of the longest
+ word, which is equivalent to double-exponential in the size of the grammar.
+ He concludes the chapter by stating that the equivalence problem for simple
+ grammars is decidable by the construction of an equivalence tree.
+\end_layout
+
+\begin_layout Section
+Plandowski algorithm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO.
+\end_layout
+
+\end_inset
+
+Present 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "plandowski1994"
@@ -2099,42 +2245,6 @@ key "plandowski1994"
 \end_inset
 
 .
- We also found proof-like 
-\begin_inset Quotes eld
-\end_inset
-
-equivalence trees
-\begin_inset Quotes erd
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "harrison1978"
-
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-In chapter ?? of harrison, they introduce the concept ...
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-isomorphism between trees/graphs/sets of rules ...
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -2621,6 +2731,30 @@ This means that if there are more than three overlapping alignments of one
  of them, as one can deduce the other alignments, forming an arithmetic
  progression.
  This is substantial for the algorithm.
+\end_layout
+
+\begin_layout Section
+Lasota algorithm
+\end_layout
+
+\begin_layout Standard
+In 2006, Lasota and Rytter presented another algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lasota2006"
+
+\end_inset
+
+ of polynomial-time complexity to resolve the equivalence problem of simple
+ deterministic grammars, improving the complexity of the Hirshfeld algorithm
+ to 
+\begin_inset Formula $\mathcal{O}\left(n^{6}\polylog nn\right)$
+\end_inset
+
+.
+ However, as the algorithm makes use of the same general principles as the
+ Hirshfeld algorithm and does not function fundamentally differently, we
+ studied it only briefly.
 \end_layout
 
 \begin_layout Chapter

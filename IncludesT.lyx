@@ -75,7 +75,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Gr}[1]{\operatorname{Gr}\left(#1\right)}
+\renewcommand{\Gr}[1]{\operatorname{Gr}\left(#1\right)}
 {\mathrm{Gr}\left(#1\right)}
 \end_inset
 
@@ -84,7 +84,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
+\renewcommand{\Concl}[1]{\operatorname{Concl}\left(#1\right)}
 {\mathrm{Concl}\left(#1\right)}
 \end_inset
 
@@ -93,7 +93,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}\left(#1\right)}
+\renewcommand{\Premstartimes}[1]{\operatorname{Prem}_{\times}^{*}\left(#1\right)}
 {\mathrm{Prem}_{\times}^{*}\left(#1\right)}
 \end_inset
 
@@ -102,7 +102,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Heightstartimes}[1]{\operatorname{Height}_{\times}^{*}\left(#1\right)}
+\renewcommand{\Heightstartimes}[1]{\operatorname{Height}_{\times}^{*}\left(#1\right)}
 {\mathrm{Height}_{\times}^{*}\left(#1\right)}
 \end_inset
 
@@ -111,7 +111,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
+\renewcommand{\Prem}[1]{\operatorname{Prem}\left(#1\right)}
 {\mathrm{Prem}\left(#1\right)}
 \end_inset
 
@@ -120,7 +120,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\PremR}[1]{\operatorname{Prem_{\mathcal{R}}}\left(#1\right)}
+\renewcommand{\PremR}[1]{\operatorname{Prem_{\mathcal{R}}}\left(#1\right)}
 {\mathrm{Prem}_{\mathcal{R}}\left(#1\right)}
 \end_inset
 
@@ -129,7 +129,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\length}[1]{\operatorname{length}\left(#1\right)}
+\renewcommand{\length}[1]{\operatorname{length}\left(#1\right)}
 {\mathrm{length}\left(#1\right)}
 \end_inset
 
@@ -138,7 +138,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\size}[1]{\operatorname{size}\left(#1\right)}
+\renewcommand{\size}[1]{\operatorname{size}\left(#1\right)}
 {\mathrm{size}\left(#1\right)}
 \end_inset
 
@@ -147,7 +147,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\norm}[1]{\left\Vert #1\right\Vert }
+\renewcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
 
@@ -155,8 +155,17 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
+\renewcommand{\lang}[1]{\operatorname{\mathcal{L}}\left(#1\right)}
 {\mathcal{L}\left(#1\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\renewcommand{\polylog}[1]{\operatorname{polylog}}
+{\mathrm{polylog}}
 \end_inset
 
 
