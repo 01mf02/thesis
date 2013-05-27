@@ -678,6 +678,13 @@ The following lemma is an obvious conclusion.
 \end_inset
 
 
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Norm-addition"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Definition
@@ -2882,6 +2889,64 @@ From this argumentation, we deduce that we can refer from one judgement
 \end_inset
 
  rule.
+\end_layout
+
+\begin_layout Section
+Proof definition
+\end_layout
+
+\begin_layout Definition
+\begin_inset CommandInset label
+LatexCommand label
+name "def:Proof-definition"
+
+\end_inset
+
+Let 
+\begin_inset Formula $G=(V,T,P)$
+\end_inset
+
+ be a context-free grammar, 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+ the set of polynomials over variables 
+\begin_inset Formula $V$
+\end_inset
+
+ and terminals 
+\begin_inset Formula $T$
+\end_inset
+
+, and 
+\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
+\end_inset
+
+ the set of judgements over 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+.
+ We call 
+\begin_inset Formula $G$
+\end_inset
+
+-equivalence proof of a judgement 
+\begin_inset Formula $j\in\mathcal{J}$
+\end_inset
+
+ every finite set of rules 
+\begin_inset Formula $\mathcal{R}$
+\end_inset
+
+, being instances of the proof rules in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Proof-rules"
+
+\end_inset
+
+
 \begin_inset Float figure
 wide false
 sideways false
@@ -3001,64 +3066,6 @@ Proof rules.
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Proof definition
-\end_layout
-
-\begin_layout Definition
-\begin_inset CommandInset label
-LatexCommand label
-name "def:Proof-definition"
-
-\end_inset
-
-Let 
-\begin_inset Formula $G=(V,T,P)$
-\end_inset
-
- be a context-free grammar, 
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
- the set of polynomials over variables 
-\begin_inset Formula $V$
-\end_inset
-
- and terminals 
-\begin_inset Formula $T$
-\end_inset
-
-, and 
-\begin_inset Formula $\mathcal{J}\subset\mathcal{P}\times\mathcal{P}$
-\end_inset
-
- the set of judgements over 
-\begin_inset Formula $\mathcal{P}$
-\end_inset
-
-.
- We call 
-\begin_inset Formula $G$
-\end_inset
-
--equivalence proof of a judgement 
-\begin_inset Formula $j\in\mathcal{J}$
-\end_inset
-
- every finite set of rules 
-\begin_inset Formula $\mathcal{R}$
-\end_inset
-
-, being instances of the proof rules in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Proof-rules"
 
 \end_inset
 
@@ -3298,6 +3305,13 @@ reference "fig:Proof-rules"
 \end_inset
 
  preserves truth.
+\begin_inset CommandInset label
+LatexCommand label
+name "th:Local-soundness"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Proof
@@ -3480,45 +3494,20 @@ Grammar:
 \end_layout
 
 \end_deeper
-\begin_layout Theorem
-The proof system in definition 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "def:Proof-definition"
-
+\begin_layout Definition
+Given two polynomials 
+\begin_inset Formula $p_{1},p_{2}\in\mathcal{P}$
 \end_inset
 
- is sound.
-\end_layout
-
-\begin_layout Proof
-As shown above, all proof rules are locally sound.
- Therefore we have to verify that a set of valid proof rules satisfying
- 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "eq:Unique-conclusions"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "eq:Premises-proved"
-
-\end_inset
-
- form a valid proof.
- For this, let us first define a cost function
+, the cost function
 \begin_inset Formula 
 \[
-c\left(p_{1},p_{2}\right):=\inf\left\{ \left|w\right||w\in\lang{p_{1}}\Delta\lang{p_{2}}\right\} ,
+c\left(p_{1},p_{2}\right):=\inf\left\{ \left|w\right||w\in\lang{p_{1}}\Delta\lang{p_{2}}\right\} 
 \]
 
 \end_inset
 
-which expresses the length of the smallest witness of non-equivalence of
- 
+expresses the length of the smallest witness of non-equivalence of 
 \begin_inset Formula $p_{1}$
 \end_inset
 
@@ -3527,7 +3516,14 @@ which expresses the length of the smallest witness of non-equivalence of
 \end_inset
 
 .
- For all rules 
+\end_layout
+
+\begin_layout Standard
+Now we need to prove a basic property of rules.
+\end_layout
+
+\begin_layout Lemma
+For all rules 
 \begin_inset Formula $\trinaryinfc{\axiomc{P_{1}}}{\axiomc{\dots}}{\axiomc{P_{n}}}C{}$
 \end_inset
 
@@ -3544,16 +3540,6 @@ and for all rules
 \end_inset
 
  it even holds that
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: show that!
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula 
 \[
 \min\left\{ c\left(P_{1}\right),c\left(P_{2}\right)\right\} <c\left(C\right).
@@ -3561,31 +3547,25 @@ TODO: show that!
 
 \end_inset
 
-Now let us assume that the proof system is unsound.
- Then there exists a judgement 
-\begin_inset Formula $p_{1}\equiv p_{2}$
+
+\end_layout
+
+\begin_layout Proof
+Let us first assume that 
+\begin_inset Formula $C$
 \end_inset
 
- which does not hold, but has a proof in the proof system.
- If 
-\begin_inset Formula $p_{1}\equiv p_{2}$
-\end_inset
-
- does not hold, there exists a smallest witness of non-equivalence 
-\begin_inset Formula $w\in T^{*}$
-\end_inset
-
- such that 
-\begin_inset Formula $w\in\lang{p_{1}}\Delta\lang{p_{2}}$
-\end_inset
-
- with 
-\begin_inset Formula $\left|w\right|=c\left(p_{1},p_{2}\right)$
+ holds, implying 
+\begin_inset Formula $c\left(C\right)=\infty$
 \end_inset
 
 .
- We have to show that there exists a smaller 
-\begin_inset Formula $w'\in T^{*}$
+ Then 
+\begin_inset Formula $\min\left\{ c\left(P_{1}\right),\dots,c\left(P_{n}\right)\right\} <\infty$
+\end_inset
+
+ holds, given that 
+\begin_inset Formula $\infty<\infty$
 \end_inset
 
 .
@@ -3593,12 +3573,368 @@ Now let us assume that the proof system is unsound.
 status open
 
 \begin_layout Plain Layout
-TODO: finish proof!
+How to argue here?
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Proof
+Now assume that 
+\begin_inset Formula $C$
+\end_inset
+
+ does not hold, implying 
+\begin_inset Formula $c\left(C\right)\neq\infty$
+\end_inset
+
+.
+ We consider the different kinds of rules:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Symmetry: 
+\begin_inset Formula $\bussproof{\syminf xy{\axiom yx}}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Here, we see at a glance that 
+\begin_inset Formula $c\left(x,y\right)=c\left(y,x\right)$
+\end_inset
+
+, so 
+\begin_inset Formula $\min\left\{ c\left(y,x\right)\right\} =c\left(y,x\right)\leq c\left(x,y\right)$
+\end_inset
+
+ holds.
+\end_layout
+
+\begin_layout Itemize
+Transitivity: 
+\begin_inset Formula $\bussproof{\transinf xz{\axiom xy}{\axiom yz}}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Let us assume w.l.o.g.
+ that the smallest witness of non-equivalence 
+\begin_inset Formula $w$
+\end_inset
+
+ is contained in 
+\begin_inset Formula $\lang x$
+\end_inset
+
+ and not in 
+\begin_inset Formula $\lang z$
+\end_inset
+
+.
+ Then we differentiate two cases:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x\equiv y$
+\end_inset
+
+ holds: As 
+\begin_inset Formula $x\equiv z$
+\end_inset
+
+ does not hold, 
+\begin_inset Formula $y\equiv z$
+\end_inset
+
+ can not hold.
+ Furthermore, as 
+\begin_inset Formula $\lang x=\lang y$
+\end_inset
+
+ by assumption, 
+\begin_inset Formula $c\left(y,z\right)=c\left(x,z\right)$
+\end_inset
+
+, therefore 
+\begin_inset Formula $\min\left\{ c\left(x,y\right),c\left(y,z\right)\right\} \leq c\left(y,z\right)\leq c\left(x,z\right)$
+\end_inset
+
+ holds.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $x\equiv y$
+\end_inset
+
+ does not hold: This means that 
+\begin_inset Formula $c\left(x,y\right)\leq c\left(x,z\right)$
+\end_inset
+
+, as there might exist a smaller witness of non-equivalence 
+\begin_inset Formula $w'\in\lang x\Delta\lang y$
+\end_inset
+
+, but the smallest witness can not be greater than 
+\begin_inset Formula $w$
+\end_inset
+
+ in any case.
+ Therefore 
+\begin_inset Formula $\min\left\{ c\left(x,y\right),c\left(y,z\right)\right\} \leq c\left(y,z\right)\leq c\left(x,z\right)$
+\end_inset
+
+ holds as well.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Sum: 
+\begin_inset Formula $\bussproof{\plusinf{x+y}{x'+y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Let us assume w.l.o.g.
+ that the smallest witness 
+\begin_inset Formula $w\in\lang{x+y}\Delta\lang{x'+y'}$
+\end_inset
+
+ is in 
+\begin_inset Formula $\lang x$
+\end_inset
+
+.
+ Then by assumption 
+\begin_inset Formula $w\not\in\lang{x'}$
+\end_inset
+
+, which means that 
+\begin_inset Formula $c\left(x,x'\right)=c\left(x+y,x'+y'\right)$
+\end_inset
+
+.
+ Therefore 
+\begin_inset Formula $\min\left\{ c\left(x,x'\right),c\left(y,y'\right)\right\} \leq c\left(x,x'\right)\leq c\left(x+y,x'+y'\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Product: 
+\begin_inset Formula $\bussproof{\timesinf{x\cdot y}{x'\cdot y'}{\axiom x{x'}}{\axiom y{y'}}}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Let us assume w.l.o.g.
+ that 
+\begin_inset Formula $w$
+\end_inset
+
+ is in 
+\begin_inset Formula $\lang{x\cdot y}$
+\end_inset
+
+.
+ Then we differentiate two cases:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x\equiv x'$
+\end_inset
+
+ holds: We conclude that 
+\begin_inset Formula $y\equiv y'$
+\end_inset
+
+ can not hold, which is why there has to exist 
+\begin_inset Formula $w'\in\lang y\Delta\lang{y'}$
+\end_inset
+
+.
+ Due to lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Norm-addition"
+
+\end_inset
+
+ we know that 
+\begin_inset Formula $\norm{x\cdot y}<\norm y$
+\end_inset
+
+, therefore we can say that 
+\begin_inset Formula $c\left(y,y'\right)<c\left(x\cdot y,x'\cdot y'\right)$
+\end_inset
+
+.
+ In order, 
+\begin_inset Formula $\min\left\{ c\left(x,x'\right),c\left(y,y'\right)\right\} \leq c\left(y,y'\right)<c\left(x\cdot y,x'\cdot y'\right)$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+I'm not completely satisfied by that, especially with the norm argument
+ ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $x\equiv x'$
+\end_inset
+
+ does not hold: This means that 
+\begin_inset Formula $w'\in\lang x\Delta\lang{x'}$
+\end_inset
+
+ exists.
+ We argue analogous to the previous case.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The reflexivity and grammar rules do not have any premises, which means
+ the property for these rules is trivial.
+\end_layout
+
+\end_deeper
+\begin_layout Theorem
+The proof system in definition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "def:Proof-definition"
+
+\end_inset
+
+ is sound.
+\end_layout
+
+\begin_layout Proof
+As shown in theorem 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "th:Local-soundness"
+
+\end_inset
+
+, all proof rules are locally sound.
+ Therefore we have to verify that a set of valid proof rules satisfying
+ the conditions in definition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "def:Proof-definition"
+
+\end_inset
+
+ form a valid proof.
+\end_layout
+
+\begin_layout Proof
+Let us argue by contradiction: Assume that the proof system is unsound.
+ Then there exists a judgement 
+\begin_inset Formula $p_{1}\equiv p_{2}$
+\end_inset
+
+ which has a proof in the proof system, but does not hold.
+ If 
+\begin_inset Formula $p_{1}\equiv p_{2}$
+\end_inset
+
+ does not hold, then 
+\begin_inset Formula $c\left(p_{1},p_{2}\right)\neq\infty$
+\end_inset
+
+.
+ As all proof rules are locally sound, we must have an invalid circular
+ reference in that case.
+ However, as a consequence of 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Premises-proved"
+
+\end_inset
+
+, on all paths between a judgement in a conclusion and the same judgement
+ in a premise, there exists at least one 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule, see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Circular-proof"
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\bussproof{\binaryinf{\axiomc{\dots\phantom{p}}}{\binaryinfc{\binaryinfc{\axiomc{\dots\phantom{p}}}{\binaryinfc{\axiomc{\dots}}{\axiom{p_{1}}{p_{2}}}{\dots\phantom{p}}{}}{\dots\phantom{p}}{\ensuremath{\times}}}{\axiomc{\phantom{p}\dots}}{\dots\phantom{p}}{}}{p_{1}}{p_{2}}{}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Circular-proof"
+
+\end_inset
+
+Illustration of a circular proof.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ Due to the 
+\begin_inset Formula $\times$
+\end_inset
+
+ rule, the cost function strictly decreases along this path, therefore we
+ must have that 
+\begin_inset Formula $c\left(p_{1},p_{2}\right)<c\left(p_{1},p_{2}\right)$
+\end_inset
+
+, which is a contradiction.
 \end_layout
 
 \begin_layout Standard
