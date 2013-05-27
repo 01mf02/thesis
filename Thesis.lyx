@@ -2,10 +2,11 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass clmthesis
+\textclass scrreprt
 \begin_preamble
-\plainauthor{Michael Färber}
-\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
+% set author and title for the CL class --- why the fuck is that needed?
+%\plainauthor{Michael Färber}
+%\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
 
 
 % to show DRAFT watermark
@@ -110,8 +111,8 @@ Complexity of equivalence proofs of simple deterministic grammars
 Michael Färber
 \end_layout
 
-\begin_layout Supervisors
-Géraud Sénizergues
+\begin_layout Publishers
+Supervisors: Géraud Sénizergues
 \begin_inset Foot
 status open
 
@@ -137,8 +138,8 @@ Universität Innsbruck
 \begin_layout Abstract
 Equivalence of simple deterministic grammar is decidable in PTIME.
  We created an algorithm in 2-EXPTIME to solve the problem and to issue
- a complimentary equivalence proof in a simple proof system, which can then
- be verified automatically.
+ a complimentary equivalence proof in a simple proof system, which we then
+ verify automatically.
 \end_layout
 
 \begin_layout Standard
