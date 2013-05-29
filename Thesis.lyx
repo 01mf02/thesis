@@ -1807,7 +1807,7 @@ Given a restricted SDG
 \begin_inset Formula $X_{i}$
 \end_inset
 
- is bounded by 
+ is bounded from above by 
 \begin_inset Formula $\sum_{x=0}^{i}k^{x}$
 \end_inset
 
@@ -1953,7 +1953,7 @@ Given a restricted SDG
 \begin_inset Formula $X_{i}$
 \end_inset
 
- is bounded by 
+ is bounded from above by 
 \begin_inset Formula $\left(k+1\right)^{i}$
 \end_inset
 
@@ -2233,20 +2233,6 @@ not
 .
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-A restricted polynomial is valid iff a sum contains each non-terminal maximally
- once.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Chapter
 Existing algorithms
 \begin_inset CommandInset label
@@ -2256,6 +2242,33 @@ name "chap:Existing-algorithms"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO.
+\end_layout
+
+\end_inset
+
+Show 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "huynh1994"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "caucal1993"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
