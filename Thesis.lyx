@@ -276,39 +276,33 @@ A remedy for this problem is to generate proofs for the results.
 
 \begin_layout Standard
 In this document, we considered the problem of equivalence of simple determinist
-ic grammars, for which there exist algorithms which do not give proofs of
- their results: In 
+ic grammars, which was shown to be decidable by Korenjak and Hopcroft in
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "korenjak1966"
+
+\end_inset
+
+.
+ Thirty years later, an efficient algorithm for the problem in PTIME was
+ presented in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hirshfeld1996"
 
 \end_inset
 
-, such an algorithm is presented, which is in P.
- Ten years later, 
+, however, this algorithm does not yield proofs.
+ Another ten years later, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lasota2006"
 
 \end_inset
 
- showed another algorithm in P for the problem, which improves performance
- over the former algorithm.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Those algorithms could be expressed in a stronger proof system, 
-\begin_inset Formula $\lambda-\Pi$
-\end_inset
-
- (LF).
- Conclusion!
-\end_layout
-
-\end_inset
-
-
+ showed a new algorithm for the problem, which improves performance over
+ the former algorithm, but still remains in PTIME.
 \end_layout
 
 \begin_layout Standard
@@ -573,7 +567,7 @@ Exponentiation: Given an alphabet
 \begin_inset Formula 
 \begin{align*}
 \Sigma^{0} & :=\varepsilon,\\
-\Sigma^{n+1} & :=A\cdot A^{n+1}.
+\Sigma^{n+1} & :=\Sigma\cdot\Sigma^{n}.
 \end{align*}
 
 \end_inset
@@ -726,24 +720,24 @@ An important property of a variable is the length of its shortest producible
 
 \begin_layout Definition
 The variable norm is a function 
-\begin_inset Formula $\norm{\cdot}_{1}:V\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
+\begin_inset Formula $\norm{\cdot}:V^{*}\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
 \end_inset
 
 .
- Given a variable 
-\begin_inset Formula $X\in V$
+ Given a variable word 
+\begin_inset Formula $\alpha\in V^{*}$
 \end_inset
 
 , 
-\begin_inset Formula $\norm X_{1}$
+\begin_inset Formula $\norm{\alpha}$
 \end_inset
 
  equals the length of the shortest terminal word 
-\begin_inset Formula $w\in T^{+}$
+\begin_inset Formula $w\in T^{*}$
 \end_inset
 
  which can be produced from 
-\begin_inset Formula $X$
+\begin_inset Formula $\alpha$
 \end_inset
 
 , or 
@@ -753,25 +747,8 @@ The variable norm is a function
  if no such word exists, i.e.
 \begin_inset Formula 
 \[
-\norm X_{1}:=\inf_{w\in\lang X}\left|w\right|.
+\norm{\alpha}:=\inf_{w\in\lang{\alpha}}\left|w\right|.
 \]
-
-\end_inset
-
-We extend the norm function to finite sequences of variables, where 
-\begin_inset Formula $X\in V$
-\end_inset
-
- and 
-\begin_inset Formula $\alpha\in V^{*}$
-\end_inset
-
-:
-\begin_inset Formula 
-\begin{align*}
-\norm{\varepsilon} & :=0;\\
-\norm{X\alpha} & :=\norm X_{1}+\norm{\alpha}.
-\end{align*}
 
 \end_inset
 
@@ -796,12 +773,23 @@ name "lem:Norm-addition"
 
 \end_layout
 
+\begin_layout Proof
+See 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Definition
 A grammar is normed iff all its variables produce at least one finite word,
  i.e.
 \begin_inset Formula 
 \[
-\forall i:\,\norm{X_{i}}\neq\infty.
+\forall X\in V:\,\norm X\neq\infty.
 \]
 
 \end_inset
@@ -1153,12 +1141,12 @@ A compression grammar is a simple deterministic grammar, with the condition
 \begin_inset Formula $X\in V$
 \end_inset
 
-, there exists at most one terminal 
-\begin_inset Formula $a\in T$
+, there exists at most one word 
+\begin_inset Formula $w\in\left(T\cup V\right)^{*}$
 \end_inset
 
  such that 
-\begin_inset Formula $X\to a\alpha$
+\begin_inset Formula $X\to w$
 \end_inset
 
  is in 
@@ -1301,6 +1289,16 @@ P & \to V\:|\: T\:|\: P+P\:|\: P\cdot P\\
 V & \to X_{1}\:|\:\dots\:|\: X_{n}\\
 T & \to a_{1}\:|\:\dots\:|\: a_{m}
 \end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO!
+\end_layout
 
 \end_inset
 
@@ -1462,7 +1460,7 @@ Restricted SDGs
 
 \begin_layout Standard
 For the proof construction algorithms presented in this document, we impose
- several conditions on employed SDG grammar 
+ several normalisation conditions on any SDG grammar 
 \begin_inset Formula $G=\left(V,T,P\right)$
 \end_inset
 
@@ -1556,6 +1554,59 @@ There exists a function
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Our first restriction to normed grammars does not limit the class of languages,
+ as we only consider grammars producing finite words: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make sure we clarify that before!
+\end_layout
+
+\end_inset
+
+For simple deterministic grammars, we can find in linear time equivalent
+ grammars without variables that produce only infinite words.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yehudai1977"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+As a (perhaps surprising) consequence, in the grammar
+\begin_inset Formula 
+\begin{align*}
+A & \to aA\\
+B & \to bB
+\end{align*}
+
+\end_inset
+
+the variables 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ are equivalent, because 
+\begin_inset Formula $\lang A=\lang B=\emptyset$
+\end_inset
+
+, as they both produce no single finite word.
+\end_layout
+
+\begin_layout Standard
+Now let us inspect an example normalisation of a grammar.
 \end_layout
 
 \begin_layout Example
@@ -2272,11 +2323,11 @@ key "hirshfeld1996"
 
 \begin_layout Definition
 Norm reduction is a partial function from 
-\begin_inset Formula $\left(X^{*},\mathbb{N}\right)$
+\begin_inset Formula $V^{*}\times\mathbb{N}$
 \end_inset
 
  to 
-\begin_inset Formula $X^{*}$
+\begin_inset Formula $V^{*}$
 \end_inset
 
 , which is undefined if the supplied natural number is greater than the
@@ -2309,7 +2360,7 @@ cutting away
 \begin_inset Formula $p$
 \end_inset
 
- characters of its longest producible terminal word and returning the remaining
+ characters of its shortest producible terminal word and returning the remaining
  variables.
  For example, if we know that 
 \begin_inset Formula $AB\equiv CD$
@@ -3030,6 +3081,19 @@ From this argumentation, we deduce that we can refer from one judgement
 Proof definition
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Introduction.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Definition
 \begin_inset CommandInset label
 LatexCommand label
@@ -3207,7 +3271,7 @@ Proof rules.
 , such that
 \begin_inset Formula 
 \begin{equation}
-\forall r\in\mathcal{R}:\,\left(\Concl r=j\lor\exists r'\in\mathcal{R}:\,\Concl{r'}\in\Prem r\right),\label{eq:Goal-proved}
+\forall r\in\mathcal{R}:\,\left(\Concl r=j\lor\exists r'\in\mathcal{R}:\,\Concl r\in\Prem{r'}\right),\label{eq:Goal-proved}
 \end{equation}
 
 \end_inset
@@ -3243,7 +3307,7 @@ where
 , and
 \begin_inset Formula 
 \[
-\PremR r:=\left\{ r_{p}|r_{p}\in\mathcal{R}\land\Concl{r_{p}}\in\Prem r\right\} ,
+\PremR r:=\left\{ r'|r'\in\mathcal{R}\land\Concl{r'}\in\Prem r\right\} ,
 \]
 
 \end_inset
@@ -3414,6 +3478,16 @@ Now we shall discuss another important matter which we have not touched
 \end_inset
 
 , we have that 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+bullshit, clean that up
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
 \end_inset
 
@@ -3621,7 +3695,7 @@ Grammar:
 \begin_inset Formula $\lang X=\lang{\Gr X}$
 \end_inset
 
- is a tautology, so 
+ is obvious, so 
 \begin_inset Formula $X\equiv\Gr X$
 \end_inset
 
@@ -3659,7 +3733,7 @@ Now we need to prove a basic property of rules.
 
 \begin_layout Lemma
 For all rules 
-\begin_inset Formula $\trinaryinfc{\axiomc{P_{1}}}{\axiomc{\dots}}{\axiomc{P_{n}}}C{}$
+\begin_inset Formula $\bussproof{\trinaryinfc{\axiomc{P_{1}}}{\axiomc{\dots}}{\axiomc{P_{n}}}C{}}$
 \end_inset
 
  it then holds that
@@ -3671,7 +3745,7 @@ For all rules
 \end_inset
 
 and for all rules 
-\begin_inset Formula $\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}$
+\begin_inset Formula $\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}}$
 \end_inset
 
  it even holds that
@@ -4126,6 +4200,19 @@ Base replacement
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Explain that.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{gather*}
 \norm{A_{1}}>\norm{B_{1}},\\
@@ -4220,6 +4307,16 @@ To prove that
 
 \end_inset
 
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Explain gr* and x* or skip them completely.
+\end_layout
+
+\end_inset
+
 After this initial step, the base replacement algorithm dictates that we
  must continuously apply the proof schemes given in 
 \begin_inset CommandInset ref
@@ -4297,7 +4394,7 @@ Motivate decomposition.
 
 \begin_layout Standard
 The decomposition function is a partial function from 
-\begin_inset Formula $\left(V^{*},\mathbb{N}\right)$
+\begin_inset Formula $V^{*}\times\mathbb{N}$
 \end_inset
 
  to 
@@ -4376,12 +4473,37 @@ reference "sec:Hirshfeld-algorithm"
 \begin_inset Formula $D$
 \end_inset
 
- instead, such that 
+ instead, such that
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\norm{\beta}=\norm A-\norm C$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $D\equiv\beta\cdot\gamma$
+\end_inset
+
+ for some 
+\begin_inset Formula $\gamma$
+\end_inset
+
+, and
+\end_layout
+
+\begin_layout Itemize
 \begin_inset Formula $A\equiv C\beta$
 \end_inset
 
 .
- Again, the main difference is that we derive 
+\end_layout
+
+\begin_layout Standard
+Again, the main difference between decomposition and norm reduction is that
+ we derive 
 \begin_inset Formula $\beta$
 \end_inset
 
@@ -4914,19 +5036,19 @@ Branching grammar.
 
  in the lower half.
  However, we note that 
-\begin_inset Formula $PC$
+\begin_inset Formula $\norm{PC}$
 \end_inset
 
- produces longer words than 
-\begin_inset Formula $A$
+ is greater than 
+\begin_inset Formula $\norm A$
 \end_inset
 
 , while 
-\begin_inset Formula $P$
+\begin_inset Formula $\norm P$
 \end_inset
 
- alone produces a word smaller than 
-\begin_inset Formula $A$
+ alone is smaller than 
+\begin_inset Formula $\norm A$
 \end_inset
 
 , which is why we want to calculate the prefix of 
@@ -7084,6 +7206,24 @@ name "chap:Conclusion"
 
 \begin_layout Standard
 Playing Nostradamus here ...
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Those algorithms could be expressed in a stronger proof system, 
+\begin_inset Formula $\lambda-\Pi$
+\end_inset
+
+ (LF).
+ Conclusion!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter*
