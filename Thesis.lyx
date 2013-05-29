@@ -7205,25 +7205,59 @@ name "chap:Conclusion"
 \end_layout
 
 \begin_layout Standard
-Playing Nostradamus here ...
+We studied several existing algorithms to decide equivalence of simple determini
+stic grammars, and implemented several different algorithms based on them
+ to produce equivalence proofs in our own proof system.
+ Unfortunately, it turned out that all our algorithms have a complexity
+ of 2-EXPTIME, which is far away from our projected goal of PTIME.
+ Nonetheless, in our experiments our decomposition strategy always seemed
+ to yield polynomial-size proofs for the special case of compression grammars,
+ so at least for a subclass of SDGs, we do not have any counterexample yet
+ of a grammar evoking exponential-size proofs.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Those algorithms could be expressed in a stronger proof system, 
-\begin_inset Formula $\lambda-\Pi$
-\end_inset
-
- (LF).
- Conclusion!
+The problem has been difficult to treat as we could not find a way to translate
+ several techniques from the existing PTIME algorithms into proofs in our
+ proof system; however, this might be possible in the future by adding new
+ rules to the proof system, making our proof system more powerful and therefore
+ accommodating the function of the PTIME algorithms.
 \end_layout
 
+\begin_layout Standard
+A completely different approach to the problem would be to use a logical
+ framework, such as Edinburgh LF 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "harper1993"
+
 \end_inset
 
+, to express the executions of existing PTIME algorithms as proofs in the
+ logical framework.
+ Afterwards, proofs could be automatically verified with existing proof
+ checkers like Twelf.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pfenning1999"
 
+\end_inset
+
+ This approach would have the advantage of enabling to construct polynomial-size
+ proofs for sure.
+ However, the proof system would be quite complex, while our original goal
+ was to find out if polynomial-size proofs could be constructed with a relativel
+y simple proof system like ours.
+\end_layout
+
+\begin_layout Standard
+One last, but for us rather important aspect of this work is the creation
+ of several original SDGs yielding exponential-size words, with non-trivially
+ equivalent variables, which is something we did not find so far in existing
+ literature.
+ May they serve as inspiration for those who walk this rocky road well after
+ us.
 \end_layout
 
 \begin_layout Chapter*
