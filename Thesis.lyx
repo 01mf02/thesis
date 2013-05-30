@@ -384,7 +384,7 @@ reference "chap:Proof-construction-algorithm"
  of 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "chap:Experimental-results"
+reference "chap:Implementation-Experiments"
 
 \end_inset
 
@@ -561,6 +561,34 @@ Product of languages: The product of two languages
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+Prefix/postfix: If there exist languages 
+\begin_inset Formula $\mathcal{L}_{1},\mathcal{L}_{2}$
+\end_inset
+
+ for a given language 
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+ such that 
+\begin_inset Formula $\mathcal{L}=\mathcal{L}_{1}\cdot\mathcal{L}_{2}$
+\end_inset
+
+, then we call 
+\begin_inset Formula $\mathcal{L}_{1}$
+\end_inset
+
+ prefix and 
+\begin_inset Formula $\mathcal{L}_{2}$
+\end_inset
+
+ postfix of 
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -3146,6 +3174,14 @@ From this argumentation, we deduce that we can refer from one judgement
 \end_inset
 
  rule.
+ We formalise this argument in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Soundness"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -3541,39 +3577,15 @@ above
  rule is encountered.
 \end_layout
 
-\begin_layout Standard
-Now we shall discuss another important matter which we have not touched
- so far; namely the difference between strict and non-strict rules: For
- each rule 
-\begin_inset Formula $\unrulec{P_{1}\dots P_{n}}C{rule}$
-\end_inset
-
-, we have that 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-bullshit, clean that up
-\end_layout
-
-\end_inset
-
- 
-\begin_inset Formula $\forall i:\,\norm{P_{i}}\leq\norm C$
-\end_inset
-
-.
- For strict rules, however, we even have 
-\begin_inset Formula $\forall i:\,\norm{P_{i}}<\norm C$
-\end_inset
-
-.
- This is the main difference between the two types of rules; we will see
- later why it is important.
-\end_layout
-
 \begin_layout Section
 Soundness
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Soundness"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Theorem
@@ -3796,18 +3808,32 @@ expresses the length of the smallest witness of non-equivalence of
 \end_inset
 
 .
+ We extend the cost function to judgements 
+\begin_inset Formula $p_{1}\equiv p_{2}$
+\end_inset
+
+ such that
+\begin_inset Formula 
+\[
+c\left(p_{1}\equiv p_{2}\right):=c\left(p_{1},p_{2}\right).
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Now we need to prove a basic property of rules.
+Now we shall discuss another important matter which we have not touched
+ so far; namely the difference between strict and non-strict rules:
 \end_layout
 
 \begin_layout Lemma
 For all rules 
-\begin_inset Formula $\bussproof{\trinaryinfc{\axiomc{P_{1}}}{\axiomc{\dots}}{\axiomc{P_{n}}}C{}}$
+\begin_inset Formula $\bussproof{\trinaryinfc{\axiomc{P_{1}}}{\axiomc{\dots}}{\axiomc{P_{n}}}C{rule}}$
 \end_inset
 
- it then holds that
+ it holds that
 \begin_inset Formula 
 \[
 \min\left\{ c\left(P_{1}\right),\dots,c\left(P_{n}\right)\right\} \leq c\left(C\right),
@@ -4271,29 +4297,46 @@ Base replacement
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Explain that.
-\end_layout
-
-\end_inset
-
-
+Being unable to adapt the entire Hirshfeld algorithm to produce equivalence
+ proofs, we noted that we could still use one of the main concepts of the
+ algorithm, namely the Caucal base.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\begin{gather*}
-\norm{A_{1}}>\norm{B_{1}},\\
-R=B_{1}\left[A_{1}\right]_{\norm{B_{1}}}\implies\\
-\bussproof{\transinf{\prod_{x=1}^{n_{A}\geq1}A_{x}}{\prod_{y=1}^{n_{B}>1}B_{y}}{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}}
-\end{gather*}
+Our first idea to use the Caucal base was to find the list of equivalences
+ in the base and to prove each one separately.
+ As the number of elements in the base is quadratic, we only had to verify
+ whether the proof of each element in the base is of polynomial size or
+ not.
+ The idea was to look at the first variables on both sides of a judgement,
+ and to replace the variable with the greater norm with the associated base
+ equivalence.
+ For example, if we would encounter an equivalence like 
+\begin_inset Formula $AB\equiv CD$
+\end_inset
+
+ with 
+\begin_inset Formula $\norm A>\norm C$
+\end_inset
+
+, then we would replace 
+\begin_inset Formula $A$
+\end_inset
+
+ by 
+\begin_inset Formula $C\left[A\right]_{\norm C}$
+\end_inset
+
+ via transitivity in the proof.
+ We detail the exact proof construction tactic in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Proof-strategy-2"
 
 \end_inset
 
-
+.
+ Unfortunately, we soon had to conclude with the following lemma.
 \end_layout
 
 \begin_layout Lemma
@@ -4303,19 +4346,57 @@ name "lem:Base-replacement-exp"
 
 \end_inset
 
-The base-replacement algorithm may produce proofs of exponential size.
+The base replacement tactic may produce proofs of exponential size.
 \end_layout
 
 \begin_layout Proof
-We consider the grammar given in 
+To make the argument in this proof easier to read, we introduce two auxiliary
+ proof rules:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+gr*: This rule replaces the first variable of the left or the right side
+ of the conclusion by its grammar.
+ For example:
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiom{\Gr AB}{CD}}{AB}{CD}{gr*}}\quad\equiv\quad\bussproof{\transinf{AB}{CD}{\timesinf{AB}{\Gr AB}{\gr A{\Gr A}}{\refl BB}}{\axiom{\Gr A\cdot B}{CD}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\times^{*}$
+\end_inset
+
+: If one side of a judgement starts with a variable and the other side starts
+ with the grammar of that variable, this rule eliminates variable and grammar
+ from both sides.
+ For example:
+\begin_inset Formula 
+\[
+\bussproof{\unaryinf{\axiom BD}{AB}{\Gr A\cdot D}{\ensuremath{\times^{*}}}}\quad\equiv\quad\bussproof{\timesinf{AB}{\Gr A\cdot D}{\gr A{\Gr A}}{\axiom BD}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Proof
+Now we consider the grammar given in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "tab:AB-grammar-non2NF"
 
 \end_inset
 
-.
- 
+
 \begin_inset Float table
 wide false
 sideways false
@@ -4326,9 +4407,9 @@ status collapsed
 \[
 \begin{aligned}A & \to a & A & \to a\\
 B & \to b & B & \to b\\
-A_{B}^{0} & \to aB & B_{A}^{0} & \to bA\\
-A_{B}^{n+1} & \to aBA_{B}^{n}A_{B}^{n} & B_{A}^{n+1} & \to bAB_{A}^{n}B_{A}^{n}\\
-F^{n} & \to aBA_{B}^{n} & G^{n} & \to aB_{A}^{n}B
+A_{B,0} & \to aB & B_{A,0} & \to bA\\
+A_{B,n+1} & \to aBA_{B,n}A_{B,n} & B_{A,n+1} & \to bAB_{A,n}B_{A,n}\\
+F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
 \end{aligned}
 \]
 
@@ -4348,7 +4429,7 @@ name "tab:AB-grammar-non2NF"
 \end_inset
 
 
-\begin_inset Formula $F^{n}\equiv G^{n}$
+\begin_inset Formula $F_{n}\equiv G_{n}$
 \end_inset
 
 .
@@ -4366,25 +4447,16 @@ name "tab:AB-grammar-non2NF"
 
 \end_inset
 
-To prove that 
-\begin_inset Formula $F^{n}\equiv G^{n}$
+, where we want to prove 
+\begin_inset Formula $F_{n}\equiv G_{n}$
 \end_inset
 
-, we start as follows:
+.
+ We start as follows:
 \begin_inset Formula 
 \[
-\bussproof{\grstar{F^{n}}{G^{n}}{\timesstarinf{aBA_{B}^{n}}{aB_{A}^{n}B}{\axiom{BA_{B}^{n}}{B_{A}^{n}B}}}}
+\bussproof{\grstar{F_{n}}{G_{n}}{\grstar{aBA_{B,n}}{G_{n}}{\timesinf{aBA_{B,n}}{aB_{A,n}B}{\refl aa}{\axiom{BA_{B,n}}{B_{A,n}B}}}}}
 \]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Explain gr* and x* or skip them completely.
-\end_layout
 
 \end_inset
 
@@ -4396,14 +4468,14 @@ reference "fig:Proof-schemes-base-replacement"
 
 \end_inset
 
-, until we have to apply the reflexivity rule at the very end of the proof.
+
 \begin_inset Float figure
 wide false
 sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\begin_inset Formula $\bussproof{\grstar{BA_{B}^{n+1}X}{B_{A}^{n+1}YB}{\timesstarinf{BA_{B}^{n+1}X}{bAB_{A}^{n}B_{A}^{n}YB}{\grstar{A_{B}^{n+1}X}{AB_{A}^{n}B_{A}^{n}YB}{\timesstarinf{aBA_{B}^{n}A_{B}^{n}X}{AB_{A}^{n}B_{A}^{n}YB}{\axiom{BA_{B}^{n}A_{B}^{n}X}{B_{A}^{n}B_{A}^{n}YB}}}}}}$
+\begin_inset Formula $\bussproof{\grstar{BA_{B,n+1}X}{B_{A,n+1}YB}{\timesstarinf{BA_{B,n+1}X}{bAB_{A,n}B_{A,n}YB}{\grstar{A_{B,n+1}X}{AB_{A,n}B_{A,n}YB}{\timesstarinf{aBA_{B,n}A_{B,n}X}{AB_{A,n}B_{A,n}YB}{\axiom{BA_{B,n}A_{B,n}X}{B_{A,n}B_{A,n}YB}}}}}}$
 \end_inset
 
 
@@ -4437,6 +4509,7 @@ Proof schemes for base replacement algorithm.
 
 \end_inset
 
+, until we have to apply the reflexivity rule at the very end of the proof.
  We note that in both proof schemes, the norm of the last equality is by
  two smaller than the norm of the first equality, which means that we have
  to apply the proof schemes a number of times linear in the norm of the
@@ -6203,16 +6276,21 @@ Given a judgement, the presented proof strategy constructs a rule with its
 \end_layout
 
 \begin_layout Proof
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO!
+The only non-trivial functions we use to decide which rule to construct,
+ are norm, norm reduction and decomposition, which all terminate in polynomial
+ time.
+ This means that we can decide in polynomial time which rule to apply.
 \end_layout
 
-\end_inset
-
-
+\begin_layout Proof
+Furthermore, the size of the premises of the new rule is also polynomial
+ in the size of the conclusion, as the size of a premise can only become
+ bigger than its conclusion with the transitivity rule.
+ In that case we substitute a polynomial number of variables of the conclusion
+ with other terms, for example the grammar of a variable or the decomposition
+ of a variable word.
+ Because these terms can always be calculated in polynomial time, the tactic
+ constructs a rule in polynomial time.
 \end_layout
 
 \begin_layout Section
@@ -6285,10 +6363,10 @@ R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
 \end_layout
 
 \begin_layout Chapter
-Experimental results
+Implementation & experimental results
 \begin_inset CommandInset label
 LatexCommand label
-name "chap:Experimental-results"
+name "chap:Implementation-Experiments"
 
 \end_inset
 
@@ -6644,9 +6722,9 @@ status collapsed
 A & \to a & A & \to a\\
 B & \to b & B & \to b\\
 A_{B}^{0} & \rightarrow aB & B_{A}^{0} & \to bA\\
-A_{B}^{n+1} & \to aB_{B}^{n+1} & B_{A}^{n+1} & \to bA_{A}^{n+1}\\
-B_{B}^{n+1} & \to bA_{B}^{n}A_{B}^{n} & A_{A}^{n+1} & \to aB_{A}^{n}B_{A}^{n}\\
-F^{n} & \to aBA_{B}^{n} & G^{n} & \to aB_{A}^{n}B
+A_{B,n+1} & \to aB_{B,n+1} & B_{A,n+1} & \to bA_{A,n+1}\\
+B_{B,n+1} & \to bA_{B,n}A_{B,n} & A_{A,n+1} & \to aB_{A,n}B_{A,n}\\
+F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
 \end{align*}
 
 \end_inset
@@ -6665,7 +6743,7 @@ name "tab:AB-grammar-2NF"
 \end_inset
 
 
-\begin_inset Formula $F^{n}\equiv G^{n}$
+\begin_inset Formula $F_{n}\equiv G_{n}$
 \end_inset
 
 .
@@ -6721,16 +6799,16 @@ reference "tab:AB-grammar-non2NF-br"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \begin{aligned}A & \to a+b & A & \to a+b\\
 B & \to b+a & B & \to b+a\\
-A_{B}^{0} & \to\left(a+b\right)B & B_{A}^{0} & \to\left(b+a\right)A\\
-A_{B}^{n+1} & \to\left(a+b\right)BA_{B}^{n}A_{B}^{n} & B_{A}^{n+1} & \to\left(b+a\right)AB_{A}^{n}B_{A}^{n}\\
-F^{n} & \to\left(a+b\right)BA_{B}^{n} & G^{n} & \to\left(a+b\right)B_{A}^{n}B
+A_{B,0} & \to\left(a+b\right)B & B_{A,0} & \to\left(b+a\right)A\\
+A_{B,n+1} & \to\left(a+b\right)BA_{B,n}A_{B,n} & B_{A,n+1} & \to\left(b+a\right)AB_{A,n}B_{A,n}\\
+F_{n} & \to\left(a+b\right)BA_{B,n} & G_{n} & \to\left(a+b\right)B_{A,n}B
 \end{aligned}
 \]
 
@@ -6750,7 +6828,7 @@ name "tab:AB-grammar-non2NF-br"
 \end_inset
 
 
-\begin_inset Formula $F^{n}\equiv G^{n}$
+\begin_inset Formula $F_{n}\equiv G_{n}$
 \end_inset
 
 .
@@ -6769,11 +6847,11 @@ name "tab:AB-grammar-non2NF-br"
 \end_inset
 
 
-\begin_inset Formula $F^{n}$
+\begin_inset Formula $F_{n}$
 \end_inset
 
  and 
-\begin_inset Formula $G^{n}$
+\begin_inset Formula $G_{n}$
 \end_inset
 
  describe the language 
