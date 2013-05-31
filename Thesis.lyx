@@ -1486,78 +1486,339 @@ polynomial
 \end_layout
 
 \begin_layout Standard
-Given a set of variables 
-\begin_inset Formula $V=\left\{ X_{1},\dots,X_{n}\right\} $
+Let us start by defining some algebraic structures, which serve us later
+ in the definitions of polynomials.
+ For a more detailed source, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "berstel1984"
+
 \end_inset
 
- and a set of terminals 
-\begin_inset Formula $T=\left\{ a_{1},\dots,a_{m}\right\} $
-\end_inset
-
-, we define polynomials over 
-\begin_inset Formula $\left(V,T\right)$
-\end_inset
-
- with the following Backus-Naur form (BNF), 
-\begin_inset Formula $P$
-\end_inset
-
- being the start symbol:
+.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-P & \to V\:|\: T\:|\: P+P\:|\: P\cdot P\\
-V & \to X_{1}\:|\:\dots\:|\: X_{n}\\
-T & \to a_{1}\:|\:\dots\:|\: a_{m}
-\end{align*}
-
-\end_inset
-
-
-\begin_inset Note Note
+\begin_layout Definition
+\begin_inset Argument
 status open
 
 \begin_layout Plain Layout
-TODO!
+Monoid
 \end_layout
 
 \end_inset
 
-Any polynomials 
-\begin_inset Formula $x,y,z$
+A monoid is a pair 
+\begin_inset Formula $\left(A,\cdot\right)$
 \end_inset
 
- have the following properties:
+ such that 
+\begin_inset Formula $A$
+\end_inset
+
+ is a set and 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ is an associative operation such that
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
-Commutativity: 
-\begin_inset Formula $x+y=y+x$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Associativity: 
-\begin_inset Formula $\left(x+y\right)+z=x+\left(y+z\right)$
+For all 
+\begin_inset Formula $a,b\in A$
 \end_inset
 
 , 
-\begin_inset Formula $\left(x\cdot y\right)\cdot z=x\cdot\left(y\cdot z\right)$
+\begin_inset Formula $a\cdot b\in A$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+For all 
+\begin_inset Formula $a,b,c\in A$
+\end_inset
+
+, 
+\begin_inset Formula $a\cdot\left(b\cdot c\right)=\left(a\cdot b\right)\cdot c$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+There exists a neutral element 
+\begin_inset Formula $n\in A$
+\end_inset
+
+ such that for all 
+\begin_inset Formula $a\in A$
+\end_inset
+
+, 
+\begin_inset Formula $a\cdot n=n\cdot a=a$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Definition
+If it holds additionally for all 
+\begin_inset Formula $a,b\in A$
+\end_inset
+
+ that 
+\begin_inset Formula $a\cdot b=b\cdot a$
+\end_inset
+
+, then we call the monoid 
+\emph on
+commutative
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Semiring
+\end_layout
+
+\end_inset
+
+A semiring is a 3-tuple 
+\begin_inset Formula $\left(A,\cdot,+\right)$
+\end_inset
+
+ such that
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
-Distributivity: 
-\begin_inset Formula $\left(x+y\right)\cdot z=x\cdot z+y\cdot z$
+\begin_inset Formula $\left(A,+\right)$
+\end_inset
+
+ is a commutative monoid, whose neutral element is noted 1.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\left(A,\cdot\right)$
+\end_inset
+
+ is a monoid, whose neutral element is noted 0.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\cdot$
+\end_inset
+
+ distributes over 
+\begin_inset Formula $+$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+For each 
+\begin_inset Formula $a\in A$
+\end_inset
+
+ we have 
+\begin_inset Formula $a\cdot0=0\cdot a=0$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Definition
+If it holds additionally for all 
+\begin_inset Formula $a,b\in A$
+\end_inset
+
+ that 
+\begin_inset Formula $a\cdot b=b\cdot a$
+\end_inset
+
+, then we call the semiring commutative.
+\end_layout
+
+\begin_layout Standard
+In particular, the boolean semiring 
+\begin_inset Formula $\mathbb{B}=\left(\left\{ 0,1\right\} ,\cdot,+\right)$
+\end_inset
+
+ is defined by 
+\begin_inset Formula $1+1=1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Formal power series
+\end_layout
+
+\end_inset
+
+A formal power series 
+\begin_inset Formula $S$
+\end_inset
+
+ is a total function from 
+\begin_inset Formula $X^{*}$
+\end_inset
+
+ to 
+\begin_inset Formula $K$
+\end_inset
+
+.
+ The image of a word 
+\begin_inset Formula $w\in X^{*}$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $S$
+\end_inset
+
+ is noted as 
+\begin_inset Formula $\left(S,w\right)$
+\end_inset
+
+ and is called 
+\emph on
+coefficient
+\emph default
+ of 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ The 
+\emph on
+support
+\emph default
+ of 
+\begin_inset Formula $S$
+\end_inset
+
+ is defined as
+\begin_inset Formula 
+\[
+\supp\left(S\right):=\left\{ w\in X^{*}|\left(S,w\right)\neq0\right\} .
+\]
+
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Semiring of formal power series
+\end_layout
+
+\end_inset
+
+The set of formal power series over 
+\begin_inset Formula $X$
+\end_inset
+
+ with coefficients in 
+\begin_inset Formula $K$
+\end_inset
+
+ is noted 
+\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
+\end_inset
+
+.
+ We define a semiring of 
+\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
+\end_inset
+
+ as follows: If 
+\begin_inset Formula $S,T$
+\end_inset
+
+ are two series, their sum is defined as
+\begin_inset Formula 
+\[
+\left(S+T,w\right):=\left(S,w\right)+\left(T,w\right),
+\]
+
+\end_inset
+
+and their product is defined as
+\begin_inset Formula 
+\[
+\left(ST,w\right):=\sum_{uv=w}\left(S,u\right)\left(T,v\right),
+\]
+
+\end_inset
+
+where the sum is finite.
+\end_layout
+
+\begin_layout Standard
+We now define polynomials over 
+\begin_inset Formula $\Sigma=V\cup T$
+\end_inset
+
+ to be the noncommutative semiring
+\begin_inset Formula 
+\[
+R=\mathbb{B}\left\langle \left\langle \Sigma\right\rangle \right\rangle 
+\]
+
+\end_inset
+
+with finite support, i.e.
+ 
+\begin_inset Formula $\left|\supp\left(S\right)\right|<\infty$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -1607,8 +1868,8 @@ where
 \begin_inset Formula $\overset{*}{\to}$
 \end_inset
 
- is the reflexive and transitive closure of the derivation relation defined
- as in 
+ is the reflexive and transitive closure of the derivation relation, which
+ is defined as in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "carton2008"

@@ -164,8 +164,17 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\polylog}[1]{\operatorname{polylog}}
+\renewcommand{\polylog}{\operatorname{polylog}}
 {\mathrm{polylog}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\renewcommand{\supp}{\operatorname{supp}}
+{\mathrm{supp}}
 \end_inset
 
 
@@ -196,7 +205,7 @@ filename "LyXproofsT.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
+\renewcommand{\refl}[2]{\unaryinf{\axiomc{}}{#1}{#2}{refl}}
 \end_inset
 
 
@@ -204,7 +213,7 @@ filename "LyXproofsT.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
+\renewcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
 \end_inset
 
 
