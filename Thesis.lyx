@@ -146,8 +146,9 @@ Universität Innsbruck
 
 \begin_layout Abstract
 Equivalence of simple deterministic grammar is decidable in PTIME.
- We created an algorithm in 2-EXPTIME to solve the problem and to issue
- a complimentary equivalence proof in a simple proof system, which we then
+ We created a sound and complete equivalence proof system, for which we
+ implemented an algorithm in 2-EXPTIME to decide equivalence of simple determini
+stic grammars and to issue a complementary equivalence proof, which we then
  verify automatically.
 \end_layout
 
@@ -278,7 +279,7 @@ proof
 \end_layout
 
 \begin_layout Standard
-A remedy for this problem is to generate proofs for the results.
+A possible remedy for this problem is to generate proofs for the results.
  This way, users can validate the proofs and detect possible errors in the
  execution of the algorithm.
 \end_layout
@@ -295,7 +296,7 @@ key "korenjak1966"
 
 .
  Thirty years later, an efficient algorithm for the problem in PTIME was
- presented in 
+ presented by Hirshfeld, Faron and Moller in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hirshfeld1996"
@@ -303,7 +304,7 @@ key "hirshfeld1996"
 \end_inset
 
 , however, this algorithm does not yield proofs.
- Another ten years later, 
+ Another ten years later, Lasota and Rytter 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lasota2006"
@@ -320,7 +321,8 @@ We created a relatively simple proof system to prove equivalences of simple
  of the existing algorithms to construct equivalence proofs automatically.
  Furthermore, we constructed a test suite of non-trivially equivalent grammars.
  Based on this test suite, we compared the performances of our algorithms,
- and the best algorithm we found so far has complexity 2-EXPTIME.
+ and the best algorithm we found so far always terminated in EXPTIME, and
+ we proved it to have a maximal complexity of 2-EXPTIME.
 \end_layout
 
 \begin_layout Standard
@@ -331,7 +333,7 @@ reference "chap:Preliminaries"
 
 \end_inset
 
-, we explain basic concepts, such as grammars.
+, we explain basic concepts, such as languages, grammars and polynomials.
  In 
 \begin_inset CommandInset ref
 LatexCommand formatted
@@ -354,8 +356,8 @@ reference "chap:Existing-algorithms"
 
 \end_inset
 
-, we explain the function of the existing algorithms to determine equivalence
- of simple deterministic grammars.
+, we explain existing algorithms to determine equivalence of simple deterministi
+c grammars.
  In 
 \begin_inset CommandInset ref
 LatexCommand formatted
@@ -363,7 +365,7 @@ reference "chap:Equivalence-proof-system"
 
 \end_inset
 
-, we explain our proof system to prove equivalences.
+, we explain our equivalence proof system.
  In 
 \begin_inset CommandInset ref
 LatexCommand formatted
@@ -380,7 +382,7 @@ reference "chap:Proof-construction-algorithm"
 \end_inset
 
 .
- A small overview of our implementation and how it performs, is the subject
+ A short overview of our implementation and how it performs, is the subject
  of 
 \begin_inset CommandInset ref
 LatexCommand formatted
@@ -451,8 +453,8 @@ name "chap:Preliminaries"
 \end_layout
 
 \begin_layout Standard
-In this chapter, we define some terms we will use throughout the document,
- see the first chapters of 
+In this chapter, we define some terms we will use throughout the document.
+ For a longer introduction, see the first chapters of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hopcroft1979,carton2008"
@@ -460,6 +462,16 @@ key "hopcroft1979,carton2008"
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Change to definition environments?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -491,12 +503,24 @@ Word: A word
 \begin_inset Formula $\Sigma$
 \end_inset
 
+ and the length of the word 
+\begin_inset Formula $\left|w\right|$
+\end_inset
+
+ is 
+\begin_inset Formula $n$
+\end_inset
+
 .
  The empty word 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
- is defined to be the empty sequence.
+ is defined to be the empty sequence, with 
+\begin_inset Formula $\left|\varepsilon\right|=0$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -551,11 +575,10 @@ Product of languages: The product of two languages
 \begin_inset Formula $\mathcal{L}_{1},\,\mathcal{L}_{2}$
 \end_inset
 
- is defined to be the concatenation of each of its words, i.e.
- 
+ is defined to be 
 \begin_inset Formula 
 \[
-\mathcal{L}_{1}\cdot\mathcal{L}_{2}=\bigcup_{\left\{ \left(x,y\right)|x\in\mathcal{L}_{1},\, y\in\mathcal{L}_{2}\right\} }x\cdot y.
+\mathcal{L}_{1}\cdot\mathcal{L}_{2}:=\bigcup_{\left\{ \left(x,y\right)|x\in\mathcal{L}_{1},\, y\in\mathcal{L}_{2}\right\} }x\cdot y.
 \]
 
 \end_inset
@@ -627,6 +650,16 @@ Kleene operators: Given an alphabet
 \Sigma^{*} & :=\bigcup_{i\geq0}\Sigma^{i},\\
 \Sigma^{+} & :=\bigcup_{i>0}\Sigma^{i}.
 \end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Maybe a sentence that explains that these are all _finite_ words?
+\end_layout
 
 \end_inset
 
@@ -777,11 +810,7 @@ The variable norm is a function
 \begin_inset Formula $\alpha$
 \end_inset
 
-, or 
-\begin_inset Formula $\infty$
-\end_inset
-
- if no such word exists, i.e.
+, i.e.
 \begin_inset Formula 
 \[
 \norm{\alpha}:=\inf_{w\in\lang{\alpha}}\left|w\right|.
@@ -789,11 +818,32 @@ The variable norm is a function
 
 \end_inset
 
+In case that 
+\begin_inset Formula $\alpha$
+\end_inset
 
+ contains a variable which produces no single finite word, 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ itself will also produce no single finite word, in which case 
+\begin_inset Formula $\norm{\alpha}$
+\end_inset
+
+ will equal to 
+\begin_inset Formula $\infty$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 The following lemma is an obvious conclusion.
+ Note that we use addition defined on 
+\begin_inset Formula $\mathbb{N}\cup\left\{ \infty\right\} $
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Lemma
@@ -841,8 +891,11 @@ A grammar
 \begin_inset Formula $G$
 \end_inset
 
- is in Greibach normal form (GNF) iff each production rule has the form
- 
+ is in 
+\emph on
+Greibach normal form
+\emph default
+ (GNF) iff each production rule has the form 
 \begin_inset Formula $X\to a\alpha$
 \end_inset
 
@@ -886,6 +939,16 @@ name "ex:Example-grammar"
 \end_inset
 
 Consider the following grammar:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Define +! How does + correspond to my grammar definition?
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{align*}
 X & \to aX+bZ\\
@@ -992,7 +1055,7 @@ path (X)  edge[loop above] node {$a$} (X)
 
 \begin_layout Plain Layout
 
-        (ZZ) edge             node {$b$} (Z);
+        (ZZ) edge             node {$c$} (Z);
 \end_layout
 
 \begin_layout Plain Layout
@@ -1027,7 +1090,17 @@ Production graph for example grammar.
 
 \end_inset
 
- In this graph, we can interpret the paths from each variable sequence 
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Say what edges and vertices express as well.
+\end_layout
+
+\end_inset
+
+In this graph, we can interpret the paths from each variable sequence 
 \begin_inset Formula $w_{V}\in V^{+}$
 \end_inset
 
