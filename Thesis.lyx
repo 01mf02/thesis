@@ -474,16 +474,47 @@ Change to definition environments?
 
 \end_layout
 
-\begin_layout Itemize
-Alphabet: An alphabet 
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Alphabet
+\end_layout
+
+\end_inset
+
+An alphabet 
 \begin_inset Formula $\Sigma$
 \end_inset
 
  is a finite set of symbols.
 \end_layout
 
-\begin_layout Itemize
-Word: A word 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Word
+\end_layout
+
+\end_inset
+
+A word 
 \begin_inset Formula $w$
 \end_inset
 
@@ -491,7 +522,7 @@ Word: A word
 \begin_inset Formula $\Sigma$
 \end_inset
 
- is a sequence 
+ is a finite sequence 
 \begin_inset Formula $w_{1}w_{2}\dots w_{n}$
 \end_inset
 
@@ -523,24 +554,115 @@ Word: A word
 .
 \end_layout
 
-\begin_layout Itemize
-Language: A language 
-\begin_inset Formula $\mathcal{L}$
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
 \end_inset
 
- over the alphabet 
-\begin_inset Formula $A$
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Free monoid
+\end_layout
+
 \end_inset
 
- is a set of words over 
-\begin_inset Formula $A$
+ The free monoid 
+\begin_inset Formula $\Sigma^{*}$
+\end_inset
+
+ of 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is the set of all words over 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+.
+ We define 
+\begin_inset Formula $\Sigma^{+}:=\Sigma^{*}\backslash\left\{ \varepsilon\right\} $
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Itemize
-Concatenation of words: The concatenation of two words 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Language
+\end_layout
+
+\end_inset
+
+ A language 
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+ over the alphabet 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is a set of words over 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, meaning 
+\begin_inset Formula $\mathcal{L}\subset\mbox{\Sigma}^{*}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Concatenation of words
+\end_layout
+
+\end_inset
+
+ The concatenation of two words 
 \begin_inset Formula $u=u_{1}\dots u_{m}$
 \end_inset
 
@@ -570,8 +692,30 @@ Concatenation of words: The concatenation of two words
 .
 \end_layout
 
-\begin_layout Itemize
-Product of languages: The product of two languages 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Product of languages
+\end_layout
+
+\end_inset
+
+ The product of two languages 
 \begin_inset Formula $\mathcal{L}_{1},\,\mathcal{L}_{2}$
 \end_inset
 
@@ -586,8 +730,30 @@ Product of languages: The product of two languages
 
 \end_layout
 
-\begin_layout Itemize
-Prefix/postfix: If there exist languages 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Prefix/postfix
+\end_layout
+
+\end_inset
+
+ If there exist languages 
 \begin_inset Formula $\mathcal{L}_{1},\mathcal{L}_{2}$
 \end_inset
 
@@ -614,51 +780,12 @@ Prefix/postfix: If there exist languages
 .
 \end_layout
 
-\begin_layout Itemize
-Exponentiation: Given an alphabet 
-\begin_inset Formula $\Sigma$
-\end_inset
-
-, define 
-\begin_inset Formula $\Sigma^{n}$
-\end_inset
-
- inductively by
-\begin_inset Formula 
-\begin{align*}
-\Sigma^{0} & :=\varepsilon,\\
-\Sigma^{n+1} & :=\Sigma\cdot\Sigma^{n}.
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Kleene operators: Given an alphabet 
-\begin_inset Formula $\Sigma$
-\end_inset
-
-, the Kleene star and Kleene plus of 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- are defined as
-\begin_inset Formula 
-\begin{align*}
-\Sigma^{*} & :=\bigcup_{i\geq0}\Sigma^{i},\\
-\Sigma^{+} & :=\bigcup_{i>0}\Sigma^{i}.
-\end{align*}
-
-\end_inset
-
-
-\begin_inset Note Note
+\begin_layout Standard
+\begin_inset ERT
 status open
 
 \begin_layout Plain Layout
-Maybe a sentence that explains that these are all _finite_ words?
+
 \end_layout
 
 \end_inset
@@ -666,8 +793,17 @@ Maybe a sentence that explains that these are all _finite_ words?
 
 \end_layout
 
-\begin_layout Itemize
-Symmetrical difference: For two sets 
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Symmetrical difference
+\end_layout
+
+\end_inset
+
+ For two sets 
 \begin_inset Formula $A$
 \end_inset
 
