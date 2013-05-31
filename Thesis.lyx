@@ -5839,11 +5839,11 @@ rule
 \noun on
 rule
 \noun default
-, which we called proof strategies:
+, which we called proof tactics:
 \end_layout
 
 \begin_layout Enumerate
-The first proof strategy we developed (see 
+The first proof tactic we developed (see 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "sec:Proof-strategy-1"
@@ -5855,7 +5855,7 @@ reference "sec:Proof-strategy-1"
 
 \begin_layout Enumerate
 To measure the impact of the decomposition on the proof size, we also developed
- a second strategy (see 
+ a second tactic (see 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "sec:Proof-strategy-2"
@@ -5866,15 +5866,16 @@ reference "sec:Proof-strategy-2"
 \end_layout
 
 \begin_layout Enumerate
-We also briefly considered writing a proof strategy using neither base replaceme
-nt nor decomposition, only rewriting judgements with the given grammar rules,
+We also briefly considered writing a proof tactic using neither base replacement
+ nor decomposition, only rewriting judgements with the given grammar rules,
  but it soon turned out that it would require bigger adaptations to our
  current algorithm, which is why, given the predictably horrendous performance
- of the strategy, we chose not to implement this strategy.
+ (if it were terminating, which is not sure) of the tactic, we chose not
+ to implement it.
 \end_layout
 
 \begin_layout Section
-Proof strategy 1
+Proof tactic 1
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Proof-strategy-1"
@@ -5885,7 +5886,7 @@ name "sec:Proof-strategy-1"
 \end_layout
 
 \begin_layout Standard
-The first proof strategy uses base replacement and decomposition to construct
+The first proof tactic uses base replacement and decomposition to construct
  a proof rule from a given judgement.
  We construct proof rules bottom-up, which means that for a given judgement,
  we try to find a proof rule which has the given judgement as conclusion.
@@ -6476,11 +6477,11 @@ SS-
 \end_layout
 
 \begin_layout Standard
-The validity of the proof strategy is proven in the appendix.
+The validity of the proof tactic is proven in the appendix.
 \end_layout
 
 \begin_layout Lemma
-Given a judgement, the presented proof strategy constructs a rule with its
+Given a judgement, the presented proof tactic constructs a rule with its
  conclusion equalling the judgement in polynomial time.
 \end_layout
 
@@ -6503,7 +6504,7 @@ Furthermore, the size of the premises of the new rule is also polynomial
 \end_layout
 
 \begin_layout Section
-Proof strategy 2
+Proof tactic 2
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Proof-strategy-2"
@@ -6514,15 +6515,15 @@ name "sec:Proof-strategy-2"
 \end_layout
 
 \begin_layout Standard
-The second proof strategy does not use decomposition, but relies solely
- on base replacement.
+The second proof tactic does not use decomposition, but relies solely on
+ base replacement.
  The greatest part of its proof construction rules is equivalent to the
- rules in the first strategy; the differences lie only in the PP rules,
- where we replace PP-D, PP-
+ rules in the first tactic; the differences lie only in the PP rules, where
+ we replace PP-D, PP-
 \begin_inset Formula $\times$
 \end_inset
 
- and PP-B from the first strategy by the following rules:
+ and PP-B from the first tactic by the following rules:
 \end_layout
 
 \begin_layout Itemize
@@ -6634,7 +6635,7 @@ Grammar verification & norm calculation: The program verifies that the input
 \begin_layout Itemize
 Proof construction: The program constructs an equivalence proof for a given
  judgement.
- For this, it may use any of the two strategies presented in 
+ For this, it may use any of the two tactics presented in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "chap:Proof-construction-algorithm"
@@ -6718,8 +6719,8 @@ Benchmark grammars
 \end_layout
 
 \begin_layout Standard
-Here we present the performance of our proof strategies with the aid of
- five different grammars, where 
+Here we present the performance of our proof tactics with the aid of five
+ different grammars, where 
 \begin_inset Formula $n$
 \end_inset
 
@@ -7141,7 +7142,7 @@ Decomp.
 \begin_inset Quotes erd
 \end_inset
 
- signify the measured proof sizes for the respective strategies, while the
+ signify the measured proof sizes for the respective tactics, while the
  dotted lines 
 \begin_inset Quotes eld
 \end_inset
@@ -7158,7 +7159,7 @@ DF
 \begin_inset Quotes erd
 \end_inset
 
- signify the fitted functions for each strategy.
+ signify the fitted functions for each tactic.
 \end_layout
 
 \begin_layout Standard
@@ -7190,7 +7191,7 @@ status collapsed
 \begin_inset Text
 
 \begin_layout Plain Layout
-Grammar/Strategy
+Grammar/Tactic
 \end_layout
 
 \end_inset
@@ -7422,8 +7423,8 @@ Results for
 
 \end_inset
 
-For this grammar, both base and decomposition strategy seem to produce polynomia
-l-size proofs.
+For this grammar, both base and decomposition tactic seem to produce polynomial-
+size proofs.
  Interestingly, the base produces more rules with less symbols overall.
 \end_layout
 
@@ -7493,8 +7494,8 @@ Results for AB grammar in 2NF.
 
 \end_inset
 
-Both strategies seem to produce polynomial-size proofs, with the base outperform
-ing the decomposition with apparently linear proof sizes.
+Both tactics seem to produce polynomial-size proofs, with the base outperforming
+ the decomposition with apparently linear proof sizes.
 \end_layout
 
 \begin_layout Enumerate
@@ -7571,8 +7572,8 @@ Results for AB grammar with branching.
 \end_inset
 
 As all production rules for this grammar are (strict) sums, we cannot apply
- decomposition here, so the decomposition strategy will always fall back
- to the base strategy.
+ decomposition here, so the decomposition tactic will always fall back to
+ the base tactic.
  As the latter produces exponential-size proofs, the decomposition also
  produces exponential-size proofs.
 \end_layout
@@ -7594,7 +7595,7 @@ stic grammars, and implemented several different algorithms based on them
  to produce equivalence proofs in our own proof system.
  Unfortunately, it turned out that all our algorithms have a complexity
  of 2-EXPTIME, which is far away from our projected goal of PTIME.
- Nonetheless, in our experiments our decomposition strategy always seemed
+ Nonetheless, in our experiments our decomposition tactic always seemed
  to yield polynomial-size proofs for the special case of compression grammars,
  so at least for a subclass of SDGs, we do not have any counterexample yet
  of a grammar evoking exponential-size proofs.
