@@ -582,7 +582,7 @@ status open
 status open
 
 \begin_layout Plain Layout
-Free monoid
+Free monoid & semigroup
 \end_layout
 
 \end_inset
@@ -600,7 +600,11 @@ Free monoid
 \end_inset
 
 .
- We define 
+ The free semigroup of 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is 
 \begin_inset Formula $\Sigma^{+}:=\Sigma^{*}\backslash\left\{ \varepsilon\right\} $
 \end_inset
 
@@ -758,7 +762,7 @@ status open
 status open
 
 \begin_layout Plain Layout
-Prefix/postfix
+Prefix & postfix
 \end_layout
 
 \end_inset
@@ -1646,14 +1650,14 @@ A semiring is a 3-tuple
 \begin_inset Formula $\left(A,+\right)$
 \end_inset
 
- is a commutative monoid, whose neutral element is noted 1.
+ is a commutative monoid, whose neutral element is noted 0.
 \end_layout
 
 \begin_layout Itemize
 \begin_inset Formula $\left(A,\cdot\right)$
 \end_inset
 
- is a monoid, whose neutral element is noted 0.
+ is a monoid, whose neutral element is noted 1.
 \end_layout
 
 \begin_layout Itemize
@@ -1960,6 +1964,16 @@ Two polynomials
 \end_inset
 
  are equivalent iff their languages are equal, i.e.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+bullshit!
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \[
 p_{1}\equiv p_{2}\Longleftrightarrow\lang{p_{1}}=\lang{p_{2}}.
@@ -2583,22 +2597,16 @@ reference "lem:Poly-bound"
 \end_layout
 
 \begin_layout Section
-Restricted polynomials
+Simple polynomials
 \end_layout
 
 \begin_layout Standard
 To reduce the number of proof construction rules and to simplify checking
- if two polynomials are equivalent, we institute 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-kill latin :(
-\end_layout
-
-\end_inset
-
- a restricted class of polynomials 
+ if two polynomials are equivalent, we define the class of 
+\emph on
+simple polynomials
+\emph default
+ 
 \begin_inset Formula $\mathcal{P}$
 \end_inset
 
@@ -2610,23 +2618,8 @@ kill latin :(
 \begin_inset Formula $T$
 \end_inset
 
- with the following BNF, 
-\begin_inset Formula $I$
-\end_inset
-
- being the start symbol:
-\begin_inset Formula 
-\begin{align*}
-I & \to P\:|\: S\\
-P & \to V\:|\: V\cdot P\\
-S & \to S+S\:|\: T\:|\: T\cdot P\\
-V & \to X_{1}\:|\:\dots\:|\: X_{n}\\
-T & \to a_{1}\:|\:\dots\:|\: a_{m}
-\end{align*}
-
-\end_inset
-
-In a nutshell, a restricted polynomial is:
+.
+ In a nutshell, a simple polynomial should be:
 \end_layout
 
 \begin_layout Itemize
@@ -2650,104 +2643,48 @@ the concatenation of a terminal with a product of variables.
 \begin_layout Standard
 Additionally, we impose that all terminals of a sum have to be pairwise
  different.
- This restriction ensures compatibility of polynomials with simple deterministic
- grammars.
+ This restriction ensures compatibility of simple polynomials with simple
+ deterministic grammars.
 \end_layout
 
 \begin_layout Definition
-Two restricted polynomials 
-\begin_inset Formula $p_{1}$
+A simple polynomial 
+\begin_inset Formula $p\in\mathcal{P}$
 \end_inset
 
-, 
-\begin_inset Formula $p_{2}$
+ over variables 
+\begin_inset Formula $V$
 \end_inset
 
- are equivalent iff:
-\begin_inset Note Note
-status open
+ and terminals 
+\begin_inset Formula $T$
+\end_inset
 
-\begin_layout Plain Layout
-Their languages are equal?
+ is a polynomial (as defined in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Polynomials"
+
+\end_inset
+
+) with the following restrictions:
 \end_layout
 
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Make this a lemma, prove it?
-\end_layout
+\begin_layout Definition
+\begin_inset Formula 
+\begin{align*}
+\left(\exists w\in\supp\left(p\right):\, w\in V^{*}\right)\to & \:\forall w,w'\in\supp\left(p\right):\, w=w'\\
+\lnot\left(\exists w\in\supp\left(p\right):\, w\in V^{*}\right)\to & \:\left(\forall w\in\supp\left(p\right):\, w\in TV^{*}\right)\land\\
+ & \:\left(\forall w,w'\in\supp\left(p\right):\, w=au\land w'=av\to u=v\right)
+\end{align*}
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $p_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $p_{2}$
-\end_inset
-
- are syntactically equivalent products of variables, i.e.
- 
-\begin_inset Formula $p_{1}=p_{2}=\prod_{x=1}^{n_{A}}A_{x}$
-\end_inset
-
-, or
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $p_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $p_{2}$
-\end_inset
-
- are sums of terms, where the number of addends in 
-\begin_inset Formula $p_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $p_{2}$
-\end_inset
-
- is equal and for each addend of 
-\begin_inset Formula $p_{1}$
-\end_inset
-
- there exists an equivalent addend in 
-\begin_inset Formula $p_{2}$
-\end_inset
-
-, i.e.
- 
-\begin_inset Formula $p_{1}=\sum_{x=1}^{n_{A}}a_{x}A_{x}$
-\end_inset
-
-, 
-\begin_inset Formula $p_{2}=\sum_{y=1}^{n_{B}}b_{y}B_{y}$
-\end_inset
-
-, 
-\begin_inset Formula $n_{A}=n_{B}$
-\end_inset
-
- and 
-\begin_inset Formula $\forall x\,\exists!y:\, a_{x}=b_{y}\land A_{x}=B_{y}$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard
-Valid restricted polynomials over the variables 
+Valid simple polynomials over the variables 
 \begin_inset Formula $V=\left\{ X_{1},\dots,X_{4}\right\} $
 \end_inset
 
@@ -2780,21 +2717,11 @@ Valid restricted polynomials over the variables
 \end_layout
 
 \begin_layout Standard
-Expressions which are 
+
 \emph on
-not
+Not
 \emph default
- valid 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-restricted
-\end_layout
-
-\end_inset
-
-polynomials over the same 
+ valid simple polynomials, over the same 
 \begin_inset Formula $V$
 \end_inset
 
@@ -2835,47 +2762,11 @@ polynomials over the same
 \begin_inset Formula $a$
 \end_inset
 
- appears several times in the same sum;
+ appears several times in the same sum.
 \end_layout
 
-\begin_layout Itemize
-\begin_inset Formula $a\left(a+bX_{1}cX_{2}\left(c+dX_{3}+e\right)\right)+dX_{4}$
-\end_inset
-
-, because the first addend is a concatenation of a terminal with a sum;
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $e+fX_{5}$
-\end_inset
-
-, because neither 
-\begin_inset Formula $e$
-\end_inset
-
-, 
-\begin_inset Formula $f$
-\end_inset
-
- nor 
-\begin_inset Formula $X_{5}$
-\end_inset
-
- are in 
-\begin_inset Formula $V\cup T$
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-delete this example?
-\end_layout
-
-\end_inset
-
-
+\begin_layout Standard
+Note that the last examples express valid non-simple polynomials.
 \end_layout
 
 \begin_layout Chapter
@@ -4473,7 +4364,7 @@ and for all rules
  it even holds that
 \begin_inset Formula 
 \[
-\min\left\{ c\left(P_{1}\right),c\left(P_{2}\right)\right\} <c\left(C\right).
+\min\left\{ c\left(P_{1}\right),c\left(P_{2}\right)\right\} <c\left(C\right)\text{ or }c\left(C\right)=\infty.
 \]
 
 \end_inset
@@ -4492,24 +4383,18 @@ Let us first assume that
 
 .
  Then 
-\begin_inset Formula $\min\left\{ c\left(P_{1}\right),\dots,c\left(P_{n}\right)\right\} <\infty$
+\begin_inset Formula $\min\left\{ c\left(P_{1}\right),\dots,c\left(P_{n}\right)\right\} \leq\infty$
 \end_inset
 
- holds, given that 
-\begin_inset Formula $\infty<\infty$
+ holds, which affirms the condition for all rules, and 
+\begin_inset Formula $c\left(C\right)=\infty$
 \end_inset
 
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-How to argue here?
-\end_layout
-
+ holds also, which affirms the condition for 
+\begin_inset Formula $\times$
 \end_inset
 
-
+ rules.
 \end_layout
 
 \begin_layout Proof
@@ -4671,8 +4556,8 @@ Product:
 \end_inset
 
 Let us assume w.l.o.g.
- that 
-\begin_inset Formula $w$
+ that the smallest witness 
+\begin_inset Formula $w\in\lang{x\cdot y}\Delta\lang{x'\cdot y'}$
 \end_inset
 
  is in 
@@ -4680,67 +4565,65 @@ Let us assume w.l.o.g.
 \end_inset
 
 .
- Then we differentiate two cases:
+ Then 
+\begin_inset Formula $w=w_{x}w_{y}$
+\end_inset
+
+ with 
+\begin_inset Formula $w_{x}\in\lang x$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{y}\in\lang y$
+\end_inset
+
+, furthermore 
+\begin_inset Formula $\left|w\right|=c\left(C\right)$
+\end_inset
+
+.
+ Now we differentiate two cases:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-\begin_inset Formula $x\equiv x'$
+\begin_inset Formula $w_{x}\not\in\lang{x'}$
 \end_inset
 
- holds: We conclude that 
-\begin_inset Formula $y\equiv y'$
-\end_inset
-
- can not hold, which is why there has to exist 
-\begin_inset Formula $w'\in\lang y\Delta\lang{y'}$
+: We conclude that 
+\begin_inset Formula $w_{x}\in\lang x\Delta\lang{x'}$
 \end_inset
 
 .
- Due to lemma 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lem:Norm-addition"
-
+ As 
+\begin_inset Formula $\left|w_{x}\right|<\left|w\right|$
 \end_inset
 
- we know that 
-\begin_inset Formula $\norm{x\cdot y}<\norm y$
-\end_inset
-
-, therefore we can say that 
-\begin_inset Formula $c\left(y,y'\right)<c\left(x\cdot y,x'\cdot y'\right)$
+, it follows that 
+\begin_inset Formula $c\left(x,x'\right)\leq\left|w_{x}\right|<\left|w\right|=c\left(xy,x'y'\right)$
 \end_inset
 
 .
- In order, 
-\begin_inset Formula $\min\left\{ c\left(x,x'\right),c\left(y,y'\right)\right\} \leq c\left(y,y'\right)<c\left(x\cdot y,x'\cdot y'\right)$
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-I'm not completely satisfied by that, especially with the norm argument
- ...
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Formula $x\equiv x'$
+\begin_inset Formula $w_{x}\in\lang{x'}$
 \end_inset
 
- does not hold: This means that 
-\begin_inset Formula $w'\in\lang x\Delta\lang{x'}$
+: We conclude that 
+\begin_inset Formula $w_{y}\not\in\lang{y'}$
 \end_inset
 
- exists.
- We argue analogous to the previous case.
+.
+ As 
+\begin_inset Formula $\left|w_{y}\right|<\left|w\right|$
+\end_inset
+
+, it follows that 
+\begin_inset Formula $c\left(y,y'\right)\leq\left|w_{y}\right|<\left|w\right|=c\left(xy,x'y'\right)$
+\end_inset
+
+.
 \end_layout
 
 \end_deeper
@@ -9339,17 +9222,7 @@ name "th:Proof-EXP"
 
 \end_inset
 
-For two 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-restricted?
-\end_layout
-
-\end_inset
-
-polynomials 
+For two simple polynomials 
 \begin_inset Formula $p_{1},p_{2}\in\mathcal{P}$
 \end_inset
 
@@ -9378,6 +9251,19 @@ As each cluster contains maximally
 \[
 2^{h+1}\cdot\left(2^{h}\right)^{\left(k+1\right)^{n}}.
 \]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Remark*
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note for two non-simple polynomials, equivalence undecidable!
+\end_layout
 
 \end_inset
 
