@@ -267,25 +267,29 @@ no
 \begin_inset Quotes erd
 \end_inset
 
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-CAS
-\end_layout
-
-\end_inset
-
 , but do not certify their answer with an easily verifiable 
 \emph on
 proof
 \emph default
 .
  Nonetheless, users usually trust these algorithms, because their correctness
- is proven, but it is still possible that an implementation of an algorithm
- may be erroneous, or the machine executing the algorithm misbehaves, thus
- possibly producing a wrong result despite a flawless algorithm.
+ is proven, but it is still possible that
+\end_layout
+
+\begin_layout Itemize
+an implementation of an algorithm may be erroneous, or
+\end_layout
+
+\begin_layout Itemize
+the machine executing the algorithm misbehaves, or
+\end_layout
+
+\begin_layout Itemize
+the compiler translating the algorithm into machine code contains errors,
+\end_layout
+
+\begin_layout Standard
+thus possibly producing a wrong result despite a flawless algorithm.
 \end_layout
 
 \begin_layout Standard
@@ -7967,6 +7971,21 @@ One last, but for us rather important aspect of this work is the creation
 status open
 
 \begin_layout Plain Layout
+Motivation for our approach: using basically equational logic without quantifier
+s and logical connectives.
+ Very simple system.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 1.
  express proof system in a proof assistant
 \end_layout
@@ -9243,16 +9262,44 @@ As each cluster contains maximally
 \end_layout
 
 \begin_layout Remark*
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Note for two non-simple polynomials, equivalence undecidable!
-\end_layout
+Theorem 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "th:Proof-EXP"
 
 \end_inset
 
+ does in general not hold for non-simple polynomials.
+ If it would, then we could always obtain a valid polynomial 
+\begin_inset Formula $p_{1}+p_{2}$
+\end_inset
 
+ from 
+\begin_inset Formula $p_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{2}$
+\end_inset
+
+ (which is not always possible for simple polynomials) and decide whether
+ 
+\begin_inset Formula $\lang{p_{1}+p_{2}}=\lang{p_{2}}$
+\end_inset
+
+.
+ However, this would be equivalent to deciding whether 
+\begin_inset Formula $\lang{p_{1}}\subseteq\lang{p_{2}}$
+\end_inset
+
+, which has been proven by Friedman in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "friedman1976"
+
+\end_inset
+
+ to be undecidable.
 \end_layout
 
 \begin_layout Theorem
