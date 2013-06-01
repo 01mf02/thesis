@@ -351,21 +351,6 @@ reference "chap:Preliminaries"
  In 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "chap:Restrictions"
-
-\end_inset
-
-, we show restricted forms of the concepts presented in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "chap:Preliminaries"
-
-\end_inset
-
-.
- In 
-\begin_inset CommandInset ref
-LatexCommand formatted
 reference "chap:Existing-algorithms"
 
 \end_inset
@@ -476,6 +461,44 @@ key "hopcroft1979,carton2008"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Symmetrical difference
+\end_layout
+
+\end_inset
+
+ For two sets 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+, 
+\begin_inset Formula $A\Delta B:=\left(A-B\right)\cup\left(B-A\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Definition
@@ -645,6 +668,23 @@ Language
 \end_inset
 
 .
+ If two languages 
+\begin_inset Formula $\mathcal{L}_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathcal{L}_{2}$
+\end_inset
+
+ are not equivalent, there exists a witness of non-equivalence 
+\begin_inset Formula $w\in\Sigma^{*}$
+\end_inset
+
+ such that 
+\begin_inset Formula $w\in\mathcal{L}(p_{1})\Delta\mathcal{L}(p_{2}).$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -783,44 +823,6 @@ Prefix & postfix
 
  postfix of 
 \begin_inset Formula $\mathcal{L}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Symmetrical difference
-\end_layout
-
-\end_inset
-
- For two sets 
-\begin_inset Formula $A$
-\end_inset
-
- and 
-\begin_inset Formula $B$
-\end_inset
-
-, 
-\begin_inset Formula $A\Delta B:=\left(A-B\right)\cup\left(B-A\right)$
 \end_inset
 
 .
@@ -1467,6 +1469,559 @@ By induction on
 
 \end_deeper
 \begin_layout Section
+Normalised SDGs
+\end_layout
+
+\begin_layout Standard
+For the proof construction algorithms presented in this document, we use
+ so-called 
+\emph on
+normalised
+\emph default
+ SDGs.
+\end_layout
+
+\begin_layout Standard
+The only restriction of normalised SDGs with respect to SDGs is that normalised
+ SDGs must be normed.
+ This is because we extensively use the norm in our later algorithms.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The same restriction has also been imposed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996,lasota2006"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Furthermore, we impose several ordering and naming conventions on any SDG
+ grammar 
+\begin_inset Formula $G=\left(V,T,P\right)$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $V=\left\{ X_{1},\dots,X_{n}\right\} $
+\end_inset
+
+, where 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ to 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+ are ordered by ascending norm, i.e.
+\begin_inset Formula 
+\[
+\forall i:\,1\leq i<n\implies\norm{X_{i}}\leq\norm{X_{i+1}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P=\left\{ X_{i}\to a_{i,j}\alpha_{i,j}|a_{i,j}\in T\land\alpha_{i,j}\in V^{*}\right\} $
+\end_inset
+
+, where the number of productions for 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is 
+\begin_inset Formula $p_{i}$
+\end_inset
+
+, then
+\begin_inset Formula 
+\[
+\forall i\forall k:\,1<k\leq p_{i}\implies\left(\norm{\alpha_{i,1}}\leq\norm{\alpha_{i,k}}\land\forall X_{l}\in\alpha_{i,1}:\, l<i\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There exists a function 
+\begin_inset Formula $v:T\to V$
+\end_inset
+
+ which associates each terminal 
+\begin_inset Formula $a\in T$
+\end_inset
+
+ to a variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ such that there exists exactly one production rule for 
+\begin_inset Formula $X$
+\end_inset
+
+ in 
+\begin_inset Formula $P$
+\end_inset
+
+ with 
+\begin_inset Formula $X\to a$
+\end_inset
+
+, i.e.
+\begin_inset Formula 
+\[
+\forall a\in T,\,\exists X\in V:\,\left[\exists!\alpha:\,\left(X,\alpha\right)\in P\right]\land\left(X,a\right)\in P.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our first restriction to normed grammars does not limit the class of languages,
+ as we only consider grammars producing finite words: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make sure we clarify that before!
+\end_layout
+
+\end_inset
+
+For simple deterministic grammars, we can find in linear time equivalent
+ grammars without variables that produce only infinite words.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yehudai1977"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+As a (perhaps surprising) consequence, in the grammar
+\begin_inset Formula 
+\begin{align*}
+A & \to aA\\
+B & \to bB
+\end{align*}
+
+\end_inset
+
+the variables 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ are equivalent, because 
+\begin_inset Formula $\lang A=\lang B=\emptyset$
+\end_inset
+
+, as they both produce no single finite word.
+\end_layout
+
+\begin_layout Standard
+Now let us inspect an example normalisation of a grammar.
+\end_layout
+
+\begin_layout Example
+We consider the grammar from example 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "ex:Example-grammar"
+
+\end_inset
+
+.
+ First, we note that for the terminals 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+, there exist no dedicated variables, so we add
+\begin_inset Formula 
+\begin{align*}
+A & \to a\\
+B & \to b
+\end{align*}
+
+\end_inset
+
+to the grammar.
+ At this point, we write down all variables with their production rules
+ ordered by ascending norm, i.e.
+\begin_inset Formula 
+\begin{align*}
+A & \to a\\
+B & \to b\\
+Z & \to c\\
+X & \to aX+bZ\\
+Y & \to bZZ+aX
+\end{align*}
+
+\end_inset
+
+Now we need to verify whether the first production rule of each variable
+ has the smallest norm of all production rules for this variable.
+ As 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $B$
+\end_inset
+
+ and 
+\begin_inset Formula $Z$
+\end_inset
+
+ only have one production rule, the property obviously holds for these variables
+, but what about 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+? Looking at the production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+, we note that 
+\begin_inset Formula $\norm X=2$
+\end_inset
+
+ and 
+\begin_inset Formula $\norm Z=1$
+\end_inset
+
+, so the property does not hold for 
+\begin_inset Formula $X$
+\end_inset
+
+, which we fix by changing the order of the production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ For 
+\begin_inset Formula $Y$
+\end_inset
+
+, though, the property holds, as 
+\begin_inset Formula $\norm{ZZ}=\norm X=2$
+\end_inset
+
+.
+ The intermediate result after this transformation step, where we only changed
+ the order of production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+, is:
+\begin_inset Formula 
+\begin{align*}
+A & \to a\\
+B & \to b\\
+Z & \to c\\
+X & \to bZ+aX\\
+Y & \to bZZ+aX
+\end{align*}
+
+\end_inset
+
+After renaming the variables, the final grammar is:
+\begin_inset Formula 
+\begin{align*}
+X_{1} & \to a\\
+X_{2} & \to b\\
+X_{3} & \to c\\
+X_{4} & \to bX_{3}+aX_{4}\\
+X_{5} & \to bX_{3}X_{3}+aX_{4}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Normalised SDGs also allows calculating the norm of each variable easily
+ in an inductive way: 
+\begin_inset Formula 
+\[
+\norm{X_{j}}=1+\sum_{X_{k}\in\alpha_{j,1}}\norm{X_{k}}
+\]
+
+\end_inset
+
+This function terminates as the conditions at the beginning of this section
+ ensure that all variables in the first production rule 
+\begin_inset Formula $\alpha_{j,1}$
+\end_inset
+
+ of each variable 
+\begin_inset Formula $X_{j}$
+\end_inset
+
+ have a smaller index than 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In addition to then checking that the variables are sorted by ascending
+ norm, we have to verify that the first production rule of each variable
+ produces the smallest terminal word among all production rules of the variable;
+ i.e.
+ 
+\begin_inset Formula 
+\[
+\forall X_{j}\in V:\,\forall i:\,\left(\forall X_{k}\in\alpha_{j,i}:\, k<j\right)\implies\left(\sum_{X_{k}\in\alpha_{j,i}}\norm{X_{k}}\right)\geq\norm{X_{j}}.
+\]
+
+\end_inset
+
+We can show that the norms of grammar variables 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ are exponentially bounded by their index 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Norm-bounded"
+
+\end_inset
+
+Given a normalised SDG 
+\begin_inset Formula $G=\left(V,T,P\right)$
+\end_inset
+
+ in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF, the upper bound of the norm of each variable 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is 
+\begin_inset Formula $\sum_{x=0}^{i}k^{x}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+We prove this by induction on 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $i=1$
+\end_inset
+
+: By definition, for all production rules 
+\begin_inset Formula $X_{1}\to a_{1j}\alpha_{1j}$
+\end_inset
+
+ it holds that 
+\begin_inset Formula $\alpha_{1j}=\emptyset$
+\end_inset
+
+, therefore 
+\begin_inset Formula $\norm{X_{1}}=1\leq\sum_{x=0}^{1}k^{x}=1+k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $i+1$
+\end_inset
+
+: The production rules of 
+\begin_inset Formula $X_{i+1}$
+\end_inset
+
+ may contain only variables of degree 
+\begin_inset Formula $i$
+\end_inset
+
+ or smaller.
+ The greatest norm of 
+\begin_inset Formula $X_{i+1}$
+\end_inset
+
+ can therefore be achieved by a production rule with a maximum number of
+ appearances of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+, so 
+\begin_inset Formula $X_{i+1}\to a\left(X_{i}\right)^{k}$
+\end_inset
+
+.
+ With our induction hypothesis 
+\begin_inset Formula $\norm{X_{i}}\leq\sum_{x=0}^{i}k^{x}$
+\end_inset
+
+, we calculate the norm of 
+\begin_inset Formula $X_{i+1}$
+\end_inset
+
+ to be 
+\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}=1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Because we need the bound of the norm later in the bound of proof size,
+ we establish a bound that is slightly simpler to write.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Poly-bound"
+
+\end_inset
+
+For 
+\begin_inset Formula $k\geq0$
+\end_inset
+
+, 
+\begin_inset Formula $\sum_{x=0}^{i}k^{x}\leq\left(k+1\right)^{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+By induction on 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $i=0$
+\end_inset
+
+: 
+\begin_inset Formula $k^{0}=1\leq1=\left(k+1\right)^{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $i+1$
+\end_inset
+
+: 
+\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{ind.}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Corollary
+Given a normalised SDG 
+\begin_inset Formula $G=\left(V,T,P\right)$
+\end_inset
+
+ in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF, the upper bound of the norm of each variable 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is 
+\begin_inset Formula $\left(k+1\right)^{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+By lemmas 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Norm-bounded"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Poly-bound"
+
+\end_inset
+
+, we have that 
+\begin_inset Formula $\norm{X_{i}}\leq\sum_{x=0}^{i}k^{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{x=0}^{i}k^{x}\leq\left(k+1\right)^{i}$
+\end_inset
+
+, so the result follows by transitivity.
+\end_layout
+
+\begin_layout Section
 Polynomials
 \begin_inset CommandInset label
 LatexCommand label
@@ -1924,66 +2479,6 @@ It follows as lemma:
 \end_layout
 
 \begin_layout Standard
-We use the definition of a language to define equivalence of polynomials.
-\end_layout
-
-\begin_layout Definition
-Two polynomials 
-\begin_inset Formula $p_{1},p_{2}\in\mathcal{P}$
-\end_inset
-
- are equivalent iff their languages are equal, i.e.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-bullshit!
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-p_{1}\equiv p_{2}\Longleftrightarrow\lang{p_{1}}=\lang{p_{2}}.
-\]
-
-\end_inset
-
-If 
-\begin_inset Formula $p_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $p_{2}$
-\end_inset
-
- are not equivalent, there exists a witness of non-equivalence 
-\begin_inset Formula $w$
-\end_inset
-
- such that
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Give example of non-equal, but equivalent grammars.
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-p_{1}\not\equiv p_{2}\Longleftrightarrow\exists w\in T^{*}:\, w\in\mathcal{L}(p_{1})\Delta\mathcal{L}(p_{2}).
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 To later measure the size of a proof, we define the size of a polynomial.
 \end_layout
 
@@ -2001,588 +2496,6 @@ The size of a polynomial is the sum of terminals and variables appearing
 \end_inset
 
 
-\end_layout
-
-\begin_layout Chapter
-Restrictions
-\begin_inset CommandInset label
-LatexCommand label
-name "chap:Restrictions"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-One sentence here.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Restricted SDGs
-\end_layout
-
-\begin_layout Standard
-For the proof construction algorithms presented in this document, we impose
- several normalisation conditions on any SDG grammar 
-\begin_inset Formula $G=\left(V,T,P\right)$
-\end_inset
-
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-1 and 4 are restrictions, 2 and 3 are just conventions, ordering.
- (The set stays the same, just differently ordered.)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $G$
-\end_inset
-
- must be normed.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO.
-\end_layout
-
-\end_inset
-
-In the course of this document, we assume all grammars to be normed, because
- we extensively use the norm in our later algorithms.
- The same restriction has been imposed in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hirshfeld1996,lasota2006"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $V=\left\{ X_{1},\dots,X_{n}\right\} $
-\end_inset
-
-, where 
-\begin_inset Formula $X_{1}$
-\end_inset
-
- to 
-\begin_inset Formula $X_{n}$
-\end_inset
-
- are ordered by ascending norm, i.e.
-\begin_inset Formula 
-\[
-\forall i:\,1\leq i<n\implies\norm{X_{i}}\leq\norm{X_{i+1}}.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $P=\left\{ X_{i}\to a_{i,j}\alpha_{i,j}|a_{i,j}\in T\land\alpha_{i,j}\in V^{*}\right\} $
-\end_inset
-
-, where the number of productions for 
-\begin_inset Formula $X_{i}$
-\end_inset
-
- is 
-\begin_inset Formula $p_{i}$
-\end_inset
-
-, then
-\begin_inset Formula 
-\[
-\forall i\forall k:\,1<k\leq p_{i}\implies\norm{\alpha_{i,1}}\leq\norm{\alpha_{i,k}}.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-There exists a function 
-\begin_inset Formula $v:T\to V$
-\end_inset
-
- which associates each terminal 
-\begin_inset Formula $a\in T$
-\end_inset
-
- to a variable 
-\begin_inset Formula $X\in V$
-\end_inset
-
- such that there exists exactly one production rule for 
-\begin_inset Formula $X$
-\end_inset
-
- in 
-\begin_inset Formula $P$
-\end_inset
-
- with 
-\begin_inset Formula $X\to a$
-\end_inset
-
-, i.e.
-\begin_inset Formula 
-\[
-\forall a\in T,\,\exists X\in V:\,\left[\exists!\alpha:\,\left(X,\alpha\right)\in P\right]\land\left(X,a\right)\in P.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Our first restriction to normed grammars does not limit the class of languages,
- as we only consider grammars producing finite words: 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Make sure we clarify that before!
-\end_layout
-
-\end_inset
-
-For simple deterministic grammars, we can find in linear time equivalent
- grammars without variables that produce only infinite words.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "yehudai1977"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Example
-As a (perhaps surprising) consequence, in the grammar
-\begin_inset Formula 
-\begin{align*}
-A & \to aA\\
-B & \to bB
-\end{align*}
-
-\end_inset
-
-the variables 
-\begin_inset Formula $A$
-\end_inset
-
- and 
-\begin_inset Formula $B$
-\end_inset
-
- are equivalent, because 
-\begin_inset Formula $\lang A=\lang B=\emptyset$
-\end_inset
-
-, as they both produce no single finite word.
-\end_layout
-
-\begin_layout Standard
-Now let us inspect an example normalisation of a grammar.
-\end_layout
-
-\begin_layout Example
-We consider the grammar from example 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "ex:Example-grammar"
-
-\end_inset
-
-.
- First, we note that for the terminals 
-\begin_inset Formula $a$
-\end_inset
-
- and 
-\begin_inset Formula $b$
-\end_inset
-
-, there exist no dedicated variables, so we add
-\begin_inset Formula 
-\begin{align*}
-A & \to a\\
-B & \to b
-\end{align*}
-
-\end_inset
-
-to the grammar.
- At this point, we write down all variables with their production rules
- ordered by ascending norm, i.e.
-\begin_inset Formula 
-\begin{align*}
-A & \to a\\
-B & \to b\\
-Z & \to c\\
-X & \to aX+bZ\\
-Y & \to bZZ+aX
-\end{align*}
-
-\end_inset
-
-Now we need to verify whether the first production rule of each variable
- has the smallest norm of all production rules for this variable.
- As 
-\begin_inset Formula $A$
-\end_inset
-
-, 
-\begin_inset Formula $B$
-\end_inset
-
- and 
-\begin_inset Formula $Z$
-\end_inset
-
- only have one production rule, the property obviously holds for these variables
-, but what about 
-\begin_inset Formula $X$
-\end_inset
-
- and 
-\begin_inset Formula $Y$
-\end_inset
-
-? Looking at the production rules of 
-\begin_inset Formula $X$
-\end_inset
-
-, we note that 
-\begin_inset Formula $\norm X=2$
-\end_inset
-
- and 
-\begin_inset Formula $\norm Z=1$
-\end_inset
-
-, so the property does not hold for 
-\begin_inset Formula $X$
-\end_inset
-
-, which we fix by changing the order of the production rules of 
-\begin_inset Formula $X$
-\end_inset
-
-.
- For 
-\begin_inset Formula $Y$
-\end_inset
-
-, though, the property holds, as 
-\begin_inset Formula $\norm{ZZ}=\norm X=2$
-\end_inset
-
-.
- The intermediate result after this transformation step, where we only changed
- the order of production rules of 
-\begin_inset Formula $X$
-\end_inset
-
-, is:
-\begin_inset Formula 
-\begin{align*}
-A & \to a\\
-B & \to b\\
-Z & \to c\\
-X & \to bZ+aX\\
-Y & \to bZZ+aX
-\end{align*}
-
-\end_inset
-
-After renaming the variables, the final grammar is:
-\begin_inset Formula 
-\begin{align*}
-X_{1} & \to a\\
-X_{2} & \to b\\
-X_{3} & \to c\\
-X_{4} & \to bX_{3}+aX_{4}\\
-X_{5} & \to bX_{3}X_{3}+aX_{4}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The restricted form of SDGs also allows calculating the norm of each variable
- easily in an inductive way: 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-delete bottom case, but explain why it is not needed
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-\norm{X_{j}}=\begin{cases}
-1+\sum_{X_{k}\in\alpha_{j,1}}\norm{X_{k}} & \forall X_{k}\in\alpha_{j,1}:\, k<j;\\
-\bot & \text{else}.
-\end{cases}
-\]
-
-\end_inset
-
-In addition to then checking that the variables are sorted by ascending
- norm, we have to verify that the first production rule of each variable
- produces the smallest terminal word among all production rules of the variable;
- i.e.
- 
-\begin_inset Formula 
-\[
-\forall X_{j}\in V:\,\forall i:\,\left(\forall X_{k}\in\alpha_{j,i}:\, k<j\right)\implies\left(\sum_{X_{k}\in\alpha_{j,i}}\norm{X_{k}}\right)\geq\norm{X_{j}}.
-\]
-
-\end_inset
-
-We can show that the norms of grammar variables 
-\begin_inset Formula $X_{i}$
-\end_inset
-
- are exponentially bounded by their index 
-\begin_inset Formula $i$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Lemma
-\begin_inset CommandInset label
-LatexCommand label
-name "lem:Norm-bounded"
-
-\end_inset
-
-Given a restricted SDG 
-\begin_inset Formula $G=\left(V,T,P\right)$
-\end_inset
-
- in 
-\begin_inset Formula $k$
-\end_inset
-
--GNF, the upper bound of the norm of each variable 
-\begin_inset Formula $X_{i}$
-\end_inset
-
- is 
-\begin_inset Formula $\sum_{x=0}^{i}k^{x}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Proof
-We prove this by induction on 
-\begin_inset Formula $i$
-\end_inset
-
-:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-\begin_inset Formula $i=1$
-\end_inset
-
-: By definition, for all production rules 
-\begin_inset Formula $X_{1}\to a_{1j}\alpha_{1j}$
-\end_inset
-
- it holds that 
-\begin_inset Formula $\alpha_{1j}=\emptyset$
-\end_inset
-
-, therefore 
-\begin_inset Formula $\norm{X_{1}}=1\leq\sum_{x=0}^{1}k^{x}=1+k$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $i+1$
-\end_inset
-
-: The production rules of 
-\begin_inset Formula $X_{i+1}$
-\end_inset
-
- may contain only variables of degree 
-\begin_inset Formula $i$
-\end_inset
-
- or smaller.
- The greatest norm of 
-\begin_inset Formula $X_{i+1}$
-\end_inset
-
- can therefore be achieved by a production rule with a maximum number of
- appearances of 
-\begin_inset Formula $X_{i}$
-\end_inset
-
-, so 
-\begin_inset Formula $X_{i+1}\to a\left(X_{i}\right)^{k}$
-\end_inset
-
-.
- With our induction hypothesis 
-\begin_inset Formula $\norm{X_{i}}\leq\sum_{x=0}^{i}k^{x}$
-\end_inset
-
-, we calculate the norm of 
-\begin_inset Formula $X_{i+1}$
-\end_inset
-
- to be 
-\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}=1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
-\end_inset
-
-.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-Because we need the bound of the norm later in the bound of proof size,
- we establish a bound that is slightly simpler to write.
-\end_layout
-
-\begin_layout Lemma
-\begin_inset CommandInset label
-LatexCommand label
-name "lem:Poly-bound"
-
-\end_inset
-
-For 
-\begin_inset Formula $k\geq0$
-\end_inset
-
-, 
-\begin_inset Formula $\sum_{x=0}^{i}k^{x}\leq\left(k+1\right)^{i}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Proof
-By induction on 
-\begin_inset Formula $i$
-\end_inset
-
-:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-\begin_inset Formula $i=0$
-\end_inset
-
-: 
-\begin_inset Formula $k^{0}=1\leq1=\left(k+1\right)^{0}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $i+1$
-\end_inset
-
-: 
-\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{ind.}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}$
-\end_inset
-
-.
-\end_layout
-
-\end_deeper
-\begin_layout Corollary
-Given a restricted SDG 
-\begin_inset Formula $G=\left(V,T,P\right)$
-\end_inset
-
- in 
-\begin_inset Formula $k$
-\end_inset
-
--GNF, the upper bound of the norm of each variable 
-\begin_inset Formula $X_{i}$
-\end_inset
-
- is 
-\begin_inset Formula $\left(k+1\right)^{i}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Proof
-By lemmas 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lem:Norm-bounded"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lem:Poly-bound"
-
-\end_inset
-
-, we have that 
-\begin_inset Formula $\norm{X_{i}}\leq\sum_{x=0}^{i}k^{x}$
-\end_inset
-
- and 
-\begin_inset Formula $\sum_{x=0}^{i}k^{x}\leq\left(k+1\right)^{i}$
-\end_inset
-
-, so the result follows by transitivity.
 \end_layout
 
 \begin_layout Section
@@ -2770,46 +2683,136 @@ name "chap:Existing-algorithms"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO.
+In this chapter we discuss the history of the equivalence problem for simple
+ deterministic grammars, and present some of the approaches in detail.
 \end_layout
 
-\end_inset
+\begin_layout Section
+Overview
+\end_layout
 
-Show 
+\begin_layout Standard
+The equivalence problem for SDGs is relatively old.
+ We show its historical development:
+\end_layout
+
+\begin_layout Itemize
+In 1966, a milestone towards its resolution has been achieved by Hopcroft
+ and Korenjak when they showed that equivalence is decidable.
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "huynh1994"
+key "korenjak1966"
 
 \end_inset
 
- and 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "caucal1993"
+ Since then, there have continuous attempts to decide equivalence more efficient
+ly.
+\end_layout
+
+\begin_layout Itemize
+In 1978, Harrison showed a proof-like way to decide equivalence, which we
+ discuss in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Harrison-equivalence-trees"
 
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Section
-Harrison equivalence trees
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Redo.
-\end_layout
+\begin_layout Itemize
+In 1993, Caucal found the up to that date fastest decision procedure, which
+ was however still exponential in size of the grammar.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "caucal1993"
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Itemize
+In 1994, Plandowski described a method to decide the equivalence of compression
+ grammars in polynomial time.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "plandowski1994"
+
+\end_inset
+
+ Furthermore, that year Huynh and Tian showed an algorithm which could decide
+ equivalence of SDGs and was in 
+\begin_inset Formula $\Sigma_{2}^{P}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "huynh1994"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In 1996, another major breakthrough was achieved by Hirshfeld, Faron and
+ Moller, who were able to find an algorithm to decide equivalence of SDG
+ in polynomial time.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+ We discuss this algorithm in detail in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Hirshfeld-algorithm"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+In 2006, Lasota and Rytter presented another algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lasota2006"
+
+\end_inset
+
+ of polynomial-time complexity to resolve the equivalence problem of simple
+ deterministic grammars, improving the complexity of the Hirshfeld algorithm
+ to 
+\begin_inset Formula $\mathcal{O}\left(n^{6}\polylog n\right)$
+\end_inset
+
+.
+ However, as the algorithm makes use of the same general principles as the
+ Hirshfeld algorithm, we studied it only briefly.
+\end_layout
+
+\begin_layout Section
+Harrison equivalence trees
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Harrison-equivalence-trees"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 In chapter 11.10 of 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2838,30 +2841,6 @@ reference "chap:Equivalence-proof-system"
 ponential in the size of the grammar.
  He proves that the equivalence problem for simple grammars is decidable
  by the construction of an equivalence tree.
-\end_layout
-
-\begin_layout Section
-Plandowski algorithm
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO.
-\end_layout
-
-\end_inset
-
-Present 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "plandowski1994"
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Section
@@ -3390,29 +3369,6 @@ This means that if there are more than three overlapping alignments of one
  This is substantial for the algorithm.
 \end_layout
 
-\begin_layout Section
-Lasota algorithm
-\end_layout
-
-\begin_layout Standard
-In 2006, Lasota and Rytter presented another algorithm 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "lasota2006"
-
-\end_inset
-
- of polynomial-time complexity to resolve the equivalence problem of simple
- deterministic grammars, improving the complexity of the Hirshfeld algorithm
- to 
-\begin_inset Formula $\mathcal{O}\left(n^{6}\polylog nn\right)$
-\end_inset
-
-.
- However, as the algorithm makes use of the same general principles as the
- Hirshfeld algorithm, we studied it only briefly.
-\end_layout
-
 \begin_layout Chapter
 Equivalence proof system
 \begin_inset CommandInset label
@@ -3694,16 +3650,7 @@ Proof definition
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Introduction.
-\end_layout
-
-\end_inset
-
-
+Now we are ready to formally define equivalence proofs.
 \end_layout
 
 \begin_layout Definition
@@ -5797,6 +5744,19 @@ That is a realistic scenario in a proof, so what can we do to remedy this
 Other ideas
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Scrap this, or detail it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Itemize
 If we have for example 
 \begin_inset Formula $A\equiv BCD$
@@ -6068,6 +6028,10 @@ rule
 \noun default
  returns a proof rule for a given judgement, which will be the conclusion
  of the new proof rule.
+ Note that this function works purely locally, meaning it does not have
+ any other information than the grammar and the current judgement to prove;
+ for example, it does not dispose of the information which judgements have
+ already been proven.
 \end_layout
 
 \begin_layout Itemize
@@ -6174,19 +6138,6 @@ name "sec:Proof-strategy-1"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Explain that tactic rules work locally.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 The first proof tactic uses base replacement and decomposition to construct
  a proof rule from a given judgement.
  We construct proof rules bottom-up, which means that for a given judgement,
@@ -6239,17 +6190,7 @@ Furthermore, we use the following abbreviations, where
 
 \end_inset
 
-The 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-tactic 
-\end_layout
-
-\end_inset
-
-rules are named according to the type of judgement to prove:
+The tactic rules are named according to the type of judgement to prove:
 \end_layout
 
 \begin_layout Itemize
@@ -6273,7 +6214,7 @@ For example, if we have to prove
 \begin_inset Formula $A\equiv aB_{1}+bB_{2}$
 \end_inset
 
-, we look for the rule pS, because 
+, we look for the tactic rule pS, because 
 \begin_inset Formula $A$
 \end_inset
 
@@ -6282,16 +6223,17 @@ For example, if we have to prove
 \end_inset
 
  is a sum of multiple terms ('S').
- In this case, however, there exists no rule pS, but only the rule psS,
- which indicates that it handles the cases ps and pS.
- Similarly the rule sSpP, which handles the cases sp, sP, Sp and SP.
+ In this case, however, there exists no tactic rule pS, but only the tactic
+ rule psS, which indicates that it handles the cases ps and pS.
+ Similarly the tactic rule sSpP, which handles the cases sp, sP, Sp and
+ SP.
 \end_layout
 
 \begin_layout Standard
-For several judgement types, there exist multiple rules, which we apply
- depending on if their conditions are fulfilled.
- If there are several rules for one judgement type, we name them accordingly
- based on the performed action:
+For several judgement types, there exist multiple tactic rules, which we
+ apply depending on if their conditions are fulfilled.
+ If there are several tactic rules for one judgement type, we name them
+ accordingly based on the performed action:
 \end_layout
 
 \begin_layout Itemize
@@ -6322,7 +6264,7 @@ V: variable replacement
 \end_layout
 
 \begin_layout Standard
-Now without further ado the rules:
+Now without further ado the tactic rules:
 \end_layout
 
 \begin_layout Itemize
@@ -6410,18 +6352,8 @@ pP-
 \end_layout
 
 \begin_layout Itemize
-pP-B: If the right-hand side has not been subject to a previous base replacement
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-rephrase this to not make believe we store this in memory or something
-\end_layout
-
-\end_inset
-
-, we use the base to substitute the variable on the left-hand side.
+pP-B: Given we do not produce any invalid circularity, we use the base to
+ substitute the variable on the left-hand side.
 \begin_inset Formula 
 \begin{gather*}
 \begin{aligned}\norm A & >\norm{B_{1}},\\
@@ -6802,26 +6734,26 @@ The validity of the proof tactic is proven in the appendix.
 \end_layout
 
 \begin_layout Lemma
-Given a judgement, the presented proof tactic constructs a rule with its
- conclusion equalling the judgement in polynomial time.
+Given a judgement, the presented proof tactic constructs a proof rule with
+ its conclusion equalling the judgement in polynomial time.
 \end_layout
 
 \begin_layout Proof
-The only non-trivial functions we use to decide which rule to construct,
+The only non-trivial functions we use to decide which tactic rule to use,
  are norm, norm reduction and decomposition, which all terminate in polynomial
  time.
- This means that we can decide in polynomial time which rule to apply.
+ This means that we can decide in polynomial time which tactic rule to apply.
 \end_layout
 
 \begin_layout Proof
-Furthermore, the size of the premises of the new rule is also polynomial
+Furthermore, the size of the premises of the new proof rule is also polynomial
  in the size of the conclusion, as the size of a premise can only become
  bigger than its conclusion with the transitivity rule.
  In that case we substitute a polynomial number of variables of the conclusion
  with other terms, for example the grammar of a variable or the decomposition
  of a variable word.
  Because these terms can always be calculated in polynomial time, the tactic
- constructs a rule in polynomial time.
+ constructs a proof rule in polynomial time.
 \end_layout
 
 \begin_layout Section
@@ -6838,9 +6770,9 @@ name "sec:Proof-strategy-2"
 \begin_layout Standard
 The second proof tactic does not use decomposition, but relies solely on
  base replacement.
- The greatest part of its proof construction rules is equivalent to the
- rules in the first tactic; the differences lie only in the PP rules, where
- we replace PP-D, PP-
+ The greatest part of its tactic rules is equivalent to the rules in the
+ first tactic; the differences lie only in the PP rules, where we replace
+ PP-D, PP-
 \begin_inset Formula $\times$
 \end_inset
 
@@ -7926,7 +7858,7 @@ stic grammars, and implemented several different algorithms based on them
 The problem has been difficult to treat as we could not find a way to translate
  several techniques from the existing PTIME algorithms into proofs in our
  proof system; however, this might be possible in the future by adding new
- rules to the proof system, making our proof system more powerful and therefore
+ proof rules to the proof system, making it more powerful and therefore
  accommodating the function of the PTIME algorithms.
 \end_layout
 
