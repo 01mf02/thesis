@@ -472,16 +472,6 @@ key "hopcroft1979,carton2008"
 \end_inset
 
 .
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Change to definition environments?
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Definition
@@ -864,31 +854,30 @@ A context-free grammar (CFG) is a triple
 \end_inset
 
  is a finite set of production rules.
- We write 
-\begin_inset Formula $X\to\alpha$
-\end_inset
-
- iff 
-\begin_inset Formula $(X,\alpha)\in P$
-\end_inset
-
-.
  For each variable 
 \begin_inset Formula $X\in V$
 \end_inset
 
 , there exists at least one production rule 
-\begin_inset Formula $X\to\alpha$
-\end_inset
-
- in 
-\begin_inset Formula $P$
+\begin_inset Formula $(X,\alpha)\in P$
 \end_inset
 
 , i.e.
 \begin_inset Formula 
 \[
-\forall X\in V,\,\exists\alpha\in\left(V\cup T\right)^{*}:\, X\to\alpha.
+\forall X\in V,\,\exists\alpha\in\left(V\cup T\right)^{*}:\,(X,\alpha)\in P.
+\]
+
+\end_inset
+
+To express all production rules for a variable 
+\begin_inset Formula $X\in V$
+\end_inset
+
+, we write
+\begin_inset Formula 
+\[
+X\to\sum_{\left(X,\alpha\right)\in P}\alpha.
 \]
 
 \end_inset
@@ -934,17 +923,7 @@ reference "sec:Polynomials"
 
 \begin_layout Standard
 An important property of a variable is the length of its shortest producible
- word 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-~~~
-\end_layout
-
-\end_inset
-
-.
+ word.
  We define a function to calculate this property.
 \end_layout
 
@@ -987,33 +966,19 @@ In case that
 \end_inset
 
  itself will also produce no single finite word, in which case 
-\begin_inset Formula $\norm{\alpha}$
-\end_inset
-
- will equal to 
-\begin_inset Formula $\infty$
+\begin_inset Formula $\norm{\alpha}=\infty$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
-The following lemma is an obvious conclusion.
- Note that we use addition defined on 
-\begin_inset Formula $\mathbb{N}\cup\left\{ \infty\right\} $
-\end_inset
+\begin_inset ERT
+status open
 
-.
+\begin_layout Plain Layout
+
 \end_layout
-
-\begin_layout Lemma
-\begin_inset Formula $\norm{AB}=\norm A+\norm B.$
-\end_inset
-
-
-\begin_inset CommandInset label
-LatexCommand label
-name "lem:Norm-addition"
 
 \end_inset
 
@@ -1034,16 +999,16 @@ A grammar is normed iff all its variables produce at least one finite word,
 \end_layout
 
 \begin_layout Standard
-In the course of this document, we assume all grammars to be normed, because
- we extensively use the norm in our later algorithms.
- The same restriction has been imposed in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hirshfeld1996,lasota2006"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
 
 \end_inset
 
-.
+
 \end_layout
 
 \begin_layout Definition
@@ -1099,16 +1064,6 @@ name "ex:Example-grammar"
 \end_inset
 
 Consider the following grammar:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Define +! How does + correspond to my grammar definition?
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula 
 \begin{align*}
 X & \to aX+bZ\\
@@ -1250,31 +1205,57 @@ Production graph for example grammar.
 
 \end_inset
 
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Say what edges and vertices express as well.
+ We interpret this graph as follows:
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+Each edge represents a variable word.
+\end_layout
+
+\begin_layout Itemize
+Each vertex with label 
+\begin_inset Formula $a\in T$
 \end_inset
 
-In this graph, we can interpret the paths from each variable sequence 
-\begin_inset Formula $w_{V}\in V^{+}$
+ from 
+\begin_inset Formula $w=X\beta$
+\end_inset
+
+ to 
+\begin_inset Formula $w'$
+\end_inset
+
+ expresses that there exists a production rule 
+\begin_inset Formula $\left(X,a\alpha\right)\in P$
+\end_inset
+
+ such that 
+\begin_inset Formula $w'=\alpha\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Each path from a variable word 
+\begin_inset Formula $w$
 \end_inset
 
  to 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
- as set of terminal words produced by 
-\begin_inset Formula $w_{V}$
+ represents a terminal word produced by 
+\begin_inset Formula $w$
 \end_inset
 
 .
- Furthermore, the length of the shortest path from 
-\begin_inset Formula $w_{V}$
+\end_layout
+
+\begin_layout Itemize
+The length of the shortest path from a terminal word 
+\begin_inset Formula $w$
 \end_inset
 
  to 
@@ -1282,11 +1263,15 @@ In this graph, we can interpret the paths from each variable sequence
 \end_inset
 
  is equivalent to 
-\begin_inset Formula $\norm{w_{V}}$
+\begin_inset Formula $\norm w$
 \end_inset
 
 .
- For example, 
+\end_layout
+
+\end_deeper
+\begin_layout Example
+For example, 
 \begin_inset Formula $\norm X=2$
 \end_inset
 
@@ -1366,17 +1351,7 @@ key "harrison1978"
 \end_layout
 
 \begin_layout Standard
-Where
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-~~~
-\end_layout
-
-\end_inset
-
- each variable of a SDG can potentially produce a set of several different
+While each variable of a SDG can potentially produce a set of several different
  terminal words 
 \begin_inset Formula $W_{T}\subset T^{+}$
 \end_inset
@@ -1879,16 +1854,6 @@ For a grammar
 \end_inset
 
 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-So a sum of sequences?
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -2090,6 +2055,26 @@ status open
 \end_inset
 
  must be normed.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO.
+\end_layout
+
+\end_inset
+
+In the course of this document, we assume all grammars to be normed, because
+ we extensively use the norm in our later algorithms.
+ The same restriction has been imposed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996,lasota2006"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
