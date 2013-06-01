@@ -267,6 +267,16 @@ no
 \begin_inset Quotes erd
 \end_inset
 
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CAS
+\end_layout
+
+\end_inset
+
 , but do not certify their answer with an easily verifiable 
 \emph on
 proof
@@ -920,7 +930,17 @@ reference "sec:Polynomials"
 
 \begin_layout Standard
 An important property of a variable is the length of its shortest producible
- word.
+ word 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+~~~
+\end_layout
+
+\end_inset
+
+.
  We define a function to calculate this property.
 \end_layout
 
@@ -1342,7 +1362,17 @@ key "harrison1978"
 \end_layout
 
 \begin_layout Standard
-Where each variable of a SDG can potentially produce a set of several different
+Where
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+~~~
+\end_layout
+
+\end_inset
+
+ each variable of a SDG can potentially produce a set of several different
  terminal words 
 \begin_inset Formula $W_{T}\subset T^{+}$
 \end_inset
@@ -1845,6 +1875,16 @@ For a grammar
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+So a sum of sequences?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1877,13 +1917,24 @@ key "carton2008"
 \end_inset
 
 .
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What is the derivation relation?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 It follows as lemma:
 \end_layout
 
-\begin_layout Lemma*
+\begin_layout Lemma
 \begin_inset Formula 
 \[
 \lang p=\begin{cases}
@@ -1924,11 +1975,21 @@ If
 \begin_inset Formula $p_{2}$
 \end_inset
 
- are inequivalent, there exists a witness of non-equivalence 
+ are not equivalent, there exists a witness of non-equivalence 
 \begin_inset Formula $w$
 \end_inset
 
  such that
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Give example of non-equal, but equivalent grammars.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \[
 p_{1}\not\equiv p_{2}\Longleftrightarrow\exists w\in T^{*}:\, w\in\mathcal{L}(p_{1})\Delta\mathcal{L}(p_{2}).
@@ -1970,6 +2031,19 @@ name "chap:Restrictions"
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+One sentence here.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Restricted SDGs
 \end_layout
@@ -1981,6 +2055,20 @@ For the proof construction algorithms presented in this document, we impose
 \end_inset
 
 :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+1 and 4 are restrictions, 2 and 3 are just conventions, ordering.
+ (The set stays the same, just differently ordered.)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2218,7 +2306,7 @@ Now we need to verify whether the first production rule of each variable
 \end_inset
 
 .
- The intermediary result after this transformation step, where we only changed
+ The intermediate result after this transformation step, where we only changed
  the order of production rules of 
 \begin_inset Formula $X$
 \end_inset
@@ -2251,8 +2339,18 @@ X_{5} & \to bX_{3}X_{3}+aX_{4}
 \end_layout
 
 \begin_layout Standard
-The restricted form of SDGs also allows us to calculate the norm of each
- variable easily in an inductive way:
+The restricted form of SDGs also allows calculating the norm of each variable
+ easily in an inductive way: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+delete bottom case, but explain why it is not needed
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \[
 \norm{X_{j}}=\begin{cases}
@@ -2301,11 +2399,11 @@ Given a restricted SDG
 \begin_inset Formula $k$
 \end_inset
 
--GNF, the norm of each variable 
+-GNF, the upper bound of the norm of each variable 
 \begin_inset Formula $X_{i}$
 \end_inset
 
- is bounded from above by 
+ is 
 \begin_inset Formula $\sum_{x=0}^{i}k^{x}$
 \end_inset
 
@@ -2330,7 +2428,7 @@ We prove this by induction on
 \end_inset
 
  it holds that 
-\begin_inset Formula $\alpha_{1j}\overset{!}{=}\emptyset$
+\begin_inset Formula $\alpha_{1j}=\emptyset$
 \end_inset
 
 , therefore 
@@ -2447,11 +2545,11 @@ Given a restricted SDG
 \begin_inset Formula $k$
 \end_inset
 
--GNF, the norm of each variable 
+-GNF, the upper bound of the norm of each variable 
 \begin_inset Formula $X_{i}$
 \end_inset
 
- is bounded from above by 
+ is 
 \begin_inset Formula $\left(k+1\right)^{i}$
 \end_inset
 
@@ -2490,8 +2588,17 @@ Restricted polynomials
 
 \begin_layout Standard
 To reduce the number of proof construction rules and to simplify checking
- if two polynomials are equivalent, we institute a restricted class of polynomia
-ls 
+ if two polynomials are equivalent, we institute 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+kill latin :(
+\end_layout
+
+\end_inset
+
+ a restricted class of polynomials 
 \begin_inset Formula $\mathcal{P}$
 \end_inset
 
@@ -2557,6 +2664,26 @@ Two restricted polynomials
 \end_inset
 
  are equivalent iff:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Their languages are equal?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make this a lemma, prove it?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2657,7 +2784,17 @@ Expressions which are
 \emph on
 not
 \emph default
- valid polynomials over the same 
+ valid 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+restricted
+\end_layout
+
+\end_inset
+
+polynomials over the same 
 \begin_inset Formula $V$
 \end_inset
 
@@ -2729,6 +2866,16 @@ not
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+delete this example?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -2774,6 +2921,15 @@ Harrison equivalence trees
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Redo.
+\end_layout
+
+\end_inset
+
 In chapter 11.10 of 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2797,11 +2953,11 @@ reference "chap:Equivalence-proof-system"
 .
  These equivalence trees are constructed through a series of transformations,
  which are applied on the proof tree nondeterministically.
- In corollary 3 of the chapter, Harrison shows that each equivalence tree
- has at most a number of nodes exponential in the length of the longest
- word, which is equivalent to double-exponential in the size of the grammar.
- He concludes the chapter by stating that the equivalence problem for simple
- grammars is decidable by the construction of an equivalence tree.
+ Harrison shows that each equivalence tree has at most a number of nodes
+ exponential in the length of the longest word, which is equivalent to double-ex
+ponential in the size of the grammar.
+ He proves that the equivalence problem for simple grammars is decidable
+ by the construction of an equivalence tree.
 \end_layout
 
 \begin_layout Section
@@ -3374,8 +3530,7 @@ key "lasota2006"
 
 .
  However, as the algorithm makes use of the same general principles as the
- Hirshfeld algorithm and does not function fundamentally differently, we
- studied it only briefly.
+ Hirshfeld algorithm, we studied it only briefly.
 \end_layout
 
 \begin_layout Chapter
@@ -4591,7 +4746,7 @@ I'm not completely satisfied by that, especially with the norm argument
 \end_deeper
 \begin_layout Itemize
 The reflexivity and grammar rules do not have any premises, which means
- the property for these rules is trivial.
+ the property for these rules is true.
 \end_layout
 
 \end_deeper
@@ -6147,6 +6302,19 @@ name "sec:Proof-strategy-1"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Explain that tactic rules work locally.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 The first proof tactic uses base replacement and decomposition to construct
  a proof rule from a given judgement.
  We construct proof rules bottom-up, which means that for a given judgement,
@@ -6199,7 +6367,17 @@ Furthermore, we use the following abbreviations, where
 
 \end_inset
 
-The rules are named according to the type of judgement to prove:
+The 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+tactic 
+\end_layout
+
+\end_inset
+
+rules are named according to the type of judgement to prove:
 \end_layout
 
 \begin_layout Itemize
@@ -6361,6 +6539,16 @@ pP-
 
 \begin_layout Itemize
 pP-B: If the right-hand side has not been subject to a previous base replacement
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+rephrase this to not make believe we store this in memory or something
+\end_layout
+
+\end_inset
+
 , we use the base to substitute the variable on the left-hand side.
 \begin_inset Formula 
 \begin{gather*}
@@ -6386,7 +6574,7 @@ pP-G: If we cannot replace the right-hand side with the base (possibly because
 \left[A\right]_{\norm{B_{1}}} & =\prod_{y=2}^{n_{B}}B_{y}\implies
 \end{aligned}
 \\
-\bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}A{\prod B_{y}}{\text{trans (pP-B)}}}
+\bussproof{\binaryinf{\axiom A{\Gr A}}{\axiom{\Gr A}B}A{\prod B_{y}}{\text{trans (pP-G)}}}
 \end{gather*}
 
 \end_inset
@@ -7906,6 +8094,39 @@ One last, but for us rather important aspect of this work is the creation
  us.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+1.
+ express proof system in a proof assistant
+\end_layout
+
+\begin_layout Plain Layout
+2.
+ new proof system in a proof assistant
+\end_layout
+
+\begin_layout Plain Layout
+3.
+ prove correctness of alg.
+ in a proof assistant
+\end_layout
+
+\begin_layout Plain Layout
+(Dedukti, Coq & Isabelle -> obtain formally proved program)
+\end_layout
+
+\begin_layout Plain Layout
+delete logical framework
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter*
 Appendix
 \end_layout
@@ -9118,7 +9339,17 @@ name "th:Proof-EXP"
 
 \end_inset
 
-For two polynomials 
+For two 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+restricted?
+\end_layout
+
+\end_inset
+
+polynomials 
 \begin_inset Formula $p_{1},p_{2}\in\mathcal{P}$
 \end_inset
 
