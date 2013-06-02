@@ -8707,6 +8707,12 @@ Actually, if the proof construction algorithm is called to prove equivalence
 \end_layout
 
 \begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:SS-+"
+
+\end_inset
+
 Proving 
 \begin_inset Formula $\sum_{x=1}^{n_{A}>1}a_{x}P_{x}\equiv\sum_{y=1}^{n_{B}>1}b_{y}Q_{y}$
 \end_inset
@@ -9230,7 +9236,15 @@ For each cluster
 \begin_inset Formula $h$
 \end_inset
 
- being a constant.
+ being linear in 
+\begin_inset Formula $k$
+\end_inset
+
+, where the grammar is in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF.
 \end_layout
 
 \begin_layout Proof
@@ -9257,21 +9271,22 @@ h=\max_{r\in\mathcal{R}}\left(\Heightstartimes r\right),
 
 \end_inset
 
-We can in fact find a maximal value of 
+The fact that 
 \begin_inset Formula $h$
 \end_inset
 
- independent of grammar.
-\begin_inset Note Note
-status open
+ is linear in 
+\begin_inset Formula $k$
+\end_inset
 
-\begin_layout Plain Layout
-Why?
-\end_layout
+ follows from lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:SS-+"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Proof
@@ -9301,7 +9316,7 @@ The number of clusters is bounded by
 \end_layout
 
 \begin_layout Proof
-As each cluster may thus produce maximally 
+As each cluster may produce maximally 
 \begin_inset Formula $2^{h}$
 \end_inset
 
