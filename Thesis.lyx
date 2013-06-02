@@ -6885,7 +6885,7 @@ Optimisation ideas
 \begin_layout Standard
 During the development of our proof strategy, we considered several ideas
  to improve proof construction.
- For completeness, we show a small excerpt of these ideas:
+ We show a small excerpt of these ideas:
 \end_layout
 
 \begin_layout Itemize
@@ -6956,6 +6956,14 @@ Having already proven
 \end_inset
 
 , we might just apply the symmetry rule.
+ For example, this would about halve the size of the proof in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Equivalence-Groof"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -6991,8 +6999,16 @@ The name
 \noun on
 Groof
 \noun default
- is of course a clever pun referring to grammar proofs and to its respective
- homophone.
+ is of course a clever pun referring to its respective homophone and to
+ 
+\emph on
+gr
+\emph default
+ammar pr
+\emph on
+oof
+\emph default
+s.
  Coincidentally, there also exists an Austrian musician named Carl de Groof
  (1923-2007), thereby further enriching the different significations of
  the name.
@@ -7020,8 +7036,8 @@ Grammar generation: The program constructs several different grammars with
 
 \begin_layout Itemize
 Grammar verification & norm calculation: The program verifies that the input
- grammar is simple deterministic, and in the same turn calculates the norm
- of each variable.
+ grammar is a normalised simple deterministic grammar, and in the same turn
+ calculates the norm of each variable.
 \end_layout
 
 \begin_layout Itemize
