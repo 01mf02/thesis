@@ -75,7 +75,7 @@ theorems-ams-bytype
 \pdf_bookmarksopen false
 \pdf_bookmarksopenlevel 1
 \pdf_breaklinks false
-\pdf_pdfborder false
+\pdf_pdfborder true
 \pdf_colorlinks false
 \pdf_backref false
 \pdf_pdfusetitle true
@@ -243,6 +243,15 @@ Last but not least an extended member of my family, namely my cousin Mino,
  for your most gentle invitation to the south of France and for your most
  continuous interest in my thesis, which was unique among my extrauniversitary
  circles and motivated me greatly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter*
@@ -9253,7 +9262,7 @@ name "fig:Clusters"
 
 \end_inset
 
-Illustration of some clusters.
+Illustration of clusters.
 \end_layout
 
 \end_inset
