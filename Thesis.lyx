@@ -5855,68 +5855,6 @@ That is a realistic scenario in a proof, so what can we do to remedy this
 .
 \end_layout
 
-\begin_layout Section
-Other ideas
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Scrap this, or detail it.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-If we have for example 
-\begin_inset Formula $A\equiv BCD$
-\end_inset
-
- and 
-\begin_inset Formula $A\equiv BCE$
-\end_inset
-
-, we might try to prove 
-\begin_inset Formula $D\equiv E$
-\end_inset
-
- directly.
- The problem is that we might have several choices to choose from ...
-\end_layout
-
-\begin_layout Itemize
-If we have 
-\begin_inset Formula $X_{1}X_{2}\dots X_{n}\equiv Y_{1}Y_{2}\dots Y_{m}$
-\end_inset
-
-, we might try to figure out 
-\begin_inset Quotes eld
-\end_inset
-
-cut-points
-\begin_inset Quotes erd
-\end_inset
-
- by looking at the norms.
-\end_layout
-
-\begin_layout Itemize
-Having already proven 
-\begin_inset Formula $X\equiv Y$
-\end_inset
-
- and faced with the task of proving 
-\begin_inset Formula $Y\equiv X$
-\end_inset
-
-, we might just apply the symmetry rule.
-\end_layout
-
 \begin_layout Chapter
 Proof construction algorithm
 \begin_inset CommandInset label
@@ -6938,6 +6876,92 @@ R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Optimisation ideas
+\end_layout
+
+\begin_layout Standard
+During the development of our proof strategy, we considered several ideas
+ to improve proof construction.
+ For completeness, we show a small excerpt of these ideas:
+\end_layout
+
+\begin_layout Itemize
+If we have to prove for example 
+\begin_inset Formula $A\equiv BCD$
+\end_inset
+
+ and 
+\begin_inset Formula $A\equiv BCE$
+\end_inset
+
+, we might try to prove only 
+\begin_inset Formula $A\equiv BCD$
+\end_inset
+
+ and then prove 
+\begin_inset Formula $A\equiv BCE$
+\end_inset
+
+ by just showing 
+\begin_inset Formula $D\equiv E$
+\end_inset
+
+ directly.
+ The problem is that we might have several choices to choose from --- what
+ do we do for example if we also have to prove 
+\begin_inset Formula $A\equiv BCF$
+\end_inset
+
+? Do we then prove 
+\begin_inset Formula $F\equiv D$
+\end_inset
+
+, or do we prove 
+\begin_inset Formula $F\equiv E$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Itemize
+Having to prove a judgement of the form 
+\begin_inset Formula $X_{1}X_{2}\dots X_{l}\equiv Y_{1}Y_{2}\dots Y_{m}$
+\end_inset
+
+, we might try to find indices 
+\begin_inset Formula $i,j$
+\end_inset
+
+ such that
+\begin_inset Formula 
+\[
+\norm{X_{1}\dots X_{i}}=\norm{Y_{1}\dots Y_{j}},\,\norm{X_{i+1}\dots X_{l}}=\norm{Y_{j+1}\dots Y_{m}},
+\]
+
+\end_inset
+
+thus producing two smaller judgements to prove.
+\end_layout
+
+\begin_layout Itemize
+Having already proven 
+\begin_inset Formula $X\equiv Y$
+\end_inset
+
+ and faced with the task of proving 
+\begin_inset Formula $Y\equiv X$
+\end_inset
+
+, we might just apply the symmetry rule.
+\end_layout
+
+\begin_layout Standard
+As we considered none of these ideas to have a fundamental impact on the
+ complexity of our algorithm, we decided to first determine the complexity
+ of our algorithm without these optimisation ideas.
 \end_layout
 
 \begin_layout Chapter
