@@ -9103,6 +9103,78 @@ Given a cluster
 .
 \end_layout
 
+\begin_layout Standard
+We illustrate clusters in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Clusters"
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+svgwidth{250pt}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includesvg{Cluster}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Clusters"
+
+\end_inset
+
+Illustration of some clusters.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+: There you see a cluster 
+\begin_inset Formula $C$
+\end_inset
+
+, containing several proof rules at the junctions of its proof tree.
+ It contains two 
+\begin_inset Formula $\times$
+\end_inset
+
+ rules, which are its leaves, and whose premises are the conclusions of
+ the root rules of its child clusters.
+\end_layout
+
 \begin_layout Lemma
 From each proof 
 \begin_inset Formula $\mathcal{R}$
