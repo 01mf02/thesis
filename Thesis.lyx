@@ -1483,8 +1483,8 @@ normalised
 
 \begin_layout Standard
 The only restriction of normalised SDGs with respect to SDGs is that normalised
- SDGs must be normed.
- This is because we extensively use the norm in our later algorithms.
+ SDGs must be normed, because we extensively use the norm in our later algorithm
+s.
 \begin_inset Foot
 status collapsed
 
@@ -1501,7 +1501,43 @@ key "hirshfeld1996,lasota2006"
 
 \end_inset
 
+ This restriction does not limit the class of languages for which we can
+ decide equivalence, as we only consider languages containing finite words:
+ For simple deterministic grammars, we can find in linear time equivalent
+ grammars without variables that produce only infinite words.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "yehudai1977"
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+As a (perhaps surprising) consequence, in the grammar
+\begin_inset Formula 
+\begin{align*}
+A & \to aA\\
+B & \to bB
+\end{align*}
+
+\end_inset
+
+the variables 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ are equivalent, because 
+\begin_inset Formula $\lang A=\lang B=\emptyset$
+\end_inset
+
+, as they both produce no single finite word.
 \end_layout
 
 \begin_layout Standard
@@ -1527,9 +1563,9 @@ Furthermore, we impose several ordering and naming conventions on any SDG
 
  are ordered by ascending norm, i.e.
 \begin_inset Formula 
-\[
-\forall i:\,1\leq i<n\implies\norm{X_{i}}\leq\norm{X_{i+1}}.
-\]
+\begin{equation}
+\forall i\forall j:\,1\leq i\leq j\leq n\implies\norm{X_{i}}\leq\norm{X_{j}}.\label{eq:Norms-ordered}
+\end{equation}
 
 \end_inset
 
@@ -1550,9 +1586,9 @@ Furthermore, we impose several ordering and naming conventions on any SDG
 
 , then
 \begin_inset Formula 
-\[
-\forall i\forall k:\,1<k\leq p_{i}\implies\left(\norm{\alpha_{i,1}}\leq\norm{\alpha_{i,k}}\land\forall X_{l}\in\alpha_{i,1}:\, l<i\right).
-\]
+\begin{equation}
+\forall i\forall j:\,1<j\leq p_{i}\implies\norm{\alpha_{i,1}}\leq\norm{\alpha_{i,j}}.\label{eq:Productions-ordered}
+\end{equation}
 
 \end_inset
 
@@ -1596,52 +1632,147 @@ There exists a function
 \end_layout
 
 \begin_layout Standard
-Our first restriction to normed grammars does not limit the class of languages,
- as we only consider grammars producing finite words: 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Make sure we clarify that before!
-\end_layout
+The following lemma is a trivial consequence of 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Productions-ordered"
 
 \end_inset
 
-For simple deterministic grammars, we can find in linear time equivalent
- grammars without variables that produce only infinite words.
+.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Norm-first-production"
+
+\end_inset
+
+
+\begin_inset Formula $\norm{X_{i}}=1+\norm{\alpha_{i,1}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+With the help of this lemma we show another lemma, which we use later to
+ ease calculating norms.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Indices-ordered"
+
+\end_inset
+
+
+\begin_inset Formula $\forall i\forall X_{j}\in\alpha_{i,1}:\, j<i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+Assume to the contrary 
+\begin_inset Formula $\exists i\exists X_{j}\in\alpha_{i,1}:\, j\geq i$
+\end_inset
+
+.
+ Then there exist 
+\begin_inset Formula $i,j$
+\end_inset
+
+ with 
+\begin_inset Formula $\norm{X_{i}}\geq1+\norm{X_{j}}$
+\end_inset
+
+ (by lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Norm-first-production"
+
+\end_inset
+
+) and 
+\begin_inset Formula $j\geq i$
+\end_inset
+
+.
+ We differentiate two cases:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $j=i$
+\end_inset
+
+: This implies 
+\begin_inset Formula $\norm{X_{i}}\geq1+\norm{X_{i}}$
+\end_inset
+
+, so 
+\begin_inset Formula $\norm{X_{i}}>\norm{X_{i}}$
+\end_inset
+
+, which is a contradiction.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $j>i$
+\end_inset
+
+: By 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "eq:Norms-ordered"
+
+\end_inset
+
+, 
+\begin_inset Formula $\norm{X_{j}}\geq\norm{X_{i}}$
+\end_inset
+
+, implying 
+\begin_inset Formula $\norm{X_{i}}<1+\norm{X_{j}}$
+\end_inset
+
+, which is a contradiction as well.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Now we show an easy method to calculate the norm of each variable inductively:
  
-\begin_inset CommandInset citation
-LatexCommand cite
-key "yehudai1977"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Example
-As a (perhaps surprising) consequence, in the grammar
 \begin_inset Formula 
-\begin{align*}
-A & \to aA\\
-B & \to bB
-\end{align*}
+\[
+\norm{X_{i}}=1+\sum_{X_{j}\in\alpha_{i,1}}\norm{X_{j}}
+\]
 
 \end_inset
 
-the variables 
-\begin_inset Formula $A$
+This function terminates as by lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Indices-ordered"
+
 \end_inset
 
- and 
-\begin_inset Formula $B$
+, all variables in the first production rule 
+\begin_inset Formula $\alpha_{i,1}$
 \end_inset
 
- are equivalent, because 
-\begin_inset Formula $\lang A=\lang B=\emptyset$
+ of each variable 
+\begin_inset Formula $X_{i}$
 \end_inset
 
-, as they both produce no single finite word.
+ have a smaller index than 
+\begin_inset Formula $i$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -1774,44 +1905,6 @@ X_{5} & \to bX_{3}X_{3}+aX_{4}
 \end_layout
 
 \begin_layout Standard
-Normalised SDGs also allows calculating the norm of each variable easily
- in an inductive way: 
-\begin_inset Formula 
-\[
-\norm{X_{j}}=1+\sum_{X_{k}\in\alpha_{j,1}}\norm{X_{k}}
-\]
-
-\end_inset
-
-This function terminates as the conditions at the beginning of this section
- ensure that all variables in the first production rule 
-\begin_inset Formula $\alpha_{j,1}$
-\end_inset
-
- of each variable 
-\begin_inset Formula $X_{j}$
-\end_inset
-
- have a smaller index than 
-\begin_inset Formula $j$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-In addition to then checking that the variables are sorted by ascending
- norm, we have to verify that the first production rule of each variable
- produces the smallest terminal word among all production rules of the variable;
- i.e.
- 
-\begin_inset Formula 
-\[
-\forall X_{j}\in V:\,\forall i:\,\left(\forall X_{k}\in\alpha_{j,i}:\, k<j\right)\implies\left(\sum_{X_{k}\in\alpha_{j,i}}\norm{X_{k}}\right)\geq\norm{X_{j}}.
-\]
-
-\end_inset
-
 We can show that the norms of grammar variables 
 \begin_inset Formula $X_{i}$
 \end_inset
