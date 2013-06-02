@@ -206,7 +206,7 @@ e, thereby easing my days otherwise plain of work --- vive le poulpe
 
 \begin_layout Itemize
 Simon for our common bicycle tours, museum and concert visits, and especially
- for your interest in my work --- I wish you the best on your way to becoming
+ for your interest in my work --- I wish you the best on your way to become
  the Poincaré of the 21th century.
 \end_layout
 
@@ -3603,7 +3603,7 @@ We see that
 \begin_inset Formula $Y$
 \end_inset
 
- produce the language 
+ produce the same language 
 \begin_inset Formula $\lang X=\lang Y=b^{*}a$
 \end_inset
 
@@ -3696,7 +3696,7 @@ To show that the first proof is correct, let us assume that
 \end_inset
 
 , 
-\begin_inset Formula $w_{W}\in T^{+}$
+\begin_inset Formula $w\in T^{+}$
 \end_inset
 
 .
@@ -3712,11 +3712,11 @@ To show that the first proof is correct, let us assume that
  rule which increases the norm when going from a conclusion to a premise,
  but there exists a rule which decreases the norm --- the product rule.
  As we then have a smaller witness of non-equivalence than 
-\begin_inset Formula $w_{W}$
+\begin_inset Formula $w$
 \end_inset
 
 , this contradicts the fact that 
-\begin_inset Formula $w_{W}$
+\begin_inset Formula $w$
 \end_inset
 
  is the smallest witness.
@@ -3728,7 +3728,7 @@ To show that the first proof is correct, let us assume that
 \end_layout
 
 \begin_layout Standard
-From this argumentation, we deduce that we can refer from one judgement
+Following this argumentation, we deduce that we can refer from one judgement
  to another judgement only if on all paths between the two judgements, there
  is at least one instance of the 
 \begin_inset Formula $\times$
@@ -4043,8 +4043,7 @@ reference "eq:Unique-conclusions"
 
  we demand that there can not exist two different rules in the same proof
  having equal conclusions.
- This makes it possible to always find one unique proof rule given a judgement,
- thus simplifying matters.
+ This makes it possible to always find one unique proof rule given a judgement.
 \end_layout
 
 \begin_layout Enumerate
@@ -6545,7 +6544,7 @@ PP-B: If the decomposition yields
 \begin_inset Formula $\bot$
 \end_inset
 
-, we have to resort to the base replacement.
+, we resort to base replacement.
 \begin_inset Formula 
 \begin{gather*}
 \begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
@@ -6671,7 +6670,10 @@ sSpP: We resort to the pPsS rules to treat this case.
 \end_layout
 
 \begin_layout Itemize
-ssSP:
+ssSP: If the left-hand side consists of only a terminal, then the right-hand
+ side must either consist of the same terminal (which is treated by the
+ refl rule) or by one single variable.
+ Otherwise, we have a contradiction, as handles by this rule.
 \begin_inset Formula 
 \begin{gather*}
 E\neq B\implies\\
@@ -6734,7 +6736,9 @@ sS-
 \begin_inset Formula $\bot$
 \end_inset
 
-:
+: If we have sums on both sides of a judgement, their number of addends
+ must coincide.
+ This is obviously not the case here, so we have a contradiction.
 \begin_inset Formula 
 \[
 \bussproof{\unaryinf{\axiomc{\bot}}{aP}{\sum b_{y}Q_{y}}{\ensuremath{\bot}\text{ (ss-\bot)}}}
@@ -6754,7 +6758,7 @@ SS-
  on the right-hand side, we fail.
 \begin_inset Formula 
 \begin{gather*}
-\lnot\left(\exists!i:\, a_{1}=b_{i}\right)\implies\\
+\lnot\left(\exists i:\, a_{1}=b_{i}\right)\implies\\
 \bussproof{\unaryinf{\axiomc{\bot}}{\sum a_{x}A_{x}}{\sum b_{y}B_{y}}{\ensuremath{\bot}\text{ (SS-\bot)}}}
 \end{gather*}
 
@@ -6861,8 +6865,8 @@ R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
 \end_layout
 
 \begin_layout Itemize
-PP-B': If a base replacement step does not result in an invalid circularity,
- we execute it:
+PP-B': We execute base replacement when it does not result in an invalid
+ circularity:
 \begin_inset Formula 
 \begin{gather*}
 \begin{aligned}\norm{A_{1}} & \geq\norm{B_{1}},\\
@@ -7105,6 +7109,10 @@ reference "ex:Recursive-grammar"
 
 \end_inset
 
+, generated automatically by 
+\noun on
+Groof
+\noun default
 .
 \end_layout
 
@@ -7515,9 +7523,9 @@ the cumulative size of all conclusion polynomials, i.e.
 \end_layout
 
 \begin_layout Standard
-It is interesting to consider both of these factors, as we might have a
- linear number of proof rules on the one hand, however at the same time
- containing polynomials of cubic size on the other hand.
+It is interesting to consider both of these factors, as we might e.g.
+ have a linear number of proof rules on the one hand, however at the same
+ time containing polynomials of cubic size on the other hand.
 \end_layout
 
 \begin_layout Standard
@@ -8106,17 +8114,32 @@ Appendix
 \end_layout
 
 \begin_layout Standard
-Here we prove that our proof construction rules are sound and complete.
+Here we prove that our proof strategy using the first proof tactic as shown
+ in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Proof-strategy-1"
+
+\end_inset
+
+ is sound and complete.
  To show soundness, we have to verify that the conditions in 
 \begin_inset CommandInset ref
 LatexCommand formatted
+reference "eq:Goal-proved"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:Unique-conclusions"
 
 \end_inset
 
  and 
 \begin_inset CommandInset ref
-LatexCommand formatted
+LatexCommand ref
 reference "eq:Premises-proved"
 
 \end_inset
@@ -8142,9 +8165,16 @@ rest in appendix
 \end_layout
 
 \begin_layout Standard
-As our proof construction algorithm takes care of the condition in 
+As our proof construction algorithm takes care of the conditions in 
 \begin_inset CommandInset ref
 LatexCommand formatted
+reference "eq:Goal-proved"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:Unique-conclusions"
 
 \end_inset
@@ -8678,7 +8708,7 @@ Actually, if the proof construction algorithm is called to prove equivalence
 
 \begin_layout Lemma
 Proving 
-\begin_inset Formula $\sum_{x=1}^{n_{A}>1}a_{x}P_{x}\equiv\sum_{y=1}^{n_{B}>1}$
+\begin_inset Formula $\sum_{x=1}^{n_{A}>1}a_{x}P_{x}\equiv\sum_{y=1}^{n_{B}>1}b_{y}Q_{y}$
 \end_inset
 
  requires 
@@ -8808,6 +8838,15 @@ on of our proof rules are different, at least until we apply a
 \end_inset
 
  rule.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+How shall we actually show this?
+\end_layout
+
+\end_inset
+
  For example, for the sSP rule, we have to make sure that for the proof
  paths
 \end_layout
@@ -8903,7 +8942,8 @@ reference "eq:Premises-proved"
 \begin_inset Formula $AB\equiv a_{1}B+a_{2}B$
 \end_inset
 
- appears in the conclusion as well as in a premise of a non-strict rule.
+ appears in the conclusion as well as in a premise of the same non-strict
+ rule.
 \end_layout
 
 \begin_layout Standard
@@ -8956,6 +8996,16 @@ move to main
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Now we show completeness of our proof strategy.
+ For this, we first define an auxiliary construction, which we baptised
+ 
+\emph on
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Definition
@@ -9108,7 +9158,7 @@ With this machinery in place, we finally define
 \[
 \mathrm{Cluster}\left(r\right):=\begin{cases}
 r & r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
-r\cup\bigcup_{r_{p}\in\PremR r}\mathrm{Leafs}\left(r_{p}\right) & \mathrm{else}.
+r\cup\bigcup_{r_{p}\in\PremR r}\mathrm{Cluster}\left(r_{p}\right) & \mathrm{else}.
 \end{cases}
 \]
 
