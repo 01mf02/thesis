@@ -770,7 +770,7 @@ Product of languages
  is defined to be 
 \begin_inset Formula 
 \[
-\mathcal{L}_{1}\cdot\mathcal{L}_{2}:=\bigcup_{\left\{ \left(x,y\right) \mid x\in\mathcal{L}_{1},\, y\in\mathcal{L}_{2}\right\} }x\cdot y.
+\mathcal{L}_{1}\cdot\mathcal{L}_{2}:=\bigcup_{\left\{ \left(x,y\right)\mid x\in\mathcal{L}_{1},\, y\in\mathcal{L}_{2}\right\} }x\cdot y.
 \]
 
 \end_inset
@@ -1573,7 +1573,7 @@ Furthermore, we impose several ordering and naming conventions on any SDG
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Formula $P=\left\{ X_{i}\to a_{i,j}\alpha_{i,j} \mid a_{i,j}\in T\land\alpha_{i,j}\in V^{*}\right\} $
+\begin_inset Formula $P=\left\{ X_{i}\to a_{i,j}\alpha_{i,j}\mid a_{i,j}\in T\land\alpha_{i,j}\in V^{*}\right\} $
 \end_inset
 
 , where the number of productions for 
@@ -1701,7 +1701,7 @@ reference "lem:Norm-first-production"
 \end_inset
 
 .
- We differentiate two cases:
+ We distinguish two cases:
 \end_layout
 
 \begin_deeper
@@ -3159,7 +3159,7 @@ key "caucal1990"
  
 \begin_inset Formula 
 \[
-\left\{ \left(X_{j},X_{i}\left[X_{j}\right]_{\norm{X_{i}}}\right)\mid 1\leq i<j\leq n\right\} 
+\left\{ \left(X_{j},X_{i}\left[X_{j}\right]_{\norm{X_{i}}}\right)\mid1\leq i<j\leq n\right\} 
 \]
 
 \end_inset
@@ -4006,7 +4006,7 @@ where
 , and
 \begin_inset Formula 
 \[
-\PremR r:=\left\{ r' \mid r'\in\mathcal{R}\land\Concl{r'}\in\Prem r\right\} ,
+\PremR r:=\left\{ r'\mid r'\in\mathcal{R}\land\Concl{r'}\in\Prem r\right\} ,
 \]
 
 \end_inset
@@ -4522,7 +4522,7 @@ Symmetry:
 \begin_inset Newline newline
 \end_inset
 
-Here, we see at a glance that 
+Here, we see that 
 \begin_inset Formula $c\left(x,y\right)=c\left(y,x\right)$
 \end_inset
 
@@ -4556,7 +4556,7 @@ Let us assume w.l.o.g.
 \end_inset
 
 .
- Then we differentiate two cases:
+ Then we distinguish two cases:
 \end_layout
 
 \begin_deeper
@@ -4684,7 +4684,7 @@ Let us assume w.l.o.g.
 \end_inset
 
 .
- Now we differentiate two cases:
+ Now we distinguish two cases:
 \end_layout
 
 \begin_deeper
@@ -4862,8 +4862,8 @@ reference "chap:Proof-construction-algorithm"
 
 \end_inset
 
- which we prove to find an equivalence proof of two polynomials if the languages
- of the polynomials are equivalent.
+ which we prove in the appendix to find an equivalence proof of two polynomials
+ if the languages of the polynomials are equivalent.
 \end_layout
 
 \begin_layout Chapter
@@ -5167,7 +5167,11 @@ The decomposition function is a partial function from
 \begin_inset Formula $V^{*}$
 \end_inset
 
-.
+, which returns 
+\begin_inset Formula $\bot$
+\end_inset
+
+ if undefined.
 \begin_inset Formula 
 \begin{align*}
 \left\langle \alpha\right\rangle _{0} & =\varepsilon;\\
@@ -5225,8 +5229,11 @@ reference "sec:Hirshfeld-algorithm"
 
 \end_inset
 
-, the decomposition function tries not to determine the postfix, but the
- 
+, the decomposition function tries not to determine the 
+\emph on
+postfix
+\emph default
+, but the 
 \emph on
 prefix
 \emph default
@@ -5297,20 +5304,14 @@ reference "sec:Hirshfeld-algorithm"
 \end_layout
 
 \begin_layout Standard
-Again, the main difference between decomposition and norm reduction is that
- we derive 
-\begin_inset Formula $\beta$
+See 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Decomposition-motivation"
+
 \end_inset
 
- using the grammar of 
-\begin_inset Formula $D$
-\end_inset
 
-, not of 
-\begin_inset Formula $A$
-\end_inset
-
-.
 \begin_inset Float figure
 wide false
 sideways false
@@ -5345,6 +5346,12 @@ includesvg{ABCD-decomposition}
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Decomposition-motivation"
+
+\end_inset
+
 Motivation for the decomposition function.
 \end_layout
 
@@ -5353,13 +5360,23 @@ Motivation for the decomposition function.
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
+ for an illustration.
+ Again, the main difference between decomposition and norm reduction is
+ that we derive 
+\begin_inset Formula $\beta$
+\end_inset
 
+ using the grammar of 
+\begin_inset Formula $D$
+\end_inset
+
+, not of 
+\begin_inset Formula $A$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Definition
@@ -5412,7 +5429,11 @@ Decomposition has several properties:
 \begin_inset Formula $\alpha=\varepsilon$
 \end_inset
 
-).
+), and the grammar is in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF.
 \end_layout
 
 \begin_layout Enumerate
@@ -5718,6 +5739,12 @@ However, if we look at general simple-deterministic grammars, we encounter
 \end_layout
 
 \begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "ex:Branching-grammar"
+
+\end_inset
+
 We want to prove 
 \begin_inset Formula $AB\equiv PCD$
 \end_inset
@@ -5800,7 +5827,14 @@ name "fig:Branching-grammar"
 
 \end_inset
 
-Branching grammar.
+Branching grammar from example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:Branching-grammar"
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -5942,8 +5976,8 @@ relation to other work ...
 
 \end_inset
 
-In this chapter, we present our proof construction algorithm, which tries
- to construct an equivalence proof given a grammar and a judgement.
+In this chapter, we present our algorithm, which tries to construct an equivalen
+ce proof given a grammar and a judgement.
 \end_layout
 
 \begin_layout Standard
@@ -6239,10 +6273,10 @@ reference "sec:Proof-strategy-2"
 \begin_layout Enumerate
 We also briefly considered writing a proof tactic using neither base replacement
  nor decomposition, only rewriting judgements with the given grammar rules,
- but it soon turned out that it would require bigger adaptations to our
- current algorithm, which is why, given the predictably horrendous performance
- (if it were terminating, which is not sure) of the tactic, we chose not
- to implement it.
+ but it soon turned out that it would require significant adaptations to
+ our current algorithm.
+ Also given the predictably horrendous performance (if it were terminating,
+ which is not sure) of the tactic, we chose not to implement it.
 \end_layout
 
 \begin_layout Section
@@ -6383,7 +6417,7 @@ V: variable replacement
 \end_layout
 
 \begin_layout Standard
-Now without further ado the tactic rules:
+Now we present the tactic rules:
 \end_layout
 
 \begin_layout Itemize
@@ -6402,7 +6436,7 @@ Now without further ado the tactic rules:
 Refl: If we encounter a judgement where both sides are equal, we apply this
  rule.
  This rule has highest precedence, which means that for all other rules,
- we can assume left- and right-hand sides of the conclusion to be inequivalent.
+ we can assume left- and right-hand sides of the conclusion to be unequal.
 \begin_inset Formula 
 \[
 \bussproof{\unaryinf{\axiomc{}}EE{\text{refl (Refl)}}}
