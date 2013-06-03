@@ -8176,8 +8176,8 @@ name "chap:Conclusion"
 
 \begin_layout Standard
 We studied several existing algorithms to decide equivalence of simple determini
-stic grammars, and implemented several different algorithms based on them
- to produce equivalence proofs in our own proof system.
+stic grammars, and created several different algorithms based on them to
+ produce equivalence proofs in our own proof system.
  Unfortunately, it turned out that all our algorithms have a complexity
  of 2-EXPTIME, which is far away from our projected goal of PTIME.
  Nonetheless, in our experiments our decomposition tactic always seemed
@@ -8195,30 +8195,34 @@ The problem has been difficult to treat as we could not find a way to translate
 \end_layout
 
 \begin_layout Standard
-A completely different approach to the problem would be to use a logical
- framework, such as Edinburgh LF 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "harper1993"
-
-\end_inset
-
-, to express the executions of existing PTIME algorithms as proofs in the
- logical framework.
- Afterwards, proofs could be automatically verified with existing proof
- checkers like Twelf.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "pfenning1999"
-
-\end_inset
-
- This approach would have the advantage of enabling to construct polynomial-size
- proofs for sure.
+A completely different approach to the problem would be to use a different
+ proof system to express the executions of existing PTIME algorithms as
+ proofs.
+ This approach would have the advantage of yielding polynomial-size proofs
+ for sure.
  However, the proof system would be quite complex, while our original goal
  was to find out if polynomial-size proofs could be constructed with a relativel
 y simple proof system like ours.
+\end_layout
+
+\begin_layout Standard
+Another approach would be to formally prove the correctness of a PTIME algorithm
+, using a proof assistant like Coq or Isabelle 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+sources
+\end_layout
+
+\end_inset
+
+ to verify the proof afterwards.
+ These programs can also automatically produce code from such a proof afterwards
+, meaning we can obtain a program formally proved for correctness.
+ However, currently the compilation of the resulting code may still introduce
+ errors into the program, or the machine running the program might misbehave,
+ producing a wrong result without us being able to verify it.
 \end_layout
 
 \begin_layout Standard
@@ -8228,39 +8232,6 @@ One last, but for us rather important aspect of this work is the creation
  literature.
  May they serve as inspiration for those who walk this rocky road well after
  us.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-1.
- express proof system in a proof assistant
-\end_layout
-
-\begin_layout Plain Layout
-2.
- new proof system in a proof assistant
-\end_layout
-
-\begin_layout Plain Layout
-3.
- prove correctness of alg.
- in a proof assistant
-\end_layout
-
-\begin_layout Plain Layout
-(Dedukti, Coq & Isabelle -> obtain formally proved program)
-\end_layout
-
-\begin_layout Plain Layout
-delete logical framework
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Chapter
