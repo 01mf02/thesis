@@ -402,8 +402,24 @@ reference "chap:Proof-construction-algorithm"
 \end_inset
 
 .
- A short overview of our implementation and how it performs, is the subject
- of 
+ A short overview of our implementation
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Available at 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/01mf02/thesis"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ and how it performs, is the subject of 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "chap:Implementation-Experiments"
@@ -461,19 +477,6 @@ status open
 
 \begin_layout Plain Layout
 isomorphism between trees/graphs/sets of rules ...
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-mention what I did exactly
 \end_layout
 
 \end_inset
@@ -1545,7 +1548,8 @@ key "hirshfeld1996,lasota2006"
  This restriction does not limit the class of languages for which we can
  decide equivalence, as we only consider languages containing finite words:
  For simple deterministic grammars, we can find in linear time equivalent
- grammars without variables that produce only infinite words.
+ grammars exclusively containing variables which produce at least one finite
+ word.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1789,12 +1793,27 @@ Now we show an easy method to calculate the norm of each variable inductively:
  
 \begin_inset Formula 
 \[
-\norm{X_{i}}=1+\sum_{X_{j}\in\alpha_{i,1}}\norm{X_{j}}
+\norm{X_{i}}=1+\sum_{1\leq p\leq\left|\alpha_{i,1}\right|}\norm{\alpha_{i,1}\left[p\right]},
 \]
 
 \end_inset
 
-This function terminates as by lemma 
+where 
+\begin_inset Formula $w\left[p\right]$
+\end_inset
+
+ denotes the 
+\begin_inset Formula $p$
+\end_inset
+
+-th letter of the word 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ This function just sums up the norms of all variables of the first production
+ rule of a variable.
+ It terminates as by lemma 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "lem:Indices-ordered"
@@ -2475,11 +2494,21 @@ The set of formal power series over
 \end_inset
 
 .
- We define a semiring of 
+ We enclose
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+the right word?
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
 \end_inset
 
- as follows: If 
+ with a semiring structure as follows: If 
 \begin_inset Formula $S,T$
 \end_inset
 
@@ -2502,28 +2531,35 @@ and their product is defined as
 where the sum is finite.
 \end_layout
 
+\begin_layout Definition
+Based on this, we also define
+\begin_inset Formula 
+\[
+K\left\langle X\right\rangle :=\left\{ S\in K\left\langle \left\langle X\right\rangle \right\rangle \mid\left|\supp\left(S\right)\right|<\infty\right\} 
+\]
+
+\end_inset
+
+to be the set of elements in 
+\begin_inset Formula $K\left\langle X\right\rangle $
+\end_inset
+
+ with finite support.
+\end_layout
+
 \begin_layout Standard
 We now define polynomials over 
 \begin_inset Formula $\Sigma=V\cup T$
 \end_inset
 
- to be the noncommutative semiring
+ to be the elements of the noncommutative semiring
 \begin_inset Formula 
 \[
-R=\mathbb{B}\left\langle \left\langle \Sigma\right\rangle \right\rangle 
+R=\mathbb{B}\left\langle \Sigma\right\rangle .
 \]
 
 \end_inset
 
-with finite support, i.e.
- 
-\begin_inset Formula $\left|\supp\left(S\right)\right|<\infty$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
 For each variable of a grammar, we define its grammar polynomial, which
  is the polynomial representation of all production rules belonging to the
  variable.
@@ -7143,7 +7179,7 @@ We wrote an OCaml program called
 \noun on
 Groof
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 The name 
@@ -7163,6 +7199,14 @@ s.
  Coincidentally, there also exists an Austrian musician named Carl de Groof
  (1923-2007), thereby further enriching the different significations of
  the name.
+ The program is available at 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/01mf02/thesis"
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -9120,6 +9164,11 @@ This is an invalid proof as well, as there is no single application of
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+We manually verified that our proof tactics do not produce invalid circularities
+, but due to the length of the proof, we omit it here.
 \end_layout
 
 \begin_layout Section
