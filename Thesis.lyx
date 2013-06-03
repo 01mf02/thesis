@@ -41,7 +41,12 @@
 \usepackage{fixltx2e}
 \MakeRobust{\Call}
 
+% include gnuplot files via TikZ
 \usepackage{gnuplot-lua-tikz}
+
+% don't show "section §1.1" and "equation (3.2)" in references, but "section 1.1" and "equation 3.2"
+\newref{sec}{name = {section~}, refcmd = {\ref{#1}}}
+\newref{eq}{name = {equation~}, refcmd = {\ref{#1}}}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -146,10 +151,15 @@ Universität Innsbruck
 
 \begin_layout Abstract
 Equivalence of simple deterministic grammar is decidable in PTIME.
- We created a sound and complete equivalence proof system, for which we
- implemented an algorithm in 2-EXPTIME to decide equivalence of simple determini
-stic grammars and to issue a complementary equivalence proof, which we then
- verify automatically.
+ We created a new equivalence proof system, for which we implemented an
+ algorithm to decide equivalence of simple deterministic grammars and to
+ issue a complementary equivalence proof, which we then verify automatically.
+ We proved that our proof system is sound and complete, by showing that
+ our algorithm runs in 2-EXPTIME (although in all our experiments it needed
+ at most EXPTIME) and finds a proof of equivalence if and only if the equivalenc
+e holds.
+ Furthermore, we made a set of grammars containing equivalent variables,
+ whose equivalences are non-trivial to prove.
 \end_layout
 
 \begin_layout Standard
@@ -343,9 +353,11 @@ We created a relatively simple proof system to prove equivalences of simple
  deterministic grammars, and attempted to find algorithms based on ideas
  of the existing algorithms to construct equivalence proofs automatically.
  Furthermore, we constructed a test suite of non-trivially equivalent grammars.
- Based on this test suite, we compared the performances of our algorithms,
- and the best algorithm we found so far always terminated in EXPTIME, and
- we proved it to have a maximal complexity of 2-EXPTIME.
+ Based on this test suite, we compared the performances of our algorithms:
+ The best algorithm we found so far always terminated in EXPTIME, and we
+ proved it to have a maximal complexity of 2-EXPTIME.
+ Using the latter result, we proved that our proof system is complete, and
+ we proved that it is also sound.
 \end_layout
 
 \begin_layout Standard
@@ -407,7 +419,14 @@ reference "chap:Conclusion"
 \end_inset
 
 .
- The appendix contains some longer proofs.
+ The appendix in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Appendix"
+
+\end_inset
+
+ contains the proof of soundness and completeness of our proof system.
 \end_layout
 
 \begin_layout Standard
@@ -442,6 +461,19 @@ status open
 
 \begin_layout Plain Layout
 isomorphism between trees/graphs/sets of rules ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+mention what I did exactly
 \end_layout
 
 \end_inset
@@ -3497,8 +3529,13 @@ name "chap:Equivalence-proof-system"
 \end_layout
 
 \begin_layout Standard
-In this section, we introduce a system to prove equivalence of simple-determinis
-tic grammars.
+In this section, we introduce our system to prove equivalence of simple-determin
+istic grammars.
+ The motivation for creating this system was to find a very simple logic
+ and to find out if we could prove all equivalences in it, and if so, which
+ size these proofs would occupy.
+ Therefore we made a system loosely resembling equational logic, however
+ enhanced with implicit induction and rules specific to grammars.
  It is based on the proof system 
 \begin_inset Formula $\mathcal{D}_{5}$
 \end_inset
@@ -7140,6 +7177,16 @@ filename "programsize.txt"
 \end_inset
 
 lines of code) doing the following tasks:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+fix footnote!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -7520,7 +7567,19 @@ reference "tab:AB-grammar-non2NF"
 
 \end_inset
 
-): As previous grammar.
+): 
+\begin_inset Formula $F_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $G_{n}$
+\end_inset
+
+ describe the language 
+\begin_inset Formula $\left(ab\right)^{2^{n+1}}$
+\end_inset
+
+, such as the grammar before, but this grammar is not in 2NF.
 \end_layout
 
 \begin_layout Enumerate
@@ -8176,21 +8235,6 @@ One last, but for us rather important aspect of this work is the creation
 status open
 
 \begin_layout Plain Layout
-Motivation for our approach: using basically equational logic without quantifier
-s and logical connectives.
- Very simple system.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
 1.
  express proof system in a proof assistant
 \end_layout
@@ -8219,8 +8263,15 @@ delete logical framework
 
 \end_layout
 
-\begin_layout Chapter*
-Appendix
+\begin_layout Chapter
+Appendix: Soundness and completeness
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Appendix"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8260,7 +8311,7 @@ reference "eq:Premises-proved"
 ion terminates.
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 Soundness
 \begin_inset Note Note
 status open
@@ -9100,7 +9151,7 @@ This is an invalid proof as well, as there is no single application of
 .
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 Completeness
 \begin_inset Note Note
 status open
