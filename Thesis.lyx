@@ -8251,13 +8251,17 @@ y simple proof system like ours.
 
 \begin_layout Standard
 Another approach would be to formally prove the correctness of a PTIME algorithm
-, using a proof assistant like Coq or Isabelle 
-\begin_inset Note Note
-status open
+, using a proof assistant like Coq 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bertot2004"
 
-\begin_layout Plain Layout
-sources
-\end_layout
+\end_inset
+
+ or Isabelle 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "paulson1990"
 
 \end_inset
 
