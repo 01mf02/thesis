@@ -8,9 +8,8 @@
 %\plainauthor{Michael Färber}
 %\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
 
-
 % to show DRAFT watermark
-\usepackage[firstpage]{draftwatermark}
+%\usepackage[firstpage]{draftwatermark}
 
 \usepackage{bussproofs}
 
@@ -194,7 +193,7 @@ My supervisor Cezary, for supporting me and my studies since we met in 2012,
 
 \begin_layout Itemize
 Aart Middeldorp, Georg Moser, Pierre Castéran, Marc Zeitoun and Anca Muscholl
- for your amazing logic lectures, of which I had to joy to attend at least
+ for your amazing logic lectures, of which I had the joy to attend at least
  four different ones during the last two years.
 \end_layout
 
@@ -206,8 +205,8 @@ Walter for introducing me to the field of logic and therefore motivating
 \end_layout
 
 \begin_layout Itemize
-Noël, Romaric and Robin for our delightful lunchs at the restaurant universitair
-e, thereby easing my days otherwise plain of work --- vive le poulpe
+Noël and Romaric for our delightful lunchs at the restaurant universitaire,
+ thereby easing my days otherwise plain of work --- vive le poulpe
 \begin_inset space ~
 \end_inset
 
@@ -9204,7 +9203,7 @@ cluster
 status open
 
 \begin_layout Plain Layout
-Clusters
+Cluster
 \end_layout
 
 \end_inset
@@ -9217,20 +9216,41 @@ Given a proof of
 \begin_inset Formula $\mathcal{R}$
 \end_inset
 
-, a cluster 
+, a 
+\emph on
+cluster
+\emph default
+ 
 \begin_inset Formula $C\subseteq\mathcal{R}$
 \end_inset
 
- is a set of proof rules, having exactly one root rule 
+ is a set of proof rules, where we call the set of 
+\begin_inset Formula $\times$
+\end_inset
+
+-rules in 
+\begin_inset Formula $C$
+\end_inset
+
+ 
+\emph on
+leaves
+\emph default
+.
+ The following conditions define a cluster:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A cluster has exactly one root rule 
 \begin_inset Formula $r$
 \end_inset
 
-.
- The conclusion of the root rule must be equivalent to 
+, whose conclusion must be 
 \begin_inset Formula $p_{1}\equiv p_{2}$
 \end_inset
 
- or equivalent to a premise of an 
+ or equivalent to a premise of a 
 \begin_inset Formula $\times$
 \end_inset
 
@@ -9239,7 +9259,10 @@ Given a proof of
 \end_inset
 
 .
- For each rule in 
+\end_layout
+
+\begin_layout Itemize
+For each rule in 
 \begin_inset Formula $C$
 \end_inset
 
@@ -9252,25 +9275,33 @@ Given a proof of
 \end_inset
 
 .
- We call the set of 
-\begin_inset Formula $\times$
-\end_inset
-
--rules in 
-\begin_inset Formula $C$
-\end_inset
-
- leafs, and for each leaf, there must not exist any rule in 
-\begin_inset Formula $C$
-\end_inset
-
- whose conclusion is equal to any premise of aforementioned 
-\begin_inset Formula $\times$
-\end_inset
-
- rule.
 \end_layout
 
+\begin_layout Itemize
+For each non-leaf in 
+\begin_inset Formula $C$
+\end_inset
+
+, its premise must be equal to the conclusion of another rule in 
+\begin_inset Formula $C$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+For each leaf in 
+\begin_inset Formula $C$
+\end_inset
+
+, there must not exist any rule in 
+\begin_inset Formula $C$
+\end_inset
+
+ whose conclusion is equal to any premise of the leaf.
+\end_layout
+
+\end_deeper
 \begin_layout Definition
 Given a cluster 
 \begin_inset Formula $C$
@@ -9296,7 +9327,7 @@ reference "fig:Clusters"
 
 \end_inset
 
-
+: 
 \begin_inset Float figure
 wide false
 sideways false
@@ -9347,7 +9378,7 @@ Illustration of clusters.
 
 \end_inset
 
-: There you see a cluster 
+There we see a cluster 
 \begin_inset Formula $C$
 \end_inset
 
