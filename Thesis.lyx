@@ -7547,7 +7547,7 @@ status collapsed
 \begin{align*}
 A & \to a & A & \to a\\
 B & \to b & B & \to b\\
-A_{B}^{0} & \rightarrow aB & B_{A}^{0} & \to bA\\
+A_{B,0} & \rightarrow aB & B_{A,0} & \to bA\\
 A_{B,n+1} & \to aB_{B,n+1} & B_{A,n+1} & \to bA_{A,n+1}\\
 B_{B,n+1} & \to bA_{B,n}A_{B,n} & A_{A,n+1} & \to aB_{A,n}B_{A,n}\\
 F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
