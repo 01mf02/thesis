@@ -11,6 +11,9 @@
 \usepackage{bussproofs}
 
 \usepackage{gnuplot-lua-tikz}
+
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{navigation symbols}{}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -826,7 +829,11 @@ grammar replacement: dummy tactic (not implemented), replaces variables
 \end_layout
 
 \begin_layout Itemize
-base replacement: replaces variables with their Caucal base entry
+base replacement: replaces variables with their 
+\emph on
+Caucal base
+\emph default
+ entry
 \end_layout
 
 \begin_layout Itemize
@@ -1032,9 +1039,24 @@ F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
 \end_layout
 
 \begin_layout BeginFrame
-Results
+Complexity
 \end_layout
 
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Lower bound}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 grammar replacement: exponential
 \end_layout
@@ -1048,13 +1070,27 @@ decomposition: exponential (when falling back to base replacement), but
  so far polynomial for compression grammars
 \end_layout
 
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Block
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-{Complexity proof}
+{Upper bound}
 \end_layout
 
 \end_inset
