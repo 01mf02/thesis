@@ -620,7 +620,7 @@ status open
 
 \end_inset
 
-On paths between two equivalent rules, there must be at least one product
+On paths between two equivalent judgements, there must be at least one product
  (
 \begin_inset Formula $\times$
 \end_inset
