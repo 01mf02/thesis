@@ -25,7 +25,7 @@ definition of_key :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" w
 definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
   "gram_valid gr \<equiv> is_typical_alist gr \<and>
      (\<forall>g \<in> set gr. case g of (v, pr) \<Rightarrow> is_typical_alist pr \<and>
-       (\<forall>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' \<in> set (map fst gr)) \<and>
+       (\<forall>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' \<in> fst ` set gr) \<and>
        (\<exists>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' < v))"
 
 
@@ -35,15 +35,15 @@ definition norm_of_variables :: "('t, 'v) norm_list \<Rightarrow> 'v list \<Righ
 definition norm_list_of_rules ::
   "('t, 'v) norm_list \<Rightarrow> ('t, 'v) production_rules \<Rightarrow> (nat \<times> ('t, 'v) production_rule) list" where
   "norm_list_of_rules norms rules \<equiv>
-     let valid_rules = filter (\<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> set (map fst norms)) rules in
+     let valid_rules = filter (\<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> fst ` set norms) rules in
      map (\<lambda>r. (1 + norm_of_variables norms (snd r), r)) valid_rules"
 
 
 definition norm_of_production_rules ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norm_of_production_rules gr \<equiv> List.fold (\<lambda>(v, rules). \<lambda>norms.
+  "norm_of_production_rules gr \<equiv> (fold (\<lambda>(v, rules). \<lambda>norms.
      let min_norm = Min (set (norm_list_of_rules norms rules)) in
-     (norms@[(v, min_norm)])) gr []"
+     norms@[(v, min_norm)]) gr [])"
 
 fun word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr []    [] = True"
@@ -58,7 +58,7 @@ fun word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> '
 definition test_gr :: "(char, nat) grammar" where
   "test_gr =
    [(0, [(CHR ''a'', [])]),
-    (1, [(CHR ''a'', []), (CHR ''b'', [0])])]"
+    (1, [(CHR ''b'', [0])])]"
 
 value "gram_valid test_gr"
 value "norm_of_production_rules test_gr"
@@ -92,11 +92,11 @@ oops
 
 lemma fold_helper:
   "(\<forall>l e. length (f e l) = Suc (length l)) \<Longrightarrow> length (fold f l l') = length l + length l'"
-  by (induct l arbitrary: l') simp_all
+by (induct l arbitrary: l') simp_all
 
 lemma fold_helper2:
   "(\<forall>l e. length (f e l) = Suc (length l)) \<Longrightarrow> length (fold f l []) = length l"
-  by (simp add: fold_helper)
+by (simp add: fold_helper)
 
 lemma "norm_of_production_rules gr = l \<Longrightarrow> length l = length gr"
   unfolding norm_of_production_rules_def
@@ -104,7 +104,42 @@ lemma "norm_of_production_rules gr = l \<Longrightarrow> length l = length gr"
   apply (simp)
   apply (rule fold_helper2)
   apply auto
-  done
+done
+
+
+lemma fhx:
+  "\<forall>x p. f x p = p@[(fst x, g x p)] \<Longrightarrow> map fst (fold f l l') = map fst l' @ map fst l"
+by (induct l arbitrary: l') auto
+
+lemma fhx2:
+  "\<forall>x p. f x p = p@[(fst x, g x p)] \<Longrightarrow> map fst (fold f l []) = map fst l"
+  apply (rule subst [of "map fst [] @ map fst l"])
+  apply simp
+  apply (rule fhx)
+  apply auto
+done
+
+lemma "norm_of_production_rules gr = l \<Longrightarrow> map fst l = map fst gr"
+  unfolding norm_of_production_rules_def
+  apply auto
+  apply (rule fhx2 [of "\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))]" "\<lambda>(v, rules) norms. Min (set (norm_list_of_rules norms rules))"])
+  apply auto
+done
+
+lemma "norm_list_of_rules norms rules = l \<Longrightarrow> snd ` set l \<subseteq> set rules"
+  unfolding norm_list_of_rules_def
+by auto
+
+(* use Min.closed in proof below *)
+find_theorems Min
+
+lemma "norm_of_production_rules gr = l \<Longrightarrow> \<forall>(v, (_, (t, vs))) \<in> set l. (t, vs) \<in> set (of_key gr v)"
+  unfolding norm_of_production_rules_def
+  unfolding of_key_def
+  apply (drule sym)
+  apply simp
+  apply auto
+oops
 
 lemma "gram_valid gr \<Longrightarrow> \<forall>v. v \<in> set (map fst gr) \<Longrightarrow>
   fst (of_key (norm_of_production_rules gr) v) = norm gr [v]"
