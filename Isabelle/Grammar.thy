@@ -13,13 +13,44 @@ type_synonym ('t, 'v) norm_list = "('v \<times> (nat \<times> ('t, 'v) productio
 
 
 definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
-  "is_alist l \<equiv> l = AList.clearjunk l"
+  "is_alist l \<equiv> distinct (map fst l)"
 
 definition is_typical_alist where
   "is_typical_alist l \<equiv> is_alist l \<and> l \<noteq> [] \<and> sorted (map fst l)"
 
 definition of_key :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
   "of_key l k \<equiv> snd (hd (AList.restrict {k} l))"
+
+lemma helper_restr1: "k \<notin> fst ` set l \<Longrightarrow> [(ka, v)\<leftarrow>l . ka = k] = []"
+by (induct l) auto
+
+lemma helper_restr2: "k \<notin> fst ` set l \<Longrightarrow> (k, v) \<notin> set l"
+by (induct l) auto
+
+lemma inclusion_helper: "set [x] \<le> set l \<Longrightarrow> x \<in> set l"
+by auto
+
+
+lemma restrict_single_both: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (AList.restrict {k} l = [(k, v)])"
+  unfolding restrict_eq is_alist_def
+  apply (rule iffI)
+
+  apply (induct l)
+  apply auto
+  apply (rule helper_restr1)
+  apply simp
+  apply (rule notE)
+  apply (rule helper_restr2)
+  apply assumption+
+  apply (rule notE)
+  apply (rule helper_restr2)
+  apply assumption+
+
+  apply (rule inclusion_helper)
+  apply (rule subst [of "[(ka, v)\<leftarrow>l . ka = k]" "[(k, v)]"])
+  apply assumption
+  apply (rule filter_is_subset)
+done
 
 
 definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
