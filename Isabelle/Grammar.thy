@@ -21,17 +21,22 @@ definition is_typical_alist where
 definition of_key :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
   "of_key l k \<equiv> snd (hd (AList.restrict {k} l))"
 
+
+lemma alist_subset_is_alist: "is_alist (x # l) \<Longrightarrow> is_alist l"
+  unfolding is_alist_def
+by (induct l) auto
+
+
 lemma helper_restr1: "k \<notin> fst ` set l \<Longrightarrow> [(ka, v)\<leftarrow>l . ka = k] = []"
 by (induct l) auto
 
 lemma helper_restr2: "k \<notin> fst ` set l \<Longrightarrow> (k, v) \<notin> set l"
 by (induct l) auto
 
-lemma inclusion_helper: "set [x] \<le> set l \<Longrightarrow> x \<in> set l"
+lemma inclusion_helper: "set [x] \<le> l \<Longrightarrow> x \<in> l"
 by auto
 
-
-lemma restrict_single_both: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (AList.restrict {k} l = [(k, v)])"
+lemma restrict_single: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (AList.restrict {k} l = [(k, v)])"
   unfolding restrict_eq is_alist_def
   apply (rule iffI)
 
@@ -51,6 +56,32 @@ lemma restrict_single_both: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) =
   apply assumption
   apply (rule filter_is_subset)
 done
+
+lemma of_key_semantics: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> of_key l k = v"
+  unfolding of_key_def
+  apply (simp add: restrict_single)
+done
+
+lemma test: "(a, b) \<in> set l \<Longrightarrow> a \<in> fst ` set l"
+by (induct l) auto
+
+lemma of_key_semantics2: "is_alist l \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> of_key l k = v \<Longrightarrow> (k, v) \<in> set l"
+  unfolding of_key_def
+  apply (simp add: restrict_single)
+  apply (induct l)
+  apply simp
+  apply (case_tac "fst a \<in> fst ` set l")
+  apply (simp only: is_alist_def)
+  apply simp
+  apply auto
+  apply (simp only: restrict_eq)
+  apply auto
+  apply (rule helper_restr1)
+  apply assumption
+  apply (drule alist_subset_is_alist)
+  apply auto
+  apply (drule test)
+by assumption
 
 
 definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
@@ -107,9 +138,7 @@ definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" wh
 
 lemma helper: "(word_in_variables gr w []) = (w = [])"
   apply (case_tac w)
-  apply simp
-  apply simp
-  done
+by simp_all
 
 lemma "norm gr (a@b) = norm gr a + norm gr b"
   apply (cases a)
