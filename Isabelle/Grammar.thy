@@ -27,13 +27,18 @@ lemma alist_subset_is_alist: "is_alist (x # l) \<Longrightarrow> is_alist l"
 by (induct l) auto
 
 
-lemma helper_restr1: "k \<notin> fst ` set l \<Longrightarrow> [(ka, v)\<leftarrow>l . ka = k] = []"
+lemma fst_existence: "(k, v) \<in> A \<Longrightarrow> k \<in> fst ` A"
+by (rule Set.image_eqI) simp_all
+
+lemma filter_nonex_key: "(k \<notin> fst ` set l) = ([(ka, v)\<leftarrow>l . ka = k] = [])"
 by (induct l) auto
 
+(* TODO: this is a trivial consequence from fst_existence; how to get rid of it in proof below? *)
 lemma helper_restr2: "k \<notin> fst ` set l \<Longrightarrow> (k, v) \<notin> set l"
 by (induct l) auto
 
-lemma inclusion_helper: "set [x] \<le> l \<Longrightarrow> x \<in> l"
+(* TODO: this also looks like a candidate for removal ... *)
+lemma inclusion_helper: "set [x] \<subseteq> l \<Longrightarrow> x \<in> l"
 by auto
 
 lemma restrict_single: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (AList.restrict {k} l = [(k, v)])"
@@ -42,8 +47,7 @@ lemma restrict_single: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (ALi
 
   apply (induct l)
   apply auto
-  apply (rule helper_restr1)
-  apply simp
+  apply (simp add: filter_nonex_key)
   apply (rule notE)
   apply (rule helper_restr2)
   apply assumption+
@@ -57,30 +61,22 @@ lemma restrict_single: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (ALi
   apply (rule filter_is_subset)
 done
 
-lemma of_key_semantics: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> of_key l k = v"
+lemma of_key_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> of_key l k = v"
   unfolding of_key_def
-  apply (simp add: restrict_single)
-done
+by (simp add: restrict_single)
 
-lemma test: "(a, b) \<in> set l \<Longrightarrow> a \<in> fst ` set l"
-by (induct l) auto
-
-lemma of_key_semantics2: "is_alist l \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> of_key l k = v \<Longrightarrow> (k, v) \<in> set l"
+lemma existence_from_of_key: "is_alist l \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> of_key l k = v \<Longrightarrow> (k, v) \<in> set l"
   unfolding of_key_def
   apply (simp add: restrict_single)
   apply (induct l)
   apply simp
   apply (case_tac "fst a \<in> fst ` set l")
   apply (simp only: is_alist_def)
-  apply simp
   apply auto
   apply (simp only: restrict_eq)
-  apply auto
-  apply (rule helper_restr1)
-  apply assumption
+  apply (simp add: filter_nonex_key)
   apply (drule alist_subset_is_alist)
-  apply auto
-  apply (drule test)
+  apply (drule fst_existence)
 by assumption
 
 
@@ -90,7 +86,6 @@ definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> boo
        (\<forall>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' \<in> fst ` set gr) \<and>
        (\<exists>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' < v))"
 
-
 definition norm_of_variables :: "('t, 'v) norm_list \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables norms vars \<equiv> listsum (map fst (map (\<lambda>v. of_key norms v) vars))"
 
@@ -99,7 +94,6 @@ definition norm_list_of_rules ::
   "norm_list_of_rules norms rules \<equiv>
      let valid_rules = filter (\<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> fst ` set norms) rules in
      map (\<lambda>r. (1 + norm_of_variables norms (snd r), r)) valid_rules"
-
 
 definition norm_of_production_rules ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
@@ -112,8 +106,9 @@ fun word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> '
 | "word_in_variables gr [] (_#_) = False"
 | "word_in_variables gr (_#_) [] = False"
 | "word_in_variables gr (th#tt) (vh#vt) = (
-     case AList.restrict {th} (of_key gr vh) of [] \<Rightarrow> False
-     | _ \<Rightarrow> word_in_variables gr tt (snd (hd (AList.restrict {th} (of_key gr vh))) @ vt))"
+     let prods = of_key gr vh in
+     if th \<in> fst ` set prods then word_in_variables gr tt ((of_key prods th) @ vt)
+     else False)"
 
 
 
@@ -136,18 +131,26 @@ definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarr
 definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm gr v \<equiv> Min {length w | w. word_in_variables gr w v}"
 
-lemma helper: "(word_in_variables gr w []) = (w = [])"
-  apply (case_tac w)
-by simp_all
+lemma no_variables_empty_word: "(word_in_variables gr w []) = (w = [])"
+by (case_tac w) simp_all
+
+lemma no_variables_zero_norm: "norm gr [] = 0"
+  unfolding norm_def
+  apply (rule Min_eqI)
+  apply auto
+  apply (rule finite_imageI)
+by (simp add: no_variables_empty_word)
+
+lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
+  word_in_variables gr (w@w') (v@v')"
+oops
 
 lemma "norm gr (a@b) = norm gr a + norm gr b"
   apply (cases a)
   apply simp
   apply (unfold norm_def)
-  apply (simp add: helper)
-  apply simp
-  apply (unfold word_in_variables_def)
-  apply (unfold Min_def)
+  apply (simp add: no_variables_empty_word)
+  apply auto
 oops
 
 lemma fold_helper:
@@ -167,46 +170,72 @@ lemma "norm_of_production_rules gr = l \<Longrightarrow> length l = length gr"
 done
 
 
-lemma fhx:
-  "\<forall>x p. f x p = p@[(fst x, g x p)] \<Longrightarrow> map fst (fold f l l') = map fst l' @ map fst l"
+lemma key_fold:
+  "\<forall>x p. f x p = p@[(fst x, g' x p)] \<Longrightarrow> map fst (fold f l l') = map fst l' @ map fst l"
 by (induct l arbitrary: l') auto
 
-lemma fhx2:
+lemma key_fold_empty_init:
   "\<forall>x p. f x p = p@[(fst x, g x p)] \<Longrightarrow> map fst (fold f l []) = map fst l"
   apply (rule subst [of "map fst [] @ map fst l"])
   apply simp
-  apply (rule fhx)
+  apply (rule key_fold)
   apply auto
 done
 
-lemma "norm_of_production_rules gr = l \<Longrightarrow> map fst l = map fst gr"
+(* TODO: fix this most ugly proof! *)
+lemma norm_fst_is_gr_fst: "norm_of_production_rules gr = l \<Longrightarrow> map fst l = map fst gr"
   unfolding norm_of_production_rules_def
   apply auto
-  apply (rule fhx2 [of "\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))]" "\<lambda>(v, rules) norms. Min (set (norm_list_of_rules norms rules))"])
+  apply (rule key_fold_empty_init [of "\<lambda>(v, rules) norms. norms @
+    [(v, Min (set (norm_list_of_rules norms rules)))]" "\<lambda>(v, rules) norms. 
+    Min (set (norm_list_of_rules norms rules))"])
   apply auto
 done
 
 lemma "norm_list_of_rules norms rules = l \<Longrightarrow> snd ` set l \<subseteq> set rules"
-  unfolding norm_list_of_rules_def
-by auto
+by (unfold norm_list_of_rules_def) auto
 
-(* use Min.closed in proof below *)
-find_theorems Min
 
-lemma "norm_of_production_rules gr = l \<Longrightarrow> \<forall>(v, (_, (t, vs))) \<in> set l. (t, vs) \<in> set (of_key gr v)"
-  unfolding norm_of_production_rules_def
-  unfolding of_key_def
-  apply (drule sym)
+lemma nopr_fst_is_gr_fst:
+  "gram_valid gr \<Longrightarrow> norm_of_production_rules gr = l \<Longrightarrow> \<forall>(v, _) \<in> set l. v \<in> fst ` set gr"
+  apply (rule subst [of "set (map fst gr)"])
   apply simp
+  apply (rule subst [of "(map fst l)"])
+  apply (rule norm_fst_is_gr_fst)
+  apply assumption
+  apply (rule subst [of "fst ` set l"])
   apply auto
+  apply (rule fst_existence)
+by assumption
+
+(* lemma of_key_forall: "\<forall>(k, v)\<in>set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (of_key l k)"
+  unfolding of_key_def
+by (induct l) auto *)
+
+lemma "gram_valid gr \<Longrightarrow> norm_of_production_rules gr = l \<Longrightarrow>
+  \<forall>(v, (_, (t, vs))) \<in> set l. (t, vs) \<in> set (of_key gr v)"
+  (* unfolding norm_of_production_rules_def *)
+  apply (drule sym)
+  apply auto
+  unfolding gram_valid_def is_typical_alist_def
+  apply auto
+  (* apply (rule subst [of "prods" "of_key gr a"])
+  apply (rule sym)
+  apply (rule of_key_semantics)
+  apply auto *)
 oops
 
-lemma "gram_valid gr \<Longrightarrow> \<forall>v. v \<in> set (map fst gr) \<Longrightarrow>
-  fst (of_key (norm_of_production_rules gr) v) = norm gr [v]"
-  unfolding norm_def
-  unfolding norm_of_production_rules_def Let_def
-  unfolding norm_list_of_rules_def Let_def
-  unfolding norm_of_variables_def
+lemma nov_distr: "norm_of_variables ns (x @ y) = norm_of_variables ns x + norm_of_variables ns y"
+by (unfold norm_of_variables_def) auto
+
+lemma "gram_valid gr \<Longrightarrow> set v \<subseteq> fst ` set gr \<Longrightarrow>
+  norm_of_variables (norm_of_production_rules gr) v = norm gr v"
+  apply (induct v)
+  apply (rule subst [of "0::nat"], rule sym)
+  apply (rule no_variables_zero_norm)
+  apply (simp only: norm_of_variables_def)
+  apply auto
+  (* apply (simp only: nov_distr) *) (* TODO! *)
 oops
 
 fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat \<Rightarrow> 'v list" where
