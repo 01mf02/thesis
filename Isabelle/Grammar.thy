@@ -64,14 +64,15 @@ definition norm_of_production_rules ::
      let min_norm = Min (set (norm_list_of_rules norms rules)) in
      norms@[(v, min_norm)]) gr [])"
 
-fun word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
-  "word_in_variables gr []    [] = True"
-| "word_in_variables gr [] (_#_) = False"
-| "word_in_variables gr (_#_) [] = False"
-| "word_in_variables gr (th#tt) (vh#vt) = (
+fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> ('t list \<times> 'v list)" where
+  "eat_word gr (th#tt) (vh#vt) = (
      let prods = of_key gr vh in
-     if th \<in> fst ` set prods then word_in_variables gr tt ((of_key prods th) @ vt)
-     else False)"
+     if th \<in> fst ` set prods then eat_word gr tt ((of_key prods th) @ vt)
+     else (th#tt, vh#vt))"
+| "eat_word gr t v = (t, v)"
+
+definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
+  "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
 
 definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
@@ -82,20 +83,59 @@ definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarr
 definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm gr v \<equiv> Min {length w | w. word_in_variables gr w v}"
 
+(* The output word of eat_word is a postfix of the input word. *)
+lemma "eat_word gr w v = (w', v') \<Longrightarrow> \<exists>p. w = p @ w'"
+  apply (induct w arbitrary: v)
+  apply auto
+oops
 
-lemma no_variables_empty_word: "(word_in_variables gr w []) = (w = [])"
-by (case_tac w) simp_all
+(* Prefixfreeness *)
+lemma "word_in_variables gr w v \<Longrightarrow> \<not>(\<exists>w'. w' = w'h # w't \<and> word_in_variables gr (w@w') v)"
+  apply (auto simp add: word_in_variables_def)
+  apply (cases w)
+  apply auto
+  apply (cases v)
+  apply auto
+  apply (case_tac "a \<in> fst ` set (of_key gr aa)")
+  apply auto
+oops
+
+lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (fst (eat_word gr w v1)) v2"
+oops
+
+
+lemma no_variables_no_word: "(word_in_variables gr w []) = (w = [])"
+by (case_tac w) (auto simp add: word_in_variables_def)
+
+lemma no_word_no_variables: "(word_in_variables gr [] v) = (v = [])"
+by (case_tac v) (auto simp add: word_in_variables_def)
 
 lemma no_variables_zero_norm: "norm gr [] = 0"
-by (auto simp add: norm_def no_variables_empty_word Min_eqI)
+by (auto simp add: norm_def no_variables_no_word Min_eqI)
+
+lemma "word_in_variables gr w (vh # vt) \<Longrightarrow>
+       \<exists>w1 w2. w = w1 @ w2 \<and> word_in_variables gr w1 [vh]"
+  apply (cases w)
+  apply (auto simp add: no_word_no_variables)
+  apply (case_tac "a \<in> fst ` set prods")
+  apply (auto simp add: fst_existence)
+  apply (intro exI)
+oops
 
 lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
   word_in_variables gr (w@w') (v@v')"
+  apply (cases w)
+  apply (cases v)
+  apply (auto simp add: no_variables_no_word)
+  apply (cases v)
+  apply (auto simp add: no_variables_no_word)
+  (* apply (case_tac "a \<in> fst ` set (of_key gr aa)")
+  apply auto *)
 oops
 
 lemma "norm gr (a@b) = norm gr a + norm gr b"
   apply (cases a)
-  apply (auto simp add: norm_def no_variables_empty_word)
+  apply (auto simp add: norm_def no_variables_no_word)
 oops
 
 lemma fold_concat:
