@@ -83,21 +83,32 @@ definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarr
 definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm gr v \<equiv> Min {length w | w. word_in_variables gr w v}"
 
+
+lemma prefix_helper: "\<exists>p. x = p @ y \<Longrightarrow> \<exists>p. x' # x = p @ y"
+by auto
+
 (* The output word of eat_word is a postfix of the input word. *)
-lemma "eat_word gr w v = (w', v') \<Longrightarrow> \<exists>p. w = p @ w'"
-  apply (induct w arbitrary: v)
+lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
+  apply (rule eat_word.induct [of "\<lambda>gr w v. \<exists>p. w = p @ fst (eat_word gr w v)"])
+  apply (case_tac "th \<in> fst ` set (of_key gr vh)")
+by (auto simp add: prefix_helper)
+
+(* Prefixfreeness *)
+lemma prefix_free:
+  "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow> \<not>(\<exists>w'. w' = w'h # w't \<and> word_in_variables gr (w@w') v)"
+  (* TODO: induction does not behave as intended \<rightarrow> introduces new quantifiers instead of using
+           existing ones. *)
+  (* apply (rule eat_word.induct [of "\<lambda>gr w v. \<not> (\<exists>w'. w' = w'h # w't \<and> word_in_variables gr (w@w') v)"]) *)
+  unfolding word_in_variables_def
+  apply (rule eat_word.cases [of "(gr, w, v)"])
+  apply (case_tac "th \<in> fst ` set (of_key gr vh)")
   apply auto
 oops
 
-(* Prefixfreeness *)
-lemma "word_in_variables gr w v \<Longrightarrow> \<not>(\<exists>w'. w' = w'h # w't \<and> word_in_variables gr (w@w') v)"
-  apply (auto simp add: word_in_variables_def)
-  apply (cases w)
-  apply auto
-  apply (cases v)
-  apply auto
-  apply (case_tac "a \<in> fst ` set (of_key gr aa)")
-  apply auto
+(* lemma "eat_word gr w v = (postf, []) \<Longrightarrow> \<exists>pref. w = pref @ postf \<and> word_in_variables gr pref v"
+oops *)
+
+lemma "eat_word gr w v1 = (p, []) \<Longrightarrow> word_in_variables gr p v2 \<Longrightarrow> word_in_variables gr w (v1 @ v2)"
 oops
 
 lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (fst (eat_word gr w v1)) v2"
