@@ -71,6 +71,16 @@ fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<
      else (th#tt, vh#vt))"
 | "eat_word gr t v = (t, v)"
 
+function minimal_word_of_variables where
+  "minimal_word_of_variables gr [] = []"
+| "minimal_word_of_variables gr (vh#vt) = (
+     if gram_valid gr then
+       let norms = norm_of_production_rules gr in
+       let (t, vars) = snd (of_key norms vh) in
+       t#(minimal_word_of_variables gr (vars@vt))
+     else [])"
+oops
+
 definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
 
@@ -89,21 +99,28 @@ by auto
 
 (* The output word of eat_word is a postfix of the input word. *)
 lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
-  apply (rule eat_word.induct [of "\<lambda>gr w v. \<exists>p. w = p @ fst (eat_word gr w v)"])
+  apply (induct gr w v rule: eat_word.induct)
   apply (case_tac "th \<in> fst ` set (of_key gr vh)")
 by (auto simp add: prefix_helper)
 
+(* Postfixfreeness *)
+lemma postfix_free:
+  "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow> w' = w'h # w't \<Longrightarrow> \<not>(word_in_variables gr (w@w') v)"
+  apply (induct gr w v rule: eat_word.induct)
+  apply (auto simp add: word_in_variables_def)
+by (case_tac "th \<in> fst ` set (of_key gr vh)") auto
+
 (* Prefixfreeness *)
 lemma prefix_free:
-  "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow> \<not>(\<exists>w'. w' = w'h # w't \<and> word_in_variables gr (w@w') v)"
-  (* TODO: induction does not behave as intended \<rightarrow> introduces new quantifiers instead of using
-           existing ones. *)
-  (* apply (rule eat_word.induct [of "\<lambda>gr w v. \<not> (\<exists>w'. w' = w'h # w't \<and> word_in_variables gr (w@w') v)"]) *)
-  unfolding word_in_variables_def
-  apply (rule eat_word.cases [of "(gr, w, v)"])
-  apply (case_tac "th \<in> fst ` set (of_key gr vh)")
-  apply auto
+  "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow>
+     \<not>(\<exists>w1 w2. w1 = w1h # w1t \<and> w2 = w2h # w2t \<and> w = w1 @ w2 \<and> word_in_variables gr w1 v)"
+  apply (induct gr w v rule: eat_word.induct)
+  apply (auto simp add: word_in_variables_def)
+  apply (case_tac "w1h \<in> fst ` set (of_key gr vh)")
+  apply (auto simp add: postfix_free word_in_variables_def) (* TODO: make it use postfix_free! *)
 oops
+
+
 
 (* lemma "eat_word gr w v = (postf, []) \<Longrightarrow> \<exists>pref. w = pref @ postf \<and> word_in_variables gr pref v"
 oops *)
@@ -112,6 +129,14 @@ lemma "eat_word gr w v1 = (p, []) \<Longrightarrow> word_in_variables gr p v2 \<
 oops
 
 lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (fst (eat_word gr w v1)) v2"
+  apply (induct gr w v1 rule: eat_word.induct)
+  apply (auto simp add: word_in_variables_def)
+  apply (case_tac "th \<in> fst ` set (of_key gr vh)")
+by auto
+
+
+lemma "minimal_word_of_variables (norm_of_production_rules gr) v = w \<Longrightarrow>
+       word_in_variables gr w' v \<Longrightarrow> length w' \<ge> length w"
 oops
 
 
@@ -124,29 +149,15 @@ by (case_tac v) (auto simp add: word_in_variables_def)
 lemma no_variables_zero_norm: "norm gr [] = 0"
 by (auto simp add: norm_def no_variables_no_word Min_eqI)
 
-lemma "word_in_variables gr w (vh # vt) \<Longrightarrow>
-       \<exists>w1 w2. w = w1 @ w2 \<and> word_in_variables gr w1 [vh]"
-  apply (cases w)
-  apply (auto simp add: no_word_no_variables)
-  apply (case_tac "a \<in> fst ` set prods")
-  apply (auto simp add: fst_existence)
-  apply (intro exI)
-oops
 
 lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
   word_in_variables gr (w@w') (v@v')"
-  apply (cases w)
-  apply (cases v)
-  apply (auto simp add: no_variables_no_word)
-  apply (cases v)
-  apply (auto simp add: no_variables_no_word)
-  (* apply (case_tac "a \<in> fst ` set (of_key gr aa)")
-  apply auto *)
-oops
+  apply (induct gr w v rule: eat_word.induct)
+  apply (auto simp add: word_in_variables_def)
+by (case_tac "th \<in> fst ` set (of_key gr vh)") auto
 
-lemma "norm gr (a@b) = norm gr a + norm gr b"
-  apply (cases a)
-  apply (auto simp add: norm_def no_variables_no_word)
+
+lemma "gram_valid gr \<Longrightarrow> set a \<union> set b \<subseteq> fst ` set gr \<Longrightarrow> norm gr (a@b) = norm gr a + norm gr b"
 oops
 
 lemma fold_concat:
@@ -180,41 +191,53 @@ lemma "norm_list_of_rules norms rules = l \<Longrightarrow> snd ` set l \<subset
 by (unfold norm_list_of_rules_def) auto
 
 lemma nopr_fst_is_gr_fst:
-  "gram_valid gr \<Longrightarrow> norm_of_production_rules gr = l \<Longrightarrow> \<forall>(v, _) \<in> set l. v \<in> fst ` set gr"
+  "(v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow> v \<in> fst ` set gr"
   apply (rule subst [of "set (map fst gr)"])
   apply simp
-  apply (rule subst [of "(map fst l)"])
+  apply (rule subst [of "(map fst (norm_of_production_rules gr))"])
 by (auto intro: norm_fst_is_gr_fst simp add: fst_existence)
 
-(* lemma of_key_forall: "\<forall>(k, v)\<in>set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (of_key l k)"
-by (induct l) (auto simp add: of_key_def) *)
+lemma of_key_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (of_key l k)"
+by (induct l) (auto simp add: of_key_def is_alist_def fst_existence)
 
-lemma "gram_valid gr \<Longrightarrow> norm_of_production_rules gr = l \<Longrightarrow>
-  \<forall>(v, (_, (t, vs))) \<in> set l. (t, vs) \<in> set (of_key gr v)"
-  (* unfolding norm_of_production_rules_def *)
-  apply (auto simp add: gram_valid_def is_typical_alist_def)
-  (* apply (rule subst [of "prods" "of_key gr a"])
-  apply (rule sym)
-  apply (rule of_key_semantics)
-  apply auto *)
+lemma of_key_forall: "\<forall>(k, v) \<in> set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (of_key l k)"
+by (induct l) (auto simp add: of_key_def is_alist_def fst_existence)
+
+lemma Min_predicate: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> \<forall>x \<in> A. P x \<Longrightarrow> P (Min A)"
+by auto
+
+lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b. v \<in> fst ` set norms) \<Longrightarrow>
+  snd (Min (set (norm_list_of_rules norms rules))) \<in> set rules"
+by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
+
+lemma "gram_valid gr \<Longrightarrow> (v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow>
+  (t, vs) \<in> set (of_key gr v)"
+  apply (rule existence_from_of_key)
+  apply (rule of_key_forall [of gr])
+  apply (simp add: gram_valid_def is_typical_alist_def)
+  apply (auto simp add: nopr_fst_is_gr_fst)
+  apply (auto simp add: norm_of_production_rules_def)
+  (* TODO: I think most machinery is in place, now we have to figure out the assembly.
+     Use "helper"! *)
 oops
 
 lemma nov_distr: "norm_of_variables ns (x @ y) = norm_of_variables ns x + norm_of_variables ns y"
 by (unfold norm_of_variables_def) auto
 
-lemma "gram_valid gr \<Longrightarrow> set v \<subseteq> fst ` set gr \<Longrightarrow>
-  norm_of_variables (norm_of_production_rules gr) v = norm gr v"
+lemma nov_singleton: "norm_of_variables ns [v] = fst (of_key ns v)"
+by (auto simp add: norm_of_variables_def)
+
+lemma nov_norm_equal:
+  assumes G: "gram_valid gr"
+      and V: "set v \<subseteq> fst ` set gr"
+    shows "norm_of_variables (norm_of_production_rules gr) v = norm gr v"
 proof (induct v)
   case Nil then show ?case by (auto simp add: no_variables_zero_norm norm_of_variables_def)
 next
   case (Cons a v)
-    assume A: "gram_valid gr \<Longrightarrow> set v \<subseteq> fst ` set gr
-      \<Longrightarrow> norm_of_variables (norm_of_production_rules gr) v = norm gr v"
-    assume B: "gram_valid gr"
-    assume C: "set (a # v) \<subseteq> fst ` set gr"
-    have D: "a # v = [a] @ v" by simp
-    show ?case unfolding D
-      apply (simp only: nov_distr)
+    have CA: "a # v = [a] @ v" by simp
+    show ?case unfolding CA
+      apply (simp only: nov_distr nov_singleton)
       sorry
 qed
 
