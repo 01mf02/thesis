@@ -79,6 +79,10 @@ function minimal_word_of_variables where
        let (t, vars) = snd (of_key norms vh) in
        t#(minimal_word_of_variables gr (vars@vt))
      else [])"
+by pat_completeness auto
+termination
+  (* apply (relation "\<lambda>x. ...") *)
+  (* See functions.pdf. *)
 oops
 
 definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
@@ -111,16 +115,21 @@ lemma postfix_free:
 by (case_tac "th \<in> fst ` set (of_key gr vh)") auto
 
 (* Prefixfreeness *)
+(* TODO: convert this to proper Isar style, it looks ugly as of now! *)
 lemma prefix_free:
   "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow>
      \<not>(\<exists>w1 w2. w1 = w1h # w1t \<and> w2 = w2h # w2t \<and> w = w1 @ w2 \<and> word_in_variables gr w1 v)"
-  apply (induct gr w v rule: eat_word.induct)
-  apply (auto simp add: word_in_variables_def)
-  apply (case_tac "w1h \<in> fst ` set (of_key gr vh)")
-  apply (auto simp add: postfix_free word_in_variables_def) (* TODO: make it use postfix_free! *)
-oops
-
-
+proof (induct gr w v rule: eat_word.induct,
+      auto simp add: word_in_variables_def, case_tac "w1h \<in> fst ` set (of_key gr vh)",
+      auto simp add: postfix_free word_in_variables_def)
+  fix gr vh vt a b
+  assume a1: "gram_valid gr"
+     and a2: "eat_word gr (w1t @ w2h # w2t) (of_key (of_key gr vh) a @ vt) = ([], [])"
+     and a3: "eat_word gr w1t (of_key (of_key gr vh) a @ vt) = ([], [])"
+   show "False"
+     using a2 postfix_free[simplified word_in_variables_def, OF a1 a3]
+     by simp
+qed
 
 (* lemma "eat_word gr w v = (postf, []) \<Longrightarrow> \<exists>pref. w = pref @ postf \<and> word_in_variables gr pref v"
 oops *)
@@ -135,8 +144,7 @@ lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (
 by auto
 
 
-lemma "minimal_word_of_variables (norm_of_production_rules gr) v = w \<Longrightarrow>
-       word_in_variables gr w' v \<Longrightarrow> length w' \<ge> length w"
+lemma "word_in_variables gr w v \<Longrightarrow> length w \<ge> length (minimal_word_of_variables gr v)"
 oops
 
 
@@ -209,6 +217,41 @@ by auto
 lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b. v \<in> fst ` set norms) \<Longrightarrow>
   snd (Min (set (norm_list_of_rules norms rules))) \<in> set rules"
 by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
+
+lemma helper4: "\<And>x p. f x p = p @ [g x p] \<Longrightarrow> y \<in> set l \<Longrightarrow> y \<in> set (f a l)"
+  apply (induct l) (* TODO! *)
+oops
+
+lemma helper3: "\<And>x p. f x p = p @ [g x p] \<Longrightarrow> y \<notin> set (fold f l [])
+  \<Longrightarrow> y \<in> set (fold f l l') \<Longrightarrow> y \<in> set l'"
+  apply (induct l arbitrary: l')
+  apply auto
+oops
+
+lemma helper2_fugly: "(\<And>x p. f x p = p @ [g x p]) \<Longrightarrow> (\<And>x p. P (g x p)) \<Longrightarrow> y \<in> set (fold f l []) \<Longrightarrow> P y"
+proof (induct l arbitrary: y, simp_all, case_tac "y \<in> set (fold f l [])", auto)
+  fix a l y
+  assume a1: "\<And>x p. f x p = p @ [g x p]"
+     and a2: "\<And>x p. P (g x p)"
+     and a3: "y \<in> set (fold f l [g a []])"
+     and a4: "y \<notin> set (fold f l [])"
+  have "y = g a []" using a3 a4 sorry (*helper3 by simp*)
+  then show "P y" using a2 by simp
+qed
+
+lemma helper2_better:
+  assumes F: "\<And>x p. f x p = p @ [g x p]"
+      and G: "\<And>x p. P (g x p)"
+      and Y: "y \<in> set (fold f l [])"
+    shows "P y" using Y
+proof (induct l arbitrary: y)
+  case Nil then show ?case by auto
+next
+  case (Cons a l)
+  show ?case using assms 
+  apply -
+  sorry (* TODO! *)
+qed
 
 lemma "gram_valid gr \<Longrightarrow> (v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow>
   (t, vs) \<in> set (of_key gr v)"
