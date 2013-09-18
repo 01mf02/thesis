@@ -71,6 +71,8 @@ fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<
      else (th#tt, vh#vt))"
 | "eat_word gr t v = (t, v)"
 
+lemmas eat_word_induct = eat_word.induct[case_names normal nil_word nil_vars]
+
 function minimal_word_of_variables where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
@@ -103,33 +105,30 @@ by auto
 
 (* The output word of eat_word is a postfix of the input word. *)
 lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
-  apply (induct gr w v rule: eat_word.induct)
-  apply (case_tac "th \<in> fst ` set (of_key gr vh)")
-by (auto simp add: prefix_helper)
+by (induct gr w v rule: eat_word.induct, auto simp add: prefix_helper Let_def split_if_eq1)
 
 (* Postfixfreeness *)
 lemma postfix_free:
   "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow> w' = w'h # w't \<Longrightarrow> \<not>(word_in_variables gr (w@w') v)"
-  apply (induct gr w v rule: eat_word.induct)
-  apply (auto simp add: word_in_variables_def)
-by (case_tac "th \<in> fst ` set (of_key gr vh)") auto
+by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 (* Prefixfreeness *)
-(* TODO: convert this to proper Isar style, it looks ugly as of now! *)
 lemma prefix_free:
-  "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow>
-     \<not>(\<exists>w1 w2. w1 = w1h # w1t \<and> w2 = w2h # w2t \<and> w = w1 @ w2 \<and> word_in_variables gr w1 v)"
-proof (induct gr w v rule: eat_word.induct,
-      auto simp add: word_in_variables_def, case_tac "w1h \<in> fst ` set (of_key gr vh)",
-      auto simp add: postfix_free word_in_variables_def)
-  fix gr vh vt a b
-  assume a1: "gram_valid gr"
-     and a2: "eat_word gr (w1t @ w2h # w2t) (of_key (of_key gr vh) a @ vt) = ([], [])"
-     and a3: "eat_word gr w1t (of_key (of_key gr vh) a @ vt) = ([], [])"
-   show "False"
-     using a2 postfix_free[simplified word_in_variables_def, OF a1 a3]
-     by simp
-qed
+  assumes "gram_valid gr"
+      and "word_in_variables gr w v"
+    shows "\<not>(\<exists>w1 w2. w1 = w1h # w1t \<and> w2 = w2h # w2t \<and> w = w1 @ w2 \<and> word_in_variables gr w1 v)"
+using assms
+proof (induct gr w v rule: eat_word_induct)
+  case (normal gr th tt vh vt)
+  then show ?case
+  proof (auto simp add: word_in_variables_def Let_def split_if_eq1)
+    fix a
+    assume a1: "gram_valid gr"
+       and a2: "eat_word gr (w1t @ w2h # w2t) (of_key (of_key gr vh) a @ vt) = ([], [])"
+       and a3: "eat_word gr w1t (of_key (of_key gr vh) a @ vt) = ([], [])"
+    show "False" using a2 postfix_free[simplified word_in_variables_def, OF a1 a3] by simp
+  qed
+qed (auto simp add: word_in_variables_def)
 
 (* lemma "eat_word gr w v = (postf, []) \<Longrightarrow> \<exists>pref. w = pref @ postf \<and> word_in_variables gr pref v"
 oops *)
@@ -138,11 +137,7 @@ lemma "eat_word gr w v1 = (p, []) \<Longrightarrow> word_in_variables gr p v2 \<
 oops
 
 lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (fst (eat_word gr w v1)) v2"
-  apply (induct gr w v1 rule: eat_word.induct)
-  apply (auto simp add: word_in_variables_def)
-  apply (case_tac "th \<in> fst ` set (of_key gr vh)")
-by auto
-
+by (induct gr w v1 rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 lemma "word_in_variables gr w v \<Longrightarrow> length w \<ge> length (minimal_word_of_variables gr v)"
 oops
@@ -160,9 +155,7 @@ by (auto simp add: norm_def no_variables_no_word Min_eqI)
 
 lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
   word_in_variables gr (w@w') (v@v')"
-  apply (induct gr w v rule: eat_word.induct)
-  apply (auto simp add: word_in_variables_def)
-by (case_tac "th \<in> fst ` set (of_key gr vh)") auto
+by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 
 lemma "gram_valid gr \<Longrightarrow> set a \<union> set b \<subseteq> fst ` set gr \<Longrightarrow> norm gr (a@b) = norm gr a + norm gr b"
@@ -218,9 +211,17 @@ lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b
   snd (Min (set (norm_list_of_rules norms rules))) \<in> set rules"
 by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
 
-lemma helper4: "\<And>x p. f x p = p @ [g x p] \<Longrightarrow> y \<in> set l \<Longrightarrow> y \<in> set (f a l)"
-  apply (induct l) (* TODO! *)
-oops
+lemma helper4:
+  assumes F: "\<And>x p. f x p = p @ [g x p]"
+      and L: "y \<in> set l"
+    shows "y \<in> set (f z l)" using L
+proof (induct l)
+  case (Cons a l)
+  assume IH1: "(y \<in> set l \<Longrightarrow> y \<in> set (f z l))"
+  assume IH2: "y \<in> set (a # l)"
+  have F': "f z (a # l) = (a # l) @ [g z (a # l)]" using F by auto
+  then show ?case using F' IH1 IH2 by auto
+qed (auto)
 
 lemma helper3: "\<And>x p. f x p = p @ [g x p] \<Longrightarrow> y \<notin> set (fold f l [])
   \<Longrightarrow> y \<in> set (fold f l l') \<Longrightarrow> y \<in> set l'"
