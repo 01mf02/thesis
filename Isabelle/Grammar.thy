@@ -122,7 +122,7 @@ proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
   then show ?case
   proof (auto simp add: word_in_variables_def Let_def split_if_eq1)
-    fix a
+    fix a  (* TODO: why do we fix "a" here? where is "a"? *)
     assume a1: "gram_valid gr"
        and a2: "eat_word gr (w1t @ w2h # w2t) (of_key (of_key gr vh) a @ vt) = ([], [])"
        and a3: "eat_word gr w1t (of_key (of_key gr vh) a @ vt) = ([], [])"
@@ -211,47 +211,19 @@ lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b
   snd (Min (set (norm_list_of_rules norms rules))) \<in> set rules"
 by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
 
-lemma helper4:
-  assumes F: "\<And>x p. f x p = p @ [g x p]"
-      and L: "y \<in> set l"
-    shows "y \<in> set (f z l)" using L
-proof (induct l)
-  case (Cons a l)
-  assume IH1: "(y \<in> set l \<Longrightarrow> y \<in> set (f z l))"
-  assume IH2: "y \<in> set (a # l)"
-  have F': "f z (a # l) = (a # l) @ [g z (a # l)]" using F by auto
-  then show ?case using F' IH1 IH2 by auto
-qed (auto)
+lemma helper3:
+  "(\<And>x p. f x p = p @ [g x p]) \<Longrightarrow> (\<And>x p. P (g x p)) \<Longrightarrow> (\<forall>x \<in> set (fold f l []). P x)"
+by (rule fold_invariant) auto
 
-lemma helper3: "\<And>x p. f x p = p @ [g x p] \<Longrightarrow> y \<notin> set (fold f l [])
-  \<Longrightarrow> y \<in> set (fold f l l') \<Longrightarrow> y \<in> set l'"
-  apply (induct l arbitrary: l')
-  apply auto
-oops
-
-lemma helper2_fugly: "(\<And>x p. f x p = p @ [g x p]) \<Longrightarrow> (\<And>x p. P (g x p)) \<Longrightarrow> y \<in> set (fold f l []) \<Longrightarrow> P y"
-proof (induct l arbitrary: y, simp_all, case_tac "y \<in> set (fold f l [])", auto)
-  fix a l y
-  assume a1: "\<And>x p. f x p = p @ [g x p]"
-     and a2: "\<And>x p. P (g x p)"
-     and a3: "y \<in> set (fold f l [g a []])"
-     and a4: "y \<notin> set (fold f l [])"
-  have "y = g a []" using a3 a4 sorry (*helper3 by simp*)
-  then show "P y" using a2 by simp
-qed
-
-lemma helper2_better:
-  assumes F: "\<And>x p. f x p = p @ [g x p]"
-      and G: "\<And>x p. P (g x p)"
-      and Y: "y \<in> set (fold f l [])"
-    shows "P y" using Y
-proof (induct l arbitrary: y)
-  case Nil then show ?case by auto
-next
-  case (Cons a l)
-  show ?case using assms 
-  apply -
-  sorry (* TODO! *)
+(* TODO: Can't we conclude that in an easier way from helper3? *)
+lemma helper3':
+  assumes F: "(\<And>x p. f x p = p @ [g x p])"
+      and G: "(\<And>x p. P (g x p))"
+      and L: "x \<in> set (fold f l [])"
+    shows "P x"
+proof -
+  have "\<forall>x \<in> set (fold f l []). P x" using F G by (rule helper3)
+  then show "P x" using L by (auto simp add: ballE)
 qed
 
 lemma "gram_valid gr \<Longrightarrow> (v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow>
