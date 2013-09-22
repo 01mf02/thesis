@@ -223,7 +223,7 @@ lemma helper3':
     shows "P x"
 proof -
   have "\<forall>x \<in> set (fold f l []). P x" using F G by (rule helper3)
-  then show "P x" using L by (auto simp add: ballE)
+  then show ?thesis using L by simp
 qed
 
 lemma "gram_valid gr \<Longrightarrow> (v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow>
@@ -233,17 +233,14 @@ lemma "gram_valid gr \<Longrightarrow> (v, n, t, vs) \<in> set (norm_of_producti
   apply (simp add: gram_valid_def is_typical_alist_def)
   apply (auto simp add: nopr_fst_is_gr_fst)
   apply (auto simp add: norm_of_production_rules_def)
-  thm helper3' [of "(\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))])"
-                           "\<lambda>(v, rules) norms. (v, Min (set (norm_list_of_rules norms rules)))"
-                           "\<lambda>(v, n, t, vs). t \<in> fst ` set (of_key gr v)" "(v, n, t, vs)" gr]
-  (* TODO: We cannot apply helper3' with these parameters, because it introduces unnecessary
-     "case" statements. How to fix that? *)
-  
-  (* This rule "works", but does not actually seem to help, because auto produces the
-     same goals before the application of this rule. *)
+  apply (subgoal_tac "case (v, n, t, vs) of (v, n, t, vs) \<Rightarrow> t \<in> fst ` set (of_key gr v)")
+  apply simp
   apply (rule helper3' [of "(\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))])"
                            "\<lambda>(v, rules) norms. (v, Min (set (norm_list_of_rules norms rules)))"
-                           _ "(v, n, t, vs)" gr])
+                           "\<lambda>(v, n, t, vs). t \<in> fst ` set (of_key gr v)" "(v, n, t, vs)" gr])
+  apply auto[1]
+  (* TODO: helper3' does not work as expected! *)
+
   (* TODO: I think most machinery is in place, now we have to figure out the assembly.
      Use "helper"! *)
 oops
