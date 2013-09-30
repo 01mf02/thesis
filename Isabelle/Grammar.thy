@@ -195,11 +195,12 @@ lemma nlor_nonempty:
 by (auto simp add: norm_list_of_rules_def filter_empty_conv)
 
 lemma nopr_fst_is_gr_fst:
-  "(v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow> v \<in> fst ` set gr"
-  apply (rule subst [of "set (map fst gr)"])
-  apply simp
-  apply (rule subst [of "(map fst (norm_of_production_rules gr))"])
-by (auto intro: norm_fst_is_gr_fst simp add: fst_existence)
+  assumes "(v, n, t, vs) \<in> set (norm_of_production_rules gr)"
+    shows "v \<in> fst ` set gr"
+proof -
+  have "fst ` set gr = set (map fst (norm_of_production_rules gr))" by (auto simp add: norm_fst_is_gr_fst)
+  then show ?thesis using assms by (auto simp add: fst_existence)
+qed
 
 lemma of_key_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (of_key l k)"
 by (induct l) (auto simp add: of_key_def is_alist_def fst_existence)
