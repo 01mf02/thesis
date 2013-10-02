@@ -30,9 +30,6 @@ proof (induct gr w v rule: eat_word_induct)
   qed
 qed (auto simp add: word_in_variables_def)
 
-(* lemma "eat_word gr w v = (postf, []) \<Longrightarrow> \<exists>pref. w = pref @ postf \<and> word_in_variables gr pref v"
-oops *)
-
 lemma "eat_word gr w v1 = (p, []) \<Longrightarrow> word_in_variables gr p v2 \<Longrightarrow> word_in_variables gr w (v1 @ v2)"
 oops
 
@@ -49,7 +46,7 @@ lemma no_word_no_variables: "(word_in_variables gr [] v) = (v = [])"
 by (case_tac v) (auto simp add: word_in_variables_def)
 
 lemma no_variables_zero_norm: "norm gr [] = 0"
-by (auto simp add: norm_def no_variables_no_word Min_eqI)
+by (simp add: norm_def no_variables_no_word Min_eqI)
 
 
 lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
@@ -74,7 +71,7 @@ by (unfold norm_list_of_rules_def) auto
 
 lemma nlor_nonempty:
   "\<exists>(t, vs) \<in> set rules. \<forall>v \<in> set vs. v \<in> fst ` set norms \<Longrightarrow> norm_list_of_rules norms rules \<noteq> []"
-by (auto simp add: norm_list_of_rules_def filter_empty_conv)
+by (simp add: norm_list_of_rules_def filter_empty_conv)
 
 lemma nopr_fst_is_gr_fst:
   assumes "(v, n, t, vs) \<in> set (norm_of_production_rules gr)"
@@ -91,7 +88,7 @@ lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b
 by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
 
 
-lemma
+(* lemma
   assumes G: "gram_valid gr"
       and N: "(v, n, t, vs) \<in> set (norm_of_production_rules gr)"
     shows "(t, vs) \<in> set (of_key gr v)"
@@ -129,13 +126,25 @@ proof -
   have EX1: "t \<in> fst ` set (of_key gr v)" using N SG by auto
   have EX2: "of_key (of_key gr v) t = vs" sorry
   show ?thesis using AL EX1 EX2 by (rule existence_from_of_key)
-qed
+qed *)
 
 lemma nov_distr: "norm_of_variables ns (x @ y) = norm_of_variables ns x + norm_of_variables ns y"
 by (simp add: norm_of_variables_def)
 
+lemma nov_distr': "norm_of_variables ns (x # y) = norm_of_variables ns [x] + norm_of_variables ns y"
+by (simp add: norm_of_variables_def)
+
+
 lemma nov_singleton: "norm_of_variables ns [v] = fst (of_key ns v)"
 by (simp add: norm_of_variables_def)
+
+termination minimal_word_of_variables
+  apply (relation "measure (\<lambda>(gr, vs). norm_of_variables (norm_of_production_rules gr) vs)", auto)
+  apply (simp add: nov_distr)
+  (* TODO! *)
+  (* apply (simp only: nov_distr') *)
+oops
+
 
 lemma nov_norm_equal:
   assumes G: "gram_valid gr"

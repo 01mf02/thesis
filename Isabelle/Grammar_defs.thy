@@ -40,19 +40,23 @@ fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<
 
 lemmas eat_word_induct = eat_word.induct[case_names normal nil_word nil_vars]
 
-function minimal_word_of_variables where
+(* definition gram_max_vars :: "('t, 'v) grammar \<Rightarrow> nat" where
+  "gram_max_vars gr = Max (set (map (\<lambda>(_, rules). Max (set (map (\<lambda>(_, vs). length vs) rules))) gr))" *)
+
+(* TODO: is there a function which finds a nat for a given 'v :: linorder? *)
+(* we need to know how many elements are smaller than a given v of type 'v *)
+(* definition max_norm_of_variables :: "('t, nat) grammar \<Rightarrow> nat list \<Rightarrow> nat" where
+  "max_norm_of_variables gr vs = listsum (map (\<lambda>v. ((gram_max_vars gr) + 1) ^ v) vs)" *)
+
+function minimal_word_of_variables :: "('t :: linorder, nat) grammar \<Rightarrow> nat list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
-     if gram_valid gr then
+     if gram_valid gr \<and> set (vh#vt) \<subseteq> fst ` set gr then
        let norms = norm_of_production_rules gr in
        let (t, vars) = snd (of_key norms vh) in
        t#(minimal_word_of_variables gr (vars@vt))
      else [])"
 by pat_completeness auto
-termination
-  (* apply (relation "\<lambda>x. ...") *)
-  (* See functions.pdf. *)
-oops
 
 definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
