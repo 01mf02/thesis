@@ -2053,7 +2053,7 @@ We prove this by induction on
 \end_inset
 
  to be 
-\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}=1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
+\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}\overset{\text{ind.}}{\leq}1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
 \end_inset
 
 .
