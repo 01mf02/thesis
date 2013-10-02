@@ -59,42 +59,42 @@ oops
 
 
 
-lemma "norm_of_production_rules gr = l \<Longrightarrow> length l = length gr"
-by (auto simp add: norm_of_production_rules_def fold_concat_empty_init)
+lemma "length (norms_of_grammar gr) = length gr"
+by (auto simp add: norms_of_grammar_def fold_concat_empty_init)
 
-lemma norm_fst_is_gr_fst: "norm_of_production_rules gr = l \<Longrightarrow> map fst l = map fst gr"
-by (auto simp add: norm_of_production_rules_def
-    key_fold_empty_init[of _ "\<lambda>(v, rules) norms. Min (set (norm_list_of_rules norms rules))"])
+lemma norm_fst_is_gr_fst: "map fst (norms_of_grammar gr) = map fst gr"
+by (auto simp add: norms_of_grammar_def
+    key_fold_empty_init[of _ "\<lambda>(v, rules) norms. Min (set (norms_of_rules norms rules))"])
 
-lemma "norm_list_of_rules norms rules = l \<Longrightarrow> snd ` set l \<subseteq> set rules"
-by (unfold norm_list_of_rules_def) auto
+lemma "snd ` set (norms_of_rules norms rules) \<subseteq> set rules"
+by (unfold norms_of_rules_def) auto
 
-lemma nlor_nonempty:
-  "\<exists>(t, vs) \<in> set rules. \<forall>v \<in> set vs. v \<in> fst ` set norms \<Longrightarrow> norm_list_of_rules norms rules \<noteq> []"
-by (simp add: norm_list_of_rules_def filter_empty_conv)
+lemma nor_nonempty:
+  "\<exists>(t, vs) \<in> set rules. \<forall>v \<in> set vs. v \<in> fst ` set norms \<Longrightarrow> norms_of_rules norms rules \<noteq> []"
+by (simp add: norms_of_rules_def filter_empty_conv)
 
-lemma nopr_fst_is_gr_fst:
-  assumes "(v, n, t, vs) \<in> set (norm_of_production_rules gr)"
+lemma nog_fst_is_gr_fst:
+  assumes "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "v \<in> fst ` set gr"
 proof -
-  have "fst ` set gr = set (map fst (norm_of_production_rules gr))" by (simp add: norm_fst_is_gr_fst)
+  have "fst ` set gr = set (map fst (norms_of_grammar gr))" by (simp add: norm_fst_is_gr_fst)
   then show ?thesis using assms by (auto simp add: key_in_fst)
 qed
 
 
 
 lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b. v \<in> fst ` set norms) \<Longrightarrow>
-  snd (Min (set (norm_list_of_rules norms rules))) \<in> set rules"
-by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
+  snd (Min (set (norms_of_rules norms rules))) \<in> set rules"
+by (rule Min_predicate) (auto simp add: norms_of_rules_def)
 
 
 (* lemma
   assumes G: "gram_valid gr"
-      and N: "(v, n, t, vs) \<in> set (norm_of_production_rules gr)"
+      and N: "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "(t, vs) \<in> set (of_key gr v)"
 proof -
   have XX: "\<forall>(k, v)\<in>set gr. is_alist v" using G by (auto simp add: gram_valid_def is_typical_alist_def)
-  have XY: "v \<in> fst ` set gr" using G N by (simp add: nopr_fst_is_gr_fst)
+  have XY: "v \<in> fst ` set gr" using G N by (simp add: nog_fst_is_gr_fst)
   have AL: "is_alist (of_key gr v)" using XX XY by (rule of_key_forall)
 
   have T1: "\<And>x. gram_valid gr \<Longrightarrow> x \<in> set gr \<Longrightarrow> case x of (v, rules) \<Rightarrow> of_key gr v = rules"
@@ -102,61 +102,76 @@ proof -
   have T2: "\<And>P. \<forall>x\<in>set []. P x" by auto
 
   have ABC: "\<And>a norms. \<forall>(v, n, t, vs)\<in>set norms. t \<in> fst ` set (of_key gr v) \<Longrightarrow>
-             \<exists>(n, t, vs) \<in> (set (norm_list_of_rules norms (of_key gr a))). True" sorry
+             \<exists>(n, t, vs) \<in> (set (norms_of_rules norms (of_key gr a))). True" sorry
 
   have XYZ: "\<And>a s ab ac ba. \<forall>(v, n, t, vs)\<in>set s. t \<in> fst ` set (of_key gr v) \<Longrightarrow>
-             (ab, ac, ba) = Min (set (norm_list_of_rules s (of_key gr a))) \<Longrightarrow>
-             ac \<in> fst ` set (of_key gr a)" using G ABC by (auto simp add: Min.closed nlor_nonempty norm_list_of_rules_def) (* TODO! *)
+             (ab, ac, ba) = Min (set (norms_of_rules s (of_key gr a))) \<Longrightarrow>
+             ac \<in> fst ` set (of_key gr a)" using G ABC by (auto simp add: Min.closed nor_nonempty norms_of_rules_def) (* TODO! *)
 
   have T3: "\<And>x s. gram_valid gr \<Longrightarrow>
           case x of (v, rules) \<Rightarrow> of_key gr v = rules \<Longrightarrow>
           \<forall>(v, n, t, vs)\<in>set s. t \<in> fst ` set (of_key gr v) \<Longrightarrow>
-          \<forall>(v, n, t, vs)\<in>set ((\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))]) x s).
+          \<forall>(v, n, t, vs)\<in>set ((\<lambda>(v, rules) norms. norms @ [(v, Min (set (norms_of_rules norms rules)))]) x s).
              t \<in> fst ` set (of_key gr v)" using G XYZ by auto
 
   have SGX: "gram_valid gr \<Longrightarrow>
-    \<forall>(v, n, t, vs)\<in>set (norm_of_production_rules gr).
-      t \<in> fst ` set (of_key gr v)" unfolding norm_of_production_rules_def using T1 T2 T3
+    \<forall>(v, n, t, vs)\<in>set (norms_of_grammar gr).
+      t \<in> fst ` set (of_key gr v)" unfolding norms_of_grammar_def using T1 T2 T3
     by (rule fold_invariant[of _ "\<lambda>(v, rules). of_key gr v = rules"
       "\<lambda>s. \<forall>(v, n, t, vs) \<in> set s. t \<in> fst ` set (of_key gr v)" _])
 
-  have SG: "\<forall>(v, n, t, vs) \<in> set (norm_of_production_rules gr). t \<in> fst ` set (of_key gr v)"
-    using G SGX by (auto simp add: norm_of_production_rules_def)
+  have SG: "\<forall>(v, n, t, vs) \<in> set (norms_of_grammar gr). t \<in> fst ` set (of_key gr v)"
+    using G SGX by (auto simp add: norms_of_grammar_def)
 
   have EX1: "t \<in> fst ` set (of_key gr v)" using N SG by auto
   have EX2: "of_key (of_key gr v) t = vs" sorry
   show ?thesis using AL EX1 EX2 by (rule existence_from_of_key)
 qed *)
 
-lemma nov_distr: "norm_of_variables ns (x @ y) = norm_of_variables ns x + norm_of_variables ns y"
-by (simp add: norm_of_variables_def)
+(* lemma ns_distr: "norm_sum ns (x @ y) = norm_sum ns x + norm_sum ns y"
+by (simp add: norm_sum_def)
 
-lemma nov_distr': "norm_of_variables ns (x # y) = norm_of_variables ns [x] + norm_of_variables ns y"
-by (simp add: norm_of_variables_def)
+lemma ns_distr': "norm_sum ns (x # y) = norm_sum ns [x] + norm_sum ns y"
+by (rule ns_distr[of _ "[x]", simplified]) *)
 
+lemma ns_singleton: "norm_sum ns [v] = fst (of_key ns v)"
+by (simp add: norm_sum_def)
 
-lemma nov_singleton: "norm_of_variables ns [v] = fst (of_key ns v)"
-by (simp add: norm_of_variables_def)
+lemma nov_distr: "norm_of_variables gr (x @ y) = norm_of_variables gr x + norm_of_variables gr y"
+by (simp add: norm_of_variables_def norm_sum_def)
+
+lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
+by (rule nov_distr[of _ "[x]", simplified])
+
+lemma nog_nov:
+  assumes "gram_valid gr"
+      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
+      and "(v, rules) \<in> set gr"
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]"
+  unfolding norm_of_variables_def norm_sum_def
+  apply simp
+sorry
 
 termination minimal_word_of_variables
-  apply (relation "measure (\<lambda>(gr, vs). norm_of_variables (norm_of_production_rules gr) vs)", auto)
-  apply (simp add: nov_distr)
-  (* TODO! *)
-  (* apply (simp only: nov_distr') *)
-oops
+  apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
+  apply (subst nov_distr')
+  apply (simp add: nov_distr nog_nov)
+done
 
 
 lemma nov_norm_equal:
   assumes G: "gram_valid gr"
       and V: "set v \<subseteq> fst ` set gr"
-    shows "norm_of_variables (norm_of_production_rules gr) v = norm gr v"
+    shows "norm_of_variables gr v = norm gr v"
 proof (induct v)
-  case Nil then show ?case by (auto simp add: no_variables_zero_norm norm_of_variables_def)
+  case Nil then show ?case
+  by (auto simp add: no_variables_zero_norm norm_of_variables_def norm_sum_def)
 next
   case (Cons a v)
     have CA: "a # v = [a] @ v" by simp
     show ?case unfolding CA
-      apply (simp only: nov_distr nov_singleton)
+      apply (subst nov_distr)
+      apply (simp only: norm_of_variables_def ns_singleton)
       sorry
 qed
 
