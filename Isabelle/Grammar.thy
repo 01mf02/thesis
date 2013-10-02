@@ -1,106 +1,7 @@
 theory Grammar imports
-  "~~/src/HOL/Library/AList"
-  "~~/src/HOL/Library/Char_ord"
-  "~~/src/HOL/Library/List_lexord"
-  "~~/src/HOL/Library/Product_ord"
+  "Grammar_defs"
+  "Helpers"
 begin
-
-type_synonym ('t, 'v) production_rule = "('t \<times> 'v list)"
-type_synonym ('t, 'v) production_rules = "('t, 'v) production_rule list"
-type_synonym ('t, 'v) grammar = "('v \<times> ('t, 'v) production_rules) list"
-
-type_synonym ('t, 'v) norm_list = "('v \<times> (nat \<times> ('t, 'v) production_rule)) list"
-
-
-definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
-  "is_alist l \<equiv> distinct (map fst l)"
-
-definition is_typical_alist where
-  "is_typical_alist l \<equiv> is_alist l \<and> l \<noteq> [] \<and> sorted (map fst l)"
-
-definition of_key :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
-  "of_key l k \<equiv> snd (hd (AList.restrict {k} l))"
-
-
-lemma alist_subset_is_alist: "is_alist (x # l) \<Longrightarrow> is_alist l"
-by (induct l) (auto simp add: is_alist_def)
-
-lemma fst_existence: "(k, v) \<in> A \<Longrightarrow> k \<in> fst ` A"
-by (rule Set.image_eqI) simp_all
-
-lemma filter_nonex_key: "(k \<notin> fst ` set l) = ([(ka, v)\<leftarrow>l . ka = k] = [])"
-by (induct l) auto
-
-lemma restrict_single: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (AList.restrict {k} l = [(k, v)])"
-by (induct l) (auto simp add: restrict_eq is_alist_def filter_nonex_key)
-
-lemma of_key_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> of_key l k = v"
-by (simp add: of_key_def restrict_single)
-
-lemma existence_from_of_key: "is_alist l \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> of_key l k = v \<Longrightarrow> (k, v) \<in> set l"
-  unfolding restrict_single
-by (induct l) (auto simp add: of_key_def fst_existence alist_subset_is_alist restrict_eq
-  filter_nonex_key is_alist_def)
-
-
-definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
-  "gram_valid gr \<equiv> is_typical_alist gr \<and>
-     (\<forall>g \<in> set gr. case g of (v, pr) \<Rightarrow> is_typical_alist pr \<and>
-       (\<forall>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' \<in> fst ` set gr) \<and>
-       (\<exists>vs \<in> set (map snd pr). \<forall>v' \<in> set vs. v' < v))"
-
-definition norm_of_variables :: "('t, 'v) norm_list \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm_of_variables norms vars \<equiv> listsum (map fst (map (\<lambda>v. of_key norms v) vars))"
-
-definition norm_list_of_rules ::
-  "('t, 'v) norm_list \<Rightarrow> ('t, 'v) production_rules \<Rightarrow> (nat \<times> ('t, 'v) production_rule) list" where
-  "norm_list_of_rules norms rules \<equiv>
-     let valid_rules = filter (\<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> fst ` set norms) rules in
-     map (\<lambda>r. (1 + norm_of_variables norms (snd r), r)) valid_rules"
-
-definition norm_of_production_rules ::
-  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norm_of_production_rules gr \<equiv> (fold (\<lambda>(v, rules). \<lambda>norms.
-     norms@[(v, Min (set (norm_list_of_rules norms rules)))]) gr [])"
-
-fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> ('t list \<times> 'v list)" where
-  "eat_word gr (th#tt) (vh#vt) = (
-     let prods = of_key gr vh in
-     if th \<in> fst ` set prods then eat_word gr tt ((of_key prods th) @ vt)
-     else (th#tt, vh#vt))"
-| "eat_word gr t v = (t, v)"
-
-lemmas eat_word_induct = eat_word.induct[case_names normal nil_word nil_vars]
-
-function minimal_word_of_variables where
-  "minimal_word_of_variables gr [] = []"
-| "minimal_word_of_variables gr (vh#vt) = (
-     if gram_valid gr then
-       let norms = norm_of_production_rules gr in
-       let (t, vars) = snd (of_key norms vh) in
-       t#(minimal_word_of_variables gr (vars@vt))
-     else [])"
-by pat_completeness auto
-termination
-  (* apply (relation "\<lambda>x. ...") *)
-  (* See functions.pdf. *)
-oops
-
-definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
-  "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
-
-definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
-  "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
-
-definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 'v list \<Rightarrow> bool" where
-  "variables_equiv gr v1 v2 \<equiv> words_of_variables gr v1 = words_of_variables gr v2"
-
-definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm gr v \<equiv> Min {length w | w. word_in_variables gr w v}"
-
-
-lemma prefix_helper: "\<exists>p. x = p @ y \<Longrightarrow> \<exists>p. x' # x = p @ y"
-by auto
 
 (* The output word of eat_word is a postfix of the input word. *)
 lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
@@ -141,7 +42,6 @@ by (induct gr w v1 rule: eat_word.induct, auto simp add: word_in_variables_def L
 lemma "word_in_variables gr w v \<Longrightarrow> length w \<ge> length (minimal_word_of_variables gr v)"
 oops
 
-
 lemma no_variables_no_word: "(word_in_variables gr w []) = (w = [])"
 by (case_tac w) (auto simp add: word_in_variables_def)
 
@@ -160,28 +60,10 @@ by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Le
 lemma "gram_valid gr \<Longrightarrow> set a \<union> set b \<subseteq> fst ` set gr \<Longrightarrow> norm gr (a@b) = norm gr a + norm gr b"
 oops
 
-lemma fold_concat:
-  "(\<forall>l e. length (f e l) = Suc (length l)) \<Longrightarrow> length (fold f l l') = length l + length l'"
-by (induct l arbitrary: l') simp_all
 
-lemma fold_concat_empty_init:
-  "(\<forall>l e. length (f e l) = Suc (length l)) \<Longrightarrow> length (fold f l []) = length l"
-by (simp add: fold_concat)
 
 lemma "norm_of_production_rules gr = l \<Longrightarrow> length l = length gr"
 by (auto simp add: norm_of_production_rules_def fold_concat_empty_init)
-
-
-lemma key_fold:
-  "\<forall>x p. f x p = p@[(fst x, g' x p)] \<Longrightarrow> map fst (fold f l l') = map fst l' @ map fst l"
-by (induct l arbitrary: l') auto
-
-lemma key_fold_empty_init:
-  "\<forall>x p. f x p = p@[(fst x, g x p)] \<Longrightarrow> map fst (fold f l []) = map fst l"
-  apply (rule subst [of "map fst [] @ map fst l"])
-  apply simp
-  apply (rule key_fold)
-by auto
 
 lemma norm_fst_is_gr_fst: "norm_of_production_rules gr = l \<Longrightarrow> map fst l = map fst gr"
 by (auto simp add: norm_of_production_rules_def
@@ -198,44 +80,16 @@ lemma nopr_fst_is_gr_fst:
   assumes "(v, n, t, vs) \<in> set (norm_of_production_rules gr)"
     shows "v \<in> fst ` set gr"
 proof -
-  have "fst ` set gr = set (map fst (norm_of_production_rules gr))" by (auto simp add: norm_fst_is_gr_fst)
-  then show ?thesis using assms by (auto simp add: fst_existence)
+  have "fst ` set gr = set (map fst (norm_of_production_rules gr))" by (simp add: norm_fst_is_gr_fst)
+  then show ?thesis using assms by (auto simp add: key_in_fst)
 qed
 
-lemma of_key_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (of_key l k)"
-by (induct l) (auto simp add: of_key_def is_alist_def fst_existence)
 
-lemma of_key_forall: "\<forall>(k, v) \<in> set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (of_key l k)"
-by (induct l) (auto simp add: of_key_def is_alist_def fst_existence)
-
-lemma Min_predicate: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> \<forall>x \<in> A. P x \<Longrightarrow> P (Min A)"
-by auto
 
 lemma helper: "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b. v \<in> fst ` set norms) \<Longrightarrow>
   snd (Min (set (norm_list_of_rules norms rules))) \<in> set rules"
 by (rule Min_predicate) (auto simp add: norm_list_of_rules_def)
 
-lemma helper3:
-  "(\<And>x p. f x p = p @ [g x p]) \<Longrightarrow> (\<And>x p. P (g x p)) \<Longrightarrow> (\<forall>x \<in> set (fold f l []). P x)"
-by (rule fold_invariant) auto
-
-(* TODO: Can't we conclude that in an easier way from helper3? *)
-lemma helper3':
-  assumes F: "(\<And>x p. f x p = p @ [g x p])"
-      and G: "(\<And>x p. P (g x p))"
-      and L: "x \<in> set (fold f l [])"
-    shows "P x"
-proof -
-  have "\<forall>x \<in> set (fold f l []). P x" using F G by (rule helper3)
-  then show ?thesis using L by simp
-qed
-
-thm helper3' [of "(\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))])"
-                           "\<lambda>(v, rules) norms. (v, Min (set (norm_list_of_rules norms rules)))"
-                           "\<lambda>(v, n, t, vs). t \<in> fst ` set (of_key gr v)" "(v, n, t, vs)" gr]
-
-thm fold_invariant[of gr "\<lambda>(v, rules). of_key gr v = rules"
-  "\<lambda>s. \<forall>(v, n, t, vs) \<in> set s. t \<in> fst ` set (of_key gr v)" "[]" "(\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))])"]
 
 lemma
   assumes G: "gram_valid gr"
@@ -277,39 +131,11 @@ proof -
   show ?thesis using AL EX1 EX2 by (rule existence_from_of_key)
 qed
 
-lemma "gram_valid gr \<Longrightarrow> (v, n, t, vs) \<in> set (norm_of_production_rules gr) \<Longrightarrow>
-  (t, vs) \<in> set (of_key gr v)"
-  apply (rule existence_from_of_key)
-  apply (rule of_key_forall [of gr])
-  apply (simp add: gram_valid_def is_typical_alist_def)
-  apply (auto simp add: nopr_fst_is_gr_fst)
-  apply (auto simp add: norm_of_production_rules_def)
-  apply (subgoal_tac "\<forall>(v, n, t, vs) \<in> set (fold (\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))]) gr []). t \<in> fst ` set (of_key gr v)")
-  apply auto[1]
-  apply (thin_tac "(v, n, t, vs) \<in> set (fold (\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))]) gr [])")
-  apply (rule fold_invariant[of _ "\<lambda>(v, rules). of_key gr v = rules"
-  "\<lambda>s. \<forall>(v, n, t, vs) \<in> set s. t \<in> fst ` set (of_key gr v)" _])
-  apply (auto simp add: of_key_from_existence gram_valid_def is_typical_alist_def)
-  apply auto
-  apply (auto elim: Min.closed)
-
-  apply (subgoal_tac "case (v, n, t, vs) of (v, n, t, vs) \<Rightarrow> t \<in> fst ` set (of_key gr v)")
-  apply simp
-  apply (rule helper3' [of "(\<lambda>(v, rules) norms. norms @ [(v, Min (set (norm_list_of_rules norms rules)))])"
-                           "\<lambda>(v, rules) norms. (v, Min (set (norm_list_of_rules norms rules)))"
-                           "\<lambda>(v, n, t, vs). t \<in> fst ` set (of_key gr v)" "(v, n, t, vs)" gr])
-  apply auto[1]
-  (* TODO: helper3' does not work as expected! *)
-
-  (* TODO: I think most machinery is in place, now we have to figure out the assembly.
-     Use "helper"! *)
-oops
-
 lemma nov_distr: "norm_of_variables ns (x @ y) = norm_of_variables ns x + norm_of_variables ns y"
-by (unfold norm_of_variables_def) auto
+by (simp add: norm_of_variables_def)
 
 lemma nov_singleton: "norm_of_variables ns [v] = fst (of_key ns v)"
-by (auto simp add: norm_of_variables_def)
+by (simp add: norm_of_variables_def)
 
 lemma nov_norm_equal:
   assumes G: "gram_valid gr"
@@ -324,23 +150,5 @@ next
       apply (simp only: nov_distr nov_singleton)
       sorry
 qed
-
-fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat \<Rightarrow> 'v list" where
-  "norm_reduce gr v 0 = v"
-| "norm_reduce gr [] (Suc p) = []"
-| "norm_reduce gr (vh#vt) (Suc p) = (
-     let (n, (_, v)) = of_key (norm_of_production_rules gr) vh in
-     if Suc p < n then (norm_reduce gr v p) @ vt
-     else norm_reduce gr vt (Suc p - n))"
-
-
-definition test_gr :: "(char, nat) grammar" where
-  "test_gr =
-   [(0, [(CHR ''a'', [])]),
-    (1, [(CHR ''b'', [0])])]"
-
-value "gram_valid test_gr"
-value "norm_of_production_rules test_gr"
-value "word_in_variables test_gr ''a'' [0]"
 
 end
