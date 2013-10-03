@@ -47,7 +47,7 @@ definition norms_of_rules ::
      map (\<lambda>(t, vs). (1 + norm_sum norms vs, (t, vs))) (filter (rule_has_norm norms) rules)"
 
 definition min_norm_of_rules where
-  "min_norm_of_rules norms rules = Min (set (norms_of_rules norms rules))"
+  "min_norm_of_rules norms rules \<equiv> Min (set (norms_of_rules norms rules))"
 
 definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where

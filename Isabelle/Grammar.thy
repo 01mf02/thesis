@@ -21,14 +21,13 @@ by (unfold norms_of_rules_def) auto
 
 lemma nor_nonempty:
   assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
-    shows "norms_of_rules norms rules \<noteq> []" using assms
-by (simp add: norms_of_rules_def filter_empty_conv)
+    shows "norms_of_rules norms rules \<noteq> []"
+using assms by (simp add: norms_of_rules_def filter_empty_conv)
 
 lemma
   assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
-    shows "snd (Min (set (norms_of_rules norms rules))) \<in> set rules" using assms
-apply -
-by (rule Min_predicate) (auto simp add: norms_of_rules_def)
+    shows "snd (Min (set (norms_of_rules norms rules))) \<in> set rules"
+using assms by - (rule Min_predicate, auto simp add: norms_of_rules_def)
 
 
 (*****************************************************************************
@@ -77,11 +76,23 @@ by (simp add: norm_of_variables_def norm_sum_def)
 lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
 by (rule nov_distr[of _ "[x]", simplified])
 
+lemma nov_singleton:
+  assumes "gram_valid gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+    shows "norm_of_variables gr [v] = n"
+proof -
+  have "norm_of_variables gr [v] = fst (of_key (norms_of_grammar gr) v)"  (is "_ = ?rhs")
+    by (simp add: norm_of_variables_def norm_sum_def)
+  also have "?rhs = fst (n, t, vs)" using assms
+    by (simp_all add: of_key_from_existence nog_alist)
+  finally show ?thesis by auto
+qed
+
 lemma nov_nog:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
-      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
-    shows "norm_of_variables gr [v] = Suc(norm_of_variables gr vs)"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+    shows "norm_of_variables gr [v] = Suc (norm_of_variables gr vs)"
 proof (simp add: norm_of_variables_def norm_sum_def)
   have "(of_key (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
   then show "fst (of_key (norms_of_grammar gr) v) = Suc(listsum (map (fst \<circ> of_key (norms_of_grammar gr)) vs))" sorry
