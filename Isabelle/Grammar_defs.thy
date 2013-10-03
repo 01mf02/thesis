@@ -26,8 +26,8 @@ definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> boo
        (\<forall>vs \<in> snd ` set rules. \<forall>v' \<in> set vs. v' \<in> fst ` set gr) \<and>
        (\<exists>vs \<in> snd ` set rules. \<forall>v' \<in> set vs. v' < v))"
 
-(* definition gram_max_vars :: "('t, 'v) grammar \<Rightarrow> nat" where
-  "gram_max_vars gr = Max (set (map (\<lambda>(_, rules). Max (set (map (\<lambda>(_, vs). length vs) rules))) gr))" *)
+definition gram_max_vars :: "('t, 'v) grammar \<Rightarrow> nat" where
+  "gram_max_vars gr = Max (set (map (\<lambda>(_, rules). Max (set (map (\<lambda>(_, vs). length vs) rules))) gr))"
 
 
 (*****************************************************************************
@@ -37,11 +37,14 @@ definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> boo
 definition norm_sum :: "('t, 'v) norm_list \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_sum norms vars \<equiv> listsum (map fst (map (\<lambda>v. of_key norms v) vars))"
 
+definition rule_has_norm ::
+  "('t, 'v) norm_list \<Rightarrow> ('t, 'v) production_rule \<Rightarrow> bool" where
+  "rule_has_norm norms \<equiv> \<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> fst ` set norms"
+
 definition norms_of_rules ::
   "('t, 'v) norm_list \<Rightarrow> ('t, 'v) production_rules \<Rightarrow> (nat \<times> ('t, 'v) production_rule) list" where
   "norms_of_rules norms rules \<equiv>
-     let valid_rules = filter (\<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> fst ` set norms) rules in
-     map (\<lambda>r. (1 + norm_sum norms (snd r), r)) valid_rules"
+     map (\<lambda>(t, vs). (1 + norm_sum norms vs, (t, vs))) (filter (rule_has_norm norms) rules)"
 
 definition min_norm_of_rules where
   "min_norm_of_rules norms rules = Min (set (norms_of_rules norms rules))"

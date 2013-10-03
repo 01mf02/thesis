@@ -20,11 +20,14 @@ lemma "snd ` set (norms_of_rules norms rules) \<subseteq> set rules"
 by (unfold norms_of_rules_def) auto
 
 lemma nor_nonempty:
-  "\<exists>(t, vs) \<in> set rules. \<forall>v \<in> set vs. v \<in> fst ` set norms \<Longrightarrow> norms_of_rules norms rules \<noteq> []"
+  assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
+    shows "norms_of_rules norms rules \<noteq> []" using assms
 by (simp add: norms_of_rules_def filter_empty_conv)
 
-lemma "\<exists>a b. (a, b) \<in> set rules \<and> (\<forall>v\<in>set b. v \<in> fst ` set norms) \<Longrightarrow>
-  snd (Min (set (norms_of_rules norms rules))) \<in> set rules"
+lemma
+  assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
+    shows "snd (Min (set (norms_of_rules norms rules))) \<in> set rules" using assms
+apply -
 by (rule Min_predicate) (auto simp add: norms_of_rules_def)
 
 
@@ -33,7 +36,7 @@ by (rule Min_predicate) (auto simp add: norms_of_rules_def)
  *****************************************************************************)
 
 lemma
-  assumes "\<exists>vs \<in> snd ` set rules. \<forall>v \<in> set vs. v \<in> fst ` set norms"
+  assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
     shows "min_norm_of_rules norms rules \<in> set (norms_of_rules norms rules)" using assms
   apply (auto simp add: min_norm_of_rules_def norms_of_rules_def)
   apply (rule Min.closed)
@@ -76,8 +79,8 @@ by (rule nov_distr[of _ "[x]", simplified])
 
 lemma nov_nog:
   assumes "gram_valid gr"
-      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
       and "(v, rules) \<in> set gr"
+      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
     shows "norm_of_variables gr [v] = Suc(norm_of_variables gr vs)"
 proof (simp add: norm_of_variables_def norm_sum_def)
   have "(of_key (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
@@ -99,8 +102,7 @@ by (auto simp add: nov_nog)
 termination minimal_word_of_variables
   apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
   apply (subst nov_distr')
-  apply (simp add: nov_distr nov_nog')
-done
+by (simp add: nov_distr nov_nog')
 
 
 (*****************************************************************************
