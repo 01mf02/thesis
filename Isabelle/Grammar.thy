@@ -47,18 +47,21 @@ by (auto simp add: filter_empty_conv min_def)
 lemma "length (norms_of_grammar gr) = length gr"
 by (auto simp add: norms_of_grammar_def fold_concat_empty_init)
 
-lemma nog_fst_is_gr_fst: "map fst (norms_of_grammar gr) = map fst gr"
+lemma nog_fst_is_gr_fst: "map fst gr = map fst (norms_of_grammar gr)"
 by (auto simp add: norms_of_grammar_def
     key_fold_empty_init[of _ "\<lambda>(v, rules) norms. min_norm_of_rules norms rules"])
 
-(* Do we need this? *)
-(* lemma nog_fst_is_gr_fst:
-  assumes "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-    shows "v \<in> fst ` set gr"
-proof -
-  have "fst ` set gr = set (map fst (norms_of_grammar gr))" by (simp add: nog_fst_is_gr_fst)
-  then show ?thesis using assms by (auto simp add: key_in_fst)
-qed *)
+lemma nog_alist: "gram_valid gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
+by (simp add: alist_fst_map gram_valid_def is_typical_alist_def nog_fst_is_gr_fst)
+
+lemma
+  assumes "gram_valid gr"
+      and "(v, rules) \<in> set gr"
+    shows "of_key (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules" using assms
+  apply -
+  apply (rule of_key_from_existence)
+  apply (simp add: nog_alist)
+oops
 
 
 (*****************************************************************************
@@ -75,10 +78,18 @@ lemma nov_nog:
   assumes "gram_valid gr"
       and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
       and "(v, rules) \<in> set gr"
-    shows "norm_of_variables gr vs < norm_of_variables gr [v]"
-  unfolding norm_of_variables_def norm_sum_def
-  apply simp
-sorry
+    shows "norm_of_variables gr [v] = Suc(norm_of_variables gr vs)"
+proof (simp add: norm_of_variables_def norm_sum_def)
+  have "(of_key (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
+  then show "fst (of_key (norms_of_grammar gr) v) = Suc(listsum (map (fst \<circ> of_key (norms_of_grammar gr)) vs))" sorry
+qed
+
+lemma nov_nog':
+  assumes "gram_valid gr"
+      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
+      and "(v, rules) \<in> set gr"
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
+by (auto simp add: nov_nog)
 
 
 (*****************************************************************************
@@ -88,7 +99,7 @@ sorry
 termination minimal_word_of_variables
   apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
   apply (subst nov_distr')
-  apply (simp add: nov_distr nov_nog)
+  apply (simp add: nov_distr nov_nog')
 done
 
 
