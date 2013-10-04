@@ -205,6 +205,10 @@ lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables g
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 
+lemma wiv_mwov: "word_in_variables gr (minimal_word_of_variables gr v) v"
+oops
+
+
 (*****************************************************************************
   norm
  *****************************************************************************)
