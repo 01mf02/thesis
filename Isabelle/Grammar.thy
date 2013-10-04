@@ -91,7 +91,7 @@ qed
 lemma nov_nog:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
     shows "norm_of_variables gr [v] = Suc (norm_of_variables gr vs)"
 proof (simp add: norm_of_variables_def norm_sum_def)
   have "(of_key (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
