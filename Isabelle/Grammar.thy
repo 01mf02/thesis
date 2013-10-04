@@ -115,6 +115,23 @@ termination minimal_word_of_variables
   apply (subst nov_distr')
 by (simp add: nov_distr nov_nog')
 
+lemma mwiv_minimal:
+  assumes "word_in_variables gr w v"
+    shows "length (minimal_word_of_variables gr v) \<le> length w"
+sorry
+
+lemma mwiv_in_wov: "length (minimal_word_of_variables gr v) \<in> length ` words_of_variables gr v"
+sorry
+
+lemma mwiv_len_calcs_norm: "norm gr v = length (minimal_word_of_variables gr v)"
+  unfolding norm_def
+  (* TODO: big problem here: We need the conclusion of Min_eqI, but its premise that the set of
+     words be _finite_ can not be fulfilled! *)
+  apply (rule Min_eqI)
+  apply (auto simp add: mwiv_in_wov)
+  apply (auto simp add: words_of_variables_def mwiv_minimal)
+sorry
+
 
 (*****************************************************************************
   eat_word
@@ -158,8 +175,6 @@ oops
 lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (fst (eat_word gr w v1)) v2"
 by (induct gr w v1 rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
-lemma "word_in_variables gr w v \<Longrightarrow> length w \<ge> length (minimal_word_of_variables gr v)"
-oops
 
 lemma no_variables_no_word: "(word_in_variables gr w []) = (w = [])"
 by (case_tac w) (auto simp add: word_in_variables_def)
@@ -177,15 +192,24 @@ by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Le
  *****************************************************************************)
 
 lemma no_variables_zero_norm: "norm gr [] = 0"
-by (simp add: norm_def no_variables_no_word Min_eqI)
+by (simp add: norm_def no_variables_no_word words_of_variables_def Min_eqI)
 
-lemma "gram_valid gr \<Longrightarrow> set a \<union> set b \<subseteq> fst ` set gr \<Longrightarrow> norm gr (a@b) = norm gr a + norm gr b"
+lemma norm_distr:
+  assumes "gram_valid gr"
+      and "set (a@b) \<subseteq> fst ` set gr"
+    shows "norm gr (a@b) = norm gr a + norm gr b"
+oops
+
+lemma nog_calculates_norm:
+  assumes "gram_valid gr"
+      and "v \<in> fst ` set gr"
+    shows "fst (of_key (norms_of_grammar gr) a) = norm gr ([a])"
 oops
 
 lemma nov_calculates_norm:
   assumes G: "gram_valid gr"
       and V: "set v \<subseteq> fst ` set gr"
-    shows "norm_of_variables gr v = norm gr v"
+    shows "norm_of_variables gr v = norm gr v" using assms
 proof (induct v)
   case Nil then show ?case
   by (auto simp add: no_variables_zero_norm norm_of_variables_def norm_sum_def)

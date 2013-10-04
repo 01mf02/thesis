@@ -86,11 +86,17 @@ definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Righta
 definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
 
+(* TODO: Use Inf here! *)
+definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
+  "norm gr v \<equiv> Min (length ` (words_of_variables gr v))"
+
+
+(*****************************************************************************
+  Equivalence
+ *****************************************************************************)
+
 definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "variables_equiv gr v1 v2 \<equiv> words_of_variables gr v1 = words_of_variables gr v2"
-
-definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm gr v \<equiv> Min {length w | w. word_in_variables gr w v}"
 
 
 (*****************************************************************************
