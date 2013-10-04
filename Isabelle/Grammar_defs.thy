@@ -62,7 +62,7 @@ function minimal_word_of_variables :: "('t :: linorder, nat) grammar \<Rightarro
      if gram_valid gr \<and> set (vh#vt) \<subseteq> fst ` set gr then
        let norms = norms_of_grammar gr in
        let (t, vars) = snd (of_key norms vh) in
-       t#(minimal_word_of_variables gr (vars@vt))
+       t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
      else [])"
 by pat_completeness auto
 

@@ -105,6 +105,10 @@ lemma nov_nog':
     shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
 by (auto simp add: nov_nog)
 
+lemma nov_greater_zero: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 
+  0 < norm_of_variables gr [v]"
+sorry
+
 
 (*****************************************************************************
   minimal_word_of_variables
@@ -113,11 +117,25 @@ by (auto simp add: nov_nog)
 termination minimal_word_of_variables
   apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
   apply (subst nov_distr')
-by (simp add: nov_distr nov_nog')
+  apply (auto simp add: add_commute add_strict_increasing2 nov_nog')
+  apply (subst nov_distr')
+by (auto simp add: nov_greater_zero)
+
+lemma helpy: "case x of y \<Rightarrow> (f y @ g) = (case x of y \<Rightarrow> f y) @ g"
+by auto
+
+lemma mwiv_dist: "gram_valid gr \<Longrightarrow> set v1 \<subseteq> fst ` set gr \<Longrightarrow> set v2 \<subseteq> fst ` set gr \<Longrightarrow>
+  minimal_word_of_variables gr (v1 @ v2) = minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2"
+  apply (induct v1 arbitrary: v2)
+  apply auto
+  (* TODO: we can certainly solve this. why does helpy not work here? *)
+oops
 
 lemma mwiv_minimal:
   assumes "word_in_variables gr w v"
     shows "length (minimal_word_of_variables gr v) \<le> length w"
+  apply (case_tac "w = minimal_word_of_variables gr v")
+  apply auto
 sorry
 
 lemma mwiv_in_wov: "length (minimal_word_of_variables gr v) \<in> length ` words_of_variables gr v"
