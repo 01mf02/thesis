@@ -182,10 +182,10 @@ lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (
 by (induct gr w v1 rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 
-lemma no_variables_no_word: "(word_in_variables gr w []) = (w = [])"
+lemma wiv_no_variables_no_word: "(word_in_variables gr w []) = (w = [])"
 by (case_tac w) (auto simp add: word_in_variables_def)
 
-lemma no_word_no_variables: "(word_in_variables gr [] v) = (v = [])"
+lemma wiv_no_word_no_variables: "(word_in_variables gr [] v) = (v = [])"
 by (case_tac v) (auto simp add: word_in_variables_def)
 
 lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
@@ -193,8 +193,14 @@ lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables g
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 
-lemma wiv_mwov: "word_in_variables gr (minimal_word_of_variables gr v) v"
-oops
+lemma wiv_mwov:
+  assumes "gram_valid gr"
+      and "set v \<subseteq> fst ` set gr"
+    shows "word_in_variables gr (minimal_word_of_variables gr v) v" using assms
+  apply (induct v)
+  apply (auto simp add: wiv_no_word_no_variables)
+  (* TODO: use wiv_split here! "case" prohibits it right now ... *)
+sorry
 
 lemma mwov_minimal_wiv:
   assumes "word_in_variables gr w v"
@@ -208,8 +214,11 @@ sorry
   words_of_variables
  *****************************************************************************)
 
-lemma mwov_in_wov: "length (minimal_word_of_variables gr v) \<in> length ` words_of_variables gr v"
-sorry
+lemma mwov_in_wov:
+  assumes "gram_valid gr"
+      and "set v \<subseteq> fst ` set gr"
+    shows "minimal_word_of_variables gr v \<in> words_of_variables gr v" using assms
+by (simp add: words_of_variables_def wiv_mwov)
 
 lemma mwov_min_wov:
   "\<And>x. x \<in> words_of_variables gr v \<Longrightarrow> length (minimal_word_of_variables gr v) \<le> length x"
