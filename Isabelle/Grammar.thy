@@ -121,33 +121,21 @@ termination minimal_word_of_variables
   apply (subst nov_distr')
 by (auto simp add: nov_greater_zero)
 
-lemma helpy: "case x of y \<Rightarrow> (f y @ g) = (case x of y \<Rightarrow> f y) @ g"
-by auto
+(* TODO! *)
+lemma helpy: "(case x of (y, z) \<Rightarrow> (f y z @ g)) = (case x of (y, z) \<Rightarrow> f y z) @ g"
+sorry
 
-lemma mwiv_dist: "gram_valid gr \<Longrightarrow> set v1 \<subseteq> fst ` set gr \<Longrightarrow> set v2 \<subseteq> fst ` set gr \<Longrightarrow>
+lemma mwov_dist: "gram_valid gr \<Longrightarrow> set v1 \<subseteq> fst ` set gr \<Longrightarrow> set v2 \<subseteq> fst ` set gr \<Longrightarrow>
   minimal_word_of_variables gr (v1 @ v2) = minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2"
   apply (induct v1 arbitrary: v2)
   apply auto
   (* TODO: we can certainly solve this. why does helpy not work here? *)
 oops
 
-lemma mwiv_minimal:
-  assumes "word_in_variables gr w v"
-    shows "length (minimal_word_of_variables gr v) \<le> length w"
-  apply (case_tac "w = minimal_word_of_variables gr v")
-  apply auto
-sorry
-
-lemma mwiv_in_wov: "length (minimal_word_of_variables gr v) \<in> length ` words_of_variables gr v"
-sorry
-
-lemma mwiv_len_calcs_norm: "norm gr v = length (minimal_word_of_variables gr v)"
-  unfolding norm_def
-  (* TODO: big problem here: We need the conclusion of Min_eqI, but its premise that the set of
-     words be _finite_ can not be fulfilled! *)
-  apply (rule Min_eqI)
-  apply (auto simp add: mwiv_in_wov)
-  apply (auto simp add: words_of_variables_def mwiv_minimal)
+lemma mwov_len_calcs_nov:
+  assumes "gram_valid gr"
+      and "set v \<subseteq> fst ` set gr"
+    shows "length (minimal_word_of_variables gr v) = norm_of_variables gr v"
 sorry
 
 
@@ -208,27 +196,60 @@ by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Le
 lemma wiv_mwov: "word_in_variables gr (minimal_word_of_variables gr v) v"
 oops
 
+lemma mwov_minimal_wiv:
+  assumes "word_in_variables gr w v"
+    shows "length (minimal_word_of_variables gr v) \<le> length w"
+  apply (case_tac "w = minimal_word_of_variables gr v")
+  apply auto
+sorry
+
+
+(*****************************************************************************
+  words_of_variables
+ *****************************************************************************)
+
+lemma mwov_in_wov: "length (minimal_word_of_variables gr v) \<in> length ` words_of_variables gr v"
+sorry
+
+lemma mwov_min_wov:
+  "\<And>x. x \<in> words_of_variables gr v \<Longrightarrow> length (minimal_word_of_variables gr v) \<le> length x"
+by (auto simp add: words_of_variables_def mwov_minimal_wiv)
+
 
 (*****************************************************************************
   norm
  *****************************************************************************)
 
-lemma no_variables_zero_norm: "norm gr [] = 0"
-by (simp add: norm_def no_variables_no_word words_of_variables_def Min_eqI)
+(* lemma no_variables_zero_norm: "norm gr [] = 0"
+by (simp add: norm_def no_variables_no_word words_of_variables_def Min_eqI) *)
 
-lemma norm_distr:
+(* lemma norm_distr:
   assumes "gram_valid gr"
       and "set (a@b) \<subseteq> fst ` set gr"
     shows "norm gr (a@b) = norm gr a + norm gr b"
-oops
+oops *)
 
-lemma nog_calculates_norm:
+(* lemma nog_calculates_norm:
   assumes "gram_valid gr"
       and "v \<in> fst ` set gr"
     shows "fst (of_key (norms_of_grammar gr) a) = norm gr ([a])"
-oops
+oops *)
+
+lemma mwov_len_calcs_norm: "norm gr v = length (minimal_word_of_variables gr v)"
+  unfolding norm_def
+  (* TODO: big problem here: We need the conclusion of Min_eqI, but its premise that the set of
+     words be _finite_ can not be fulfilled! *)
+  apply (rule Min_eqI)
+  apply (auto simp add: mwov_in_wov mwov_min_wov)
+sorry
 
 lemma nov_calculates_norm:
+  assumes G: "gram_valid gr"
+      and V: "set v \<subseteq> fst ` set gr"
+    shows "norm_of_variables gr v = norm gr v" using assms
+by (auto simp add: mwov_len_calcs_norm mwov_len_calcs_nov)
+
+(* lemma nov_calculates_norm:
   assumes G: "gram_valid gr"
       and V: "set v \<subseteq> fst ` set gr"
     shows "norm_of_variables gr v = norm gr v" using assms
@@ -242,6 +263,6 @@ next
       apply (subst nov_distr)
       apply (simp only: norm_of_variables_def ns_singleton)
       sorry
-qed
+qed *)
 
 end

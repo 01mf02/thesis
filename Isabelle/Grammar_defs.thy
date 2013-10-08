@@ -56,7 +56,8 @@ definition norms_of_grammar ::
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 
-function minimal_word_of_variables :: "('t :: linorder, nat) grammar \<Rightarrow> nat list \<Rightarrow> 't list" where
+function minimal_word_of_variables ::
+  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
      if gram_valid gr \<and> set (vh#vt) \<subseteq> fst ` set gr then
