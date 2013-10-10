@@ -34,12 +34,20 @@ using assms by - (rule Min_predicate, auto simp add: norms_of_rules_def)
   min_norm_of_rules
  *****************************************************************************)
 
-lemma
-  assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
+definition norms_sufficient where
+  "norms_sufficient norms rules \<equiv> \<exists>r \<in> set rules. rule_has_norm norms r"
+
+lemma mnor_in_nor:
+  assumes "norms_sufficient norms rules"
     shows "min_norm_of_rules norms rules \<in> set (norms_of_rules norms rules)" using assms
-  apply (auto simp add: min_norm_of_rules_def norms_of_rules_def)
+  apply (auto simp add: min_norm_of_rules_def norms_of_rules_def norms_sufficient_def)
   apply (rule Min.closed)
 by (auto simp add: filter_empty_conv min_def)
+
+lemma mnor_in_rules:
+  assumes "norms_sufficient norms rules"
+    shows "snd (min_norm_of_rules norms rules) \<in> set rules"
+sorry
 
 
 (*****************************************************************************
@@ -56,14 +64,34 @@ by (auto simp add: norms_of_grammar_def
 lemma nog_alist: "gram_valid gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
 by (simp add: alist_fst_map gram_valid_def is_typical_alist_def nog_fst_is_gr_fst)
 
-lemma
+(* TODO: this is a most central lemma, but probably quite difficult to prove ... *)
+lemma nog_mnor:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
     shows "of_key (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules" using assms
   apply -
   apply (rule of_key_from_existence)
   apply (simp add: nog_alist)
-oops
+sorry
+
+lemma nog_sufficient:
+  assumes "gram_valid gr"
+      and "(v, rules) \<in> set gr"
+    shows "norms_sufficient (norms_of_grammar gr) rules"
+sorry
+
+lemma nog_in_rules':
+  assumes "gram_valid gr"
+      and "(v, rules) \<in> set gr"
+    shows "snd (of_key (norms_of_grammar gr) v) \<in> set rules" using assms
+by (auto simp add: nog_mnor mnor_in_rules nog_sufficient)
+
+lemma nog_in_rules:
+  assumes "gram_valid gr"
+      and "(v, rules) \<in> set gr"
+      and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
+    shows "(t, vars) \<in> set rules" using assms
+by (auto simp add: nog_in_rules')
 
 
 (*****************************************************************************
@@ -147,6 +175,14 @@ sorry
 lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
 by (induct gr w v rule: eat_word.induct, auto simp add: prefix_helper Let_def split_if_eq1)
 
+lemma eat_word_mwov:
+  assumes "gram_valid gr"
+      and "(v, prods) \<in> set gr"
+      and "(t, vars) \<in> set prods"
+      and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
+    shows "eat_word gr (minimal_word_of_variables gr vars) (of_key (of_key gr v) t) = ([], [])"
+sorry
+
 
 (*****************************************************************************
   word_in_variables
@@ -193,13 +229,23 @@ lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables g
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 
+lemma wiv_mwov_singleton:
+  assumes "gram_valid gr"
+      and "v \<in> fst ` set gr"
+      and "snd (of_key (norms_of_grammar gr) v) = (t, vars)"
+    shows "word_in_variables gr (t # minimal_word_of_variables gr vars) [v]" using assms
+  apply (auto simp add: word_in_variables_def Let_def eat_word_mwov nog_in_rules)
+  (* TODO: use of_key_predicate here! should actually not be that hard, but does not work. *)
+  thm of_key_predicate[of gr a b "\<lambda>k v. t \<in> fst ` set v"]
+sorry
+
 lemma wiv_mwov:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
     shows "word_in_variables gr (minimal_word_of_variables gr v) v" using assms
   apply (induct v)
   apply (auto simp add: wiv_no_word_no_variables)
-  (* TODO: use wiv_split here! "case" prohibits it right now ... *)
+  (* TODO: use wiv_split / wiv_mwov_singleton here! "case" prohibits it right now ... *)
 sorry
 
 lemma mwov_minimal_wiv:
