@@ -190,7 +190,10 @@ sorry
 
 (* Postfixfreeness *)
 lemma postfix_free:
-  "gram_valid gr \<Longrightarrow> word_in_variables gr w v \<Longrightarrow> w' = w'h # w't \<Longrightarrow> \<not>(word_in_variables gr (w@w') v)"
+  assumes "gram_valid gr"
+      and "word_in_variables gr w v"
+      and "w' = w'h # w't"
+    shows "\<not>(word_in_variables gr (w@w') v)" using assms
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 (* Prefixfreeness *)
@@ -239,13 +242,38 @@ lemma wiv_mwov_singleton:
   thm of_key_predicate[of gr a b "\<lambda>k v. t \<in> fst ` set v"]
 sorry
 
+lemma wiv_mwov':
+  assumes G: "gram_valid gr"
+      and V: "set v \<subseteq> fst ` set gr"
+    shows "word_in_variables gr (minimal_word_of_variables gr v) v" using V
+proof (induct v)
+  case Nil then show ?case by (simp add: wiv_no_word_no_variables)
+next
+  case (Cons a v)
+  assume H: "(set v \<subseteq> fst ` set gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr v) v)"
+  assume A: "set (a # v) \<subseteq> fst ` set gr"
+  def R:  rule \<equiv> "snd (of_key (norms_of_grammar gr) a)"
+  def T:     t \<equiv> "fst rule"
+  def VS: vars \<equiv> "snd rule"
+  have 1: "minimal_word_of_variables gr (a # v) =
+        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr v" using G A R T VS
+    by (case_tac "snd (of_key (norms_of_grammar gr) a)", auto)
+  have 2: "word_in_variables gr (t # minimal_word_of_variables gr vars) [a]" sorry
+  have 3: "word_in_variables gr (minimal_word_of_variables gr v) v" using H A by auto
+  have "word_in_variables gr (t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr v) ([a] @ v)"
+    using 2 3 (* by (rule wiv_split) *) sorry
+  show ?case sorry
+qed
+
 lemma wiv_mwov:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
     shows "word_in_variables gr (minimal_word_of_variables gr v) v" using assms
   apply (induct v)
   apply (auto simp add: wiv_no_word_no_variables)
-  (* TODO: use wiv_split / wiv_mwov_singleton here! "case" prohibits it right now ... *)
+  apply (case_tac "snd (of_key (norms_of_grammar gr) aa)")
+  apply auto
+  (* TODO: use wiv_split / wiv_mwov_singleton here! (or even better, in Isar proof above) *)
 sorry
 
 lemma mwov_minimal_wiv:
@@ -267,7 +295,7 @@ lemma mwov_in_wov:
 by (simp add: words_of_variables_def wiv_mwov)
 
 lemma mwov_min_wov:
-  "\<And>x. x \<in> words_of_variables gr v \<Longrightarrow> length (minimal_word_of_variables gr v) \<le> length x"
+  "x \<in> words_of_variables gr v \<Longrightarrow> length (minimal_word_of_variables gr v) \<le> length x"
 by (auto simp add: words_of_variables_def mwov_minimal_wiv)
 
 
@@ -299,8 +327,8 @@ lemma mwov_len_calcs_norm: "norm gr v = length (minimal_word_of_variables gr v)"
 sorry
 
 lemma nov_calculates_norm:
-  assumes G: "gram_valid gr"
-      and V: "set v \<subseteq> fst ` set gr"
+  assumes "gram_valid gr"
+      and "set v \<subseteq> fst ` set gr"
     shows "norm_of_variables gr v = norm gr v" using assms
 by (auto simp add: mwov_len_calcs_norm mwov_len_calcs_nov)
 
