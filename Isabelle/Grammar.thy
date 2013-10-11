@@ -149,16 +149,18 @@ termination minimal_word_of_variables
   apply (subst nov_distr')
 by (auto simp add: nov_greater_zero)
 
-(* TODO! *)
-lemma helpy: "(case x of (y, z) \<Rightarrow> (f y z @ g)) = (case x of (y, z) \<Rightarrow> f y z) @ g"
-sorry
 
-lemma mwov_dist: "gram_valid gr \<Longrightarrow> set v1 \<subseteq> fst ` set gr \<Longrightarrow> set v2 \<subseteq> fst ` set gr \<Longrightarrow>
-  minimal_word_of_variables gr (v1 @ v2) = minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2"
+lemma mwov_dist:
+  assumes "gram_valid gr"
+      and "set v1 \<subseteq> fst ` set gr"
+      and "set v2 \<subseteq> fst ` set gr"
+    shows "minimal_word_of_variables gr (v1 @ v2) =
+           minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2" using assms
   apply (induct v1 arbitrary: v2)
   apply auto
-  (* TODO: we can certainly solve this. why does helpy not work here? *)
-oops
+  apply (case_tac "snd (of_key (norms_of_grammar gr) aa)")
+  (* TODO: this works, but how can I prevent the "aa" from appearing? *)
+by auto
 
 lemma mwov_len_calcs_nov:
   assumes "gram_valid gr"
@@ -206,7 +208,7 @@ proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
   then show ?case
   proof (auto simp add: word_in_variables_def Let_def split_if_eq1)
-    fix a  (* TODO: why do we fix "a" here? where is "a"? *)
+    fix a
     assume a1: "gram_valid gr"
        and a2: "eat_word gr (w1t @ w2h # w2t) (of_key (of_key gr vh) a @ vt) = ([], [])"
        and a3: "eat_word gr w1t (of_key (of_key gr vh) a @ vt) = ([], [])"
@@ -238,11 +240,13 @@ lemma wiv_mwov_singleton:
       and "snd (of_key (norms_of_grammar gr) v) = (t, vars)"
     shows "word_in_variables gr (t # minimal_word_of_variables gr vars) [v]" using assms
   apply (auto simp add: word_in_variables_def Let_def eat_word_mwov nog_in_rules)
-  (* TODO: use of_key_predicate here! should actually not be that hard, but does not work. *)
-  thm of_key_predicate[of gr a b "\<lambda>k v. t \<in> fst ` set v"]
-sorry
+  apply (rule of_key_predicate[of gr _ _ "\<lambda>k v. t \<in> fst ` set v"])
+  apply (auto simp add: gram_valid_def is_typical_alist_def)
+  apply (subgoal_tac "(t, vars) \<in> set b")
+  (* TODO: how to get rid of this "b" here? *)
+by (auto intro: nog_in_rules simp add: key_in_fst gram_valid_def is_typical_alist_def)
 
-lemma wiv_mwov':
+lemma wiv_mwov:
   assumes G: "gram_valid gr"
       and V: "set v \<subseteq> fst ` set gr"
     shows "word_in_variables gr (minimal_word_of_variables gr v) v" using V
@@ -250,31 +254,19 @@ proof (induct v)
   case Nil then show ?case by (simp add: wiv_no_word_no_variables)
 next
   case (Cons a v)
-  assume H: "(set v \<subseteq> fst ` set gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr v) v)"
   assume A: "set (a # v) \<subseteq> fst ` set gr"
+  assume "(set v \<subseteq> fst ` set gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr v) v)"
+  then have H: "word_in_variables gr (minimal_word_of_variables gr v) v" using A by auto
+
   def R:  rule \<equiv> "snd (of_key (norms_of_grammar gr) a)"
   def T:     t \<equiv> "fst rule"
   def VS: vars \<equiv> "snd rule"
-  have 1: "minimal_word_of_variables gr (a # v) =
-        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr v" using G A R T VS
-    by (case_tac "snd (of_key (norms_of_grammar gr) a)", auto)
-  have 2: "word_in_variables gr (t # minimal_word_of_variables gr vars) [a]" sorry
-  have 3: "word_in_variables gr (minimal_word_of_variables gr v) v" using H A by auto
-  have "word_in_variables gr (t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr v) ([a] @ v)"
-    using 2 3 (* by (rule wiv_split) *) sorry
-  show ?case sorry
-qed
 
-lemma wiv_mwov:
-  assumes "gram_valid gr"
-      and "set v \<subseteq> fst ` set gr"
-    shows "word_in_variables gr (minimal_word_of_variables gr v) v" using assms
-  apply (induct v)
-  apply (auto simp add: wiv_no_word_no_variables)
-  apply (case_tac "snd (of_key (norms_of_grammar gr) aa)")
-  apply auto
-  (* TODO: use wiv_split / wiv_mwov_singleton here! (or even better, in Isar proof above) *)
-sorry
+  have S: "word_in_variables gr (t # minimal_word_of_variables gr vars) [a]" using G A R T VS
+    by (auto simp add: wiv_mwov_singleton)
+  then show ?case using wiv_split[OF S H] G A R T VS
+    by (case_tac "snd (of_key (norms_of_grammar gr) a)", auto)
+qed
 
 lemma mwov_minimal_wiv:
   assumes "word_in_variables gr w v"
@@ -303,49 +295,16 @@ by (auto simp add: words_of_variables_def mwov_minimal_wiv)
   norm
  *****************************************************************************)
 
-(* lemma no_variables_zero_norm: "norm gr [] = 0"
-by (simp add: norm_def no_variables_no_word words_of_variables_def Min_eqI) *)
-
-(* lemma norm_distr:
+lemma mwov_len_calcs_norm:
   assumes "gram_valid gr"
-      and "set (a@b) \<subseteq> fst ` set gr"
-    shows "norm gr (a@b) = norm gr a + norm gr b"
-oops *)
-
-(* lemma nog_calculates_norm:
-  assumes "gram_valid gr"
-      and "v \<in> fst ` set gr"
-    shows "fst (of_key (norms_of_grammar gr) a) = norm gr ([a])"
-oops *)
-
-lemma mwov_len_calcs_norm: "norm gr v = length (minimal_word_of_variables gr v)"
-  unfolding norm_def
-  (* TODO: big problem here: We need the conclusion of Min_eqI, but its premise that the set of
-     words be _finite_ can not be fulfilled! *)
-  apply (rule Min_eqI)
-  apply (auto simp add: mwov_in_wov mwov_min_wov)
-sorry
+      and "set v \<subseteq> fst ` set gr"
+    shows "norm gr v = length (minimal_word_of_variables gr v)" using assms unfolding norm_def
+by (auto intro: Least_equality simp add: mwov_min_wov mwov_in_wov)
 
 lemma nov_calculates_norm:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
     shows "norm_of_variables gr v = norm gr v" using assms
 by (auto simp add: mwov_len_calcs_norm mwov_len_calcs_nov)
-
-(* lemma nov_calculates_norm:
-  assumes G: "gram_valid gr"
-      and V: "set v \<subseteq> fst ` set gr"
-    shows "norm_of_variables gr v = norm gr v" using assms
-proof (induct v)
-  case Nil then show ?case
-  by (auto simp add: no_variables_zero_norm norm_of_variables_def norm_sum_def)
-next
-  case (Cons a v)
-    have CA: "a # v = [a] @ v" by simp
-    show ?case unfolding CA
-      apply (subst nov_distr)
-      apply (simp only: norm_of_variables_def ns_singleton)
-      sorry
-qed *)
 
 end
