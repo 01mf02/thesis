@@ -3,6 +3,22 @@ theory Grammar imports
   "Helpers"
 begin
 
+(*****************************************************************************
+  gram_valid
+ *****************************************************************************)
+
+lemma gram_alist: "gram_valid gr \<Longrightarrow> is_alist gr"
+by (simp add: gram_valid_def is_typical_alist_def)
+
+lemma gram_rule_vars_in_fst:
+  assumes "gram_valid gr"
+      and "rules \<in> snd ` set gr"
+      and "v \<in> snd ` set rules"
+    shows "set v \<subseteq> fst ` set gr" using assms
+  unfolding gram_valid_def
+  apply auto
+sorry
+
 
 (*****************************************************************************
   norm_sum
@@ -62,7 +78,7 @@ by (auto simp add: norms_of_grammar_def
     key_fold_empty_init[of _ "\<lambda>(v, rules) norms. min_norm_of_rules norms rules"])
 
 lemma nog_alist: "gram_valid gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
-by (simp add: alist_fst_map gram_valid_def is_typical_alist_def nog_fst_is_gr_fst)
+by (simp add: alist_fst_map gram_alist nog_fst_is_gr_fst)
 
 (* TODO: this is a most central lemma, but probably quite difficult to prove ... *)
 lemma nog_mnor:
@@ -168,6 +184,12 @@ lemma mwov_len_calcs_nov:
     shows "length (minimal_word_of_variables gr v) = norm_of_variables gr v"
 sorry
 
+lemma mwov_empty:
+  assumes "gram_valid gr"
+      and "set v \<subseteq> fst ` set gr"
+    shows "(minimal_word_of_variables gr v = []) = (v = [])"
+sorry
+
 
 (*****************************************************************************
   eat_word
@@ -177,13 +199,32 @@ sorry
 lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
 by (induct gr w v rule: eat_word.induct, auto simp add: prefix_helper Let_def split_if_eq1)
 
-lemma eat_word_mwov:
+lemma eat_word_mwov':
   assumes "gram_valid gr"
       and "(v, prods) \<in> set gr"
       and "(t, vars) \<in> set prods"
       and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
-    shows "eat_word gr (minimal_word_of_variables gr vars) (of_key (of_key gr v) t) = ([], [])"
+    shows "eat_word gr (minimal_word_of_variables gr vars) vars = ([], [])" using assms
+  apply (induct gr "(minimal_word_of_variables gr vars)" vars rule: eat_word.induct)
+  apply (auto intro: mwov_empty)
+  (* for last subgoal *)
+  using mwov_empty[of gr] nog_in_rules'[of gr v prods] gram_rule_vars_in_fst
 sorry
+
+lemma eat_word_mwov:
+  assumes G: "gram_valid gr"
+      and V: "(v, prods) \<in> set gr"
+      and T: "(t, vars) \<in> set prods"
+      and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
+    shows "eat_word gr (minimal_word_of_variables gr vars) (of_key (of_key gr v) t) = ([], [])"
+proof -
+  have 1: "of_key gr v = prods" using gram_alist[OF G] V of_key_from_existence[of gr v prods] by auto
+  have "is_alist prods" using G V by (auto simp add: gram_valid_def is_typical_alist_def)
+  then have "of_key prods t = vars" using T of_key_from_existence[of prods t vars] by auto
+  then have "eat_word gr (minimal_word_of_variables gr vars) (of_key (of_key gr v) t) =
+    eat_word gr (minimal_word_of_variables gr vars) vars" using 1 by auto
+  then show ?thesis using assms by (auto simp add: eat_word_mwov')
+qed
 
 
 (*****************************************************************************
@@ -241,10 +282,10 @@ lemma wiv_mwov_singleton:
     shows "word_in_variables gr (t # minimal_word_of_variables gr vars) [v]" using assms
   apply (auto simp add: word_in_variables_def Let_def eat_word_mwov nog_in_rules)
   apply (rule of_key_predicate[of gr _ _ "\<lambda>k v. t \<in> fst ` set v"])
-  apply (auto simp add: gram_valid_def is_typical_alist_def)
+  apply (auto simp add: gram_alist)
   apply (subgoal_tac "(t, vars) \<in> set b")
   (* TODO: how to get rid of this "b" here? *)
-by (auto intro: nog_in_rules simp add: key_in_fst gram_valid_def is_typical_alist_def)
+by (auto intro: nog_in_rules simp add: key_in_fst gram_alist)
 
 lemma wiv_mwov:
   assumes G: "gram_valid gr"
@@ -301,7 +342,7 @@ lemma mwov_len_calcs_norm:
     shows "norm gr v = length (minimal_word_of_variables gr v)" using assms unfolding norm_def
 by (auto intro: Least_equality simp add: mwov_min_wov mwov_in_wov)
 
-lemma nov_calculates_norm:
+theorem nov_calculates_norm:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
     shows "norm_of_variables gr v = norm gr v" using assms

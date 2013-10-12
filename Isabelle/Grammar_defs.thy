@@ -23,8 +23,10 @@ type_synonym ('t, 'v) norm_list = "('v \<times> (nat \<times> ('t, 'v) productio
 definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
   "gram_valid gr \<equiv> is_typical_alist gr \<and>
      (\<forall>(v, rules) \<in> set gr. is_typical_alist rules \<and>
-       (\<forall>vs \<in> snd ` set rules. \<forall>v' \<in> set vs. v' \<in> fst ` set gr) \<and>
+       (\<forall>vs \<in> snd ` set rules. set vs \<subseteq> fst ` set gr) \<and>
        (\<exists>vs \<in> snd ` set rules. \<forall>v' \<in> set vs. v' < v))"
+(* research in thesis: don't we restrict ALL variable rules to contain only variables with index
+   lesser or equal to own index? *)
 
 definition gram_max_vars :: "('t, 'v) grammar \<Rightarrow> nat" where
   "gram_max_vars gr = Max (set (map (\<lambda>(_, rules). Max (set (map (\<lambda>(_, vs). length vs) rules))) gr))"
