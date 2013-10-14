@@ -29,6 +29,14 @@ by (simp add: norm_sum_def)
 
 
 (*****************************************************************************
+  rules_have_norm
+ *****************************************************************************)
+
+lemma rhn_empty_exists: "gram_normed gr \<Longrightarrow> \<exists>(v, rules) \<in> set gr. rules_have_norm [] rules"
+sorry
+
+
+(*****************************************************************************
   norms_of_rules
  *****************************************************************************)
 
@@ -157,6 +165,18 @@ sorry
 
 termination iterate_norms
 by (relation "measure (\<lambda>(gr, norms). length gr)", auto simp add: partition_helper)
+
+(*****************************************************************************
+  norms_of_grammar_new
+ *****************************************************************************)
+
+lemma nog_new_fst_is_gr_fst: "gram_normed gr \<Longrightarrow> map fst gr = map fst (norms_of_grammar_new gr)"
+  apply (auto simp add: norms_of_grammar_new_def)
+  apply (subgoal_tac "[(v, y)\<leftarrow>gr . rules_have_norm [] y] \<noteq> []")
+  apply simp
+  apply (subst filter_helper)
+  apply (simp add: rhn_empty_exists)
+sorry
 
 
 (*****************************************************************************

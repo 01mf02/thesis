@@ -26,5 +26,10 @@ by auto
 lemma Min_predicate: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> \<forall>x \<in> A. P x \<Longrightarrow> P (Min A)"
 by auto
 
+lemma partition_helper: "(filter P l \<noteq> []) = (length (filter (Not \<circ> P) l) < length l)"
+by (induct l) (auto, metis length_filter_le not_le not_less_eq)
+
+lemma filter_helper: "(\<exists>x \<in> set l. P x) = ([x\<leftarrow>l. P x] \<noteq> [])"
+by (induct l) auto
 
 end
