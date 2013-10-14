@@ -50,18 +50,15 @@ using assms by - (rule Min_predicate, auto simp add: norms_of_rules_def)
   min_norm_of_rules
  *****************************************************************************)
 
-definition norms_sufficient where
-  "norms_sufficient norms rules \<equiv> \<exists>r \<in> set rules. rule_has_norm norms r"
-
 lemma mnor_in_nor:
-  assumes "norms_sufficient norms rules"
+  assumes "rules_have_norm norms rules"
     shows "min_norm_of_rules norms rules \<in> set (norms_of_rules norms rules)" using assms
-  apply (auto simp add: min_norm_of_rules_def norms_of_rules_def norms_sufficient_def)
+  apply (auto simp add: min_norm_of_rules_def norms_of_rules_def rules_have_norm_def)
   apply (rule Min.closed)
 by (auto simp add: filter_empty_conv min_def)
 
 lemma mnor_in_rules:
-  assumes "norms_sufficient norms rules"
+  assumes "rules_have_norm norms rules"
     shows "snd (min_norm_of_rules norms rules) \<in> set rules"
 sorry
 
@@ -152,6 +149,14 @@ by (auto simp add: nov_nog)
 lemma nov_greater_zero: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 
   0 < norm_of_variables gr [v]"
 sorry
+
+
+(*****************************************************************************
+  iterate_norms
+ *****************************************************************************)
+
+termination iterate_norms
+by (relation "measure (\<lambda>(gr, norms). length gr)", auto simp add: partition_helper)
 
 
 (*****************************************************************************
