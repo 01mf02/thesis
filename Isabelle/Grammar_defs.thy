@@ -66,7 +66,7 @@ by pat_completeness auto
 
 definition norms_of_grammar_new ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar_new gr \<equiv> iterate_norms gr []"
+  "norms_of_grammar_new gr \<equiv> sort (iterate_norms gr [])"
 
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"

@@ -21,6 +21,6 @@ value "minimal_word_of_variables test_gr [1]"
 
 value "gram_valid test_gr2"
 value "norms_of_grammar test_gr2"
-value "sort (norms_of_grammar_new test_gr2)"
+value "norms_of_grammar_new test_gr2"
 
 end
