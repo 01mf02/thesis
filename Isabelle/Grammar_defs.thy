@@ -54,14 +54,14 @@ definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
   "norms_of_grammar gr \<equiv> (fold (\<lambda>(v, rules). \<lambda>ns. ns@[(v, min_norm_of_rules ns rules)]) gr [])"
 
+definition split_normable where
+  "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
 function iterate_norms where
-  "iterate_norms gr norms = (
-     let (normable, unnormable) = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr in
-     if normable = [] then norms
-     else
-       let new_norms = map (\<lambda>(v, rules). (v, min_norm_of_rules norms rules)) normable in
-       iterate_norms unnormable (norms@new_norms))"
+  "iterate_norms gr norms = (case split_normable gr norms of
+     ([], _) \<Rightarrow> norms
+   | ((v, rules)#normable, unnormable) \<Rightarrow>
+       iterate_norms (normable@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
 by pat_completeness auto
 
 definition norms_of_grammar_new ::

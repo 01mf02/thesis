@@ -164,18 +164,21 @@ sorry
  *****************************************************************************)
 
 termination iterate_norms
-by (relation "measure (\<lambda>(gr, norms). length gr)", auto simp add: partition_helper)
+apply (relation "measure (\<lambda>(gr, norms). length gr)", auto)
+apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
+by (metis (full_types) impossible_Cons not_less)
+
+lemma "\<forall>(v, n, rule) \<in> set (iterate_norms gr []). v \<in> fst ` set gr"
+  apply (induct rule: iterate_norms.induct)
+  (* using iterate_norms.induct[of "\<lambda>gr norms. \<forall>(v, n, rule)\<in>set (iterate_norms gr norms). v \<in> fst ` set gr" gr "[]"] *)
+  apply auto
+sorry
 
 (*****************************************************************************
   norms_of_grammar_new
  *****************************************************************************)
 
 lemma nog_new_fst_is_gr_fst: "gram_normed gr \<Longrightarrow> map fst gr = map fst (norms_of_grammar_new gr)"
-  apply (auto simp add: norms_of_grammar_new_def)
-  apply (subgoal_tac "[(v, y)\<leftarrow>gr . rules_have_norm [] y] \<noteq> []")
-  apply simp
-  apply (subst filter_helper)
-  apply (simp add: rhn_empty_exists)
 sorry
 
 
@@ -310,7 +313,7 @@ lemma wiv_mwov_singleton:
   apply (auto simp add: gram_alist)
   apply (subgoal_tac "(t, vars) \<in> set b")
   (* TODO: how to get rid of this "b" here? *)
-by (auto intro: nog_in_rules simp add: key_in_fst gram_alist)
+by (auto intro: nog_in_rules simp add: gram_alist)
 
 lemma wiv_mwov:
   assumes G: "gram_valid gr"

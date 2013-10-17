@@ -26,10 +26,11 @@ by auto
 lemma Min_predicate: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> \<forall>x \<in> A. P x \<Longrightarrow> P (Min A)"
 by auto
 
-lemma partition_helper: "(filter P l \<noteq> []) = (length (filter (Not \<circ> P) l) < length l)"
-by (induct l) (auto, metis length_filter_le not_le not_less_eq)
+lemma sum_length_filter_compl':
+  "length (filter P l) + length (filter (Not \<circ> P) l) = length l"
+by (induct l) simp_all
 
-lemma filter_helper: "([x\<leftarrow>l. P x] \<noteq> []) = (\<exists>x \<in> set l. P x)"
-by (induct l) auto
+lemma partition_length: "(yes, no) = partition P l \<Longrightarrow> length l = length yes + length no"
+by (auto simp add: sum_length_filter_compl')
 
 end
