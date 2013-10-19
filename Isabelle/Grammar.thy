@@ -200,11 +200,10 @@ lemma mwov_dist:
       and "set v2 \<subseteq> fst ` set gr"
     shows "minimal_word_of_variables gr (v1 @ v2) =
            minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2" using assms
-  apply (induct v1 arbitrary: v2)
-  apply auto
-  apply (case_tac "snd (of_key (norms_of_grammar gr) aa)")
-  (* TODO: this works, but how can I prevent the "aa" from appearing? *)
-by auto
+proof (induct v1 arbitrary: v2)
+  case (Cons a v1)
+  then show ?case by (case_tac "snd (of_key (norms_of_grammar gr) a)") auto
+qed auto
 
 lemma mwov_len_calcs_nov:
   assumes "gram_valid gr"
@@ -308,12 +307,13 @@ lemma wiv_mwov_singleton:
       and "v \<in> fst ` set gr"
       and "snd (of_key (norms_of_grammar gr) v) = (t, vars)"
     shows "word_in_variables gr (t # minimal_word_of_variables gr vars) [v]" using assms
-  apply (auto simp add: word_in_variables_def Let_def eat_word_mwov nog_in_rules)
-  apply (rule of_key_predicate[of gr _ _ "\<lambda>k v. t \<in> fst ` set v"])
-  apply (auto simp add: gram_alist)
-  apply (subgoal_tac "(t, vars) \<in> set b")
-  (* TODO: how to get rid of this "b" here? *)
-by (auto intro: nog_in_rules simp add: gram_alist)
+proof -
+  obtain rules where R: "(v, rules) \<in> set gr" using assms by auto
+  have G: "is_alist gr" using assms by (simp add: gram_alist)
+  have "(t, vars) \<in> set rules" using assms R by (auto intro: nog_in_rules)
+  then have "t \<in> fst ` set (of_key gr v)" using G R by (auto intro: of_key_predicate)
+  then show ?thesis using assms by (auto simp add: word_in_variables_def eat_word_mwov nog_in_rules)
+qed
 
 lemma wiv_mwov:
   assumes G: "gram_valid gr"
