@@ -10,15 +10,12 @@ begin
 lemma gram_alist: "gram_valid gr \<Longrightarrow> is_alist gr"
 by (simp add: gram_valid_def is_typical_alist_def)
 
-lemma gram_rule_vars_in_fst:
+lemma gram_rule_vars_in_keys:
   assumes "gram_valid gr"
-      and "rules \<in> snd ` set gr"
-      and "vars \<in> snd ` set rules"
-    shows "set vars \<subseteq> fst ` set gr" using assms
-  unfolding gram_valid_def
-  apply auto
-sorry
-
+      and "(v, rules) \<in> set gr"
+      and "(t, vars) \<in> set rules"
+    shows "set vars \<subseteq> keys gr" using assms
+unfolding gram_valid_def by (metis (lifting) split_conv)
 
 (*****************************************************************************
   norm_sum
@@ -235,7 +232,7 @@ lemma eat_word_mwov':
   apply (induct gr "(minimal_word_of_variables gr vars)" vars rule: eat_word.induct)
   apply (auto intro: mwov_empty)
   (* for last subgoal *)
-  using mwov_empty[of gr] nog_in_rules'[of gr v prods] gram_rule_vars_in_fst
+  using mwov_empty[of gr] nog_in_rules'[of gr v prods] gram_rule_vars_in_keys
 sorry
 
 lemma eat_word_mwov:
@@ -358,7 +355,7 @@ proof (induct gr w v rule: eat_word_induct)
   have T: "th \<in> keys rules" sorry
   then have 1: "eat_word gr tt (lookup rules th @ vt) = ([], [])" using R I3 by simp
 
-  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I2 gram_rule_vars_in_fst G R sorry
+  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I2 gram_rule_vars_in_keys G R sorry
   then have "length (minimal_word_of_variables gr (lookup rules th @ vt)) \<le> length tt" using R T I1 1 by auto
   show ?case sorry
 qed auto

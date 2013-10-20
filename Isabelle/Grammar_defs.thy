@@ -23,7 +23,7 @@ type_synonym ('t, 'v) norm_list = "('v \<times> (nat \<times> ('t, 'v) productio
 definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
   "gram_valid gr \<equiv> is_typical_alist gr \<and>
      (\<forall>(v, rules) \<in> set gr. is_typical_alist rules \<and>
-       (\<forall>vs \<in> snd ` set rules. set vs \<subseteq> keys gr))"
+       (\<forall>(t, vars) \<in> set rules. set vars \<subseteq> keys gr))"
 
 definition gram_max_vars :: "('t, 'v) grammar \<Rightarrow> nat" where
   "gram_max_vars gr = Max (set (map (\<lambda>(_, rules). Max (set (map (length \<circ> snd) rules))) gr))"
