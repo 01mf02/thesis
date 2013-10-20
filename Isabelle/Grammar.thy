@@ -24,7 +24,7 @@ sorry
   norm_sum
  *****************************************************************************)
 
-lemma ns_singleton: "norm_sum ns [v] = fst (of_key ns v)"
+lemma ns_singleton: "norm_sum ns [v] = fst (lookup ns v)"
 by (simp add: norm_sum_def)
 
 
@@ -89,9 +89,9 @@ by (simp add: alist_fst_map gram_alist nog_fst_is_gr_fst)
 lemma nog_mnor:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
-    shows "of_key (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules" using assms
+    shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules" using assms
   apply -
-  apply (rule of_key_from_existence)
+  apply (rule lookup_from_existence)
   apply (simp add: nog_alist)
 sorry
 
@@ -104,13 +104,13 @@ sorry
 lemma nog_in_rules':
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
-    shows "snd (of_key (norms_of_grammar gr) v) \<in> set rules" using assms
+    shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor mnor_in_rules nog_sufficient)
 
 lemma nog_in_rules:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
-      and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
+      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
     shows "(t, vars) \<in> set rules" using assms
 by (auto simp add: nog_in_rules')
 
@@ -130,26 +130,26 @@ lemma nov_singleton:
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "norm_of_variables gr [v] = n"
 proof -
-  have "norm_of_variables gr [v] = fst (of_key (norms_of_grammar gr) v)"  (is "_ = ?rhs")
+  have "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"  (is "_ = ?rhs")
     by (simp add: norm_of_variables_def norm_sum_def)
   also have "?rhs = fst (n, t, vs)" using assms
-    by (simp_all add: of_key_from_existence nog_alist)
+    by (simp_all add: lookup_from_existence nog_alist)
   finally show ?thesis by auto
 qed
 
 lemma nov_nog:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
-      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
+      and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
     shows "norm_of_variables gr [v] = Suc (norm_of_variables gr vs)"
 proof (simp add: norm_of_variables_def norm_sum_def)
-  have "(of_key (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
-  then show "fst (of_key (norms_of_grammar gr) v) = Suc(listsum (map (fst \<circ> of_key (norms_of_grammar gr)) vs))" sorry
+  have "(lookup (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
+  then show "fst (lookup (norms_of_grammar gr) v) = Suc(listsum (map (fst \<circ> lookup (norms_of_grammar gr)) vs))" sorry
 qed
 
 lemma nov_nog':
   assumes "gram_valid gr"
-      and "(t, vs) = snd (of_key (norms_of_grammar gr) v)"
+      and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
       and "(v, rules) \<in> set gr"
     shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
 by (auto simp add: nov_nog)
@@ -202,7 +202,7 @@ lemma mwov_dist:
            minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2" using assms
 proof (induct v1 arbitrary: v2)
   case (Cons a v1)
-  then show ?case by (case_tac "snd (of_key (norms_of_grammar gr) a)") auto
+  then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
 qed auto
 
 lemma mwov_len_calcs_nov:
@@ -230,7 +230,7 @@ lemma eat_word_mwov':
   assumes "gram_valid gr"
       and "(v, prods) \<in> set gr"
       and "(t, vars) \<in> set prods"
-      and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
+      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
     shows "eat_word gr (minimal_word_of_variables gr vars) vars = ([], [])" using assms
   apply (induct gr "(minimal_word_of_variables gr vars)" vars rule: eat_word.induct)
   apply (auto intro: mwov_empty)
@@ -242,13 +242,13 @@ lemma eat_word_mwov:
   assumes G: "gram_valid gr"
       and V: "(v, prods) \<in> set gr"
       and T: "(t, vars) \<in> set prods"
-      and "(t, vars) = snd (of_key (norms_of_grammar gr) v)"
-    shows "eat_word gr (minimal_word_of_variables gr vars) (of_key (of_key gr v) t) = ([], [])"
+      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
+    shows "eat_word gr (minimal_word_of_variables gr vars) (lookup (lookup gr v) t) = ([], [])"
 proof -
-  have 1: "of_key gr v = prods" using gram_alist[OF G] V of_key_from_existence[of gr v prods] by auto
+  have 1: "lookup gr v = prods" using gram_alist[OF G] V lookup_from_existence[of gr v prods] by auto
   have "is_alist prods" using G V by (auto simp add: gram_valid_def is_typical_alist_def)
-  then have "of_key prods t = vars" using T of_key_from_existence[of prods t vars] by auto
-  then have "eat_word gr (minimal_word_of_variables gr vars) (of_key (of_key gr v) t) =
+  then have "lookup prods t = vars" using T lookup_from_existence[of prods t vars] by auto
+  then have "eat_word gr (minimal_word_of_variables gr vars) (lookup (lookup gr v) t) =
     eat_word gr (minimal_word_of_variables gr vars) vars" using 1 by auto
   then show ?thesis using assms by (auto simp add: eat_word_mwov')
 qed
@@ -281,8 +281,8 @@ proof (induct gr w v rule: eat_word_induct)
   proof (auto simp add: word_in_variables_def Let_def split_if_eq1)
     fix a
     assume a1: "gram_valid gr"
-       and a2: "eat_word gr (w1t @ w2h # w2t) (of_key (of_key gr vh) a @ vt) = ([], [])"
-       and a3: "eat_word gr w1t (of_key (of_key gr vh) a @ vt) = ([], [])"
+       and a2: "eat_word gr (w1t @ w2h # w2t) (lookup (lookup gr vh) a @ vt) = ([], [])"
+       and a3: "eat_word gr w1t (lookup (lookup gr vh) a @ vt) = ([], [])"
     show "False" using a2 postfix_free[simplified word_in_variables_def, OF a1 a3] by simp
   qed
 qed (auto simp add: word_in_variables_def)
@@ -308,13 +308,13 @@ by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Le
 lemma wiv_mwov_singleton:
   assumes "gram_valid gr"
       and "v \<in> keys gr"
-      and "snd (of_key (norms_of_grammar gr) v) = (t, vars)"
+      and "snd (lookup (norms_of_grammar gr) v) = (t, vars)"
     shows "word_in_variables gr (t # minimal_word_of_variables gr vars) [v]" using assms
 proof -
   obtain rules where R: "(v, rules) \<in> set gr" using assms by auto
   have G: "is_alist gr" using assms by (simp add: gram_alist)
   have "(t, vars) \<in> set rules" using assms R by (auto intro: nog_in_rules)
-  then have "t \<in> keys (of_key gr v)" using G R by (auto intro: of_key_predicate)
+  then have "t \<in> keys (lookup gr v)" using G R by (auto intro: lookup_predicate)
   then show ?thesis using assms by (auto simp add: word_in_variables_def eat_word_mwov nog_in_rules)
 qed
 
@@ -330,14 +330,14 @@ next
   assume "(set v \<subseteq> keys gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr v) v)"
   then have H: "word_in_variables gr (minimal_word_of_variables gr v) v" using A by auto
 
-  def R:  rule \<equiv> "snd (of_key (norms_of_grammar gr) a)"
+  def R:  rule \<equiv> "snd (lookup (norms_of_grammar gr) a)"
   def T:     t \<equiv> "fst rule"
   def VS: vars \<equiv> "snd rule"
 
   have S: "word_in_variables gr (t # minimal_word_of_variables gr vars) [a]" using G A R T VS
     by (auto simp add: wiv_mwov_singleton)
   then show ?case using wiv_split[OF S H] G A R T VS
-    by (case_tac "snd (of_key (norms_of_grammar gr) a)", auto)
+    by (case_tac "snd (lookup (norms_of_grammar gr) a)", auto)
 qed
 
 lemma mwov_minimal_wiv:
@@ -347,19 +347,19 @@ lemma mwov_minimal_wiv:
     shows "length (minimal_word_of_variables gr v) \<le> length w" using V W unfolding word_in_variables_def
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
-  obtain rules where R: "rules = (of_key gr vh)" by simp
-  assume I1: "(\<And>x. x = of_key gr vh \<Longrightarrow>
+  obtain rules where R: "rules = (lookup gr vh)" by simp
+  assume I1: "(\<And>x. x = lookup gr vh \<Longrightarrow>
             th \<in> keys x \<Longrightarrow>
-            set (of_key x th @ vt) \<subseteq> keys gr \<Longrightarrow>
-            eat_word gr tt (of_key x th @ vt) = ([], []) \<Longrightarrow> length (minimal_word_of_variables gr (of_key x th @ vt)) \<le> length tt)"
+            set (lookup x th @ vt) \<subseteq> keys gr \<Longrightarrow>
+            eat_word gr tt (lookup x th @ vt) = ([], []) \<Longrightarrow> length (minimal_word_of_variables gr (lookup x th @ vt)) \<le> length tt)"
   assume I2: "set (vh # vt) \<subseteq> keys gr"
   assume I3: "eat_word gr (th # tt) (vh # vt) = ([], [])"
 
   have T: "th \<in> keys rules" sorry
-  then have 1: "eat_word gr tt (of_key rules th @ vt) = ([], [])" using R I3 by simp
+  then have 1: "eat_word gr tt (lookup rules th @ vt) = ([], [])" using R I3 by simp
 
-  have "set (of_key rules th @ vt) \<subseteq> keys gr" using I2 gram_rule_vars_in_fst G R sorry
-  then have "length (minimal_word_of_variables gr (of_key rules th @ vt)) \<le> length tt" using R T I1 1 by auto
+  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I2 gram_rule_vars_in_fst G R sorry
+  then have "length (minimal_word_of_variables gr (lookup rules th @ vt)) \<le> length tt" using R T I1 1 by auto
   show ?case sorry
 qed auto
 

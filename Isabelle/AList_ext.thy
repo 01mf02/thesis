@@ -7,8 +7,8 @@ definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
 definition is_typical_alist where
   "is_typical_alist l \<equiv> is_alist l \<and> l \<noteq> [] \<and> sorted (map fst l)"
 
-definition of_key :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
-  "of_key l k \<equiv> the (Mapping.lookup (Mapping l) k)"
+definition lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
+  "lookup l k \<equiv> the (Mapping.lookup (Mapping l) k)"
 
 definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
   "keys l \<equiv> Mapping.keys (Mapping l)"
@@ -26,13 +26,16 @@ by (rule Set.image_eqI) simp_all
 lemma key_filter_empty: "(k \<notin> fst ` set l) = ([(ka, v)\<leftarrow>l . ka = k] = [])"
 by (induct l) auto
 
-lemma of_key_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> of_key l k = v"
-by (simp add: of_key_def is_alist_def)
+lemma lookup_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> lookup l k = v"
+by (simp add: lookup_def is_alist_def)
 
-lemma of_key_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (of_key l k)"
-by (induct l) (auto simp add: of_key_def is_alist_def)
+lemma lookup_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (lookup l k)"
+by (induct l) (auto simp add: lookup_def is_alist_def)
 
-lemma of_key_forall: "\<forall>(k, v) \<in> set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (of_key l k)"
-by (induct l) (auto simp add: of_key_def)
+lemma lookup_forall: "\<forall>(k, v) \<in> set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (lookup l k)"
+by (induct l) (auto simp add: lookup_def)
+
+lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
+by (induct l) (auto simp add: keys_def)
 
 end
