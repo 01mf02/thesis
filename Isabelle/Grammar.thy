@@ -196,8 +196,8 @@ by (auto simp add: nov_greater_zero)
 
 lemma mwov_dist:
   assumes "gram_valid gr"
-      and "set v1 \<subseteq> fst ` set gr"
-      and "set v2 \<subseteq> fst ` set gr"
+      and "set v1 \<subseteq> keys gr"
+      and "set v2 \<subseteq> keys gr"
     shows "minimal_word_of_variables gr (v1 @ v2) =
            minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2" using assms
 proof (induct v1 arbitrary: v2)
@@ -307,27 +307,27 @@ by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Le
 
 lemma wiv_mwov_singleton:
   assumes "gram_valid gr"
-      and "v \<in> fst ` set gr"
+      and "v \<in> keys gr"
       and "snd (of_key (norms_of_grammar gr) v) = (t, vars)"
     shows "word_in_variables gr (t # minimal_word_of_variables gr vars) [v]" using assms
 proof -
   obtain rules where R: "(v, rules) \<in> set gr" using assms by auto
   have G: "is_alist gr" using assms by (simp add: gram_alist)
   have "(t, vars) \<in> set rules" using assms R by (auto intro: nog_in_rules)
-  then have "t \<in> fst ` set (of_key gr v)" using G R by (auto intro: of_key_predicate)
+  then have "t \<in> keys (of_key gr v)" using G R by (auto intro: of_key_predicate)
   then show ?thesis using assms by (auto simp add: word_in_variables_def eat_word_mwov nog_in_rules)
 qed
 
 lemma wiv_mwov:
   assumes G: "gram_valid gr"
-      and V: "set v \<subseteq> fst ` set gr"
+      and V: "set v \<subseteq> keys gr"
     shows "word_in_variables gr (minimal_word_of_variables gr v) v" using V
 proof (induct v)
   case Nil then show ?case by (simp add: wiv_no_word_no_variables)
 next
   case (Cons a v)
-  assume A: "set (a # v) \<subseteq> fst ` set gr"
-  assume "(set v \<subseteq> fst ` set gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr v) v)"
+  assume A: "set (a # v) \<subseteq> keys gr"
+  assume "(set v \<subseteq> keys gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr v) v)"
   then have H: "word_in_variables gr (minimal_word_of_variables gr v) v" using A by auto
 
   def R:  rule \<equiv> "snd (of_key (norms_of_grammar gr) a)"
@@ -342,23 +342,23 @@ qed
 
 lemma mwov_minimal_wiv:
   assumes G: "gram_valid gr"
-      and V: "set v \<subseteq> fst ` set gr" 
+      and V: "set v \<subseteq> keys gr" 
       and W: "word_in_variables gr w v"
     shows "length (minimal_word_of_variables gr v) \<le> length w" using V W unfolding word_in_variables_def
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
   obtain rules where R: "rules = (of_key gr vh)" by simp
   assume I1: "(\<And>x. x = of_key gr vh \<Longrightarrow>
-            th \<in> fst ` set x \<Longrightarrow>
-            set (of_key x th @ vt) \<subseteq> fst ` set gr \<Longrightarrow>
+            th \<in> keys x \<Longrightarrow>
+            set (of_key x th @ vt) \<subseteq> keys gr \<Longrightarrow>
             eat_word gr tt (of_key x th @ vt) = ([], []) \<Longrightarrow> length (minimal_word_of_variables gr (of_key x th @ vt)) \<le> length tt)"
-  assume I2: "set (vh # vt) \<subseteq> fst ` set gr"
+  assume I2: "set (vh # vt) \<subseteq> keys gr"
   assume I3: "eat_word gr (th # tt) (vh # vt) = ([], [])"
 
-  have T: "th \<in> fst ` set rules" sorry
+  have T: "th \<in> keys rules" sorry
   then have 1: "eat_word gr tt (of_key rules th @ vt) = ([], [])" using R I3 by simp
 
-  have "set (of_key rules th @ vt) \<subseteq> fst ` set gr" using I2 gram_rule_vars_in_fst G R sorry
+  have "set (of_key rules th @ vt) \<subseteq> keys gr" using I2 gram_rule_vars_in_fst G R sorry
   then have "length (minimal_word_of_variables gr (of_key rules th @ vt)) \<le> length tt" using R T I1 1 by auto
   show ?case sorry
 qed auto
@@ -370,13 +370,13 @@ qed auto
 
 lemma mwov_in_wov:
   assumes "gram_valid gr"
-      and "set v \<subseteq> fst ` set gr"
+      and "set v \<subseteq> keys gr"
     shows "minimal_word_of_variables gr v \<in> words_of_variables gr v" using assms
 by (simp add: words_of_variables_def wiv_mwov)
 
 lemma mwov_min_wov:
   assumes "gram_valid gr"
-      and "set v \<subseteq> fst ` set gr"
+      and "set v \<subseteq> keys gr"
     shows "w \<in> words_of_variables gr v \<Longrightarrow> length (minimal_word_of_variables gr v) \<le> length w"
 using assms by (auto simp add: words_of_variables_def mwov_minimal_wiv)
 
@@ -387,13 +387,13 @@ using assms by (auto simp add: words_of_variables_def mwov_minimal_wiv)
 
 lemma mwov_len_calcs_norm:
   assumes "gram_valid gr"
-      and "set v \<subseteq> fst ` set gr"
+      and "set v \<subseteq> keys gr"
     shows "norm gr v = length (minimal_word_of_variables gr v)" using assms unfolding norm_def
 by (auto intro: Least_equality simp add: mwov_min_wov mwov_in_wov)
 
 theorem nov_calculates_norm:
   assumes "gram_valid gr"
-      and "set v \<subseteq> fst ` set gr"
+      and "set v \<subseteq> keys gr"
     shows "norm_of_variables gr v = norm gr v" using assms
 by (auto simp add: mwov_len_calcs_norm mwov_len_calcs_nov)
 

@@ -1,4 +1,4 @@
-theory AList_ext imports "~~/src/HOL/Library/AList"
+theory AList_ext imports "~~/src/HOL/Library/AList_Mapping"
 begin
 
 definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
@@ -8,7 +8,10 @@ definition is_typical_alist where
   "is_typical_alist l \<equiv> is_alist l \<and> l \<noteq> [] \<and> sorted (map fst l)"
 
 definition of_key :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
-  "of_key l k \<equiv> snd (hd (AList.restrict {k} l))"
+  "of_key l k \<equiv> the (Mapping.lookup (Mapping l) k)"
+
+definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
+  "keys l \<equiv> Mapping.keys (Mapping l)"
 
 
 lemma alist_fst_map: "is_alist l \<Longrightarrow> map fst l = map fst (f l) \<Longrightarrow> is_alist (f l)"
@@ -23,15 +26,8 @@ by (rule Set.image_eqI) simp_all
 lemma key_filter_empty: "(k \<notin> fst ` set l) = ([(ka, v)\<leftarrow>l . ka = k] = [])"
 by (induct l) auto
 
-lemma restrict_single: "is_alist l \<Longrightarrow> ((k, v) \<in> set l) = (AList.restrict {k} l = [(k, v)])"
-by (induct l) (auto simp add: restrict_eq is_alist_def key_filter_empty)
-
 lemma of_key_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> of_key l k = v"
-by (simp add: of_key_def restrict_single)
-
-lemma existence_from_of_key: "is_alist l \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> of_key l k = v \<Longrightarrow> (k, v) \<in> set l"
-  unfolding restrict_single
-by (induct l) (auto simp add: of_key_def restrict_eq key_filter_empty is_alist_def)
+by (simp add: of_key_def is_alist_def)
 
 lemma of_key_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (of_key l k)"
 by (induct l) (auto simp add: of_key_def is_alist_def)
