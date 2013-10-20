@@ -345,6 +345,7 @@ lemma mwov_minimal_wiv:
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
   obtain rules where R: "rules = (lookup gr vh)" by simp
+  def rth \<equiv> "lookup rules th"
   assume I1: "(\<And>x. x = lookup gr vh \<Longrightarrow>
             th \<in> keys x \<Longrightarrow>
             gram_valid gr \<Longrightarrow>
@@ -355,19 +356,17 @@ proof (induct gr w v rule: eat_word_induct)
   assume I4: "word_in_variables gr (th # tt) (vh # vt)"
 
   have T: "th \<in> keys rules" sorry
-  then have 1: "word_in_variables gr tt (lookup rules th @ vt)" using R I4
-    by (auto simp add: word_in_variables_def)
+  then have 1: "word_in_variables gr tt (rth @ vt)" using R I4
+    by (auto simp add: word_in_variables_def rth_def)
 
   have "set (lookup rules th @ vt) \<subseteq> keys gr" using I3 gram_rule_vars_in_keys G R sorry
-  then have "length (minimal_word_of_variables gr (lookup rules th @ vt)) \<le> length tt"
-    using R T I1 I2 1 by auto
-  have "minimal_word_of_variables gr (vh # vt) = th # minimal_word_of_variables gr (lookup rules th @ vt)"
-    using I3
-    apply auto
-    apply (case_tac "snd (lookup (norms_of_grammar gr) a)")
-    apply auto
-  sorry
-  show ?case sorry
+  then have 2: "length (minimal_word_of_variables gr (rth @ vt)) \<le> length tt"
+    using R T I1 I2 1 rth_def by auto
+
+  have "length (minimal_word_of_variables gr (vh # vt)) \<le>
+        1 + length (minimal_word_of_variables gr (rth @ vt))" sorry
+  also have "... \<le> length (th # tt)" using 2 by auto
+  finally show ?case .
 qed (auto simp add: word_in_variables_def)
 
 
