@@ -127,11 +127,10 @@ lemma nov_singleton:
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "norm_of_variables gr [v] = n"
 proof -
-  have "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"  (is "_ = ?rhs")
+  have "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
     by (simp add: norm_of_variables_def norm_sum_def)
-  also have "?rhs = fst (n, t, vs)" using assms
-    by (simp_all add: lookup_from_existence nog_alist)
-  finally show ?thesis by auto
+  also have "... = fst (n, t, vs)" using assms by (simp_all add: lookup_from_existence nog_alist)
+  finally show ?thesis by simp
 qed
 
 lemma nov_nog:
@@ -151,8 +150,7 @@ lemma nov_nog':
     shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
 by (auto simp add: nov_nog)
 
-lemma nov_greater_zero: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 
-  0 < norm_of_variables gr [v]"
+lemma nov_greater_zero: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < norm_of_variables gr [v]"
 sorry
 
 
