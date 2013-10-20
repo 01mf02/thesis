@@ -9,11 +9,13 @@ begin
   Types
  *****************************************************************************)
 
-type_synonym ('t, 'v) production_rule = "('t \<times> 'v list)"
+type_synonym ('t, 'v) production_rule = "'t \<times> 'v list"
 type_synonym ('t, 'v) production_rules = "('t, 'v) production_rule list"
 type_synonym ('t, 'v) grammar = "('v \<times> ('t, 'v) production_rules) list"
 
-type_synonym ('t, 'v) norm_list = "('v \<times> (nat \<times> ('t, 'v) production_rule)) list"
+type_synonym ('t, 'v) norm_rule = "nat \<times> ('t, 'v) production_rule"
+type_synonym ('t, 'v) norm_rules = "('t, 'v) norm_rule list"
+type_synonym ('t, 'v) norm_list = "('v \<times> ('t, 'v) norm_rule) list"
 
 
 (*****************************************************************************
@@ -43,11 +45,12 @@ definition rules_have_norm :: "('t, 'v) norm_list \<Rightarrow> ('t, 'v) product
   "rules_have_norm norms rules \<equiv> \<exists>r \<in> set rules. rule_has_norm norms r"
 
 definition norms_of_rules ::
-  "('t, 'v) norm_list \<Rightarrow> ('t, 'v) production_rules \<Rightarrow> (nat \<times> ('t, 'v) production_rule) list" where
+  "('t, 'v) norm_list \<Rightarrow> ('t, 'v) production_rules \<Rightarrow> ('t, 'v) norm_rules" where
   "norms_of_rules norms rules \<equiv>
      map (\<lambda>(t, vs). (1 + norm_sum norms vs, (t, vs))) (filter (rule_has_norm norms) rules)"
 
-definition min_norm_of_rules where
+definition min_norm_of_rules :: "('t::linorder, 'v::linorder) norm_list \<Rightarrow>
+  ('t, 'v) production_rules \<Rightarrow> ('t, 'v) norm_rule" where
   "min_norm_of_rules norms rules \<equiv> Min (set (norms_of_rules norms rules))"
 
 definition norms_of_grammar ::
@@ -102,8 +105,8 @@ definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Righta
 definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
 
-definition gram_normed where
-  "gram_normed gr \<equiv> gram_valid gr \<and> (\<forall>(v, _) \<in> set gr. \<exists>w. w \<in> words_of_variables gr [v])"
+definition gram_normed :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
+  "gram_normed gr \<equiv> gram_valid gr \<and> (\<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v))"
 
 definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm gr v \<equiv> Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"

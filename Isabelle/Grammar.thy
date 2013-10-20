@@ -341,24 +341,34 @@ lemma mwov_minimal_wiv:
   assumes G: "gram_valid gr"
       and V: "set v \<subseteq> keys gr" 
       and W: "word_in_variables gr w v"
-    shows "length (minimal_word_of_variables gr v) \<le> length w" using V W unfolding word_in_variables_def
+    shows "length (minimal_word_of_variables gr v) \<le> length w" using assms
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
   obtain rules where R: "rules = (lookup gr vh)" by simp
   assume I1: "(\<And>x. x = lookup gr vh \<Longrightarrow>
             th \<in> keys x \<Longrightarrow>
+            gram_valid gr \<Longrightarrow>
             set (lookup x th @ vt) \<subseteq> keys gr \<Longrightarrow>
-            eat_word gr tt (lookup x th @ vt) = ([], []) \<Longrightarrow> length (minimal_word_of_variables gr (lookup x th @ vt)) \<le> length tt)"
-  assume I2: "set (vh # vt) \<subseteq> keys gr"
-  assume I3: "eat_word gr (th # tt) (vh # vt) = ([], [])"
+            word_in_variables gr tt (lookup x th @ vt) \<Longrightarrow> length (minimal_word_of_variables gr (lookup x th @ vt)) \<le> length tt)"
+  assume I2: "gram_valid gr"
+  assume I3: "set (vh # vt) \<subseteq> keys gr"
+  assume I4: "word_in_variables gr (th # tt) (vh # vt)"
 
   have T: "th \<in> keys rules" sorry
-  then have 1: "eat_word gr tt (lookup rules th @ vt) = ([], [])" using R I3 by simp
+  then have 1: "word_in_variables gr tt (lookup rules th @ vt)" using R I4
+    by (auto simp add: word_in_variables_def)
 
-  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I2 gram_rule_vars_in_keys G R sorry
-  then have "length (minimal_word_of_variables gr (lookup rules th @ vt)) \<le> length tt" using R T I1 1 by auto
+  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I3 gram_rule_vars_in_keys G R sorry
+  then have "length (minimal_word_of_variables gr (lookup rules th @ vt)) \<le> length tt"
+    using R T I1 I2 1 by auto
+  have "minimal_word_of_variables gr (vh # vt) = th # minimal_word_of_variables gr (lookup rules th @ vt)"
+    using I3
+    apply auto
+    apply (case_tac "snd (lookup (norms_of_grammar gr) a)")
+    apply auto
+  sorry
   show ?case sorry
-qed auto
+qed (auto simp add: word_in_variables_def)
 
 
 (*****************************************************************************
