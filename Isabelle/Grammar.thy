@@ -252,40 +252,13 @@ qed
 lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
 by (induct gr w v rule: eat_word.induct, auto simp add: prefix_helper Let_def split_if_eq1)
 
-lemma eat_word_mwov':
-  assumes "gram_valid gr"
-      and "(v, prods) \<in> set gr"
-      and "(t, vars) \<in> set prods"
-      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
-    shows "eat_word gr (minimal_word_of_variables gr vars) vars = ([], [])" using assms
-  apply (induct gr "(minimal_word_of_variables gr vars)" vars rule: eat_word.induct)
-  apply (auto intro: mwov_empty)
-  (* for last subgoal *)
-  using mwov_empty[of gr] nog_in_rules'[of gr v prods] gram_rule_vars_in_keys
-sorry
-
-lemma eat_word_mwov:
-  assumes G: "gram_valid gr"
-      and V: "(v, prods) \<in> set gr"
-      and T: "(t, vars) \<in> set prods"
-      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
-    shows "eat_word gr (minimal_word_of_variables gr vars) (lookup (lookup gr v) t) = ([], [])"
-proof -
-  have 1: "lookup gr v = prods" using gram_alist[OF G] V lookup_from_existence[of gr v prods] by auto
-  have "is_alist prods" using G V by (auto simp add: gram_valid_def is_typical_alist_def)
-  then have "lookup prods t = vars" using T lookup_from_existence[of prods t vars] by auto
-  then have "eat_word gr (minimal_word_of_variables gr vars) (lookup (lookup gr v) t) =
-    eat_word gr (minimal_word_of_variables gr vars) vars" using 1 by auto
-  then show ?thesis using assms by (auto simp add: eat_word_mwov')
-qed
-
 
 (*****************************************************************************
   word_in_variables
  *****************************************************************************)
 
 (* Postfixfreeness *)
-lemma postfix_free:
+lemma wiv_postfix_free:
   assumes "gram_valid gr"
       and "word_in_variables gr w v"
       and "w' = w'h # w't"
@@ -293,7 +266,7 @@ lemma postfix_free:
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 (* Prefixfreeness *)
-lemma prefix_free:
+lemma wiv_prefix_free:
   assumes "gram_valid gr"
       and "w1 = w1h # w1t"
       and "w2 = w2h # w2t"
@@ -309,7 +282,7 @@ proof (induct gr w v rule: eat_word_induct)
     assume a1: "gram_valid gr"
        and a2: "eat_word gr (w1t @ w2h # w2t) (lookup (lookup gr vh) a @ vt) = ([], [])"
        and a3: "eat_word gr w1t (lookup (lookup gr vh) a @ vt) = ([], [])"
-    show "False" using a2 postfix_free[simplified word_in_variables_def, OF a1 a3] by simp
+    show "False" using a2 wiv_postfix_free[simplified word_in_variables_def, OF a1 a3] by simp
   qed
 qed (auto simp add: word_in_variables_def)
 
@@ -331,6 +304,33 @@ lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables g
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 
+lemma wiv_mwov3:
+  assumes "gram_valid gr"
+      and "(v, prods) \<in> set gr"
+      and "(t, vars) \<in> set prods"
+      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
+    shows "word_in_variables gr (minimal_word_of_variables gr vars) vars" using assms
+  apply (induct gr "(minimal_word_of_variables gr vars)" vars rule: eat_word.induct)
+  apply (auto intro: mwov_empty)
+  (* for last subgoal *)
+  using mwov_empty[of gr] nog_in_rules'[of gr v prods] gram_rule_vars_in_keys
+sorry
+
+lemma wiv_mwov2:
+  assumes G: "gram_valid gr"
+      and V: "(v, prods) \<in> set gr"
+      and T: "(t, vars) \<in> set prods"
+      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
+    shows "word_in_variables gr (minimal_word_of_variables gr vars) (lookup (lookup gr v) t)"
+proof -
+  have L: "lookup gr v = prods" using lookup_from_existence[of gr v prods] gram_alist[OF G] V .
+  have "is_alist prods" using G V by (auto simp add: gram_valid_def is_typical_alist_def)
+  then have "lookup prods t = vars" using T lookup_from_existence[of prods t vars] by auto
+  then have "word_in_variables gr (minimal_word_of_variables gr vars) (lookup (lookup gr v) t) =
+    word_in_variables gr (minimal_word_of_variables gr vars) vars" using L by simp
+  then show ?thesis using assms by (auto simp add: wiv_mwov3)
+qed
+
 lemma wiv_mwov_singleton:
   assumes "gram_valid gr"
       and "v \<in> keys gr"
@@ -341,7 +341,8 @@ proof -
   have G: "is_alist gr" using assms by (simp add: gram_alist)
   have "(t, vars) \<in> set rules" using assms R by (auto intro: nog_in_rules)
   then have "t \<in> keys (lookup gr v)" using G R by (auto intro: lookup_predicate)
-  then show ?thesis using assms by (auto simp add: word_in_variables_def eat_word_mwov nog_in_rules)
+  then show ?thesis using assms unfolding word_in_variables_def
+    by (auto simp add: wiv_mwov2[simplified word_in_variables_def] nog_in_rules)
 qed
 
 lemma wiv_mwov:
