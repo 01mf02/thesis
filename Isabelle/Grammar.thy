@@ -212,6 +212,37 @@ lemma mwov_empty:
     shows "(minimal_word_of_variables gr v = []) = (v = [])"
 sorry
 
+lemma mwov_length_singleton:
+  assumes "gram_valid gr"
+      and "vh \<in> keys gr"
+      and "rth \<in> snd ` set (lookup gr vh)"
+    shows "length (minimal_word_of_variables gr [vh]) \<le> 1 + length (minimal_word_of_variables gr rth)"
+sorry
+
+lemma mwov_length:
+  assumes G: "gram_valid gr"
+      and V: "set (vh # vt) \<subseteq> keys gr"
+      and R: "rth \<in> snd ` set (lookup gr vh)"
+    shows "length (minimal_word_of_variables gr (vh # vt)) \<le>
+       1 + length (minimal_word_of_variables gr (rth @ vt))"
+proof -
+  have G1: "vh \<in> keys gr" using V by auto
+  have G2: "set [vh] \<subseteq> keys gr" using V by auto
+  have G3: "set vt   \<subseteq> keys gr" using V by auto
+  have G4: "set rth  \<subseteq> keys gr" using R G1 sorry
+
+  have L: "length (minimal_word_of_variables gr [vh]) \<le>
+       1 + length (minimal_word_of_variables gr rth)" using mwov_length_singleton G G1 R  .
+  have D1: "minimal_word_of_variables gr ([vh] @ vt) =
+            minimal_word_of_variables gr [vh] @ minimal_word_of_variables gr vt"
+    using mwov_dist G G2 G3 .
+  have D2: "minimal_word_of_variables gr (rth @ vt) =
+            minimal_word_of_variables gr rth @ minimal_word_of_variables gr vt"
+    using mwov_dist G G4 G3 .
+  
+  show ?thesis using L D1 D2 by auto
+qed
+
 
 (*****************************************************************************
   eat_word
@@ -336,9 +367,9 @@ next
 qed
 
 lemma mwov_minimal_wiv:
-  assumes G: "gram_valid gr"
-      and V: "set v \<subseteq> keys gr" 
-      and W: "word_in_variables gr w v"
+  assumes "gram_valid gr"
+      and "set v \<subseteq> keys gr" 
+      and "word_in_variables gr w v"
     shows "length (minimal_word_of_variables gr v) \<le> length w" using assms
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
@@ -357,12 +388,14 @@ proof (induct gr w v rule: eat_word_induct)
   then have 1: "word_in_variables gr tt (rth @ vt)" using R I4
     by (auto simp add: word_in_variables_def rth_def)
 
-  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I3 gram_rule_vars_in_keys G R sorry
+  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I3 gram_rule_vars_in_keys I2 R sorry
   then have 2: "length (minimal_word_of_variables gr (rth @ vt)) \<le> length tt"
     using R T I1 I2 1 rth_def by auto
 
+  have 4: "rth \<in> snd ` set (lookup gr vh)" using rth_def R sorry
+
   have "length (minimal_word_of_variables gr (vh # vt)) \<le>
-        1 + length (minimal_word_of_variables gr (rth @ vt))" sorry
+    1 + length (minimal_word_of_variables gr (rth @ vt))" using mwov_length I2 I3 4 .
   also have "... \<le> length (th # tt)" using 2 by auto
   finally show ?case .
 qed (auto simp add: word_in_variables_def)
