@@ -327,7 +327,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   case (normal gr th tt vh vt)
 
   obtain rules where R: "rules = lookup gr vh" by simp
-  obtain rth where T: "rth = lookup rules th" by simp
+  obtain   rth where T: "rth = lookup rules th" by simp
 
   assume I1: "(\<And>x. x = lookup gr vh \<Longrightarrow>
             th \<in> keys x \<Longrightarrow>
@@ -337,20 +337,19 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   assume I3: "gram_valid gr"
   assume I4: "set (vh # vt) \<subseteq> keys gr"
 
-  have VH: "vh \<in> keys gr" using I4 by simp
   have VT: "set vt \<subseteq> keys gr" using I4 by simp
-  have VR: "(vh, rules) \<in> set gr" using existence_from_lookup gram_alist[OF I3] VH sym[OF R] .
+  have VR: "(vh, rules) \<in> set gr" using gram_alist[OF I3] I4 R by (simp add: existence_from_lookup)
+  have RA: "is_alist rules" using VR I3 by (auto simp add: gram_valid_def is_typical_alist_def)
+
   have TH: "th \<in> keys rules \<and> tt = minimal_word_of_variables gr (rth @ vt)" unfolding T
     using mwov_prefix I3 VR VT I2 .
-  have RA: "is_alist rules" sorry
-  have TR: "(th, rth) \<in> set rules" using existence_from_lookup RA conjunct1[OF TH] sym[OF T] .
-  have RV: "set (rth @ vt) \<subseteq> keys gr" using I4 sorry
+  have TR: "(th, rth) \<in> set rules" using RA TH T by (simp add: existence_from_lookup)
+  have RV: "set (rth @ vt) \<subseteq> keys gr" using I4 gram_rule_vars_in_keys[OF I3 VR TR] by simp
 
-  have "word_in_variables gr (minimal_word_of_variables gr (rth @ vt)) (rth @ vt)" unfolding T
-    using I1[of rules] R conjunct1[OF TH] conjunct2[OF TH, simplified T] I3 RV[simplified T] .
+  have "word_in_variables gr (minimal_word_of_variables gr (rth @ vt)) (rth @ vt)"
+    using I1 R TH I3 RV T by simp
   then have WIV: "word_in_variables gr tt (rth @ vt)" using TH by simp
-  have "word_in_variables gr (th#tt) (vh#vt)" using wiv_prefix I3 VR TR WIV .
-  then show ?case using I2 by simp
+  show ?case using wiv_prefix[OF I3 VR TR WIV] I2 by simp
 qed (auto simp add: word_in_variables_def mwov_empty)
 
 lemma mwov_minimal_wiv:
