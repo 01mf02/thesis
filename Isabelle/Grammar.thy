@@ -209,7 +209,7 @@ sorry
 lemma mwov_empty:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
-    shows "(minimal_word_of_variables gr v = []) = (v = [])"
+    shows "(minimal_word_of_variables gr v = []) \<Longrightarrow> (v = [])"
 sorry
 
 lemma mwov_length_singleton:
@@ -366,6 +366,23 @@ next
   then show ?case using wiv_split[OF S H] G A R T VS
     by (case_tac "snd (lookup (norms_of_grammar gr) a)", auto)
 qed
+
+lemma wiv_prefix:
+  assumes "gram_valid gr"
+      and "(vh, rules) \<in> set gr"
+      and "(th, rth) \<in> set rules"
+      and "word_in_variables gr tt (rth @ vt)"
+    shows "word_in_variables gr (th#tt) (vh#vt)"
+sorry
+
+lemma wiv_mwov_new:
+  assumes G: "gram_valid gr"
+      and V: "set v \<subseteq> keys gr"
+    shows "word_in_variables gr (minimal_word_of_variables gr v) v" using assms
+proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
+  case (normal gr th tt vh vt)
+  then show ?case sorry (* TODO: use wiv_prefix here! *)
+qed (auto simp add: word_in_variables_def mwov_empty)
 
 lemma mwov_minimal_wiv:
   assumes "gram_valid gr"
