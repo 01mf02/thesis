@@ -255,15 +255,6 @@ sorry
 
 
 (*****************************************************************************
-  eat_word
- *****************************************************************************)
-
-(* The output word of eat_word is a postfix of the input word. *)
-lemma eat_word_postfix: "\<exists>p. w = p @ fst (eat_word gr w v)"
-by (induct gr w v rule: eat_word.induct, auto simp add: prefix_helper Let_def split_if_eq1)
-
-
-(*****************************************************************************
   word_in_variables
  *****************************************************************************)
 
@@ -295,13 +286,6 @@ proof (induct gr w v rule: eat_word_induct)
     show "False" using a2 wiv_postfix_free[simplified word_in_variables_def, OF a1 a3] by simp
   qed
 qed (auto simp add: word_in_variables_def)
-
-lemma "eat_word gr w v1 = (p, []) \<Longrightarrow> word_in_variables gr p v2 \<Longrightarrow> word_in_variables gr w (v1 @ v2)"
-oops
-
-lemma "word_in_variables gr w (v1 @ v2) \<Longrightarrow> word_in_variables gr (fst (eat_word gr w v1)) v2"
-by (induct gr w v1 rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
-
 
 lemma wiv_no_variables_no_word: "(word_in_variables gr w []) = (w = [])"
 by (case_tac w) (auto simp add: word_in_variables_def)
