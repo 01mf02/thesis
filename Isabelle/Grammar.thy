@@ -243,6 +243,14 @@ proof -
   show ?thesis using L D1 D2 by auto
 qed
 
+lemma mwov_prefix:
+  assumes "gram_valid gr"
+      and "(vh, rules) \<in> set gr"
+      and "set vt \<subseteq> keys gr"
+      and "th # tt = minimal_word_of_variables gr (vh # vt)"
+    shows "th \<in> keys rules \<and> tt = minimal_word_of_variables gr ((lookup rules th) @ vt)"
+sorry
+
 
 (*****************************************************************************
   eat_word
@@ -381,7 +389,16 @@ lemma wiv_mwov_new:
     shows "word_in_variables gr (minimal_word_of_variables gr v) v" using assms
 proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   case (normal gr th tt vh vt)
-  then show ?case sorry (* TODO: use wiv_prefix here! *)
+  obtain rules where R: "rules = lookup gr vh" by simp
+  assume I1: "(\<And>x. x = lookup gr vh \<Longrightarrow>
+            th \<in> keys x \<Longrightarrow>
+            tt = minimal_word_of_variables gr (lookup x th @ vt) \<Longrightarrow>
+            gram_valid gr \<Longrightarrow> set (lookup x th @ vt) \<subseteq> keys gr \<Longrightarrow> word_in_variables gr (minimal_word_of_variables gr (lookup x th @ vt)) (lookup x th @ vt))"
+  assume I2: "th # tt = minimal_word_of_variables gr (vh # vt)"
+  assume I3: "gram_valid gr"
+  assume I4: "set (vh # vt) \<subseteq> keys gr"
+  (* TODO: first use mwov_prefix here to get conclusion of I1, then use wiv_prefix! *)
+  show ?case sorry
 qed (auto simp add: word_in_variables_def mwov_empty)
 
 lemma mwov_minimal_wiv:
