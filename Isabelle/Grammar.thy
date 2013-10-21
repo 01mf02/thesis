@@ -10,12 +10,16 @@ begin
 lemma gram_alist: "gram_valid gr \<Longrightarrow> is_alist gr"
 by (simp add: gram_valid_def is_typical_alist_def)
 
+lemma gram_rules_alist: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> is_alist rules"
+unfolding gram_valid_def is_typical_alist_def by auto
+
 lemma gram_rule_vars_in_keys:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
       and "(t, vars) \<in> set rules"
     shows "set vars \<subseteq> keys gr" using assms
 unfolding gram_valid_def by (metis (lifting) split_conv)
+
 
 (*****************************************************************************
   norm_sum
@@ -214,31 +218,29 @@ sorry
 
 lemma mwov_length_singleton:
   assumes "gram_valid gr"
-      and "vh \<in> keys gr"
-      and "rth \<in> snd ` set (lookup gr vh)"
+      and "(vh, rules) \<in> set gr"
+      and "(th, rth) \<in> set rules"
     shows "length (minimal_word_of_variables gr [vh]) \<le> 1 + length (minimal_word_of_variables gr rth)"
 sorry
 
 lemma mwov_length:
   assumes G: "gram_valid gr"
-      and V: "set (vh # vt) \<subseteq> keys gr"
-      and R: "rth \<in> snd ` set (lookup gr vh)"
+      and T: "set vt \<subseteq> keys gr"
+      and V: "(vh, rules) \<in> set gr"
+      and R: "(th, rth) \<in> set rules"
     shows "length (minimal_word_of_variables gr (vh # vt)) \<le>
        1 + length (minimal_word_of_variables gr (rth @ vt))"
 proof -
-  have G1: "vh \<in> keys gr" using V by auto
-  have G2: "set [vh] \<subseteq> keys gr" using V by auto
-  have G3: "set vt   \<subseteq> keys gr" using V by auto
-  have G4: "set rth  \<subseteq> keys gr" using R G1 sorry
+  have VH: "set [vh] \<subseteq> keys gr" using V by auto
 
   have L: "length (minimal_word_of_variables gr [vh]) \<le>
-       1 + length (minimal_word_of_variables gr rth)" using mwov_length_singleton G G1 R  .
+       1 + length (minimal_word_of_variables gr rth)" using mwov_length_singleton G V R  .
   have D1: "minimal_word_of_variables gr ([vh] @ vt) =
             minimal_word_of_variables gr [vh] @ minimal_word_of_variables gr vt"
-    using mwov_dist G G2 G3 .
+    using mwov_dist G VH T .
   have D2: "minimal_word_of_variables gr (rth @ vt) =
             minimal_word_of_variables gr rth @ minimal_word_of_variables gr vt"
-    using mwov_dist G G4 G3 .
+    using mwov_dist G gram_rule_vars_in_keys[OF G V R] T .
   
   show ?thesis using L D1 D2 by auto
 qed
@@ -307,17 +309,22 @@ by (case_tac w) (auto simp add: word_in_variables_def)
 lemma wiv_no_word_no_variables: "(word_in_variables gr [] v) = (v = [])"
 by (case_tac v) (auto simp add: word_in_variables_def)
 
-lemma wiv_split: "word_in_variables gr w v \<Longrightarrow> word_in_variables gr w' v' \<Longrightarrow>
-  word_in_variables gr (w@w') (v@v')"
+lemma wiv_split:
+  assumes "word_in_variables gr w  v"
+      and "word_in_variables gr w' v'"
+    shows "word_in_variables gr (w@w') (v@v')" using assms
 by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 lemma wiv_prefix:
-  assumes "gram_valid gr"
-      and "(vh, rules) \<in> set gr"
-      and "(th, rth) \<in> set rules"
-      and "word_in_variables gr tt (rth @ vt)"
-    shows "word_in_variables gr (th#tt) (vh#vt)"
-sorry
+  assumes G: "gram_valid gr"
+      and V: "(vh, rules) \<in> set gr"
+      and T: "(th, rth) \<in> set rules"
+    shows "word_in_variables gr (th#tt) (vh#vt) = word_in_variables gr tt (rth @ vt)"
+proof -
+  have 1: "lookup gr vh = rules" using lookup_from_existence gram_alist[OF G] V .
+  have 2: "lookup rules th = rth" using lookup_from_existence gram_rules_alist[OF G V] T .
+  show ?thesis using assms 1 2 unfolding word_in_variables_def by (auto simp add: Let_def)
+qed
 
 lemma wiv_mwov:
   assumes G: "gram_valid gr"
@@ -339,7 +346,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
 
   have VT: "set vt \<subseteq> keys gr" using I4 by simp
   have VR: "(vh, rules) \<in> set gr" using gram_alist[OF I3] I4 R by (simp add: existence_from_lookup)
-  have RA: "is_alist rules" using VR I3 by (auto simp add: gram_valid_def is_typical_alist_def)
+  have RA: "is_alist rules" using gram_rules_alist I3 VR .
 
   have TH: "th \<in> keys rules \<and> tt = minimal_word_of_variables gr (rth @ vt)" unfolding T
     using mwov_prefix I3 VR VT I2 .
@@ -348,9 +355,12 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
 
   have "word_in_variables gr (minimal_word_of_variables gr (rth @ vt)) (rth @ vt)"
     using I1 R TH I3 RV T by simp
-  then have WIV: "word_in_variables gr tt (rth @ vt)" using TH by simp
-  show ?case using wiv_prefix[OF I3 VR TR WIV] I2 by simp
+  then have "word_in_variables gr tt (rth @ vt)" using TH by simp
+  then show ?case using I2 I3 VR TR by (simp add: sym[OF wiv_prefix])
 qed (auto simp add: word_in_variables_def mwov_empty)
+
+lemma wiv_word_head: "word_in_variables gr (th # tt) (vh # vt) \<Longrightarrow> th \<in> keys (lookup gr vh)"
+by (case_tac "th \<in> keys (lookup gr vh)") (auto simp add: Let_def word_in_variables_def)
 
 lemma mwov_minimal_wiv:
   assumes "gram_valid gr"
@@ -359,8 +369,10 @@ lemma mwov_minimal_wiv:
     shows "length (minimal_word_of_variables gr v) \<le> length w" using assms
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
+
   obtain rules where R: "rules = (lookup gr vh)" by simp
-  def rth \<equiv> "lookup rules th"
+  obtain   rth where T: "rth = lookup rules th" by simp
+
   assume I1: "(\<And>x. x = lookup gr vh \<Longrightarrow>
             th \<in> keys x \<Longrightarrow>
             gram_valid gr \<Longrightarrow>
@@ -370,19 +382,23 @@ proof (induct gr w v rule: eat_word_induct)
   assume I3: "set (vh # vt) \<subseteq> keys gr"
   assume I4: "word_in_variables gr (th # tt) (vh # vt)"
 
-  have T: "th \<in> keys rules" sorry
-  then have 1: "word_in_variables gr tt (rth @ vt)" using R I4
-    by (auto simp add: word_in_variables_def rth_def)
+  have VR: "(vh, rules) \<in> set gr" using gram_alist[OF I2] I3 R by (simp add: existence_from_lookup)
+  have RA: "is_alist rules" using gram_rules_alist I2 VR .
 
-  have "set (lookup rules th @ vt) \<subseteq> keys gr" using I3 gram_rule_vars_in_keys I2 R sorry
-  then have 2: "length (minimal_word_of_variables gr (rth @ vt)) \<le> length tt"
-    using R T I1 I2 1 rth_def by auto
+  have TH: "th \<in> keys rules" unfolding R using I4 wiv_word_head by simp
+  have TR: "(th, rth) \<in> set rules" using RA T TH by (simp add: existence_from_lookup)
 
-  have 4: "rth \<in> snd ` set (lookup gr vh)" using rth_def R sorry
+  have VT: "set vt \<subseteq> keys gr" using I3 by simp
+  have RV: "set (rth @ vt) \<subseteq> keys gr" using I3 gram_rule_vars_in_keys[OF I2 VR TR] by auto
+
+  have "word_in_variables gr tt (rth @ vt)" using R I4 TH
+    by (auto simp add: word_in_variables_def T)
+  then have L: "length (minimal_word_of_variables gr (rth @ vt)) \<le> length tt"
+    using R TH I1 I2 T RV by auto
 
   have "length (minimal_word_of_variables gr (vh # vt)) \<le>
-    1 + length (minimal_word_of_variables gr (rth @ vt))" using mwov_length I2 I3 4 .
-  also have "... \<le> length (th # tt)" using 2 by auto
+    1 + length (minimal_word_of_variables gr (rth @ vt))" using mwov_length I2 VT VR TR .
+  also have "... \<le> length (th # tt)" using L by auto
   finally show ?case .
 qed (auto simp add: word_in_variables_def)
 
