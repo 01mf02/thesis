@@ -29,6 +29,9 @@ by (induct l) auto
 lemma lookup_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> lookup l k = v"
 by (simp add: lookup_def is_alist_def)
 
+lemma existence_from_lookup: "is_alist l \<Longrightarrow> k \<in> keys l \<Longrightarrow> lookup l k = v \<Longrightarrow> (k, v) \<in> set l"
+by (auto simp add: keys_def lookup_def is_alist_def)
+
 lemma lookup_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (lookup l k)"
 by (induct l) (auto simp add: lookup_def is_alist_def)
 
