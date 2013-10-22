@@ -192,7 +192,6 @@ termination minimal_word_of_variables
   apply (subst nov_distr')
 by (auto simp add: nov_greater_zero)
 
-
 lemma mwov_dist:
   assumes "gram_valid gr"
       and "set v1 \<subseteq> keys gr"
@@ -246,12 +245,34 @@ proof -
 qed
 
 lemma mwov_prefix:
-  assumes "gram_valid gr"
-      and "(vh, rules) \<in> set gr"
-      and "set vt \<subseteq> keys gr"
-      and "th # tt = minimal_word_of_variables gr (vh # vt)"
+  assumes G: "gram_valid gr"
+      and V: "(vh, rules) \<in> set gr"
+      and S: "set vt \<subseteq> keys gr"
+      and M: "th # tt = minimal_word_of_variables gr (vh # vt)"
     shows "th \<in> keys rules \<and> tt = minimal_word_of_variables gr ((lookup rules th) @ vt)"
-sorry
+    (* TODO: probably change "th \<in> keys rules" to "th = fst nvh" *)
+proof -
+  obtain  rth where T: "rth = lookup rules th" by simp
+  obtain  nvh where X: "nvh = snd (lookup (norms_of_grammar gr) vh)" by simp
+  obtain  nth where TX: "nth = fst nvh" by simp
+  obtain nrth where NX: "nrth = snd nvh" by simp
+
+  have "th = nth" using assms TX X by (case_tac "snd (lookup (norms_of_grammar gr) vh)") auto
+  then have CT: "snd (lookup (norms_of_grammar gr) vh) = (th, nrth)" using X NX TX by auto
+  have XX: "rth = nrth" sorry
+
+  have 1: "th \<in> keys rules" using nog_in_rules[OF G V sym[OF CT]] by (simp add: CT)
+
+  have RA: "is_alist rules" using gram_rules_alist G V .
+  have TR: "(th, rth) \<in> set rules" using RA 1 T by (simp add: existence_from_lookup)
+  have RT: "set rth \<subseteq> keys gr" using gram_rule_vars_in_keys G V TR by simp
+
+  have "minimal_word_of_variables gr nrth @ minimal_word_of_variables gr vt =
+    minimal_word_of_variables gr (rth @ vt)" using XX mwov_dist[OF G RT S] by auto
+  then have 2: "tt = minimal_word_of_variables gr (rth @ vt)" using assms CT by auto
+
+  show ?thesis using 1 2 by (simp add: T)
+qed
 
 
 (*****************************************************************************
