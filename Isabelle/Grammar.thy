@@ -252,7 +252,6 @@ lemma mwov_hd_from_nog:
     shows "th = fst (snd (lookup (norms_of_grammar gr) vh))" using assms
 by (case_tac "snd (lookup (norms_of_grammar gr) vh)") auto
 
-
 lemma mwov_prefix:
   assumes G: "gram_valid gr"
       and V: "(vh, rules) \<in> set gr"
@@ -375,28 +374,24 @@ lemma mwov_minimal_wiv:
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
 
-  obtain rules where R: "rules = lookup gr vh" by simp
-  obtain   rth where T: "rth = lookup rules th" by simp
+  def rules \<equiv> "lookup gr vh"
+  def   rth \<equiv> "lookup rules th"
 
-  have VR: "(vh, rules) \<in> set gr" using gram_alist[OF normal(2)] normal R
-    by (simp add: existence_from_lookup)
+  have VR: "(vh, rules) \<in> set gr" using normal rules_def
+    by (simp add: existence_from_lookup gram_alist)
   have RA: "is_alist rules" using gram_rules_alist normal(2) VR .
 
-  have TH: "th \<in> keys rules" unfolding R using normal wiv_word_head by simp
-  have TR: "(th, rth) \<in> set rules" using RA T TH by (simp add: existence_from_lookup)
+  have TH: "th \<in> keys rules" using rules_def normal wiv_word_head by simp
+  have TR: "(th, rth) \<in> set rules" using rth_def RA TH by (simp add: existence_from_lookup)
 
   have VT: "set vt \<subseteq> keys gr" using normal by simp
   have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_rule_vars_in_keys[OF normal(2) VR TR]
     by auto
 
-  have "word_in_variables gr tt (rth @ vt)" using R normal TH
-    by (auto simp add: word_in_variables_def T)
-  then have L: "length (minimal_word_of_variables gr (rth @ vt)) \<le> length tt"
-    using R TH normal T RV by auto
-
   have "length (minimal_word_of_variables gr (vh # vt)) \<le>
     1 + length (minimal_word_of_variables gr (rth @ vt))" using mwov_length normal(2) VT VR TR .
-  also have "... \<le> length (th # tt)" using L by auto
+  also have "... \<le> length (th # tt)" using normal rules_def rth_def RV TH
+    by (auto simp add: word_in_variables_def)
   finally show ?case .
 qed (auto simp add: word_in_variables_def)
 
