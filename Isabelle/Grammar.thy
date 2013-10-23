@@ -102,18 +102,11 @@ lemma nog_sufficient:
     shows "norms_sufficient (norms_of_grammar gr) rules"
 sorry
 
-lemma nog_in_rules':
+lemma nog_in_rules:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor mnor_in_rules nog_sufficient)
-
-lemma nog_in_rules:
-  assumes "gram_valid gr"
-      and "(v, rules) \<in> set gr"
-      and "(t, vars) = snd (lookup (norms_of_grammar gr) v)"
-    shows "(t, vars) \<in> set rules" using assms
-by (auto simp add: nog_in_rules')
 
 
 (*****************************************************************************
@@ -219,7 +212,10 @@ lemma mwov_length_singleton:
   assumes "gram_valid gr"
       and "(vh, rules) \<in> set gr"
       and "(th, rth) \<in> set rules"
-    shows "length (minimal_word_of_variables gr [vh]) \<le> 1 + length (minimal_word_of_variables gr rth)"
+    shows "length (minimal_word_of_variables gr [vh]) \<le>
+       1 + length (minimal_word_of_variables gr rth)" using assms
+  apply (case_tac "snd (lookup (norms_of_grammar gr) vh)")
+  apply auto
 sorry
 
 lemma mwov_length:
@@ -268,7 +264,7 @@ proof -
   then have SL: "snd (lookup (norms_of_grammar gr) vh) = (th, nrth)"
     using nvh_def nrth_def nth_def by auto
 
-  have TN: "(th, nrth) \<in> set rules" using nog_in_rules[OF G V sym[OF SL]] .
+  have TN: "(th, nrth) \<in> set rules" using nog_in_rules[OF G V] SL by simp
   have LO: "lookup rules th = nrth" using lookup_from_existence gram_rules_alist[OF G V] TN .
 
   have "is_alist rules" using gram_rules_alist G V .
@@ -352,7 +348,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   have "th = fst (snd (lookup (norms_of_grammar gr) vh))"
     using mwov_hd_from_nog normal(3) VR VT normal(2) .
   then have TN: "(th, nrth) = snd (lookup (norms_of_grammar gr) vh)" using nrth_def by simp
-  have TH: "th \<in> keys rules" using nog_in_rules[OF normal(3) VR TN] by simp
+  have TH: "th \<in> keys rules" using nog_in_rules [OF normal(3) VR] sym[OF TN] by simp
 
   have TT: "tt = minimal_word_of_variables gr (rth @ vt)" unfolding rth_def
     using mwov_prefix normal(3) VR VT normal(2) .
