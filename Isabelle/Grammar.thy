@@ -150,6 +150,9 @@ by (auto simp add: nov_nog)
 lemma nov_greater_zero: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < norm_of_variables gr [v]"
 sorry
 
+lemma nov_empty: "norm_of_variables gr [] = 0"
+by (simp add: norm_of_variables_def norm_sum_def)
+
 
 (*****************************************************************************
   iterate_norms
@@ -196,17 +199,37 @@ proof (induct v1 arbitrary: v2)
   then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
 qed auto
 
-lemma mwov_len_calcs_nov:
+lemma mwov_len_calcs_nog:
+  assumes "gram_valid gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, n, nt, nrt) \<in> set (norms_of_grammar gr)"
+    shows "Suc (length (minimal_word_of_variables gr nrt)) = n"
+sorry
+
+theorem mwov_len_calcs_nov:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
-    shows "length (minimal_word_of_variables gr v) = norm_of_variables gr v"
+    shows "length (minimal_word_of_variables gr v) = norm_of_variables gr v" using assms
+  apply (induct v)
+  apply (auto simp add: nov_empty)
+  apply (case_tac "snd (lookup (norms_of_grammar gr) aa)")
+  apply auto
+  apply (subst nov_distr')
+  apply (simp only: sym[OF Nat.plus_nat.add_Suc])
+  apply auto
+  (* TODO: use nov_singleton *)
+  using nov_singleton mwov_len_calcs_nog
 sorry
 
 lemma mwov_empty:
   assumes "gram_valid gr"
       and "set v \<subseteq> fst ` set gr"
-    shows "(minimal_word_of_variables gr v = []) \<Longrightarrow> (v = [])"
-sorry
+      and "minimal_word_of_variables gr v = []"
+    shows "v = []" using assms
+proof (induct v)
+  case (Cons a v)
+  then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
+qed auto
 
 lemma mwov_length_singleton:
   assumes "gram_valid gr"
@@ -413,7 +436,7 @@ using assms by (auto simp add: words_of_variables_def mwov_minimal_wiv)
   norm
  *****************************************************************************)
 
-lemma mwov_len_calcs_norm:
+theorem mwov_len_calcs_norm:
   assumes "gram_valid gr"
       and "set v \<subseteq> keys gr"
     shows "norm gr v = length (minimal_word_of_variables gr v)" using assms unfolding norm_def

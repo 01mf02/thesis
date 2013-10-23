@@ -79,8 +79,7 @@ function minimal_word_of_variables ::
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
      if gram_valid (* TODO! use gram_normed here! *) gr \<and> vh \<in> keys gr then
-       let norms = norms_of_grammar gr in
-       let (t, vars) = snd (lookup norms vh) in
+       let (t, vars) = snd (lookup (norms_of_grammar gr) vh) in
        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
      else [])"
 by pat_completeness auto
