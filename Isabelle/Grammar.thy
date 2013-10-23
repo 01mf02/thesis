@@ -244,34 +244,39 @@ proof -
   show ?thesis using L D1 D2 by auto
 qed
 
+lemma mwov_hd_from_nog:
+  assumes "gram_valid gr"
+      and "(vh, rules) \<in> set gr"
+      and "set vt \<subseteq> keys gr"
+      and "th # tt = minimal_word_of_variables gr (vh # vt)"
+    shows "th = fst (snd (lookup (norms_of_grammar gr) vh))" using assms
+by (case_tac "snd (lookup (norms_of_grammar gr) vh)") auto
+
+
 lemma mwov_prefix:
   assumes G: "gram_valid gr"
       and V: "(vh, rules) \<in> set gr"
       and S: "set vt \<subseteq> keys gr"
       and M: "th # tt = minimal_word_of_variables gr (vh # vt)"
-    shows "th \<in> keys rules \<and> tt = minimal_word_of_variables gr ((lookup rules th) @ vt)"
-    (* TODO: probably change "th \<in> keys rules" to "th = fst nvh" *)
+    shows "tt = minimal_word_of_variables gr ((lookup rules th) @ vt)"
 proof -
-  obtain  rth where T: "rth = lookup rules th" by simp
-  obtain  nvh where X: "nvh = snd (lookup (norms_of_grammar gr) vh)" by simp
-  obtain  nth where TX: "nth = fst nvh" by simp
-  obtain nrth where NX: "nrth = snd nvh" by simp
+  def rth  \<equiv> "lookup rules th"
+  def nvh  \<equiv> "snd (lookup (norms_of_grammar gr) vh)"
+  def nth  \<equiv> "fst nvh"
+  def nrth \<equiv> "snd nvh"
 
-  have "th = nth" using assms TX X by (case_tac "snd (lookup (norms_of_grammar gr) vh)") auto
-  then have CT: "snd (lookup (norms_of_grammar gr) vh) = (th, nrth)" using X NX TX by auto
-  have XX: "rth = nrth" sorry
+  have "th = nth" using assms by (auto simp add: nth_def nvh_def mwov_hd_from_nog)
+  then have SL: "snd (lookup (norms_of_grammar gr) vh) = (th, nrth)"
+    using nvh_def nrth_def nth_def by auto
 
-  have 1: "th \<in> keys rules" using nog_in_rules[OF G V sym[OF CT]] by (simp add: CT)
+  have TN: "(th, nrth) \<in> set rules" using nog_in_rules[OF G V sym[OF SL]] .
+  have LO: "lookup rules th = nrth" using lookup_from_existence gram_rules_alist[OF G V] TN .
 
-  have RA: "is_alist rules" using gram_rules_alist G V .
-  have TR: "(th, rth) \<in> set rules" using RA 1 T by (simp add: existence_from_lookup)
-  have RT: "set rth \<subseteq> keys gr" using gram_rule_vars_in_keys G V TR by simp
+  have "is_alist rules" using gram_rules_alist G V .
+  then have "(th, rth) \<in> set rules" using TN rth_def by (auto simp add: existence_from_lookup)
+  then have RT: "set rth \<subseteq> keys gr" using gram_rule_vars_in_keys G V by simp
 
-  have "minimal_word_of_variables gr nrth @ minimal_word_of_variables gr vt =
-    minimal_word_of_variables gr (rth @ vt)" using XX mwov_dist[OF G RT S] by auto
-  then have 2: "tt = minimal_word_of_variables gr (rth @ vt)" using assms CT by auto
-
-  show ?thesis using 1 2 by (simp add: T)
+  show ?thesis using assms SL LO rth_def mwov_dist[OF G RT S] by auto
 qed
 
 
@@ -326,7 +331,7 @@ lemma wiv_prefix:
 proof -
   have 1: "lookup gr vh = rules" using lookup_from_existence gram_alist[OF G] V .
   have 2: "lookup rules th = rth" using lookup_from_existence gram_rules_alist[OF G V] T .
-  show ?thesis using assms 1 2 unfolding word_in_variables_def by (auto simp add: Let_def)
+  show ?thesis using assms 1 2 unfolding word_in_variables_def by auto
 qed
 
 lemma wiv_mwov:
@@ -336,24 +341,27 @@ lemma wiv_mwov:
 proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   case (normal gr th tt vh vt)
 
-  obtain rules where R: "rules = lookup gr vh" by simp
-  obtain   rth where T: "rth = lookup rules th" by simp
+  def rules \<equiv> "lookup gr vh"
+  def   rth \<equiv> "lookup rules th"
+  def  nrth \<equiv> "snd (snd (lookup (norms_of_grammar gr) vh))"
 
   have VT: "set vt \<subseteq> keys gr" using normal(4) by simp
-  have VR: "(vh, rules) \<in> set gr" using gram_alist[OF normal(3)] normal R
+  have VR: "(vh, rules) \<in> set gr" using gram_alist[OF normal(3)] normal rules_def
     by (simp add: existence_from_lookup)
   have RA: "is_alist rules" using gram_rules_alist normal(3) VR .
 
-  have TH: "th \<in> keys rules \<and> tt = minimal_word_of_variables gr (rth @ vt)" unfolding T
+  have "th = fst (snd (lookup (norms_of_grammar gr) vh))"
+    using mwov_hd_from_nog normal(3) VR VT normal(2) .
+  then have TN: "(th, nrth) = snd (lookup (norms_of_grammar gr) vh)" using nrth_def by simp
+  have TH: "th \<in> keys rules" using nog_in_rules[OF normal(3) VR TN] by simp
+
+  have TT: "tt = minimal_word_of_variables gr (rth @ vt)" unfolding rth_def
     using mwov_prefix normal(3) VR VT normal(2) .
-  have TR: "(th, rth) \<in> set rules" using RA TH T by (simp add: existence_from_lookup)
+  have TR: "(th, rth) \<in> set rules" using RA TH rth_def by (simp add: existence_from_lookup)
   have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_rule_vars_in_keys[OF normal(3) VR TR]
     by simp
 
-  have "word_in_variables gr (minimal_word_of_variables gr (rth @ vt)) (rth @ vt)"
-    using normal R TH RV T by simp
-  then have "word_in_variables gr tt (rth @ vt)" using TH by simp
-  then show ?case using normal VR TR by (simp add: sym[OF wiv_prefix])
+  show ?case using normal VR TR TT TH RV rules_def rth_def by (simp add: sym[OF wiv_prefix])
 qed (auto simp add: word_in_variables_def mwov_empty)
 
 lemma wiv_word_head: "word_in_variables gr (th # tt) (vh # vt) \<Longrightarrow> th \<in> keys (lookup gr vh)"
@@ -367,7 +375,7 @@ lemma mwov_minimal_wiv:
 proof (induct gr w v rule: eat_word_induct)
   case (normal gr th tt vh vt)
 
-  obtain rules where R: "rules = (lookup gr vh)" by simp
+  obtain rules where R: "rules = lookup gr vh" by simp
   obtain   rth where T: "rth = lookup rules th" by simp
 
   have VR: "(vh, rules) \<in> set gr" using gram_alist[OF normal(2)] normal R
