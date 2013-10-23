@@ -285,7 +285,7 @@ lemma wiv_postfix_free:
       and "word_in_variables gr w v"
       and "w' = w'h # w't"
     shows "\<not>(word_in_variables gr (w@w') v)" using assms
-by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
+by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def)
 
 (* Prefixfreeness *)
 lemma wiv_prefix_free:
