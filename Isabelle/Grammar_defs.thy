@@ -105,7 +105,7 @@ definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Right
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
 
 definition gram_normed :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
-  "gram_normed gr \<equiv> gram_valid gr \<and> (\<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v))"
+  "gram_normed gr \<equiv> \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
 
 definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm gr v \<equiv> Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"

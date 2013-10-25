@@ -3,6 +3,7 @@ theory Grammar imports
   "Helpers"
 begin
 
+
 (*****************************************************************************
   gram_valid
  *****************************************************************************)
@@ -356,7 +357,7 @@ lemma wiv_postfix_free:
       and "word_in_variables gr w v"
       and "w' = w'h # w't"
     shows "\<not>(word_in_variables gr (w@w') v)" using assms
-by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def)
+by (induct gr w v rule: eat_word_induct, auto simp add: word_in_variables_def Let_def)
 
 (* Prefixfreeness *)
 lemma wiv_prefix_free:
@@ -387,7 +388,7 @@ lemma wiv_split:
   assumes "word_in_variables gr w  v"
       and "word_in_variables gr w' v'"
     shows "word_in_variables gr (w@w') (v@v')" using assms
-by (induct gr w v rule: eat_word.induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
+by (induct gr w v rule: eat_word_induct, auto simp add: word_in_variables_def Let_def split_if_eq1)
 
 lemma wiv_prefix:
   assumes G: "gram_valid gr"
