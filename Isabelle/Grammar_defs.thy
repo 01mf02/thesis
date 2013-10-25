@@ -22,8 +22,8 @@ type_synonym ('t, 'v) norm_list = "('v \<times> ('t, 'v) norm_rule) list"
   Grammar
  *****************************************************************************)
 
-definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
-  "gram_valid gr \<equiv> is_alist gr \<and>
+definition gram_sd :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
+  "gram_sd gr \<equiv> is_alist gr \<and>
      (\<forall>(v, rules) \<in> set gr. is_alist rules \<and> rules \<noteq> [] \<and>
        (\<forall>(t, vars) \<in> set rules. set vars \<subseteq> keys gr))"
 
@@ -70,6 +70,9 @@ by pat_completeness auto
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr []) = []"
 
+definition gram_nsd :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_nsd gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
+
 definition norms_of_grammar_new ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
   "norms_of_grammar_new gr \<equiv> fst (iterate_norms gr [])"
@@ -81,7 +84,7 @@ function minimal_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
-     if gram_valid (* TODO! use gram_normed here! *) gr \<and> vh \<in> keys gr then
+     if gram_sd (* TODO! use gram_nsd here! *) gr \<and> vh \<in> keys gr then
        let (t, vars) = snd (lookup (norms_of_grammar_new gr) vh) in
        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
      else [])"

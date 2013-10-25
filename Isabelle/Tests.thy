@@ -13,13 +13,24 @@ definition test_gr2 :: "(char, nat) grammar" where
     (2, [(CHR ''c'', [1]), (CHR ''d'', [3])]),
     (3, [(CHR ''e'', [])])]"
 
-value "gram_valid test_gr"
-value "gram_max_vars test_gr"
-value "norms_of_grammar_new test_gr"
-value "word_in_variables test_gr ''a'' [0]"
-value "minimal_word_of_variables test_gr [1]"
+definition test_gr3 :: "(char, nat) grammar" where
+  "test_gr3 =
+   [(0, [(CHR ''a'', [0])])]"
 
-value "gram_valid test_gr2"
-value "norms_of_grammar_new test_gr2"
+value "gram_nsd test_gr"
+value "gram_max_vars test_gr = 1"
+value "norm_of_variables test_gr [0] = 1"
+value "norm_of_variables test_gr [1] = 2"
+value "word_in_variables test_gr ''a'' [0]"
+value "minimal_word_of_variables test_gr [1] = ''ba''"
+
+value "gram_nsd test_gr2"
+value "norm_of_variables test_gr2 [0] = 1"
+value "norm_of_variables test_gr2 [1] = 2"
+value "norm_of_variables test_gr2 [2] = 2"
+value "norm_of_variables test_gr2 [3] = 1"
+
+value "gram_sd test_gr3"
+value "gram_nsd test_gr3 = False"
 
 end
