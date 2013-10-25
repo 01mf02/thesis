@@ -47,35 +47,29 @@ sorry
   norms_of_rules
  *****************************************************************************)
 
-lemma "snd ` set (norms_of_rules norms rules) \<subseteq> set rules"
+lemma nor_in_rules: "snd ` set (norms_of_rules norms rules) \<subseteq> set rules"
 by (unfold norms_of_rules_def) auto
 
 lemma nor_nonempty:
-  assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
+  assumes "rules_have_norm norms rules"
     shows "norms_of_rules norms rules \<noteq> []"
-using assms by (simp add: norms_of_rules_def filter_empty_conv)
-
-lemma
-  assumes "\<exists>r \<in> set rules. rule_has_norm norms r"
-    shows "snd (Min (set (norms_of_rules norms rules))) \<in> set rules"
-using assms by - (rule Min_predicate, auto simp add: norms_of_rules_def)
+using assms by (simp add: rules_have_norm_def norms_of_rules_def filter_empty_conv)
 
 
 (*****************************************************************************
   min_norm_of_rules
  *****************************************************************************)
 
-lemma mnor_in_nor:
+lemma
   assumes "rules_have_norm norms rules"
     shows "min_norm_of_rules norms rules \<in> set (norms_of_rules norms rules)" using assms
-  apply (auto simp add: min_norm_of_rules_def norms_of_rules_def rules_have_norm_def)
-  apply (rule Min.closed)
-by (auto simp add: filter_empty_conv min_def)
+unfolding min_norm_of_rules_def by (auto intro: Min_predicate simp add: nor_nonempty)
 
 lemma mnor_in_rules:
   assumes "rules_have_norm norms rules"
-    shows "snd (min_norm_of_rules norms rules) \<in> set rules"
-sorry
+    shows "snd (min_norm_of_rules norms rules) \<in> set rules" using assms
+  unfolding min_norm_of_rules_def
+by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules sym[OF Set.image_subset_iff])
 
 
 (*****************************************************************************
@@ -200,7 +194,7 @@ lemma mwov_len_calcs_nog:
   assumes "gram_valid gr"
       and "v \<in> keys gr"
       and "(n, nt, nrt) = lookup (norms_of_grammar gr) v"
-    shows "Suc (length (minimal_word_of_variables gr nrt)) = n"
+    shows "Suc (length (minimal_word_of_variables gr nrt)) = n" using assms
 sorry
 
 theorem mwov_len_calcs_nov:
