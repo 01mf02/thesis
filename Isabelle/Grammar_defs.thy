@@ -23,8 +23,8 @@ type_synonym ('t, 'v) norm_list = "('v \<times> ('t, 'v) norm_rule) list"
  *****************************************************************************)
 
 definition gram_valid :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
-  "gram_valid gr \<equiv> is_typical_alist gr \<and>
-     (\<forall>(v, rules) \<in> set gr. is_typical_alist rules \<and>
+  "gram_valid gr \<equiv> is_alist gr \<and>
+     (\<forall>(v, rules) \<in> set gr. is_alist rules \<and>
        (\<forall>(t, vars) \<in> set rules. set vars \<subseteq> keys gr))"
 
 definition gram_max_vars :: "('t, 'v) grammar \<Rightarrow> nat" where
