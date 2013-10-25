@@ -160,7 +160,7 @@ apply (relation "measure (\<lambda>(gr, norms). length gr)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
-lemma "\<forall>(v, n, rule) \<in> set (iterate_norms gr []). v \<in> fst ` set gr"
+lemma "\<forall>(v, n, rule) \<in> set (fst (iterate_norms gr [])). v \<in> fst ` set gr"
   apply (induct rule: iterate_norms.induct)
   (* using iterate_norms.induct[of "\<lambda>gr norms. \<forall>(v, n, rule)\<in>set (iterate_norms gr norms). v \<in> fst ` set gr" gr "[]"] *)
   apply auto

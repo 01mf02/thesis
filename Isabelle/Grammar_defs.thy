@@ -62,14 +62,17 @@ definition split_normable where
 
 function iterate_norms where
   "iterate_norms gr norms = (case split_normable gr norms of
-     ([], _) \<Rightarrow> norms
-   | ((v, rules)#normable, unnormable) \<Rightarrow>
-       iterate_norms (normable@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
+     ([], unnormable) \<Rightarrow> (norms, unnormable)
+   | ((v, rules)#normable_tl, unnormable) \<Rightarrow>
+       iterate_norms (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
 by pat_completeness auto
+
+definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_normed_fun gr \<equiv> snd (iterate_norms gr []) = []"
 
 definition norms_of_grammar_new ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar_new gr \<equiv> sort (iterate_norms gr [])"
+  "norms_of_grammar_new gr \<equiv> fst (iterate_norms gr [])"
 
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar_new gr) vars"
