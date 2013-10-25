@@ -72,14 +72,14 @@ definition norms_of_grammar_new ::
   "norms_of_grammar_new gr \<equiv> sort (iterate_norms gr [])"
 
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
+  "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar_new gr) vars"
 
 function minimal_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
      if gram_valid (* TODO! use gram_normed here! *) gr \<and> vh \<in> keys gr then
-       let (t, vars) = snd (lookup (norms_of_grammar gr) vh) in
+       let (t, vars) = snd (lookup (norms_of_grammar_new gr) vh) in
        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
      else [])"
 by pat_completeness auto
