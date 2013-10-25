@@ -188,6 +188,8 @@ termination minimal_word_of_variables
   apply (subst nov_distr')
 by (auto simp add: nov_greater_zero)
 
+lemmas mwov_induct = minimal_word_of_variables.induct[case_names Nil_vars Cons_vars]
+
 lemma mwov_dist:
   assumes "gram_valid gr"
       and "set v1 \<subseteq> keys gr"
@@ -201,25 +203,53 @@ qed auto
 
 lemma mwov_len_calcs_nog:
   assumes "gram_valid gr"
-      and "(v, rules) \<in> set gr"
-      and "(v, n, nt, nrt) \<in> set (norms_of_grammar gr)"
+      and "v \<in> keys gr"
+      and "(n, nt, nrt) = lookup (norms_of_grammar gr) v"
     shows "Suc (length (minimal_word_of_variables gr nrt)) = n"
 sorry
 
 theorem mwov_len_calcs_nov:
-  assumes "gram_valid gr"
-      and "set v \<subseteq> fst ` set gr"
+  assumes G: "gram_valid gr"
+      and V: "set v \<subseteq> fst ` set gr"
     shows "length (minimal_word_of_variables gr v) = norm_of_variables gr v" using assms
-  apply (induct v)
-  apply (auto simp add: nov_empty)
-  apply (case_tac "snd (lookup (norms_of_grammar gr) aa)")
-  apply auto
-  apply (subst nov_distr')
-  apply (simp only: sym[OF Nat.plus_nat.add_Suc])
-  apply auto
-  (* TODO: use nov_singleton *)
-  using nov_singleton mwov_len_calcs_nog
-sorry
+proof (induct gr v rule: mwov_induct)
+  case (Cons_vars gr vh vt)
+
+  def nogh \<equiv> "lookup (norms_of_grammar gr) vh"
+  def nh   \<equiv> "fst nogh"
+  def trh  \<equiv> "snd nogh"
+  def th   \<equiv> "fst trh"
+  def rh   \<equiv> "snd trh"
+
+  have TR: "(th, rh) = trh" using th_def rh_def by simp
+  have NO: "(nh, th, rh) = nogh" using nogh_def nh_def th_def rh_def trh_def by simp
+
+  have VH: "vh \<in> keys gr" using Cons_vars by simp
+  have VS: "set [vh] \<subseteq> keys gr" using Cons_vars by simp
+  have VT: "set vt \<subseteq> keys gr" using Cons_vars by simp
+
+  have IH: "length (minimal_word_of_variables gr vt) = norm_of_variables gr vt"
+    using TR Cons_vars trh_def nogh_def by simp
+  
+  have MD: "minimal_word_of_variables gr ([vh] @ vt) =
+    minimal_word_of_variables gr [vh] @ minimal_word_of_variables gr vt"
+    using mwov_dist Cons_vars(3) VS VT .
+  have ND: "norm_of_variables gr (vh # vt) = norm_of_variables gr [vh] + norm_of_variables gr vt"
+    using nov_distr' by auto
+
+  have SL: "Suc (length (minimal_word_of_variables gr rh)) = nh"
+    using mwov_len_calcs_nog[OF Cons_vars(3) VH NO[simplified nogh_def]] .
+
+  have LN: "length (minimal_word_of_variables gr [vh]) = norm_of_variables gr [vh]" using Cons_vars
+    apply auto
+    apply (case_tac "snd (lookup (norms_of_grammar gr) a)")
+    apply auto
+    apply (simp add: norm_of_variables_def norm_sum_def)
+    using SL (* TODO! *)
+  sorry
+
+  show ?case using MD ND IH LN by simp
+qed (simp add: nov_empty)
 
 lemma mwov_empty:
   assumes "gram_valid gr"
