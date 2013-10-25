@@ -84,7 +84,7 @@ function minimal_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
-     if gram_sd (* TODO! use gram_nsd here! *) gr \<and> vh \<in> keys gr then
+     if gram_nsd gr \<and> vh \<in> keys gr then
        let (t, vars) = snd (lookup (norms_of_grammar_new gr) vh) in
        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
      else [])"
