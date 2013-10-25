@@ -28,6 +28,12 @@ unfolding gram_valid_def by (metis (lifting) split_conv)
 lemma ns_singleton: "norm_sum ns [v] = fst (lookup ns v)"
 by (simp add: norm_sum_def)
 
+lemma ns_distr: "norm_sum ns (x @ y) = norm_sum ns x + norm_sum ns y"
+by (simp add: norm_sum_def)
+
+lemma ns_empty: "norm_sum ns [] = 0"
+by (simp add: norm_sum_def)
+
 
 (*****************************************************************************
   rules_have_norm
@@ -114,31 +120,20 @@ by (auto simp add: nog_mnor mnor_in_rules nog_sufficient)
  *****************************************************************************)
 
 lemma nov_distr: "norm_of_variables gr (x @ y) = norm_of_variables gr x + norm_of_variables gr y"
-by (simp add: norm_of_variables_def norm_sum_def)
+by (simp add: norm_of_variables_def ns_distr)
 
 lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
 by (rule nov_distr[of _ "[x]", simplified])
 
-lemma nov_singleton:
-  assumes "gram_valid gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-    shows "norm_of_variables gr [v] = n"
-proof -
-  have "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
-    by (simp add: norm_of_variables_def norm_sum_def)
-  also have "... = fst (n, t, vs)" using assms by (simp_all add: lookup_from_existence nog_alist)
-  finally show ?thesis by simp
-qed
+lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
+by (simp add: norm_of_variables_def ns_singleton)
 
 lemma nov_nog:
   assumes "gram_valid gr"
       and "(v, rules) \<in> set gr"
       and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
     shows "norm_of_variables gr [v] = Suc (norm_of_variables gr vs)"
-proof (simp add: norm_of_variables_def norm_sum_def)
-  have "(lookup (norms_of_grammar gr) v) = min_norm_of_rules (norms_of_grammar gr) rules" sorry
-  then show "fst (lookup (norms_of_grammar gr) v) = Suc(listsum (map (fst \<circ> lookup (norms_of_grammar gr)) vs))" sorry
-qed
+sorry
 
 lemma nov_nog':
   assumes "gram_valid gr"
@@ -151,7 +146,7 @@ lemma nov_greater_zero: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr
 sorry
 
 lemma nov_empty: "norm_of_variables gr [] = 0"
-by (simp add: norm_of_variables_def norm_sum_def)
+by (simp add: norm_of_variables_def ns_empty)
 
 
 (*****************************************************************************
@@ -237,18 +232,14 @@ proof (induct gr v rule: mwov_induct)
   have ND: "norm_of_variables gr (vh # vt) = norm_of_variables gr [vh] + norm_of_variables gr vt"
     using nov_distr' by auto
 
-  have SL: "Suc (length (minimal_word_of_variables gr rh)) = nh"
+  have "Suc (length (minimal_word_of_variables gr rh)) = nh"
     using mwov_len_calcs_nog[OF Cons_vars(3) VH NO[simplified nogh_def]] .
 
-  have LN: "length (minimal_word_of_variables gr [vh]) = norm_of_variables gr [vh]" using Cons_vars
-    apply auto
-    apply (case_tac "snd (lookup (norms_of_grammar gr) a)")
-    apply auto
-    apply (simp add: norm_of_variables_def norm_sum_def)
-    using SL (* TODO! *)
-  sorry
+  then have "length (minimal_word_of_variables gr [vh]) = norm_of_variables gr [vh]"
+    using Cons_vars(3-4)
+    by (case_tac trh) (auto simp add: rh_def nogh_def nh_def trh_def nov_singleton)
 
-  show ?case using MD ND IH LN by simp
+  then show ?case using MD ND IH by simp
 qed (simp add: nov_empty)
 
 lemma mwov_empty:
