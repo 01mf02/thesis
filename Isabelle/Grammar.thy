@@ -9,10 +9,10 @@ begin
  *****************************************************************************)
 
 lemma gram_alist: "gram_valid gr \<Longrightarrow> is_alist gr"
-by (simp add: gram_valid_def is_typical_alist_def)
+by (simp add: gram_valid_def)
 
 lemma gram_rules_alist: "gram_valid gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> is_alist rules"
-unfolding gram_valid_def is_typical_alist_def by auto
+unfolding gram_valid_def by auto
 
 lemma gram_rule_vars_in_keys:
   assumes "gram_valid gr"
@@ -160,7 +160,7 @@ apply (relation "measure (\<lambda>(gr, norms). length gr)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
-lemma "\<forall>(v, n, rule) \<in> set (fst (iterate_norms gr [])). v \<in> fst ` set gr"
+lemma "\<forall>(v, n, rule) \<in> set (fst (iterate_norms gr [])). v \<in> keys gr"
   apply (induct rule: iterate_norms.induct)
   (* using iterate_norms.induct[of "\<lambda>gr norms. \<forall>(v, n, rule)\<in>set (iterate_norms gr norms). v \<in> fst ` set gr" gr "[]"] *)
   apply auto

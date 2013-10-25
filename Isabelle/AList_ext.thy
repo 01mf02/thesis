@@ -4,9 +4,6 @@ begin
 definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
   "is_alist l \<equiv> distinct (map fst l)"
 
-definition is_typical_alist where
-  "is_typical_alist l \<equiv> is_alist l \<and> l \<noteq> [] \<and> sorted (map fst l)"
-
 definition lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" where
   "lookup l k \<equiv> the (Mapping.lookup (Mapping l) k)"
 
