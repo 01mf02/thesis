@@ -77,12 +77,6 @@ apply (relation "measure (\<lambda>(gr, norms). length gr)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
-lemma "\<forall>(v, n, rule) \<in> set (fst (iterate_norms gr [])). v \<in> keys gr"
-  apply (induct rule: iterate_norms.induct)
-  (* using iterate_norms.induct[of "\<lambda>gr norms. \<forall>(v, n, rule)\<in>set (iterate_norms gr norms). v \<in> fst ` set gr" gr "[]"] *)
-  apply auto
-sorry
-
 
 (*****************************************************************************
   gram_nsd
@@ -100,14 +94,12 @@ lemma nog_mnor:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
     shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules"
-using assms
 sorry
 
 lemma nog_has_norms:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
     shows "rules_have_norm (norms_of_grammar gr) rules" using assms
-unfolding rules_have_norm_def
 sorry
 
 lemma nog_in_rules:
@@ -116,9 +108,26 @@ lemma nog_in_rules:
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
-lemma nog_greater_zero:
-  "gram_nsd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
+lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
 sorry
+
+lemma nog_valid: "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
+  apply (induct arbitrary: v rule: iterate_norms.induct)
+  apply auto
+sorry
+
+lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
+  (* TODO: "gram_nsd (list @ y)" does not always hold! induction makes goal unprovable ... *)
+  apply (induct arbitrary: v rule: iterate_norms.induct)
+sorry
+
+lemma nog_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
+sorry
+
+lemma nog_greater_zero_lookup:
+  "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
+  apply (rule lookup_forall[of "norms_of_grammar gr"])
+using nog_complete nog_greater_zero[of _ _ _ _ gr] by auto
 
 
 (*****************************************************************************
@@ -147,7 +156,7 @@ lemma nov_greater_zero:
       and "set v \<subseteq> keys gr"
       and "v \<noteq> []"
     shows "0 < norm_of_variables gr v" using assms unfolding norm_of_variables_def
-by (induct v) (auto, subst ns_distr_cons, simp add: ns_singleton nog_greater_zero)
+by (induct v) (auto, subst ns_distr_cons, simp add: ns_singleton nog_greater_zero_lookup)
 
 lemma nov_empty: "norm_of_variables gr [] = 0"
 by (simp add: norm_of_variables_def ns_empty)
