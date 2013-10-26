@@ -90,28 +90,28 @@ by (simp add: gram_nsd_def)
 
 
 (*****************************************************************************
-  norms_of_grammar_new
+  norms_of_grammar
  *****************************************************************************)
 
-lemma nog_new_mnor:
+lemma nog_mnor:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
-    shows "lookup (norms_of_grammar_new gr) v = min_norm_of_rules (norms_of_grammar_new gr) rules"
+    shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules"
 using assms
 sorry
 
-lemma nog_new_has_norms:
+lemma nog_has_norms:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
-    shows "rules_have_norm (norms_of_grammar_new gr) rules" using assms
+    shows "rules_have_norm (norms_of_grammar gr) rules" using assms
 unfolding rules_have_norm_def
 sorry
 
-lemma nog_new_in_rules:
+lemma nog_in_rules:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
-    shows "snd (lookup (norms_of_grammar_new gr) v) \<in> set rules" using assms
-by (auto simp add: nog_new_mnor nog_new_has_norms mnor_in_rules)
+    shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
+by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
 
 (*****************************************************************************
@@ -124,12 +124,12 @@ by (simp add: norm_of_variables_def ns_distr)
 lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
 by (rule nov_distr[of _ "[x]", simplified])
 
-lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar_new gr) v)"
+lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
 by (simp add: norm_of_variables_def ns_singleton)
 
-lemma nov_nog_new':
+lemma nov_nog':
   assumes "gram_nsd gr"
-      and "(t, vs) = snd (lookup (norms_of_grammar_new gr) v)"
+      and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
       and "(v, rules) \<in> set gr"
     shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
 sorry
@@ -149,7 +149,7 @@ by (simp add: norm_of_variables_def ns_empty)
 termination minimal_word_of_variables
   apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
   apply (subst nov_distr')
-  apply (auto simp add: add_commute add_strict_increasing2 nov_nog_new')
+  apply (auto simp add: add_commute add_strict_increasing2 nov_nog')
   apply (subst nov_distr')
 by (auto simp add: nov_greater_zero)
 
@@ -163,13 +163,13 @@ lemma mwov_dist:
            minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2" using assms
 proof (induct v1 arbitrary: v2)
   case (Cons a v1)
-  then show ?case by (case_tac "snd (lookup (norms_of_grammar_new gr) a)") auto
+  then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
 qed auto
 
 lemma mwov_len_calcs_nog:
   assumes "gram_nsd gr"
       and "v \<in> keys gr"
-      and "(n, nt, nrt) = lookup (norms_of_grammar_new gr) v"
+      and "(n, nt, nrt) = lookup (norms_of_grammar gr) v"
     shows "Suc (length (minimal_word_of_variables gr nrt)) = n" using assms
 sorry
 
@@ -180,7 +180,7 @@ theorem mwov_len_calcs_nov:
 proof (induct gr v rule: mwov_induct)
   case (Cons_vars gr vh vt)
 
-  def nogh \<equiv> "lookup (norms_of_grammar_new gr) vh"
+  def nogh \<equiv> "lookup (norms_of_grammar gr) vh"
   def nh   \<equiv> "fst nogh"
   def trh  \<equiv> "snd nogh"
   def th   \<equiv> "fst trh"
@@ -219,7 +219,7 @@ lemma mwov_empty:
     shows "v = []" using assms
 proof (induct v)
   case (Cons a v)
-  then show ?case by (case_tac "snd (lookup (norms_of_grammar_new gr) a)") auto
+  then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
 qed auto
 
 lemma mwov_length_singleton:
@@ -228,7 +228,7 @@ lemma mwov_length_singleton:
       and "(th, rth) \<in> set rules"
     shows "length (minimal_word_of_variables gr [vh]) \<le>
        1 + length (minimal_word_of_variables gr rth)" using assms
-  apply (case_tac "snd (lookup (norms_of_grammar_new gr) vh)")
+  apply (case_tac "snd (lookup (norms_of_grammar gr) vh)")
   apply auto
 sorry
 
@@ -259,8 +259,8 @@ lemma mwov_hd_from_nog:
       and "(vh, rules) \<in> set gr"
       and "set vt \<subseteq> keys gr"
       and "th # tt = minimal_word_of_variables gr (vh # vt)"
-    shows "th = fst (snd (lookup (norms_of_grammar_new gr) vh))" using assms
-by (case_tac "snd (lookup (norms_of_grammar_new gr) vh)") auto
+    shows "th = fst (snd (lookup (norms_of_grammar gr) vh))" using assms
+by (case_tac "snd (lookup (norms_of_grammar gr) vh)") auto
 
 lemma mwov_prefix:
   assumes G: "gram_nsd gr"
@@ -270,16 +270,16 @@ lemma mwov_prefix:
     shows "tt = minimal_word_of_variables gr ((lookup rules th) @ vt)"
 proof -
   def rth  \<equiv> "lookup rules th"
-  def nvh  \<equiv> "snd (lookup (norms_of_grammar_new gr) vh)"
+  def nvh  \<equiv> "snd (lookup (norms_of_grammar gr) vh)"
   def nth  \<equiv> "fst nvh"
   def nrth \<equiv> "snd nvh"
 
   have "th = nth" using assms by (auto simp add: nth_def nvh_def mwov_hd_from_nog)
-  then have SL: "snd (lookup (norms_of_grammar_new gr) vh) = (th, nrth)"
+  then have SL: "snd (lookup (norms_of_grammar gr) vh) = (th, nrth)"
     using nvh_def nrth_def nth_def by auto
 
   have GS: "gram_sd gr" using G by (rule gram_nsd_sd)
-  have TN: "(th, nrth) \<in> set rules" using nog_new_in_rules[OF G V] SL by simp
+  have TN: "(th, nrth) \<in> set rules" using nog_in_rules[OF G V] SL by simp
   have LO: "lookup rules th = nrth"
     using lookup_from_existence gram_rules_alist[OF GS V] TN .
 
@@ -356,7 +356,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
 
   def rules \<equiv> "lookup gr vh"
   def   rth \<equiv> "lookup rules th"
-  def  nrth \<equiv> "snd (snd (lookup (norms_of_grammar_new gr) vh))"
+  def  nrth \<equiv> "snd (snd (lookup (norms_of_grammar gr) vh))"
 
   have GS: "gram_sd gr" using normal by (simp add: gram_nsd_sd)
   have VT: "set vt \<subseteq> keys gr" using normal(4) by simp
@@ -364,10 +364,10 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
     by (simp add: existence_from_lookup)
   have RA: "is_alist rules" using gram_rules_alist GS VR .
 
-  have "th = fst (snd (lookup (norms_of_grammar_new gr) vh))"
+  have "th = fst (snd (lookup (norms_of_grammar gr) vh))"
     using mwov_hd_from_nog normal(3) VR VT normal(2) .
-  then have TN: "(th, nrth) = snd (lookup (norms_of_grammar_new gr) vh)" using nrth_def by simp
-  have TH: "th \<in> keys rules" using nog_new_in_rules [OF normal(3) VR] sym[OF TN] by simp
+  then have TN: "(th, nrth) = snd (lookup (norms_of_grammar gr) vh)" using nrth_def by simp
+  have TH: "th \<in> keys rules" using nog_in_rules [OF normal(3) VR] sym[OF TN] by simp
 
   have TT: "tt = minimal_word_of_variables gr (rth @ vt)" unfolding rth_def
     using mwov_prefix normal(3) VR VT normal(2) .
