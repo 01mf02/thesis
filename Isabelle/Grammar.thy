@@ -37,14 +37,6 @@ by (simp add: norm_sum_def)
 
 
 (*****************************************************************************
-  rules_have_norm
- *****************************************************************************)
-
-lemma rhn_empty_exists: "gram_normed gr \<Longrightarrow> \<exists>(v, rules) \<in> set gr. rules_have_norm [] rules"
-sorry
-
-
-(*****************************************************************************
   norms_of_rules
  *****************************************************************************)
 
@@ -71,85 +63,6 @@ lemma mnor_in_rules:
     shows "snd (min_norm_of_rules norms rules) \<in> set rules" using assms
   unfolding min_norm_of_rules_def
 by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules sym[OF Set.image_subset_iff])
-
-
-(*****************************************************************************
-  norms_of_grammar
- *****************************************************************************)
-
-lemma "length (norms_of_grammar gr) = length gr"
-by (auto simp add: norms_of_grammar_def fold_concat_empty_init)
-
-lemma nog_fst_is_gr_fst: "map fst gr = map fst (norms_of_grammar gr)"
-by (auto simp add: norms_of_grammar_def
-    key_fold_empty_init[of _ "\<lambda>(v, rules) norms. min_norm_of_rules norms rules"])
-
-lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
-by (simp add: alist_fst_map gram_alist nog_fst_is_gr_fst)
-
-(* TODO: this is a most central lemma, but probably quite difficult to prove ... *)
-lemma nog_mnor:
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-    shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules" using assms
-  apply -
-  apply (rule lookup_from_existence)
-  apply (simp add: nog_alist)
-sorry
-
-lemma nog_sufficient:
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-    shows "norms_sufficient (norms_of_grammar gr) rules"
-sorry
-
-lemma nog_in_rules:
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-    shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
-by (auto simp add: nog_mnor mnor_in_rules nog_sufficient)
-
-
-(*****************************************************************************
-  norm_of_variables
- *****************************************************************************)
-
-lemma nov_distr: "norm_of_variables gr (x @ y) = norm_of_variables gr x + norm_of_variables gr y"
-by (simp add: norm_of_variables_def ns_distr)
-
-lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
-by (rule nov_distr[of _ "[x]", simplified])
-
-lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar_new gr) v)"
-by (simp add: norm_of_variables_def ns_singleton)
-
-lemma nov_nog:
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-      and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
-    shows "norm_of_variables gr [v] = Suc (norm_of_variables gr vs)"
-sorry
-
-lemma nov_nog':
-  assumes "gram_sd gr"
-      and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
-      and "(v, rules) \<in> set gr"
-    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
-by (auto simp add: nov_nog)
-
-lemma nov_nog_new':
-  assumes "gram_nsd gr"
-      and "(t, vs) = snd (lookup (norms_of_grammar_new gr) v)"
-      and "(v, rules) \<in> set gr"
-    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
-sorry
-
-(* TODO: generalise for variable lists? *)
-lemma nov_greater_zero: "gram_nsd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < norm_of_variables gr [v]"
-sorry
-
-lemma nov_empty: "norm_of_variables gr [] = 0"
-by (simp add: norm_of_variables_def ns_empty)
 
 
 (*****************************************************************************
@@ -180,26 +93,53 @@ by (simp add: gram_nsd_def)
   norms_of_grammar_new
  *****************************************************************************)
 
-(* lemma nog_new_fst_is_gr_fst: "gram_normed gr \<Longrightarrow> map fst gr = map fst (norms_of_grammar_new gr)"
-sorry *)
-
 lemma nog_new_mnor:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
-    shows "lookup (norms_of_grammar_new gr) v = min_norm_of_rules (norms_of_grammar_new gr) rules" using assms
+    shows "lookup (norms_of_grammar_new gr) v = min_norm_of_rules (norms_of_grammar_new gr) rules"
+using assms
 sorry
 
-lemma nog_new_sufficient:
+lemma nog_new_has_norms:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
-    shows "norms_sufficient (norms_of_grammar_new gr) rules"
+    shows "rules_have_norm (norms_of_grammar_new gr) rules" using assms
+unfolding rules_have_norm_def
 sorry
 
 lemma nog_new_in_rules:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
     shows "snd (lookup (norms_of_grammar_new gr) v) \<in> set rules" using assms
-by (auto simp add: nog_new_mnor nog_new_sufficient mnor_in_rules)
+by (auto simp add: nog_new_mnor nog_new_has_norms mnor_in_rules)
+
+
+(*****************************************************************************
+  norm_of_variables
+ *****************************************************************************)
+
+lemma nov_distr: "norm_of_variables gr (x @ y) = norm_of_variables gr x + norm_of_variables gr y"
+by (simp add: norm_of_variables_def ns_distr)
+
+lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
+by (rule nov_distr[of _ "[x]", simplified])
+
+lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar_new gr) v)"
+by (simp add: norm_of_variables_def ns_singleton)
+
+lemma nov_nog_new':
+  assumes "gram_nsd gr"
+      and "(t, vs) = snd (lookup (norms_of_grammar_new gr) v)"
+      and "(v, rules) \<in> set gr"
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
+sorry
+
+(* TODO: generalise for variable lists? *)
+lemma nov_greater_zero: "gram_nsd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < norm_of_variables gr [v]"
+sorry
+
+lemma nov_empty: "norm_of_variables gr [] = 0"
+by (simp add: norm_of_variables_def ns_empty)
 
 
 (*****************************************************************************
@@ -288,7 +228,7 @@ lemma mwov_length_singleton:
       and "(th, rth) \<in> set rules"
     shows "length (minimal_word_of_variables gr [vh]) \<le>
        1 + length (minimal_word_of_variables gr rth)" using assms
-  apply (case_tac "snd (lookup (norms_of_grammar gr) vh)")
+  apply (case_tac "snd (lookup (norms_of_grammar_new gr) vh)")
   apply auto
 sorry
 
@@ -322,14 +262,6 @@ lemma mwov_hd_from_nog:
     shows "th = fst (snd (lookup (norms_of_grammar_new gr) vh))" using assms
 by (case_tac "snd (lookup (norms_of_grammar_new gr) vh)") auto
 
-lemma mwov_hd_from_nog_new:
-  assumes "gram_sd gr"
-      and "(vh, rules) \<in> set gr"
-      and "set vt \<subseteq> keys gr"
-      and "th # tt = minimal_word_of_variables gr (vh # vt)"
-    shows "th = fst (snd (lookup (norms_of_grammar_new gr) vh))" using assms
-sorry
-
 lemma mwov_prefix:
   assumes G: "gram_nsd gr"
       and V: "(vh, rules) \<in> set gr"
@@ -362,6 +294,8 @@ qed
 (*****************************************************************************
   word_in_variables
  *****************************************************************************)
+
+lemmas eat_word_induct = eat_word.induct[case_names normal nil_word nil_vars]
 
 (* Postfixfreeness *)
 lemma wiv_postfix_free:

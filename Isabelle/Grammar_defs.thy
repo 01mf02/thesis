@@ -53,10 +53,6 @@ definition min_norm_of_rules :: "('t::linorder, 'v::linorder) norm_list \<Righta
   ('t, 'v) production_rules \<Rightarrow> ('t, 'v) norm_rule" where
   "min_norm_of_rules norms rules \<equiv> Min (set (norms_of_rules norms rules))"
 
-definition norms_of_grammar ::
-  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar gr \<equiv> (fold (\<lambda>(v, rules). \<lambda>ns. ns@[(v, min_norm_of_rules ns rules)]) gr [])"
-
 definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
@@ -102,8 +98,6 @@ fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<
      else (th#tt, vh#vt))"
 | "eat_word gr t v = (t, v)"
 
-lemmas eat_word_induct = eat_word.induct[case_names normal nil_word nil_vars]
-
 definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
 
@@ -133,7 +127,7 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v li
   "norm_reduce gr v 0 = v"
 | "norm_reduce gr [] (Suc p) = []"
 | "norm_reduce gr (vh#vt) (Suc p) = (
-     let (n, (_, v)) = lookup (norms_of_grammar gr) vh in
+     let (n, (_, v)) = lookup (norms_of_grammar_new gr) vh in
      if Suc p < n then (norm_reduce gr v p) @ vt
      else norm_reduce gr vt (Suc p - n))"
 
