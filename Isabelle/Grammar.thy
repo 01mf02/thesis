@@ -32,6 +32,9 @@ by (simp add: norm_sum_def)
 lemma ns_distr: "norm_sum ns (x @ y) = norm_sum ns x + norm_sum ns y"
 by (simp add: norm_sum_def)
 
+lemma ns_distr_cons: "norm_sum ns (x # y) = norm_sum ns [x] + norm_sum ns y"
+by (simp add: norm_sum_def)
+
 lemma ns_empty: "norm_sum ns [] = 0"
 by (simp add: norm_sum_def)
 
@@ -113,6 +116,10 @@ lemma nog_in_rules:
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
+lemma nog_greater_zero:
+  "gram_nsd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
+sorry
+
 
 (*****************************************************************************
   norm_of_variables
@@ -121,7 +128,8 @@ by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 lemma nov_distr: "norm_of_variables gr (x @ y) = norm_of_variables gr x + norm_of_variables gr y"
 by (simp add: norm_of_variables_def ns_distr)
 
-lemma nov_distr': "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
+lemma nov_distr_cons:
+  "norm_of_variables gr (x # y) = norm_of_variables gr [x] + norm_of_variables gr y"
 by (rule nov_distr[of _ "[x]", simplified])
 
 lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
@@ -134,9 +142,12 @@ lemma nov_nog':
     shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
 sorry
 
-(* TODO: generalise for variable lists? *)
-lemma nov_greater_zero: "gram_nsd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> 0 < norm_of_variables gr [v]"
-sorry
+lemma nov_greater_zero:
+  assumes "gram_nsd gr"
+      and "set v \<subseteq> keys gr"
+      and "v \<noteq> []"
+    shows "0 < norm_of_variables gr v" using assms unfolding norm_of_variables_def
+by (induct v) (auto, subst ns_distr_cons, simp add: ns_singleton nog_greater_zero)
 
 lemma nov_empty: "norm_of_variables gr [] = 0"
 by (simp add: norm_of_variables_def ns_empty)
@@ -148,9 +159,9 @@ by (simp add: norm_of_variables_def ns_empty)
 
 termination minimal_word_of_variables
   apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
-  apply (subst nov_distr')
+  apply (subst nov_distr_cons)
   apply (auto simp add: add_commute add_strict_increasing2 nov_nog')
-  apply (subst nov_distr')
+  apply (subst nov_distr_cons)
 by (auto simp add: nov_greater_zero)
 
 lemmas mwov_induct = minimal_word_of_variables.induct[case_names Nil_vars Cons_vars]
@@ -200,7 +211,7 @@ proof (induct gr v rule: mwov_induct)
     minimal_word_of_variables gr [vh] @ minimal_word_of_variables gr vt"
     using mwov_dist Cons_vars(3) VS VT .
   have ND: "norm_of_variables gr (vh # vt) = norm_of_variables gr [vh] + norm_of_variables gr vt"
-    using nov_distr' by auto
+    using nov_distr_cons by auto
 
   have "Suc (length (minimal_word_of_variables gr rh)) = nh"
     using mwov_len_calcs_nog[OF Cons_vars(3) VH NO[simplified nogh_def]] .
