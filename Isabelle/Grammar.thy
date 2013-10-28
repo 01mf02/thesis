@@ -73,7 +73,7 @@ by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules sym[OF Set.im
  *****************************************************************************)
 
 termination iterate_norms
-apply (relation "measure (\<lambda>(gr, norms). length gr)", auto)
+apply (relation "measure (\<lambda>(gr, rest, norms). length rest)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
@@ -115,9 +115,6 @@ lemma nog_valid: "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> k
   apply (induct arbitrary: v rule: iterate_norms.induct)
   apply auto
 sorry
-
-(* TODO: remove afterwards ... *)
-thm iterate_norms.induct
 
 lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
   unfolding gram_nsd_def gram_normed_fun_def norms_of_grammar_def
