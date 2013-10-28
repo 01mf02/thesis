@@ -116,9 +116,13 @@ lemma nog_valid: "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> k
   apply auto
 sorry
 
+(* TODO: remove afterwards ... *)
+thm iterate_norms.induct
+
 lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
+  unfolding gram_nsd_def gram_normed_fun_def norms_of_grammar_def
   (* TODO: "gram_nsd (list @ y)" does not always hold! induction makes goal unprovable ... *)
-  apply (induct arbitrary: v rule: iterate_norms.induct)
+  (* apply (induct gr "[]" arbitrary: v rule: iterate_norms.induct) *)
 sorry
 
 lemma nog_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
