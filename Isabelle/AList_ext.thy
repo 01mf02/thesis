@@ -17,6 +17,9 @@ by (simp add: is_alist_def)
 lemma alist_subset_is_alist: "is_alist (x # l) \<Longrightarrow> is_alist l"
 by (induct l) (auto simp add: is_alist_def)
 
+lemma alist_empty[simp]: "is_alist []"
+by (simp add: is_alist_def)
+
 lemma key_in_fst[simp]: "(k, v) \<in> A \<Longrightarrow> k \<in> fst ` A"
 by (rule Set.image_eqI) simp_all
 
