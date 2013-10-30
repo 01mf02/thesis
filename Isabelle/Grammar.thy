@@ -108,6 +108,11 @@ lemma nog_in_rules:
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
+thm iterate_norms.induct
+lemma nog_invariant: "norms_correct gr rest norms \<Longrightarrow> norms_correct gr rest (fst (iterate_norms gr rest norms))"
+  apply (induct _ _ _ norms rule: iterate_norms.induct)
+sorry
+
 lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
 sorry
 

@@ -57,19 +57,19 @@ definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
 definition norms_correct where
-  "norms_correct gr norms \<equiv>
-     \<forall>(v, rules) \<in> set gr.
+  "norms_correct gr rest norms \<equiv> set rest \<subseteq> set gr \<and> fst ` set rest \<inter> fst ` set norms = {} \<and>
+     (\<forall>(v, rules) \<in> set gr.
        if v \<in> keys norms then
          let nv = lookup norms v in
          let nn = fst nv in
          let nr = snd nv in
          nr \<in> set rules \<and> rule_has_norm norms nr \<and> nn = 1 + norm_sum norms (snd nr) \<and>
          (\<forall>r' \<in> set rules. rule_has_norm norms r' \<longrightarrow> 1 + norm_sum norms (snd r') \<le> nn)
-       else True"
+       else True)"
 
 function iterate_norms where
   "iterate_norms gr rest norms = (
-     if norms_correct gr norms then case split_normable rest norms of
+     if norms_correct gr rest norms then case split_normable rest norms of
        ([], unnormable) \<Rightarrow> (norms, unnormable)
      | ((v, rules)#normable_tl, unnormable) \<Rightarrow>
          iterate_norms gr (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms)
