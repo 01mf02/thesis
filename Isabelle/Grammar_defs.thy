@@ -68,12 +68,10 @@ definition norms_correct where
        else True)"
 
 function iterate_norms where
-  "iterate_norms gr rest norms = (
-     if norms_correct gr rest norms then case split_normable rest norms of
+  "iterate_norms gr rest norms = (case split_normable rest norms of
        ([], unnormable) \<Rightarrow> (norms, unnormable)
      | ((v, rules)#normable_tl, unnormable) \<Rightarrow>
-         iterate_norms gr (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms)
-     else (norms, rest))"
+         iterate_norms gr (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
 by pat_completeness auto
 
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where

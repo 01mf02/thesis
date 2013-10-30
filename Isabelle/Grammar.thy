@@ -77,6 +77,13 @@ apply (relation "measure (\<lambda>(gr, rest, norms). length rest)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
+lemma itno_induct [case_names Base Step]: "
+  (\<And>unnb. split_normable rest norms = ([], unnb) \<Longrightarrow> P (iterate_norms gr rest norms)) \<Longrightarrow>
+  (\<And>v rules nbtl unnb. split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
+    P (iterate_norms gr (nbtl@unnb) ((v, min_norm_of_rules norms rules) # norms))) \<Longrightarrow>
+  P (iterate_norms gr rest norms)"
+by (case_tac "split_normable rest norms", case_tac "fst (split_normable rest norms)", auto)
+
 
 (*****************************************************************************
   gram_nsd
@@ -108,23 +115,26 @@ lemma nog_in_rules:
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
-thm iterate_norms.induct
-lemma nog_invariant: "norms_correct gr rest norms \<Longrightarrow> norms_correct gr rest (fst (iterate_norms gr rest norms))"
-  apply (induct _ _ _ norms rule: iterate_norms.induct)
+
+lemma nog_invariant:
+  assumes "norms_correct gr rest norms"
+  shows "norms_correct gr rest (fst (iterate_norms gr rest norms))"
 sorry
 
-lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)"
-sorry
+lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
+proof (induct rule: itno_induct)
+print_cases
+  case (Base unnb)
+  then show ?case by auto
+next
+  case (Step v rules nbtl unnb)
+  then show ?case sorry
+qed
 
 lemma nog_valid: "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
-  apply (induct arbitrary: v rule: iterate_norms.induct)
-  apply auto
 sorry
 
 lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
-  unfolding gram_nsd_def gram_normed_fun_def norms_of_grammar_def
-  (* TODO: "gram_nsd (list @ y)" does not always hold! induction makes goal unprovable ... *)
-  (* apply (induct gr "[]" arbitrary: v rule: iterate_norms.induct) *)
 sorry
 
 lemma nog_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
@@ -221,7 +231,7 @@ proof (induct gr v rule: mwov_induct)
 
   have IH: "length (minimal_word_of_variables gr vt) = norm_of_variables gr vt"
     using TR Cons_vars trh_def nogh_def by simp
-  
+
   have MD: "minimal_word_of_variables gr ([vh] @ vt) =
     minimal_word_of_variables gr [vh] @ minimal_word_of_variables gr vt"
     using mwov_dist Cons_vars(3) VS VT .
@@ -276,7 +286,7 @@ proof -
   have D2: "minimal_word_of_variables gr (rth @ vt) =
             minimal_word_of_variables gr rth @ minimal_word_of_variables gr vt"
     using mwov_dist G gram_rule_vars_in_keys[OF gram_nsd_sd[OF G] V R] T .
-  
+
   show ?thesis using L D1 D2 by auto
 qed
 
@@ -409,7 +419,7 @@ by (case_tac "th \<in> keys (lookup gr vh)") (auto simp add: Let_def word_in_var
 
 lemma mwov_minimal_wiv:
   assumes "gram_nsd gr"
-      and "set v \<subseteq> keys gr" 
+      and "set v \<subseteq> keys gr"
       and "word_in_variables gr w v"
     shows "length (minimal_word_of_variables gr v) \<le> length w" using assms
 proof (induct gr w v rule: eat_word_induct)
