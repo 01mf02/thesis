@@ -73,17 +73,33 @@ by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules sym[OF Set.im
  *****************************************************************************)
 
 termination iterate_norms
-apply (relation "measure (\<lambda>(gr, rest, norms). length rest)", auto)
+apply (relation "measure (\<lambda>((*gr,*) rest, norms). length rest)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
 lemma itno_induct [case_names Base Step]: "
-  (\<And>unnb. split_normable rest norms = ([], unnb) \<Longrightarrow> P (iterate_norms gr rest norms)) \<Longrightarrow>
+  (\<And>unnb. split_normable rest norms = ([], unnb) \<Longrightarrow> P (iterate_norms (*gr*) rest norms)) \<Longrightarrow>
   (\<And>v rules nbtl unnb. split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
-    P (iterate_norms gr (nbtl@unnb) ((v, min_norm_of_rules norms rules) # norms))) \<Longrightarrow>
-  P (iterate_norms gr rest norms)"
+    P (iterate_norms (*gr*) (nbtl@unnb) ((v, min_norm_of_rules norms rules) # norms))) \<Longrightarrow>
+  P (iterate_norms (*gr*) rest norms)"
 by (case_tac "split_normable rest norms", case_tac "fst (split_normable rest norms)", auto)
 
+(* TODO: remove after work! *)
+thm iterate_norms.induct
+thm list.induct
+
+lemma itno_induct' [case_names Base Step]: "
+  (\<And>rest norms.
+    (\<And>unnb. split_normable rest norms = ([], unnb) \<Longrightarrow> P rest norms) \<Longrightarrow>
+    (\<And>v rules nbtl unnb. split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
+      P (nbtl@unnb) ((v, min_norm_of_rules norms rules) # norms)) \<Longrightarrow>
+      P rest norms) \<Longrightarrow>
+  P rest norms"
+  apply (induct _ rest norms rule: iterate_norms.induct)
+  apply (case_tac "split_normable rest norms")
+  apply (case_tac "fst (split_normable rest norms)")
+  apply (auto simp del: iterate_norms.simps)
+sorry
 
 (*****************************************************************************
   gram_nsd
@@ -116,14 +132,13 @@ lemma nog_in_rules:
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
 
-lemma nog_invariant:
+(*lemma nog_invariant:
   assumes "norms_correct gr rest norms"
   shows "norms_correct gr rest (fst (iterate_norms gr rest norms))"
-sorry
+sorry*)
 
 lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
 proof (induct rule: itno_induct)
-print_cases
   case (Base unnb)
   then show ?case by auto
 next

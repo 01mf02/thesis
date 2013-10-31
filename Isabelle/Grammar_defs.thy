@@ -68,21 +68,21 @@ definition norms_correct where
        else True)"
 
 function iterate_norms where
-  "iterate_norms gr rest norms = (case split_normable rest norms of
-       ([], unnormable) \<Rightarrow> (norms, unnormable)
+  "iterate_norms (*gr*) rest norms = (case split_normable rest norms of
+       ([], unnormable) \<Rightarrow> (unnormable, norms)
      | ((v, rules)#normable_tl, unnormable) \<Rightarrow>
-         iterate_norms gr (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
+         iterate_norms (*gr*) (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
 by pat_completeness auto
 
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_normed_fun gr \<equiv> snd (iterate_norms gr gr []) = []"
+  "gram_normed_fun gr \<equiv> fst (iterate_norms (*gr*) gr []) = []"
 
 definition gram_nsd :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_nsd gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
 definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar gr \<equiv> fst (iterate_norms gr gr [])"
+  "norms_of_grammar gr \<equiv> snd (iterate_norms (*gr*) gr [])"
 
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
