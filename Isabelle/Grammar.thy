@@ -88,18 +88,28 @@ by (case_tac "split_normable rest norms", case_tac "fst (split_normable rest nor
 thm iterate_norms.induct
 thm list.induct
 
-lemma itno_induct' [case_names Base Step]: "
-  (\<And>rest norms.
-    (\<And>unnb. split_normable rest norms = ([], unnb) \<Longrightarrow> P rest norms) \<Longrightarrow>
-    (\<And>v rules nbtl unnb. split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
-      P (nbtl@unnb) ((v, min_norm_of_rules norms rules) # norms)) \<Longrightarrow>
-      P rest norms) \<Longrightarrow>
-  P rest norms"
-  apply (induct _ rest norms rule: iterate_norms.induct)
-  apply (case_tac "split_normable rest norms")
-  apply (case_tac "fst (split_normable rest norms)")
-  apply (auto simp del: iterate_norms.simps)
-sorry
+lemma itno_induct' [case_names Base Step]:
+  assumes N: "\<And>rest norms unnb.
+                P (rest, norms) \<Longrightarrow> split_normable rest norms = ([], unnb) \<Longrightarrow> P (unnb, norms)"
+      and C: "\<And>rest norms v rules nbtl unnb.
+                P (rest, norms) \<Longrightarrow> split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
+                P ((nbtl@unnb), ((v, min_norm_of_rules norms rules) # norms))"
+      and P: "P (rest, norms)"
+  shows "P (iterate_norms rest norms)"
+proof (cases "split_normable rest norms")
+  case (Pair nb unnb)
+  then show ?thesis
+    proof (cases "nb")
+      case Nil then show ?thesis using N P Pair by auto
+    next
+      case (Cons nbh nbt)
+      then show ?thesis using C P Pair
+        apply (induct _ rest norms rule: iterate_norms.induct)
+        apply (auto simp del: iterate_norms.simps)
+      sorry
+    qed
+qed
+
 
 (*****************************************************************************
   gram_nsd
