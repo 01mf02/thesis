@@ -88,7 +88,7 @@ by (case_tac "split_normable rest norms", case_tac "fst (split_normable rest nor
 thm iterate_norms.induct
 thm list.induct
 
-lemma itno_induct' [case_names Base Step]:
+lemma itno_induct' [case_names Nil Cons Base]:
   assumes N: "\<And>rest norms unnb.
                 P (rest, norms) \<Longrightarrow> split_normable rest norms = ([], unnb) \<Longrightarrow> P (unnb, norms)"
       and C: "\<And>rest norms v rules nbtl unnb.
@@ -99,7 +99,7 @@ lemma itno_induct' [case_names Base Step]:
 proof (cases "split_normable rest norms")
   case (Pair nb unnb)
   then show ?thesis
-    proof (cases "nb")
+    proof (cases nb)
       case Nil then show ?thesis using N P Pair by auto
     next
       case (Cons nbh nbt)
@@ -147,14 +147,23 @@ by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
   shows "norms_correct gr rest (fst (iterate_norms gr rest norms))"
 sorry*)
 
-lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
-proof (induct rule: itno_induct)
-  case (Base unnb)
-  then show ?case by auto
+lemma itno_fst_subset_gr: "gram_sd gr \<Longrightarrow> set (fst (iterate_norms gr [])) \<subseteq> set gr"
+proof (induct rule: itno_induct')
+  case (Nil rest norms unnb)
+  then show ?case by (force simp add: split_normable_def)
 next
-  case (Step v rules nbtl unnb)
+  case (Cons rest norms v rules nbtl unnb)
+  then have "set (fst (split_normable rest norms)) \<subseteq> set rest"
+    unfolding split_normable_def partition_filter1 by (simp only: filter_is_subset)
+  then have "set ((v, rules) # nbtl) \<subseteq> set rest" using Cons by simp
+  then show ?case using Cons by (auto simp add: split_normable_def)
+qed auto
+
+lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
+  case (Cons rest norms v rules nbtl unnb)
   then show ?case sorry
-qed
+qed (auto)
 
 lemma nog_valid: "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
 sorry
