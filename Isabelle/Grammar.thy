@@ -44,12 +44,15 @@ by (simp add: norm_sum_def)
  *****************************************************************************)
 
 lemma nor_in_rules: "snd ` set (norms_of_rules norms rules) \<subseteq> set rules"
-by (unfold norms_of_rules_def) auto
+unfolding norms_of_rules_def by auto
 
 lemma nor_nonempty:
   assumes "rules_have_norm norms rules"
     shows "norms_of_rules norms rules \<noteq> []"
 using assms by (simp add: rules_have_norm_def norms_of_rules_def filter_empty_conv)
+
+lemma nor_norms_greater_zero: "(n, rt, rv) \<in> set (norms_of_rules norms rules) \<Longrightarrow> 0 < n"
+unfolding norms_of_rules_def by auto
 
 
 (*****************************************************************************
@@ -66,6 +69,22 @@ lemma mnor_in_rules:
     shows "snd (min_norm_of_rules norms rules) \<in> set rules" using assms
   unfolding min_norm_of_rules_def
 by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules sym[OF Set.image_subset_iff])
+
+lemma mnor_norm_greater_zero:
+  assumes "rules_have_norm norms rules"
+    shows "0 < fst (min_norm_of_rules norms rules)" using assms unfolding min_norm_of_rules_def
+by - (rule Min_predicate, auto simp add: nor_nonempty nor_norms_greater_zero)
+
+
+(*****************************************************************************
+  split_normable
+ *****************************************************************************)
+
+lemma sn_fst_have_norms:
+  assumes "split_normable rest norms = (nb, unnb)"
+      and "(v, rules) \<in> set nb"
+    shows "rules_have_norm norms rules" using assms unfolding split_normable_def
+by auto
 
 
 (*****************************************************************************
@@ -147,7 +166,7 @@ by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
   shows "norms_correct gr rest (fst (iterate_norms gr rest norms))"
 sorry*)
 
-lemma itno_fst_subset_gr: "gram_sd gr \<Longrightarrow> set (fst (iterate_norms gr [])) \<subseteq> set gr"
+lemma (*itno_fst_subset_gr:*) "gram_sd gr \<Longrightarrow> set (fst (iterate_norms gr [])) \<subseteq> set gr"
 proof (induct rule: itno_induct')
   case (Nil rest norms unnb)
   then show ?case by (force simp add: split_normable_def)
@@ -159,25 +178,36 @@ next
   then show ?case using Cons by (auto simp add: split_normable_def)
 qed auto
 
-lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
+lemma (*nog_alist:*) "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
 proof (induct rule: itno_induct')
   case (Cons rest norms v rules nbtl unnb)
   then show ?case sorry
 qed (auto)
 
-lemma nog_valid: "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
+lemma (*nog_valid:*) "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
 sorry
 
 lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
 sorry
 
-lemma nog_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
-sorry
+lemma nog_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
+  unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
+  case (Cons rest norms va rules nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+    then have "rules_have_norm norms rules"
+      using Cons sn_fst_have_norms[of _ _ "(va, rules) # nbtl" unnb _ _] by auto
+    then have "0 < fst (min_norm_of_rules norms rules)" using mnor_norm_greater_zero by auto
+    then show ?thesis using Cons fst_predicate[of _ "min_norm_of_rules norms rules"] by auto
+  qed auto
+qed auto
 
 lemma nog_greater_zero_lookup:
   "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
   apply (rule lookup_forall[of "norms_of_grammar gr"])
-using nog_complete nog_greater_zero[of _ _ _ _ gr] by auto
+using nog_complete nog_norms_greater_zero[of _ _ _ _ gr] by auto
 
 
 (*****************************************************************************

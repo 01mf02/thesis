@@ -26,6 +26,9 @@ by auto
 lemma Min_predicate: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> \<forall>x \<in> A. P x \<Longrightarrow> P (Min A)"
 by auto
 
+lemma fst_predicate: "P (fst p) \<Longrightarrow> (f, s) = p \<Longrightarrow> P f"
+by auto
+
 lemma sum_length_filter_compl':
   "length (filter P l) + length (filter (Not \<circ> P) l) = length l"
 by (induct l) simp_all
