@@ -188,7 +188,11 @@ lemma (*nog_valid:*) "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<i
 sorry
 
 lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
-sorry
+  unfolding norms_of_grammar_def
+proof (induct arbitrary: v rule: itno_induct')
+  case Base
+  then show ?case (* TODO: this is not provable by our induction principle!! *) sorry
+qed auto
 
 lemma nog_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
   unfolding norms_of_grammar_def
