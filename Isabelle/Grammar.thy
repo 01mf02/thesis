@@ -91,8 +91,10 @@ lemma sn_fst_nil:
     shows "unnb = rest" using assms
 by (auto simp add: split_normable_def) (induct rest, auto)
 
-lemma sn_fst_subset: "set (fst (split_normable rest norms)) \<subseteq> set rest"
-unfolding split_normable_def partition_filter1 by (simp only: filter_is_subset)
+lemma sn_conserves:
+  assumes "split_normable rest norms = (nb, unnb)"
+    shows "set rest = set nb \<union> set unnb" using assms unfolding split_normable_def
+by auto
 
 
 (*****************************************************************************
@@ -111,9 +113,6 @@ lemma itno_induct [case_names Base Step]: "
   P (iterate_norms (*gr*) rest norms)"
 by (case_tac "split_normable rest norms", case_tac "fst (split_normable rest norms)", auto)
 
-(* TODO: remove after work! *)
-thm iterate_norms.induct
-thm list.induct
 
 lemma itno_induct' [case_names Nil Cons Base]:
   assumes N: "\<And>rest norms unnb.
@@ -131,6 +130,9 @@ proof (cases "split_normable rest norms")
     next
       case (Cons nbh nbt)
       then show ?thesis using C P Pair
+        (* TODO: remove after work! *)
+        thm iterate_norms.induct
+        thm list.induct
         apply (induct _ rest norms rule: iterate_norms.induct)
         apply (auto simp del: iterate_norms.simps)
       sorry
@@ -138,16 +140,13 @@ proof (cases "split_normable rest norms")
 qed
 
 
-lemma itno_conserves_keys: 
+lemma itno_conserves_keys:
   "keys gr \<subseteq> keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
 proof (intro subsetI, induct rule: itno_induct')
   case (Nil rest _ unnb)
   then have "rest = unnb" using sn_fst_nil by auto
   then show ?case using Nil by simp
-next
-  case (Cons rest norms v rules nbtl unnb)
-  then show ?case sorry
-qed auto
+qed (auto simp add: sn_conserves)
 
 
 (*****************************************************************************
@@ -192,8 +191,7 @@ proof (induct rule: itno_induct')
   then show ?case using sn_fst_nil by auto
 next
   case (Cons rest norms v rules nbtl unnb)
-  have "set (fst (split_normable rest norms)) \<subseteq> set rest" by (rule sn_fst_subset)
-  then have "set ((v, rules) # nbtl) \<subseteq> set rest" using Cons by simp
+  have "set ((v, rules) # nbtl) \<subseteq> set rest" using Cons sn_conserves by blast
   then show ?case using Cons by (auto simp add: split_normable_def)
 qed auto
 
