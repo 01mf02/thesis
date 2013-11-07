@@ -130,6 +130,17 @@ proof (cases "split_normable rest norms")
 qed
 
 
+lemma itno_conserves_keys: 
+  "keys gr \<subseteq> keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
+proof (intro subsetI, induct rule: itno_induct')
+  case Nil
+  then show ?case sorry
+next
+  case Cons
+  then show ?case sorry
+qed auto
+
+
 (*****************************************************************************
   gram_nsd
  *****************************************************************************)
@@ -187,12 +198,14 @@ qed (auto)
 lemma (*nog_valid:*) "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
 sorry
 
-lemma nog_complete: "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> v \<in> keys (norms_of_grammar gr)"
-  unfolding norms_of_grammar_def
-proof (induct arbitrary: v rule: itno_induct')
-  case Base
-  then show ?case (* TODO: this is not provable by our induction principle!! *) sorry
-qed auto
+lemma nog_complete:
+  assumes "gram_nsd gr"
+    shows "keys gr \<subseteq> keys (norms_of_grammar gr)"
+proof -
+  have "fst (iterate_norms gr []) = []" using assms unfolding gram_nsd_def gram_normed_fun_def
+    by simp
+  then show ?thesis using itno_conserves_keys[of gr] by (simp add: norms_of_grammar_def)
+qed
 
 lemma nog_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
   unfolding norms_of_grammar_def
