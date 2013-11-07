@@ -86,6 +86,14 @@ lemma sn_fst_have_norms:
     shows "rules_have_norm norms rules" using assms unfolding split_normable_def
 by auto
 
+lemma sn_fst_nil:
+  assumes "split_normable rest norms = ([], unnb)"
+    shows "unnb = rest" using assms
+by (auto simp add: split_normable_def) (induct rest, auto)
+
+lemma sn_fst_subset: "set (fst (split_normable rest norms)) \<subseteq> set rest"
+unfolding split_normable_def partition_filter1 by (simp only: filter_is_subset)
+
 
 (*****************************************************************************
   iterate_norms
@@ -133,10 +141,11 @@ qed
 lemma itno_conserves_keys: 
   "keys gr \<subseteq> keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
 proof (intro subsetI, induct rule: itno_induct')
-  case Nil
-  then show ?case sorry
+  case (Nil rest _ unnb)
+  then have "rest = unnb" using sn_fst_nil by auto
+  then show ?case using Nil by simp
 next
-  case Cons
+  case (Cons rest norms v rules nbtl unnb)
   then show ?case sorry
 qed auto
 
@@ -180,11 +189,10 @@ sorry*)
 lemma (*itno_fst_subset_gr:*) "gram_sd gr \<Longrightarrow> set (fst (iterate_norms gr [])) \<subseteq> set gr"
 proof (induct rule: itno_induct')
   case (Nil rest norms unnb)
-  then show ?case by (force simp add: split_normable_def)
+  then show ?case using sn_fst_nil by auto
 next
   case (Cons rest norms v rules nbtl unnb)
-  then have "set (fst (split_normable rest norms)) \<subseteq> set rest"
-    unfolding split_normable_def partition_filter1 by (simp only: filter_is_subset)
+  have "set (fst (split_normable rest norms)) \<subseteq> set rest" by (rule sn_fst_subset)
   then have "set ((v, rules) # nbtl) \<subseteq> set rest" using Cons by simp
   then show ?case using Cons by (auto simp add: split_normable_def)
 qed auto
