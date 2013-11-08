@@ -51,6 +51,11 @@ lemma nor_nonempty:
     shows "norms_of_rules norms rules \<noteq> []"
 using assms by (simp add: rules_have_norm_def norms_of_rules_def filter_empty_conv)
 
+lemma nor_nonempty_cons:
+  assumes "rules_have_norm norms rules"
+    shows "norms_of_rules (nh # norms) rules \<noteq> []" using assms
+by (auto simp add: rules_have_norm_def norms_of_rules_def filter_empty_conv rule_has_norm_def)
+
 lemma nor_norms_greater_zero: "(n, rt, rv) \<in> set (norms_of_rules norms rules) \<Longrightarrow> 0 < n"
 unfolding norms_of_rules_def by auto
 
@@ -59,7 +64,7 @@ unfolding norms_of_rules_def by auto
   min_norm_of_rules
  *****************************************************************************)
 
-lemma
+lemma mnor_in_nor:
   assumes "rules_have_norm norms rules"
     shows "min_norm_of_rules norms rules \<in> set (norms_of_rules norms rules)" using assms
 unfolding min_norm_of_rules_def by (auto intro: Min_predicate simp add: nor_nonempty)
@@ -95,6 +100,12 @@ lemma sn_conserves:
   assumes "split_normable rest norms = (nb, unnb)"
     shows "set rest = set nb \<union> set unnb" using assms unfolding split_normable_def
 by auto
+
+lemma sn_alist:
+  assumes "split_normable rest norms = (nb, unnb)"
+      and "is_alist rest"
+    shows "is_alist (nb @ unnb)"
+using assms partition_alist by (auto simp add: split_normable_def)
 
 
 (*****************************************************************************
@@ -151,8 +162,7 @@ qed (auto simp add: sn_conserves)
 lemma itno_subset_gr_keys:
   "keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr [])) \<subseteq> keys gr"
 proof (intro subsetI, induct rule: itno_induct')
-  case (Nil rest _ unnb)
-  then show ?case using sn_fst_nil by blast
+  case Nil then show ?case using sn_fst_nil by blast
 next
   case (Cons rest norms v rules nbtl unnb)
   then have "set rest = set ((v, rules) # nbtl) \<union> set unnb" using sn_conserves by blast
@@ -162,6 +172,36 @@ qed auto
 lemma itno_gr_keys_equal:
   "keys gr = keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
 using itno_superset_gr_keys itno_subset_gr_keys by blast
+
+lemma itno_disjunct_alists:
+  assumes "gram_sd gr"
+      and "itnofst = fst (iterate_norms gr [])"
+      and "itnosnd = snd (iterate_norms gr [])"
+    shows "is_alist itnofst \<and> is_alist itnosnd \<and> keys (itnofst) \<inter> keys (itnosnd) = {}"
+using assms unfolding norms_of_grammar_def
+proof (induct arbitrary: itnofst itnosnd rule: itno_induct')
+  case Nil then show ?case using sn_fst_nil by blast
+next
+  case (Cons rest norms v rules nbtl unnb)
+  have IH: "is_alist rest \<and> is_alist norms \<and> keys rest \<inter> keys norms = {}" using Cons by auto
+  have IH1: "is_alist rest" using IH by simp
+  have IH2: "is_alist norms" using IH by simp
+  have IH3: "keys rest \<inter> keys norms = {}" using IH by simp
+
+  have A: "is_alist ((v, rules) # nbtl @ unnb)" using Cons(2) IH1 sn_alist by force
+  then have "is_alist (nbtl @ unnb)" using alist_subset_is_alist[of "(v, rules)"] by auto
+  then have C1: "is_alist itnofst" using Cons by simp
+
+  have C2: "is_alist ((v, min_norm_of_rules norms rules) # norms)"
+    using IH2 IH3 Cons alist_distr_cons[of v "min_norm_of_rules norms rules"] sn_conserves by force
+
+  have IS1: "v \<notin> (keys nbtl \<union> keys unnb)" using A alist_distr_cons[of v _ "nbtl @ unnb"] by auto
+
+  have "set rest = set ((v, rules) # nbtl @ unnb)" using sn_conserves Cons(2) by force
+  then have IS2: "(keys nbtl \<union> keys unnb) \<inter> keys norms = {}" using IH3 by auto
+
+  show ?case using C1 C2 Cons IS1 IS2 by auto
+qed (auto simp add: gram_alist)
 
 
 (*****************************************************************************
@@ -177,13 +217,41 @@ by (simp add: gram_nsd_def)
  *****************************************************************************)
 
 lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms v rules nbtl unnb)
-  then show ?case sorry
-qed auto
+using itno_disjunct_alists by auto
 
 lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
 using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
+
+lemma helper:
+  assumes "rules_have_norm norms rules"
+      and "v \<notin> keys norms"
+      and "mn = min_norm_of_rules norms rules"
+    shows "mn = min_norm_of_rules ((v, mn) # norms) rules" using assms unfolding min_norm_of_rules_def
+  apply (auto)
+  apply (rule Min_predicate)
+  apply (auto simp add: mnor_in_nor nor_nonempty_cons)
+  (* TODO: this is not going to work like this! *)
+sorry
+
+lemma nog_mnor':
+  assumes "gram_nsd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, nv) \<in> set (norms_of_grammar gr)"
+    shows "nv = min_norm_of_rules (norms_of_grammar gr) rules" using assms unfolding norms_of_grammar_def
+proof (induct arbitrary: v rules nv rule: itno_induct')
+  case (Cons rest norms va rulesa nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+      have "rules = rulesa" sorry
+      then show ?thesis using Cons True apply auto sorry
+  next
+    case False
+      then have "nv = min_norm_of_rules norms rules" using Cons by auto
+      then show ?thesis using Cons apply auto (* use helper here, someday ... *) sorry
+  qed
+qed auto
+
 
 lemma nog_mnor:
   assumes "gram_nsd gr"

@@ -41,4 +41,14 @@ by (induct l) (auto simp add: lookup_def)
 lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
 by (induct l) (auto simp add: keys_def)
 
+(* TODO: improve speed! *)
+lemma partition_alist: "is_alist l \<Longrightarrow> (yes, no) = partition P l \<Longrightarrow> is_alist (yes @ no)"
+unfolding is_alist_def apply (induct l arbitrary: yes no) by auto
+
+lemma alist_distr: "is_alist (l1 @ l2) = (is_alist l1 \<and> is_alist l2 \<and> keys l1 \<inter> keys l2 = {})"
+by (induct l1, auto simp add: is_alist_def)
+
+lemma alist_distr_cons: "is_alist ((k, v) # l) = (k \<notin> keys l \<and> is_alist l)"
+by (induct l, auto simp add: is_alist_def)
+
 end
