@@ -140,13 +140,28 @@ proof (cases "split_normable rest norms")
 qed
 
 
-lemma itno_conserves_keys:
+lemma itno_superset_gr_keys:
   "keys gr \<subseteq> keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
 proof (intro subsetI, induct rule: itno_induct')
   case (Nil rest _ unnb)
   then have "rest = unnb" using sn_fst_nil by auto
   then show ?case using Nil by simp
 qed (auto simp add: sn_conserves)
+
+lemma itno_subset_gr_keys:
+  "keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr [])) \<subseteq> keys gr"
+proof (intro subsetI, induct rule: itno_induct')
+  case (Nil rest _ unnb)
+  then show ?case using sn_fst_nil by blast
+next
+  case (Cons rest norms v rules nbtl unnb)
+  then have "set rest = set ((v, rules) # nbtl) \<union> set unnb" using sn_conserves by blast
+  then show ?case using Cons sn_conserves by simp
+qed auto
+
+lemma itno_gr_keys_equal:
+  "keys gr = keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
+using itno_superset_gr_keys itno_subset_gr_keys by blast
 
 
 (*****************************************************************************
@@ -161,11 +176,26 @@ by (simp add: gram_nsd_def)
   norms_of_grammar
  *****************************************************************************)
 
+lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
+  case (Cons rest norms v rules nbtl unnb)
+  then show ?case sorry
+qed auto
+
+lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
+using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
+
 lemma nog_mnor:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
     shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules"
-sorry
+proof -
+  have "gram_sd gr" using gram_nsd_sd assms by auto
+  then have "is_alist (norms_of_grammar gr)" using nog_alist by auto
+  have "v \<in> keys gr" using assms by auto
+  then have "v \<in> keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by blast
+  then show ?thesis using lookup_predicate sorry
+qed
 
 lemma nog_has_norms:
   assumes "gram_nsd gr"
@@ -179,39 +209,10 @@ lemma nog_in_rules:
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
-
 (*lemma nog_invariant:
   assumes "norms_correct gr rest norms"
   shows "norms_correct gr rest (fst (iterate_norms gr rest norms))"
 sorry*)
-
-lemma (*itno_fst_subset_gr:*) "gram_sd gr \<Longrightarrow> set (fst (iterate_norms gr [])) \<subseteq> set gr"
-proof (induct rule: itno_induct')
-  case (Nil rest norms unnb)
-  then show ?case using sn_fst_nil by auto
-next
-  case (Cons rest norms v rules nbtl unnb)
-  have "set ((v, rules) # nbtl) \<subseteq> set rest" using Cons sn_conserves by blast
-  then show ?case using Cons by (auto simp add: split_normable_def)
-qed auto
-
-lemma (*nog_alist:*) "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms v rules nbtl unnb)
-  then show ?case sorry
-qed (auto)
-
-lemma (*nog_valid:*) "v \<in> keys (norms_of_grammar gr) \<Longrightarrow> v \<in> keys gr"
-sorry
-
-lemma nog_complete:
-  assumes "gram_nsd gr"
-    shows "keys gr \<subseteq> keys (norms_of_grammar gr)"
-proof -
-  have "fst (iterate_norms gr []) = []" using assms unfolding gram_nsd_def gram_normed_fun_def
-    by simp
-  then show ?thesis using itno_conserves_keys[of gr] by (simp add: norms_of_grammar_def)
-qed
 
 lemma nog_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
   unfolding norms_of_grammar_def
@@ -230,7 +231,7 @@ qed auto
 lemma nog_greater_zero_lookup:
   "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
   apply (rule lookup_forall[of "norms_of_grammar gr"])
-using nog_complete nog_norms_greater_zero[of _ _ _ _ gr] by auto
+using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ _ gr] by auto
 
 
 (*****************************************************************************
