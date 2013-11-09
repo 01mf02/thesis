@@ -51,4 +51,7 @@ by (induct l1, auto simp add: is_alist_def)
 lemma alist_distr_cons: "is_alist ((k, v) # l) = (k \<notin> keys l \<and> is_alist l)"
 by (induct l, auto simp add: is_alist_def)
 
+lemma alist_values_equal: "is_alist l \<Longrightarrow> (k, v1) \<in> set l \<Longrightarrow> (k, v2) \<in> set l \<Longrightarrow> v1 = v2"
+by (induct l) (auto simp add: is_alist_def)
+
 end

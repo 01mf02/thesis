@@ -40,6 +40,14 @@ by (simp add: norm_sum_def)
 
 
 (*****************************************************************************
+  rules_have_norm
+ *****************************************************************************)
+
+lemma rhn_cons: "rules_have_norm norms rules \<Longrightarrow> rules_have_norm (x#norms) rules"
+by (auto simp add: rules_have_norm_def rule_has_norm_def)
+
+
+(*****************************************************************************
   norms_of_rules
  *****************************************************************************)
 
@@ -264,6 +272,30 @@ proof -
   then have "v \<in> keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by blast
   then show ?thesis using lookup_predicate sorry
 qed
+
+lemma nog_has_norms':
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, nv) \<in> set (norms_of_grammar gr)"
+    shows "rules_have_norm (norms_of_grammar gr) rules" using assms unfolding norms_of_grammar_def
+proof (induct arbitrary: v rules nv rule: itno_induct')
+  case (Cons rest norms va rulesa nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+      have S: "set rest \<subseteq> set gr" sorry
+      have A: "is_alist gr" using assms gram_alist by auto
+
+      have "(va, rulesa) \<in> set rest" using Cons(2) using sn_conserves by force
+      then have "(v, rulesa) \<in> set gr" using S True by auto
+      then have "rules = rulesa" using A Cons(4) alist_values_equal by force
+      then have "rules_have_norm norms rules"
+        using Cons(2) sn_fst_have_norms[of _ norms "(va, rulesa) # nbtl"] by auto
+      then show ?thesis using rhn_cons[of norms] by auto
+  next
+    case False then show ?thesis using Cons rhn_cons[of norms] by auto
+  qed
+qed auto
 
 lemma nog_has_norms:
   assumes "gram_nsd gr"
