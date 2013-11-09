@@ -283,6 +283,8 @@ proof (induct arbitrary: v rules nv rule: itno_induct')
   then show ?case
   proof (cases "v = va")
     case True
+      (* TODO: Use some kind of induction with invariant here. We already showed the desired
+         property in itno_subset_gr_keys. *)
       have S: "set rest \<subseteq> set gr" sorry
       have A: "is_alist gr" using assms gram_alist by auto
 
@@ -299,9 +301,13 @@ qed auto
 
 lemma nog_has_norms:
   assumes "gram_nsd gr"
-      and "(v, rules) \<in> set gr"
+      and V: "(v, rules) \<in> set gr"
     shows "rules_have_norm (norms_of_grammar gr) rules" using assms
-sorry
+proof -
+  have G: "gram_sd gr" using gram_nsd_sd assms by auto
+  have "\<exists>nv. (v, nv) \<in> set (norms_of_grammar gr)" using nog_gr_keys_equal assms by force
+  then show ?thesis using nog_has_norms'[OF G V] by auto
+qed
 
 lemma nog_in_rules:
   assumes "gram_nsd gr"
