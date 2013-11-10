@@ -236,9 +236,8 @@ lemma helper:
       and "mn = min_norm_of_rules norms rules"
     shows "mn = min_norm_of_rules ((v, mn) # norms) rules" using assms unfolding min_norm_of_rules_def
   apply (auto)
-  apply (rule Min_predicate)
+  apply (rule Min_predicate)  (* TODO: this is not going to work like this! *)
   apply (auto simp add: mnor_in_nor nor_nonempty_cons)
-  (* TODO: this is not going to work like this! *)
 sorry
 
 lemma nog_mnor':
@@ -354,12 +353,52 @@ by (rule nov_distr[of _ "[x]", simplified])
 lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
 by (simp add: norm_of_variables_def ns_singleton)
 
+lemma nov_mnor:
+  assumes "rules_have_norm norms rules"
+      and "(n, t, vs) = min_norm_of_rules norms rules"
+    shows "norm_of_variables gr vs < n"
+sorry
+
 lemma nov_nog':
+  assumes "gram_sd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "(v, rules) \<in> set gr"
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
+  case (Cons rest norms va rulesa nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+      have E: "rules = rulesa" sorry
+
+      have "rules_have_norm norms rulesa" using sn_fst_have_norms[of _ _ _ unnb va] Cons by auto
+      then have R: "rules_have_norm norms rules" using E by simp
+
+      have "(n, t, vs) = min_norm_of_rules norms rules" sorry
+      then have N: "norm_of_variables gr vs < n" using R nov_mnor[OF R] by auto
+      
+      have A: "is_alist (norms_of_grammar gr)" using nog_alist assms by auto
+      have "norm_of_variables gr [v] = n" unfolding nov_singleton
+        using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
+      then show ?thesis using Cons(2-5) N by auto
+  qed auto
+qed auto
+
+lemma nov_nog:
   assumes "gram_nsd gr"
       and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
       and "(v, rules) \<in> set gr"
-    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms
-sorry
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]"
+proof -
+  have "keys gr = keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by auto
+  then have V: "v \<in> keys (norms_of_grammar gr)" using assms by auto
+
+  have G: "gram_sd gr" using gram_nsd_sd assms by auto
+  then have A: "is_alist (norms_of_grammar gr)" using nog_alist by auto
+
+  def n \<equiv> "fst (lookup (norms_of_grammar gr) v)"
+  then show ?thesis using G nov_nog'[of gr v n t] existence_from_lookup[OF A V] assms n_def by auto
+qed
 
 lemma nov_greater_zero:
   assumes "gram_nsd gr"
@@ -379,7 +418,7 @@ by (simp add: norm_of_variables_def ns_empty)
 termination minimal_word_of_variables
   apply (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)", auto)
   apply (subst nov_distr_cons)
-  apply (auto simp add: add_commute add_strict_increasing2 nov_nog')
+  apply (auto simp add: add_commute add_strict_increasing2 nov_nog)
   apply (subst nov_distr_cons)
 by (auto simp add: nov_greater_zero)
 
