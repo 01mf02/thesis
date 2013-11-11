@@ -56,33 +56,22 @@ definition min_norm_of_rules :: "('t::linorder, 'v::linorder) norm_list \<Righta
 definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
-definition norms_correct where
-  "norms_correct gr rest norms \<equiv> set rest \<subseteq> set gr \<and> fst ` set rest \<inter> fst ` set norms = {} \<and>
-     (\<forall>(v, rules) \<in> set gr.
-       if v \<in> keys norms then
-         let nv = lookup norms v in
-         let nn = fst nv in
-         let nr = snd nv in
-         nr \<in> set rules \<and> rule_has_norm norms nr \<and> nn = 1 + norm_sum norms (snd nr) \<and>
-         (\<forall>r' \<in> set rules. rule_has_norm norms r' \<longrightarrow> 1 + norm_sum norms (snd r') \<le> nn)
-       else True)"
-
 function iterate_norms where
-  "iterate_norms (*gr*) rest norms = (case split_normable rest norms of
+  "iterate_norms rest norms = (case split_normable rest norms of
        ([], unnormable) \<Rightarrow> (unnormable, norms)
      | ((v, rules)#normable_tl, unnormable) \<Rightarrow>
-         iterate_norms (*gr*) (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
+         iterate_norms (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
 by pat_completeness auto
 
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_normed_fun gr \<equiv> fst (iterate_norms (*gr*) gr []) = []"
+  "gram_normed_fun gr \<equiv> fst (iterate_norms gr []) = []"
 
 definition gram_nsd :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_nsd gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
 definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar gr \<equiv> snd (iterate_norms (*gr*) gr [])"
+  "norms_of_grammar gr \<equiv> snd (iterate_norms gr [])"
 
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
