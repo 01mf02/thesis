@@ -159,13 +159,25 @@ proof (cases "split_normable rest norms")
       case Nil then show ?thesis using N P Pair by auto
     next
       case (Cons nbh nbt)
-      then show ?thesis using C P Pair
+      def nbhv \<equiv> "fst nbh"
+      def nbhr \<equiv> "snd nbh"
+      have X: "nbh = (nbhv, nbhr)" using nbhv_def nbhr_def by auto
+      have S: "split_normable rest norms = ((nbhv, nbhr)#nbt, unnb)" using Cons Pair X by auto
+      have IH: "P (nbt @ unnb, (nbhv, min_norm_of_rules norms nbhr) # norms)" using C[OF P S] .
+
+      have "(\<And>rest norms.
+    (\<And>x y a list xa ya.
+        (x, y) = split_normable rest norms \<Longrightarrow> x = a # list \<Longrightarrow> (xa, ya) = a \<Longrightarrow> P (list @ y, (xa, min_norm_of_rules norms ya) # norms)) \<Longrightarrow>
+    P (rest, norms))" sorry
+      then have "P (fst (iterate_norms rest norms), snd (iterate_norms rest norms))" using
+        iterate_norms.induct[of "\<lambda>rest norms. P (rest, norms)"] by blast
+      then show ?thesis by auto
         (* TODO: remove after work! *)
-        thm iterate_norms.induct
+        (*thm iterate_norms.induct[of "\<lambda>rest norms. P (rest, norms)" "fst (iterate_norms rest norms)" "snd (iterate_norms rest norms)"]
         thm list.induct
         apply (induct _ rest norms rule: iterate_norms.induct)
         apply (auto simp del: iterate_norms.simps)
-      sorry
+      sorry*)
     qed
 qed
 
