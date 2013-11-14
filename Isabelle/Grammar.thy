@@ -81,7 +81,7 @@ lemma mnor_in_rules:
   assumes "rules_have_norm norms rules"
     shows "snd (min_norm_of_rules norms rules) \<in> set rules" using assms
   unfolding min_norm_of_rules_def
-by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules sym[OF Set.image_subset_iff])
+by - (rule Min_predicate, auto simp add: nor_nonempty nor_in_rules Set.image_subset_iff[symmetric])
 
 lemma mnor_norm_greater_zero:
   assumes "rules_have_norm norms rules"
@@ -132,69 +132,75 @@ qed
  *****************************************************************************)
 
 termination iterate_norms
-apply (relation "measure (\<lambda>((*gr,*) rest, norms). length rest)", auto)
+apply (relation "measure (\<lambda>(rest, norms). length rest)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
-lemma itno_induct [case_names Base Step]: "
-  (\<And>unnb. split_normable rest norms = ([], unnb) \<Longrightarrow> P (iterate_norms rest norms)) \<Longrightarrow>
-  (\<And>v rules nbtl unnb. split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
-    P (iterate_norms (nbtl@unnb) ((v, min_norm_of_rules norms rules) # norms))) \<Longrightarrow>
-  P (iterate_norms rest norms)"
-by (case_tac "split_normable rest norms", case_tac "fst (split_normable rest norms)", auto)
+
+function partition_fold :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b list)" where
+  "partition_fold p f a l = (case partition (p a) l of
+       ([], no) \<Rightarrow> (a, no)
+     | (yesh#yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest @ no))"
+by auto
+
+termination partition_fold
+apply (relation "measure (\<lambda>(p, f, a, l). length l)", auto)
+by (metis add_Suc_right lessI list.size(4) monoid_add_class.add.left_neutral
+    nat_add_commute sum_length_filter_compl')
+
+lemma pf_cons: "partition_fold p f a (x#xs) = (
+  if p a x then partition_fold p f (f a x) xs
+  else case partition (p a) xs of ([], no) \<Rightarrow> (a, x#no)
+                                | (yesh#yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest@x#no))"
+sorry
+
+lemma partition_hd_true:
+  assumes "p x"
+      and "partition p (x # xs) = (x#yest, no)"
+    shows "yest@no = xs"
+sorry
+
+lemma pf_induct:
+  assumes N: "P (a, l)"
+      and C: "\<And>a l yesh yest no. P (a, l) \<Longrightarrow> partition (p a) l = (yesh#yest, no) \<Longrightarrow>
+           P (f a yesh, yest @ no)"
+  shows "P (partition_fold p f a l)" using N
+proof (induct l arbitrary: a)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons x xs)
+  then show ?case
+  proof (cases "p a x")
+    case True then show ?thesis
+      using Cons C[of a "x#xs"] pf_cons[of p f a x] partition_hd_true[of "p a" x] by force
+  next
+    case False
+    show ?thesis sorry
+  qed
+    (*using [[simp_trace]] apply (auto simp del: List.partition_filter_conv)
+    apply simp
+  sorry *)
+qed
 
 
-lemma itno_induct' [case_names Nil Cons Base]:
-  assumes N: "\<And>rest norms unnb.
-                P (rest, norms) \<Longrightarrow> split_normable rest norms = ([], unnb) \<Longrightarrow> P (unnb, norms)"
-      and C: "\<And>rest norms v rules nbtl unnb.
+lemma itno_induct' [case_names Cons Base]:
+  assumes C: "\<And>rest norms v rules nbtl unnb.
                 P (rest, norms) \<Longrightarrow> split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
                 P ((nbtl@unnb), ((v, min_norm_of_rules norms rules) # norms))"
       and P: "P (rest, norms)"
-  shows "P (iterate_norms rest norms)"
-proof (cases "split_normable rest norms")
-  case (Pair nb unnb)
-  then show ?thesis
-    proof (cases nb)
-      case Nil then show ?thesis using N P Pair by auto
-    next
-      case (Cons nbh nbt)
-      def nbhv \<equiv> "fst nbh"
-      def nbhr \<equiv> "snd nbh"
-      have X: "nbh = (nbhv, nbhr)" using nbhv_def nbhr_def by auto
-      have S: "split_normable rest norms = ((nbhv, nbhr)#nbt, unnb)" using Cons Pair X by auto
-      have IH: "P (nbt @ unnb, (nbhv, min_norm_of_rules norms nbhr) # norms)" using C[OF P S] .
-
-      have "(\<And>rest norms.
-    (\<And>x y a list xa ya.
-        (x, y) = split_normable rest norms \<Longrightarrow> x = a # list \<Longrightarrow> (xa, ya) = a \<Longrightarrow> P (list @ y, (xa, min_norm_of_rules norms ya) # norms)) \<Longrightarrow>
-    P (rest, norms))" sorry
-      then have "P (fst (iterate_norms rest norms), snd (iterate_norms rest norms))" using
-        iterate_norms.induct[of "\<lambda>rest norms. P (rest, norms)"] by blast
-      then show ?thesis by auto
-        (* TODO: remove after work! *)
-        (*thm iterate_norms.induct[of "\<lambda>rest norms. P (rest, norms)" "fst (iterate_norms rest norms)" "snd (iterate_norms rest norms)"]
-        thm list.induct
-        apply (induct _ rest norms rule: iterate_norms.induct)
-        apply (auto simp del: iterate_norms.simps)
-      sorry*)
-    qed
-qed
+  shows "P (iterate_norms rest norms)" using P
+sorry
 
 
 lemma itno_superset_gr_keys:
   "keys gr \<subseteq> keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
 proof (intro subsetI, induct rule: itno_induct')
-  case (Nil rest _ unnb)
-  then have "rest = unnb" using sn_fst_nil by auto
-  then show ?case using Nil by simp
 qed (auto simp add: sn_conserves)
 
 lemma itno_subset_gr_keys:
   "keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr [])) \<subseteq> keys gr"
 proof (intro subsetI, induct rule: itno_induct')
-  case Nil then show ?case using sn_fst_nil by blast
-next
   case (Cons rest norms v rules nbtl unnb)
   then have "set rest = set ((v, rules) # nbtl) \<union> set unnb" using sn_conserves by blast
   then show ?case using Cons sn_conserves by simp
@@ -211,8 +217,6 @@ lemma itno_disjunct_alists:
     shows "is_alist itnofst \<and> is_alist itnosnd \<and> keys (itnofst) \<inter> keys (itnosnd) = {}"
 using assms unfolding norms_of_grammar_def
 proof (induct arbitrary: itnofst itnosnd rule: itno_induct')
-  case Nil then show ?case using sn_fst_nil by blast
-next
   case (Cons rest norms v rules nbtl unnb)
   have IH: "is_alist rest \<and> is_alist norms \<and> keys rest \<inter> keys norms = {}" using Cons by auto
   have IH1: "is_alist rest" using IH by simp
@@ -677,7 +681,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   have "th = fst (snd (lookup (norms_of_grammar gr) vh))"
     using mwov_hd_from_nog normal(3) VR VT normal(2) .
   then have TN: "(th, nrth) = snd (lookup (norms_of_grammar gr) vh)" using nrth_def by simp
-  have TH: "th \<in> keys rules" using nog_in_rules [OF normal(3) VR] sym[OF TN] by simp
+  have TH: "th \<in> keys rules" using nog_in_rules [OF normal(3) VR] TN[symmetric] by simp
 
   have TT: "tt = minimal_word_of_variables gr (rth @ vt)" unfolding rth_def
     using mwov_prefix normal(3) VR VT normal(2) .
@@ -685,7 +689,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_rule_vars_in_keys[OF GS VR TR]
     by simp
 
-  show ?case using normal GS VR TR TT TH RV rules_def rth_def by (simp add: sym[OF wiv_prefix])
+  show ?case using normal GS VR TR TT TH RV rules_def rth_def by (simp add: wiv_prefix[symmetric])
 qed (auto simp add: word_in_variables_def mwov_empty)
 
 lemma wiv_word_head: "word_in_variables gr (th # tt) (vh # vt) \<Longrightarrow> th \<in> keys (lookup gr vh)"
