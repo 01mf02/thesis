@@ -1,6 +1,7 @@
 theory Grammar imports
   "Grammar_defs"
   "Helpers"
+  "~~/src/HOL/Library/Permutation"
 begin
 
 
@@ -138,9 +139,9 @@ by (metis (full_types) impossible_Cons not_less)
 
 
 function partition_fold :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b list)" where
-  "partition_fold p f a l = (case partition (p a) l of
+  "partition_fold P f a l = (case partition (P a) l of
        ([], no) \<Rightarrow> (a, no)
-     | (yesh#yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest @ no))"
+     | (yesh#yest, no) \<Rightarrow> partition_fold P f (f a yesh) (yest @ no))"
 by auto
 
 termination partition_fold
@@ -148,22 +149,23 @@ apply (relation "measure (\<lambda>(p, f, a, l). length l)", auto)
 by (metis add_Suc_right lessI list.size(4) monoid_add_class.add.left_neutral
     nat_add_commute sum_length_filter_compl')
 
-lemma pf_cons: "partition_fold p f a (x#xs) = (
-  if p a x then partition_fold p f (f a x) xs
-  else case partition (p a) xs of ([], no) \<Rightarrow> (a, x#no)
-                                | (yesh#yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest@x#no))"
+lemma pf_cons_1: "P a x \<Longrightarrow> partition_fold P f a (x#xs) = partition_fold P f (f a x) xs"
+  apply (auto simp del: List.partition_filter_conv)
 sorry
 
-lemma partition_hd_true:
-  assumes "p x"
-      and "partition p (x # xs) = (x#yest, no)"
-    shows "yest@no = xs"
+lemma pf_cons_2: "\<not>P a x \<Longrightarrow> partition_fold P f a (x#xs) =
+  (case partition (P a) xs of ([], no) \<Rightarrow> (a, x#no)
+                            | (yesh#yest, no) \<Rightarrow> partition_fold P f (f a yesh) (yest@x#no))"
+sorry
+
+lemma partition_perm: "partition P l = (yes, no) \<Longrightarrow> perm (yes@no) l"
 sorry
 
 lemma pf_induct:
   assumes N: "P (a, l)"
       and C: "\<And>a l yesh yest no. P (a, l) \<Longrightarrow> partition (p a) l = (yesh#yest, no) \<Longrightarrow>
            P (f a yesh, yest @ no)"
+      and P: "\<And>a l lp. l <~~> lp \<Longrightarrow> P (a, l) = P (a, lp)"
   shows "P (partition_fold p f a l)" using N
 proof (induct l arbitrary: a)
   case Nil
@@ -172,8 +174,19 @@ next
   case (Cons x xs)
   then show ?case
   proof (cases "p a x")
-    case True then show ?thesis
-      using Cons C[of a "x#xs"] pf_cons[of p f a x] partition_hd_true[of "p a" x] by force
+    case True
+      def yest \<equiv> "filter (p a) xs"
+      def no \<equiv> "filter (Not \<circ> p a) xs"
+
+      have X: "yest @ no <~~> xs" using partition_perm yest_def no_def by force
+
+      (* TODO: shorten this as soon as we proved all needed lemmata ;) *)
+      have "partition (p a) (x # xs) = (x # yest, no)"
+        using List.partition.simps(2) True yest_def no_def by auto
+      then have "P (f a x, yest @ no)" using C Cons(2) by auto
+      then have "P (f a x, xs)" using P X by auto
+      then have "P (partition_fold p f (f a x) xs)" using Cons(1) by auto
+      then show ?thesis using pf_cons_1[of p a x] True by auto
   next
     case False
     show ?thesis sorry
