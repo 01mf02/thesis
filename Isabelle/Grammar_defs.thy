@@ -1,7 +1,7 @@
 theory Grammar_defs imports AList_ext
   "~~/src/HOL/Library/Char_ord"
   "~~/src/HOL/Library/List_lexord"
-  "~~/src/HOL/Library/Product_ord"
+  "~~/src/HOL/Library/Product_Lexorder"
 begin
 
 
