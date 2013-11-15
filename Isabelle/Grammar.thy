@@ -161,6 +161,9 @@ sorry
 lemma partition_perm: "partition P l = (yes, no) \<Longrightarrow> perm (yes@no) l"
 sorry
 
+lemma filter_helper: "(filter P l = []) = (l = filter (Not \<circ> P) l)"
+sorry
+
 lemma pf_induct:
   assumes N: "P (a, l)"
       and C: "\<And>a l yesh yest no. P (a, l) \<Longrightarrow> partition (p a) l = (yesh#yest, no) \<Longrightarrow>
@@ -172,7 +175,10 @@ proof (induct l arbitrary: a)
   then show ?case by auto
 next
   case (Cons x xs)
-  then show ?case
+  assume C1: "\<And>a. P (a, xs) \<Longrightarrow> P (partition_fold p f a xs)"
+  assume C2: "P (a, x # xs)"
+
+  show ?case
   proof (cases "p a x")
     case True
       def yest \<equiv> "filter (p a) xs"
@@ -184,12 +190,27 @@ next
       have "partition (p a) (x # xs) = (x # yest, no)"
         using List.partition.simps(2) True yest_def no_def by auto
       then have "P (f a x, yest @ no)" using C Cons(2) by auto
-      then have "P (f a x, xs)" using P X by auto
+      then have "P (f a x, xs)" using X P by simp
       then have "P (partition_fold p f (f a x) xs)" using Cons(1) by auto
       then show ?thesis using pf_cons_1[of p a x] True by auto
   next
     case False
-    show ?thesis sorry
+    have "P (case partition (p a) xs of ([], no) \<Rightarrow> (a, x # no)
+                              | (yesh # yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest @ x # no))"
+    proof (cases "filter (p a) xs")
+      case Nil
+        have "P (a, x # filter (Not \<circ> p a) xs)" using Cons Nil filter_helper[of "p a" xs] by auto
+        then show ?thesis using Nil by auto
+    next
+      case (Cons yesh yest)
+        def noxs \<equiv> "filter (Not \<circ> p a) xs"
+
+        have "partition (p a) (x # xs) = (yesh # yest, x # noxs)" using False sorry (* should be provable *)
+        then have "P (f a yesh, yest @ x # noxs)" using C[of a "x#xs" yesh yest "x#noxs"] C2 by simp
+        then have "P (partition_fold p f (f a yesh) (yest @ x # noxs))" using C1 sorry (* TODO: is that provable somehow? *)
+        then show ?thesis using Cons noxs_def by (simp del: partition_fold.simps)
+    qed
+    then show ?thesis unfolding pf_cons_2[of p a x, OF False] by simp
   qed
     (*using [[simp_trace]] apply (auto simp del: List.partition_filter_conv)
     apply simp
