@@ -137,6 +137,25 @@ apply (relation "measure (\<lambda>(rest, norms). length rest)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
+function pf2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b list)" where
+  "pf2 P f a l = (case partition (P a) l of
+       ([] , no) \<Rightarrow> (a, no)
+     | (yes, no) \<Rightarrow> pf2 P f (foldl f a yes) no)"
+by auto
+
+lemma helpy:
+  assumes "yesh # yest = filter (P a) l"
+    shows "length (filter (Not \<circ> P a) l) < length l"
+proof -
+  have S: "set (yesh # yest) \<subseteq> set l" using assms by auto
+
+  have "P a yesh" using assms Cons_eq_filter_iff[of yesh] by auto
+  then show ?thesis using S length_filter_less[of yesh] by auto
+qed
+
+termination pf2
+apply (relation "measure (\<lambda>(p, f, a, l). length l)")
+by (auto simp add: helpy)
 
 function partition_fold :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b list)" where
   "partition_fold P f a l = (case partition (P a) l of
@@ -149,20 +168,64 @@ apply (relation "measure (\<lambda>(p, f, a, l). length l)", auto)
 by (metis add_Suc_right lessI list.size(4) monoid_add_class.add.left_neutral
     nat_add_commute sum_length_filter_compl')
 
-lemma pf_cons_1: "P a x \<Longrightarrow> partition_fold P f a (x#xs) = partition_fold P f (f a x) xs"
+lemma pf_cons_1: "P a x \<Longrightarrow> partition_fold P f a (x # xs) = partition_fold P f (f a x) xs"
   apply (auto simp del: List.partition_filter_conv)
 sorry
 
-lemma pf_cons_2: "\<not>P a x \<Longrightarrow> partition_fold P f a (x#xs) =
-  (case partition (P a) xs of ([], no) \<Rightarrow> (a, x#no)
-                            | (yesh#yest, no) \<Rightarrow> partition_fold P f (f a yesh) (yest@x#no))"
+lemma pf_cons_2: "\<not>P a x \<Longrightarrow> partition_fold P f a (x # xs) =
+  (case partition (P a) xs of ([], no) \<Rightarrow> (a, x # no)
+                            | (yesh # yest, no) \<Rightarrow> partition_fold P f (f a yesh) (yest @ x # no))"
 sorry
 
-lemma partition_perm: "partition P l = (yes, no) \<Longrightarrow> perm (yes@no) l"
+lemma partition_perm: "partition P l = (yes, no) \<Longrightarrow> yes @ no <~~> l"
 sorry
 
 lemma filter_helper: "(filter P l = []) = (l = filter (Not \<circ> P) l)"
 sorry
+
+lemma pf2_cons_2: "\<not>P a x \<Longrightarrow> pf2 P f a (x # xs) =
+  (case partition (P a) xs of ([], no) \<Rightarrow> (a, x # no)
+                            | (yes, no) \<Rightarrow> pf2 P f (foldl f a yes) (x # no))"
+sorry
+
+thm pf2.induct
+
+lemma pf2_induct:
+  assumes N: "P (a, l)"
+      and C: "\<And>a l yes no. P (a, l) \<Longrightarrow> partition (p a) l = (yes, no) \<Longrightarrow> yes \<noteq> [] \<Longrightarrow>
+              P (foldl f a yes, no)"
+  shows "P (pf2 p f a l)" using N
+sorry
+
+(* proof (induct l arbitrary: a)
+  case Nil then show ?case by auto
+next
+  case (Cons x xs)
+  assume C1: "\<And>a. P (a, xs) \<Longrightarrow> P (pf2 p f a xs)"
+  assume C2: "P (a, x # xs)"
+
+  show ?case
+  proof (cases "p a x")
+    case True then show ?thesis sorry
+  next
+    case False
+    have "P (case partition (p a) xs of
+            ([], no) \<Rightarrow> (a, x # no)
+          | (yesh # yest, no) \<Rightarrow> pf2 p f (foldl f a (yesh # yest)) (x # no))"
+    proof (cases "filter (p a) xs")
+      case Nil
+      have "P (a, x # filter (Not \<circ> p a) xs)" using Cons(2) Nil filter_helper[of "p a" xs] by auto
+      then show ?thesis using Nil by auto
+    next
+      case (Cons yesh yest)
+      def noxs \<equiv> "filter (Not \<circ> p a) xs"
+      have "P (pf2 p f (foldl f a (yesh # yest)) (x # noxs))" using C1 C2 sorry
+      show ?thesis sorry
+    qed
+    then show ?thesis unfolding pf2_cons_2[of p a x, OF False] by simp
+  qed
+qed *)
+
 
 lemma pf_induct:
   assumes N: "P (a, l)"
@@ -183,9 +246,9 @@ next
     case True
       def yest \<equiv> "filter (p a) xs"
       def no \<equiv> "filter (Not \<circ> p a) xs"
-
+    
       have X: "yest @ no <~~> xs" using partition_perm yest_def no_def by force
-
+    
       (* TODO: shorten this as soon as we proved all needed lemmata ;) *)
       have "partition (p a) (x # xs) = (x # yest, no)"
         using List.partition.simps(2) True yest_def no_def by auto
@@ -199,7 +262,7 @@ next
                               | (yesh # yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest @ x # no))"
     proof (cases "filter (p a) xs")
       case Nil
-        have "P (a, x # filter (Not \<circ> p a) xs)" using Cons Nil filter_helper[of "p a" xs] by auto
+        have "P (a, x # filter (Not \<circ> p a) xs)" using Cons(2) Nil filter_helper[of "p a" xs] by auto
         then show ?thesis using Nil by auto
     next
       case (Cons yesh yest)
@@ -207,14 +270,11 @@ next
 
         have "partition (p a) (x # xs) = (yesh # yest, x # noxs)" using False sorry (* should be provable *)
         then have "P (f a yesh, yest @ x # noxs)" using C[of a "x#xs" yesh yest "x#noxs"] C2 by simp
-        then have "P (partition_fold p f (f a yesh) (yest @ x # noxs))" using C1 sorry (* TODO: is that provable somehow? *)
+        then have "P (partition_fold p f (f a yesh) (yest @ x # noxs))" using C1[of "f a x"] sorry (* TODO: is that provable somehow? *)
         then show ?thesis using Cons noxs_def by (simp del: partition_fold.simps)
     qed
     then show ?thesis unfolding pf_cons_2[of p a x, OF False] by simp
   qed
-    (*using [[simp_trace]] apply (auto simp del: List.partition_filter_conv)
-    apply simp
-  sorry *)
 qed
 
 
