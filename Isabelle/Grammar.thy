@@ -137,52 +137,6 @@ apply (relation "measure (\<lambda>(rest, norms). length rest)", auto)
 apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
 by (metis (full_types) impossible_Cons not_less)
 
-function pf2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b list)" where
-  "pf2 P f a l = (case partition (P a) l of
-       ([] , no) \<Rightarrow> (a, no)
-     | (yes, no) \<Rightarrow> pf2 P f (foldl f a yes) no)"
-by auto
-
-lemma helpy:
-  assumes "yesh # yest = filter (P a) l"
-    shows "length (filter (Not \<circ> P a) l) < length l"
-proof -
-  have S: "set (yesh # yest) \<subseteq> set l" using assms by auto
-
-  have "P a yesh" using assms Cons_eq_filter_iff[of yesh] by auto
-  then show ?thesis using S length_filter_less[of yesh] by auto
-qed
-
-termination pf2
-apply (relation "measure (\<lambda>(p, f, a, l). length l)")
-by (auto simp add: helpy)
-
-
-lemma filter_helper: "(filter P l = []) \<Longrightarrow> (l = filter (Not \<circ> P) l)"
-by (metis (mono_tags) Set.filter_def comp_apply filter_True in_set_member member_filter member_rec(2) set_filter)
-
-lemma pf2_induct:
-  assumes N: "P (a, l)"
-      and C: "\<And>a l yes no. P (a, l) \<Longrightarrow> partition (p a) l = (yes, no) \<Longrightarrow> yes \<noteq> [] \<Longrightarrow>
-              P (foldl f a yes, no)"
-  shows "P (pf2 p f a l)" using N
-proof (induct l arbitrary: a rule: length_induct)
-  case (1 l a) then show ?case
-  proof (cases "filter (p a) l")
-    case Nil show ?thesis using 1(2) filter_helper[of "p a" l] Nil by auto
-  next
-    case (Cons yesh yest)
-    def no \<equiv> "filter (Not \<circ> p a) l"
-    have L: "length no < length l" using helpy[of yesh yest p a l, OF Cons[symmetric]] no_def by auto
-    have X: "(\<forall>x. P (x, no) \<longrightarrow> P (pf2 p f x no))" using spec[OF 1(1), of no] L by auto
-    have Y: "P (foldl f a (yesh # yest), no)" using C[OF 1(2), of "yesh#yest" no] no_def Cons by auto
-
-    have C: "pf2 p f a l = pf2 p f (foldl f a (yesh # yest)) no" using Cons no_def[symmetric] by auto
-    have "P (pf2 p f (foldl f a (yesh#yest)) no)" using Y spec[OF X, of "foldl f a (yesh # yest)"] by auto
-    then show ?thesis using C by auto
-  qed
-qed
-
 
 lemma itno_induct' [case_names Cons Base]:
   assumes C: "\<And>rest norms v rules nbtl unnb.
