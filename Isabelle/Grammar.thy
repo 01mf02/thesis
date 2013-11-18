@@ -157,123 +157,29 @@ termination pf2
 apply (relation "measure (\<lambda>(p, f, a, l). length l)")
 by (auto simp add: helpy)
 
-function partition_fold :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b list)" where
-  "partition_fold P f a l = (case partition (P a) l of
-       ([], no) \<Rightarrow> (a, no)
-     | (yesh#yest, no) \<Rightarrow> partition_fold P f (f a yesh) (yest @ no))"
-by auto
 
-termination partition_fold
-apply (relation "measure (\<lambda>(p, f, a, l). length l)", auto)
-by (metis add_Suc_right lessI list.size(4) monoid_add_class.add.left_neutral
-    nat_add_commute sum_length_filter_compl')
-
-lemma pf_cons_1: "P a x \<Longrightarrow> partition_fold P f a (x # xs) = partition_fold P f (f a x) xs"
-  apply (auto simp del: List.partition_filter_conv)
-sorry
-
-lemma pf_cons_2: "\<not>P a x \<Longrightarrow> partition_fold P f a (x # xs) =
-  (case partition (P a) xs of ([], no) \<Rightarrow> (a, x # no)
-                            | (yesh # yest, no) \<Rightarrow> partition_fold P f (f a yesh) (yest @ x # no))"
-sorry
-
-lemma partition_perm: "partition P l = (yes, no) \<Longrightarrow> yes @ no <~~> l"
-sorry
-
-lemma filter_helper: "(filter P l = []) = (l = filter (Not \<circ> P) l)"
-sorry
-
-lemma pf2_cons_2: "\<not>P a x \<Longrightarrow> pf2 P f a (x # xs) =
-  (case partition (P a) xs of ([], no) \<Rightarrow> (a, x # no)
-                            | (yes, no) \<Rightarrow> pf2 P f (foldl f a yes) (x # no))"
-sorry
-
-thm pf2.induct
+lemma filter_helper: "(filter P l = []) \<Longrightarrow> (l = filter (Not \<circ> P) l)"
+by (metis (mono_tags) Set.filter_def comp_apply filter_True in_set_member member_filter member_rec(2) set_filter)
 
 lemma pf2_induct:
   assumes N: "P (a, l)"
       and C: "\<And>a l yes no. P (a, l) \<Longrightarrow> partition (p a) l = (yes, no) \<Longrightarrow> yes \<noteq> [] \<Longrightarrow>
               P (foldl f a yes, no)"
   shows "P (pf2 p f a l)" using N
-sorry
-
-(* proof (induct l arbitrary: a)
-  case Nil then show ?case by auto
-next
-  case (Cons x xs)
-  assume C1: "\<And>a. P (a, xs) \<Longrightarrow> P (pf2 p f a xs)"
-  assume C2: "P (a, x # xs)"
-
-  show ?case
-  proof (cases "p a x")
-    case True then show ?thesis sorry
+proof (induct l arbitrary: a rule: length_induct)
+  case (1 l a) then show ?case
+  proof (cases "filter (p a) l")
+    case Nil show ?thesis using 1(2) filter_helper[of "p a" l] Nil by auto
   next
-    case False
-    have "P (case partition (p a) xs of
-            ([], no) \<Rightarrow> (a, x # no)
-          | (yesh # yest, no) \<Rightarrow> pf2 p f (foldl f a (yesh # yest)) (x # no))"
-    proof (cases "filter (p a) xs")
-      case Nil
-      have "P (a, x # filter (Not \<circ> p a) xs)" using Cons(2) Nil filter_helper[of "p a" xs] by auto
-      then show ?thesis using Nil by auto
-    next
-      case (Cons yesh yest)
-      def noxs \<equiv> "filter (Not \<circ> p a) xs"
-      have "P (pf2 p f (foldl f a (yesh # yest)) (x # noxs))" using C1 C2 sorry
-      show ?thesis sorry
-    qed
-    then show ?thesis unfolding pf2_cons_2[of p a x, OF False] by simp
-  qed
-qed *)
+    case (Cons yesh yest)
+    def no \<equiv> "filter (Not \<circ> p a) l"
+    have L: "length no < length l" using helpy[of yesh yest p a l, OF Cons[symmetric]] no_def by auto
+    have X: "(\<forall>x. P (x, no) \<longrightarrow> P (pf2 p f x no))" using spec[OF 1(1), of no] L by auto
+    have Y: "P (foldl f a (yesh # yest), no)" using C[OF 1(2), of "yesh#yest" no] no_def Cons by auto
 
-
-lemma pf_induct:
-  assumes N: "P (a, l)"
-      and C: "\<And>a l yesh yest no. P (a, l) \<Longrightarrow> partition (p a) l = (yesh#yest, no) \<Longrightarrow>
-           P (f a yesh, yest @ no)"
-      and P: "\<And>a l lp. l <~~> lp \<Longrightarrow> P (a, l) = P (a, lp)"
-  shows "P (partition_fold p f a l)" using N
-proof (induct l arbitrary: a)
-  case Nil
-  then show ?case by auto
-next
-  case (Cons x xs)
-  assume C1: "\<And>a. P (a, xs) \<Longrightarrow> P (partition_fold p f a xs)"
-  assume C2: "P (a, x # xs)"
-
-  show ?case
-  proof (cases "p a x")
-    case True
-      def yest \<equiv> "filter (p a) xs"
-      def no \<equiv> "filter (Not \<circ> p a) xs"
-    
-      have X: "yest @ no <~~> xs" using partition_perm yest_def no_def by force
-    
-      (* TODO: shorten this as soon as we proved all needed lemmata ;) *)
-      have "partition (p a) (x # xs) = (x # yest, no)"
-        using List.partition.simps(2) True yest_def no_def by auto
-      then have "P (f a x, yest @ no)" using C Cons(2) by auto
-      then have "P (f a x, xs)" using X P by simp
-      then have "P (partition_fold p f (f a x) xs)" using Cons(1) by auto
-      then show ?thesis using pf_cons_1[of p a x] True by auto
-  next
-    case False
-    have "P (case partition (p a) xs of ([], no) \<Rightarrow> (a, x # no)
-                              | (yesh # yest, no) \<Rightarrow> partition_fold p f (f a yesh) (yest @ x # no))"
-    proof (cases "filter (p a) xs")
-      case Nil
-        have "P (a, x # filter (Not \<circ> p a) xs)" using Cons(2) Nil filter_helper[of "p a" xs] by auto
-        then show ?thesis using Nil by auto
-    next
-      case (Cons yesh yest)
-        def noxs \<equiv> "filter (Not \<circ> p a) xs"
-
-        have "partition (p a) (x # xs) = (yesh # yest, x # noxs)" using False sorry (* should be provable *)
-        then have "P (f a yesh, yest @ x # noxs)" using C[of a "x#xs" yesh yest "x#noxs"] C2 by simp
-        then have "P (partition_fold p f (f a yesh) (yest @ x # noxs))" using C1[of "f a x"] sorry (* TODO: is that provable somehow? *)
-        then show ?thesis using Cons noxs_def by (simp del: partition_fold.simps)
-    qed
-    then show ?thesis unfolding pf_cons_2[of p a x, OF False] by simp
+    have C: "pf2 p f a l = pf2 p f (foldl f a (yesh # yest)) no" using Cons no_def[symmetric] by auto
+    have "P (pf2 p f (foldl f a (yesh#yest)) no)" using Y spec[OF X, of "foldl f a (yesh # yest)"] by auto
+    then show ?thesis using C by auto
   qed
 qed
 
