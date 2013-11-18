@@ -56,17 +56,15 @@ lemma pf_induct:
 proof (induct l arbitrary: a rule: length_induct)
   case (1 l a) then show ?case
   proof (cases "filter (p a) l")
-    case Nil show ?thesis using 1(2) filter_one_empty_other_full[of "p a" l] Nil by auto
+    case Nil show ?thesis using 1(2) filter_one_empty_other_full[of "p a"] Nil by auto
   next
     case (Cons yesh yest)
     def no \<equiv> "filter (Not \<circ> p a) l"
-    have L: "length no < length l" using filter_length_smaller[of yesh yest p a l, OF Cons[symmetric]] no_def by auto
-    have X: "(\<forall>x. P (x, no) \<longrightarrow> P (partition_fold p f x no))" using spec[OF 1(1), of no] L by auto
-    have Y: "P (foldl f a (yesh # yest), no)" using C[OF 1(2), of "yesh#yest" no] no_def Cons by auto
-
-    have C: "partition_fold p f a l = partition_fold p f (foldl f a (yesh # yest)) no" using Cons no_def[symmetric] by auto
-    have "P (partition_fold p f (foldl f a (yesh#yest)) no)" using Y spec[OF X, of "foldl f a (yesh # yest)"] by auto
-    then show ?thesis using C by auto
+    have "(\<forall>x. P (x, no) \<longrightarrow> P (partition_fold p f x no))"
+      using spec[OF 1(1), of no] filter_length_smaller[of _ _ p, OF Cons[symmetric]] no_def by auto
+    then have "P (partition_fold p f (foldl f a (yesh#yest)) no)"
+      using C[OF 1(2), of "yesh#yest"] Cons no_def by auto
+    then show ?thesis using Cons no_def[symmetric] by simp
   qed
 qed
 
