@@ -133,11 +133,26 @@ qed
 
 lemma itno2_induct [case_names Base Step]:
   assumes B: "P ([], gr)"
-      and S: "\<And>norms l yes no.
-                P (norms, l) \<Longrightarrow> split_normable2 norms l = (yes, no) \<Longrightarrow>
-                P (foldl itno_f norms yes, no)"
+      and S: "\<And>norms rest yes no.
+                P (norms, rest) \<Longrightarrow> partition (itno_p norms) rest = (yes, no) \<Longrightarrow>
+                P (itno_f norms yes, no)"
   shows "P (iterate_norms2 gr)" unfolding iterate_norms2_def using assms
-by (induct rule: pf_induct) (auto simp add: split_normable2_def)
+by (induct rule: pi_induct) auto
+
+
+lemma itno2_superset_gr_keys:
+  "keys gr \<subseteq> keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr))"
+apply (intro subsetI, induct rule: itno2_induct)
+by (auto simp add: itno_f_def, force)
+
+lemma itno2_subset_gr_keys:
+  "keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr)) \<subseteq> keys gr"
+apply (intro subsetI, induct rule: itno2_induct)
+by (auto simp add: itno_f_def)
+
+lemma itno2_gr_keys_equal:
+  "keys gr = keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr))"
+using itno2_superset_gr_keys itno2_subset_gr_keys by blast
 
 
 (*****************************************************************************
