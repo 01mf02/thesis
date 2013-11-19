@@ -113,7 +113,7 @@ lemma sn_alist:
   assumes "split_normable rest norms = (nb, unnb)"
       and "is_alist rest"
     shows "is_alist (nb @ unnb)"
-using assms partition_alist by (auto simp add: split_normable_def)
+using assms alist_partition_distr by (auto simp add: split_normable_def)
 
 lemma sn_rules_equal:
   assumes "gram_sd gr"
@@ -154,9 +154,6 @@ lemma itno2_gr_keys_equal:
   "keys gr = keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr))"
 using itno2_superset_gr_keys itno2_subset_gr_keys by blast
 
-lemma filter_alist: "is_alist l \<Longrightarrow> is_alist (filter P l)"
-sorry
-
 lemma itno2_disjunct_alists:
   assumes "gram_sd gr"
       and "iterate_norms2 gr = (norms, rest)"
@@ -165,17 +162,23 @@ lemma itno2_disjunct_alists:
       and "keys norms \<inter> keys rest = {}" using assms(2)
 proof (induct arbitrary: norms rest rule: itno2_induct)
   case (Step norms rest yes no)
-    have S: "is_alist norms"
-            "is_alist rest"
-            "keys norms \<inter> keys rest = {}"
-            "partition (itno_p norms) rest = (yes, no)" using Step by auto
+  have S: "is_alist norms"
+          "is_alist rest"
+          "keys norms \<inter> keys rest = {}"
+          "partition (itno_p norms) rest = (yes, no)" using Step by auto
 
-    case (1 norms' rest') then show ?case using S
-      filter_alist[OF S(2), of "itno_p norms"]
-      alist_distr[of norms "mnor_map norms (filter (itno_p norms) rest)"]
-      apply auto unfolding itno_f_def sorry
-    case 2 then show ?case sorry
-    case 3 then show ?case sorry
+  have INY: "keys norms \<inter> keys (mnor_map norms yes) = {}"
+    unfolding mnor_map_def using S(3) S(4) by force
+  have INN: "keys norms \<inter> keys no = {}" using S by force
+  have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
+    using alist_partition_distr S(2) S(4) alist_distr[of yes no] by auto
+  have AY: "is_alist (mnor_map norms yes)"
+    unfolding mnor_map_def using alist_filter alist_map S(2) S(4) by auto
+
+    case (1 norms' rest') then show ?case using S AY INY alist_distr[of norms] unfolding itno_f_def
+      by auto
+    case (2 norms' rest') then show ?case using S alist_filter by auto
+    case (3 norms' rest') then show ?case using INN IYN unfolding itno_f_def by force
 qed (auto simp add: assms gram_alist)
 
 
