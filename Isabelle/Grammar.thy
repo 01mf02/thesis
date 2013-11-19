@@ -1,7 +1,6 @@
 theory Grammar imports
   "Grammar_defs"
   "Helpers"
-  "~~/src/HOL/Library/Permutation"
 begin
 
 
