@@ -143,16 +143,40 @@ by (induct rule: pi_induct) auto
 lemma itno2_superset_gr_keys:
   "keys gr \<subseteq> keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr))"
 apply (intro subsetI, induct rule: itno2_induct)
-by (auto simp add: itno_f_def, force)
+by (auto simp add: itno_f_def mnor_map_def, force)
 
 lemma itno2_subset_gr_keys:
   "keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr)) \<subseteq> keys gr"
 apply (intro subsetI, induct rule: itno2_induct)
-by (auto simp add: itno_f_def)
+by (auto simp add: itno_f_def mnor_map_def)
 
 lemma itno2_gr_keys_equal:
   "keys gr = keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr))"
 using itno2_superset_gr_keys itno2_subset_gr_keys by blast
+
+lemma filter_alist: "is_alist l \<Longrightarrow> is_alist (filter P l)"
+sorry
+
+lemma itno2_disjunct_alists:
+  assumes "gram_sd gr"
+      and "iterate_norms2 gr = (norms, rest)"
+    shows "is_alist norms"
+      and "is_alist rest"
+      and "keys norms \<inter> keys rest = {}" using assms(2)
+proof (induct arbitrary: norms rest rule: itno2_induct)
+  case (Step norms rest yes no)
+    have S: "is_alist norms"
+            "is_alist rest"
+            "keys norms \<inter> keys rest = {}"
+            "partition (itno_p norms) rest = (yes, no)" using Step by auto
+
+    case (1 norms' rest') then show ?case using S
+      filter_alist[OF S(2), of "itno_p norms"]
+      alist_distr[of norms "mnor_map norms (filter (itno_p norms) rest)"]
+      apply auto unfolding itno_f_def sorry
+    case 2 then show ?case sorry
+    case 3 then show ?case sorry
+qed (auto simp add: assms gram_alist)
 
 
 (*****************************************************************************

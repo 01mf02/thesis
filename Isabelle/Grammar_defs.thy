@@ -55,17 +55,19 @@ definition min_norm_of_rules :: "('t::linorder, 'v::linorder) norm_list \<Righta
   ('t, 'v) production_rules \<Rightarrow> ('t, 'v) norm_rule" where
   "min_norm_of_rules norms rules \<equiv> Min (set (norms_of_rules norms rules))"
 
-definition split_normable where
-  "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
+definition mnor_map where
+  "mnor_map norms = map (\<lambda>(v, rules). (v, min_norm_of_rules norms rules))"
 
-definition itno_p where
-  "itno_p = (\<lambda>norms (v, rules). rules_have_norm norms rules)"
-definition itno_f where
-  "itno_f = (\<lambda>norms yes. norms @ (map (\<lambda>(v, rules). (v, min_norm_of_rules norms rules)) yes))"
+definition itno_p where "itno_p = (\<lambda>norms (v, rules). rules_have_norm norms rules)"
+definition itno_f where "itno_f = (\<lambda>norms yes. norms @ (mnor_map norms yes))"
 
 definition iterate_norms2 ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) norm_list \<times> ('t, 'v) grammar)" where
   "iterate_norms2 gr = partition_iterate itno_p itno_f [] gr"
+
+
+definition split_normable where
+  "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
 function iterate_norms where
   "iterate_norms rest norms = (case split_normable rest norms of
