@@ -1,4 +1,6 @@
-theory Grammar_defs imports AList_ext
+theory Grammar_defs imports
+  AList_ext
+  Helpers
   "~~/src/HOL/Library/Char_ord"
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Product_Lexorder"
@@ -55,6 +57,16 @@ definition min_norm_of_rules :: "('t::linorder, 'v::linorder) norm_list \<Righta
 
 definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
+
+definition itno_p where "itno_p = (\<lambda>norms (v, rules). rules_have_norm norms rules)"
+definition itno_f where "itno_f = (\<lambda>norms (v, rules). (v, min_norm_of_rules norms rules)#norms)"
+
+definition split_normable2 where
+  "split_normable2 norms = partition (itno_p norms)"
+
+definition iterate_norms2 ::
+  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) norm_list \<times> ('t, 'v) grammar)" where
+  "iterate_norms2 gr = partition_fold itno_p itno_f [] gr"
 
 function iterate_norms where
   "iterate_norms rest norms = (case split_normable rest norms of

@@ -48,11 +48,10 @@ termination partition_fold
 apply (relation "measure (\<lambda>(p, f, a, l). length l)")
 by (auto simp add: filter_length_smaller)
 
-lemma pf_induct:
-  assumes N: "P (a, l)"
-      and C: "\<And>a l yes no. P (a, l) \<Longrightarrow> partition (p a) l = (yes, no) \<Longrightarrow> yes \<noteq> [] \<Longrightarrow>
-              P (foldl f a yes, no)"
-  shows "P (partition_fold p f a l)" using N
+lemma pf_induct [case_names Base Step]:
+  assumes B: "P (a, l)"
+      and S: "\<And>a l yes no. P (a, l) \<Longrightarrow> partition (p a) l = (yes, no) \<Longrightarrow> P (foldl f a yes, no)"
+  shows "P (partition_fold p f a l)" using B
 proof (induct l arbitrary: a rule: length_induct)
   case (1 l a) then show ?case
   proof (cases "filter (p a) l")
@@ -63,7 +62,7 @@ proof (induct l arbitrary: a rule: length_induct)
     have "(\<forall>x. P (x, no) \<longrightarrow> P (partition_fold p f x no))"
       using spec[OF 1(1), of no] filter_length_smaller[of _ _ p, OF Cons[symmetric]] no_def by auto
     then have "P (partition_fold p f (foldl f a (yesh#yest)) no)"
-      using C[OF 1(2), of "yesh#yest"] Cons no_def by auto
+      using S[OF 1(2), of "yesh#yest"] Cons no_def by auto
     then show ?thesis using Cons no_def[symmetric] by simp
   qed
 qed

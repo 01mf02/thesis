@@ -128,6 +128,19 @@ qed
 
 
 (*****************************************************************************
+  iterate_norms2
+ *****************************************************************************)
+
+lemma itno2_induct [case_names Base Step]:
+  assumes B: "P ([], gr)"
+      and S: "\<And>norms l yes no.
+                P (norms, l) \<Longrightarrow> split_normable2 norms l = (yes, no) \<Longrightarrow>
+                P (foldl itno_f norms yes, no)"
+  shows "P (iterate_norms2 gr)" unfolding iterate_norms2_def using assms
+by (induct rule: pf_induct) (auto simp add: split_normable2_def)
+
+
+(*****************************************************************************
   iterate_norms
  *****************************************************************************)
 
