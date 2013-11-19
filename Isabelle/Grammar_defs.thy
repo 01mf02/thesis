@@ -65,6 +65,16 @@ definition iterate_norms2 ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) norm_list \<times> ('t, 'v) grammar)" where
   "iterate_norms2 gr = partition_iterate itno_p itno_f [] gr"
 
+definition gram_normed_fun2 :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_normed_fun2 gr \<equiv> snd (iterate_norms2 gr) = []"
+
+definition gram_nsd2 :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_nsd2 gr \<equiv> gram_sd gr \<and> gram_normed_fun2 gr"
+
+definition norms_of_grammar2 ::
+  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
+  "norms_of_grammar2 gr \<equiv> fst (iterate_norms2 gr)"
+
 
 definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
