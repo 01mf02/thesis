@@ -61,33 +61,32 @@ definition mnor_map where
 definition itno_p where "itno_p = (\<lambda>norms (v, rules). rules_have_norm norms rules)"
 definition itno_f where "itno_f = (\<lambda>norms yes. norms @ (mnor_map norms yes))"
 
-definition iterate_norms2 ::
+definition iterate_norms ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) norm_list \<times> ('t, 'v) grammar)" where
-  "iterate_norms2 gr = partition_iterate itno_p itno_f [] gr"
+  "iterate_norms gr = partition_iterate itno_p itno_f [] gr"
 
-definition gram_normed_fun2 :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_normed_fun2 gr \<equiv> snd (iterate_norms2 gr) = []"
+definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"
 
-definition gram_nsd2 :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_nsd2 gr \<equiv> gram_sd gr \<and> gram_normed_fun2 gr"
+definition gram_nsd :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_nsd gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
-definition norms_of_grammar2 ::
+definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar2 gr \<equiv> fst (iterate_norms2 gr)"
-
+  "norms_of_grammar gr \<equiv> fst (iterate_norms gr)"
 
 definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar2 gr) vars"
+  "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 
 function minimal_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"
 | "minimal_word_of_variables gr (vh#vt) = (
-     if gram_nsd2 gr \<and> vh \<in> keys gr then
-       let (t, vars) = snd (lookup (norms_of_grammar2 gr) vh) in
+     if gram_nsd gr \<and> vh \<in> keys gr then
+       let (t, vars) = snd (lookup (norms_of_grammar gr) vh) in
        t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
      else [])"
 by pat_completeness auto
@@ -133,7 +132,7 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v li
   "norm_reduce gr v 0 = v"
 | "norm_reduce gr [] (Suc p) = []"
 | "norm_reduce gr (vh#vt) (Suc p) = (
-     let (n, _, v) = lookup (norms_of_grammar2 gr) vh in
+     let (n, _, v) = lookup (norms_of_grammar gr) vh in
      if Suc p < n then (norm_reduce gr v p) @ vt
      else norm_reduce gr vt (Suc p - n))"
 
