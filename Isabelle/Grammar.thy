@@ -43,8 +43,8 @@ by (simp add: norm_sum_def)
   rules_have_norm
  *****************************************************************************)
 
-lemma rhn_cons: "rules_have_norm norms rules \<Longrightarrow> rules_have_norm (x#norms) rules"
-by (auto simp add: rules_have_norm_def rule_has_norm_def)
+lemma rhn_concat: "rules_have_norm norms rules \<Longrightarrow> rules_have_norm (norms @ x) rules"
+by (induct x) (auto simp add: rules_have_norm_def rule_has_norm_def)
 
 
 (*****************************************************************************
@@ -262,12 +262,25 @@ proof -
   then show ?thesis using lookup_predicate sorry
 qed
 
+(* TODO: appropriately rename grammar types!! *)
+
 lemma nog_has_norms':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(v, nv) \<in> set (norms_of_grammar gr)"
-    shows "rules_have_norm (norms_of_grammar gr) rules" using assms (*unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
+    shows "rules_have_norm (norms_of_grammar gr) rules" using assms(3) unfolding norms_of_grammar_def
+proof (induct rule: itno_induct(1))
+  case (Step norms rest yes no) show ?case
+  proof (cases "rules_have_norm norms rules") (* TODO: change to "(v, nv) \<in> set norms". *)
+    case True then show ?thesis unfolding itno_f_def using rhn_concat by auto
+  next
+    case False
+    have "(v, nv) \<in> set (norms)" sorry
+    then have "rules_have_norm norms rules" using Step by auto
+    then show ?thesis using Step assms(1-2) sorry
+  qed
+qed auto
+(*proof (induct rule: itno_induct')
   case (Cons rest norms va rulesa nbtl unnb)
   then show ?case
   proof (cases "v = va")
@@ -283,7 +296,6 @@ proof (induct rule: itno_induct')
     case False then show ?thesis using Cons rhn_cons[of norms] by auto
   qed
 qed auto*)
-sorry
 
 lemma nog_has_norms:
   assumes "gram_nsd gr"
