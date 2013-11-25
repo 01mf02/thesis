@@ -222,28 +222,30 @@ lemma itno_disjunct_alists:
   assumes "gram_sd gr"
       and "itnofst = fst (iterate_norms gr [])"
       and "itnosnd = snd (iterate_norms gr [])"
-    shows "is_alist itnofst \<and> is_alist itnosnd \<and> keys (itnofst) \<inter> keys (itnosnd) = {}"
+    shows "is_alist itnofst"
+      and "is_alist itnosnd"
+      and "keys (itnofst) \<inter> keys (itnosnd) = {}"
 using assms unfolding norms_of_grammar_def
 proof (induct arbitrary: itnofst itnosnd rule: itno_induct')
   case (Cons rest norms v rules nbtl unnb)
-  have IH: "is_alist rest \<and> is_alist norms \<and> keys rest \<inter> keys norms = {}" using Cons by auto
-  have IH1: "is_alist rest" using IH by simp
-  have IH2: "is_alist norms" using IH by simp
-  have IH3: "keys rest \<inter> keys norms = {}" using IH by simp
+  have IH1: "is_alist rest" using Cons assms by simp
+  have IH2: "is_alist norms" using Cons assms by simp
+  have IH3: "keys rest \<inter> keys norms = {}" using Cons assms by simp
 
-  have A: "is_alist ((v, rules) # nbtl @ unnb)" using Cons(2) IH1 sn_alist by force
-  then have "is_alist (nbtl @ unnb)" using alist_subset_is_alist[of "(v, rules)"] by auto
-  then have C1: "is_alist itnofst" using Cons by simp
+    case 1
+    have A: "is_alist ((v, rules) # nbtl @ unnb)" using Cons(4) IH1 sn_alist by force
+    then have "is_alist (nbtl @ unnb)" using alist_subset_is_alist[of "(v, rules)"] by auto
+    then show ?case using 1 by simp
 
-  have C2: "is_alist ((v, min_norm_of_rules norms rules) # norms)"
-    using IH2 IH3 Cons alist_distr_cons[of v "min_norm_of_rules norms rules"] sn_conserves by force
+    case 2
+    then show ?case using IH2 IH3 Cons(4)
+      alist_distr_cons[of v "min_norm_of_rules norms rules"] sn_conserves by force
 
-  have IS1: "v \<notin> (keys nbtl \<union> keys unnb)" using A alist_distr_cons[of v _ "nbtl @ unnb"] by auto
-
-  have "set rest = set ((v, rules) # nbtl @ unnb)" using sn_conserves Cons(2) by force
-  then have IS2: "(keys nbtl \<union> keys unnb) \<inter> keys norms = {}" using IH3 by auto
-
-  show ?case using C1 C2 Cons IS1 IS2 by auto
+    case 3
+    have IS1: "v \<notin> (keys nbtl \<union> keys unnb)" using A alist_distr_cons[of v _ "nbtl @ unnb"] by auto
+    have "set rest = set ((v, rules) # nbtl @ unnb)" using sn_conserves Cons(4) by force
+    then have "(keys nbtl \<union> keys unnb) \<inter> keys norms = {}" using IH3 by auto
+    then show ?case using IS1 3 by auto
 qed (auto simp add: gram_alist)
 
 
@@ -281,7 +283,7 @@ sorry
 
 
 lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
-using itno_disjunct_alists by auto
+using itno_disjunct_alists[of gr] by auto
 
 lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
 using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
