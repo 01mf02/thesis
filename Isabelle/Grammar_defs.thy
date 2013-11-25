@@ -79,23 +79,6 @@ definition norms_of_grammar2 ::
 definition split_normable where
   "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
 
-function iterate_norms where
-  "iterate_norms rest norms = (case split_normable rest norms of
-       ([], unnormable) \<Rightarrow> (unnormable, norms)
-     | ((v, rules)#normable_tl, unnormable) \<Rightarrow>
-         iterate_norms (normable_tl@unnormable) ((v, min_norm_of_rules norms rules)#norms))"
-by pat_completeness auto
-
-definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_normed_fun gr \<equiv> fst (iterate_norms gr []) = []"
-
-definition gram_nsd :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_nsd gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
-
-definition norms_of_grammar ::
-  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
-  "norms_of_grammar gr \<equiv> snd (iterate_norms gr [])"
-
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar2 gr) vars"
 
@@ -150,7 +133,7 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v li
   "norm_reduce gr v 0 = v"
 | "norm_reduce gr [] (Suc p) = []"
 | "norm_reduce gr (vh#vt) (Suc p) = (
-     let (n, _, v) = lookup (norms_of_grammar gr) vh in
+     let (n, _, v) = lookup (norms_of_grammar2 gr) vh in
      if Suc p < n then (norm_reduce gr v p) @ vt
      else norm_reduce gr vt (Suc p - n))"
 

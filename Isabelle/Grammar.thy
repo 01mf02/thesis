@@ -200,81 +200,6 @@ qed (auto simp add: assms gram_alist)
 
 
 (*****************************************************************************
-  iterate_norms
- *****************************************************************************)
-
-termination iterate_norms
-apply (relation "measure (\<lambda>(rest, norms). length rest)", auto)
-apply (auto simp only: split_normable_def partition_length add_less_cancel_right)
-by (metis (full_types) impossible_Cons not_less)
-
-
-lemma itno_induct' [case_names Cons Base]:
-  assumes C: "\<And>rest norms v rules nbtl unnb.
-                P (rest, norms) \<Longrightarrow> split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
-                P ((nbtl@unnb), ((v, min_norm_of_rules norms rules) # norms))"
-      and P: "P (rest, norms)"
-  shows "P (iterate_norms rest norms)" using P
-sorry
-
-
-lemma itno_superset_gr_keys:
-  "keys gr \<subseteq> keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
-proof (intro subsetI, induct rule: itno_induct')
-qed (auto simp add: sn_conserves)
-
-lemma itno_subset_gr_keys:
-  "keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr [])) \<subseteq> keys gr"
-proof (intro subsetI, induct rule: itno_induct')
-  case (Cons rest norms v rules nbtl unnb)
-  then have "set rest = set ((v, rules) # nbtl) \<union> set unnb" using sn_conserves by blast
-  then show ?case using Cons sn_conserves by simp
-qed auto
-
-lemma itno_gr_keys_equal:
-  "keys gr = keys (fst (iterate_norms gr [])) \<union> keys (snd (iterate_norms gr []))"
-using itno_superset_gr_keys itno_subset_gr_keys by blast
-
-lemma itno_disjunct_alists:
-  assumes "gram_sd gr"
-      and "itnofst = fst (iterate_norms gr [])"
-      and "itnosnd = snd (iterate_norms gr [])"
-    shows "is_alist itnofst"
-      and "is_alist itnosnd"
-      and "keys (itnofst) \<inter> keys (itnosnd) = {}"
-using assms unfolding norms_of_grammar_def
-proof (induct arbitrary: itnofst itnosnd rule: itno_induct')
-  case (Cons rest norms v rules nbtl unnb)
-  have IH1: "is_alist rest" using Cons assms by simp
-  have IH2: "is_alist norms" using Cons assms by simp
-  have IH3: "keys rest \<inter> keys norms = {}" using Cons assms by simp
-
-    case 1
-    have A: "is_alist ((v, rules) # nbtl @ unnb)" using Cons(4) IH1 sn_alist by force
-    then have "is_alist (nbtl @ unnb)" using alist_subset_is_alist[of "(v, rules)"] by auto
-    then show ?case using 1 by simp
-
-    case 2
-    then show ?case using IH2 IH3 Cons(4)
-      alist_distr_cons[of v "min_norm_of_rules norms rules"] sn_conserves by force
-
-    case 3
-    have IS1: "v \<notin> (keys nbtl \<union> keys unnb)" using A alist_distr_cons[of v _ "nbtl @ unnb"] by auto
-    have "set rest = set ((v, rules) # nbtl @ unnb)" using sn_conserves Cons(4) by force
-    then have "(keys nbtl \<union> keys unnb) \<inter> keys norms = {}" using IH3 by auto
-    then show ?case using IS1 3 by auto
-qed (auto simp add: gram_alist)
-
-
-(*****************************************************************************
-  gram_nsd
- *****************************************************************************)
-
-lemma gram_nsd_sd: "gram_nsd gr \<Longrightarrow> gram_sd gr"
-by (simp add: gram_nsd_def)
-
-
-(*****************************************************************************
   gram_nsd2
  *****************************************************************************)
 
@@ -307,8 +232,8 @@ lemma nog2_mnor':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(v, nv) \<in> set (norms_of_grammar2 gr)"
-    shows "nv = min_norm_of_rules (norms_of_grammar2 gr) rules" using assms unfolding norms_of_grammar_def
-(*proof (induct rule: itno_induct')
+    shows "nv = min_norm_of_rules (norms_of_grammar2 gr) rules" using assms (*unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
   case (Cons rest norms va rulesa nbtl unnb)
   then show ?case
   proof (cases "v = va")
@@ -343,8 +268,8 @@ lemma nog2_has_norms':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(v, nv) \<in> set (norms_of_grammar2 gr)"
-    shows "rules_have_norm (norms_of_grammar2 gr) rules" using assms unfolding norms_of_grammar_def
-(*proof (induct rule: itno_induct')
+    shows "rules_have_norm (norms_of_grammar2 gr) rules" using assms (*unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
   case (Cons rest norms va rulesa nbtl unnb)
   then show ?case
   proof (cases "v = va")
@@ -381,8 +306,8 @@ lemma nog2_in_rules:
 sorry
 
 lemma nog2_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar2 gr) \<Longrightarrow> 0 < n"
-  unfolding norms_of_grammar_def
-(*proof (induct rule: itno_induct')
+  (*unfolding norms_of_grammar_def
+proof (induct rule: itno_induct')
   case (Cons rest norms va rules nbtl unnb)
   then show ?case
   proof (cases "v = va")
@@ -400,129 +325,6 @@ lemma nog2_greater_zero_lookup:
 (*  apply (rule lookup_forall[of "norms_of_grammar gr"])
 using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ _ gr] by auto*)
 sorry
-
-
-(*****************************************************************************
-  norms_of_grammar
- *****************************************************************************)
-
-definition nog_invariant where
-  "nog_invariant gr rest norms \<equiv>
-     is_alist rest \<and> set rest \<subseteq> set gr \<and>
-     is_alist norms \<and>
-     keys gr = keys rest \<union> keys norms \<and>
-     keys rest \<inter> keys norms = {}"
-
-lemma nog_induct [case_names Nil Cons Base]:
-  assumes C: "\<And>rest norms v rules nbtl unnb.
-                nog_invariant gr rest norms \<Longrightarrow> P norms \<Longrightarrow>
-                split_normable rest norms = ((v, rules)#nbtl, unnb) \<Longrightarrow>
-                P (((v, min_norm_of_rules norms rules) # norms))"
-      and N: "P []"
-      and G: "gram_sd gr"
-  shows "P (norms_of_grammar gr)"
-sorry
-
-(* TODO: Perhaps make a comfort function based on nog_induct with case distinction "v = va"
-   built in? This would show "P v rules (norms_of_grammar gr)". *)
-
-
-lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
-using itno_disjunct_alists[of gr] by auto
-
-lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
-using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
-
-lemma nog_mnor':
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-      and "(v, nv) \<in> set (norms_of_grammar gr)"
-    shows "nv = min_norm_of_rules (norms_of_grammar gr) rules" using assms unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms va rulesa nbtl unnb)
-  then show ?case
-  proof (cases "v = va")
-    case True
-      have "nog_invariant gr rest norms" sorry
-      then have "set rest \<subseteq> set gr" using nog_invariant_def[of gr rest norms] by auto
-      then have "rules = rulesa" using sn_rules_equal assms Cons True by auto
-      then show ?thesis using Cons True apply auto sorry
-  next
-    case False
-      then have "nv = min_norm_of_rules norms rules" using Cons by auto
-      then show ?thesis using Cons apply auto (* use helper here, someday ... *) sorry
-  qed
-qed auto
-
-
-lemma nog_mnor:
-  assumes "gram_nsd gr"
-      and "(v, rules) \<in> set gr"
-    shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules"
-proof -
-  have "gram_sd gr" using gram_nsd_sd assms by auto
-  then have "is_alist (norms_of_grammar gr)" using nog_alist by auto
-  have "v \<in> keys gr" using assms by auto
-  then have "v \<in> keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by blast
-  then show ?thesis using lookup_predicate sorry
-qed
-
-lemma nog_has_norms':
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-      and "(v, nv) \<in> set (norms_of_grammar gr)"
-    shows "rules_have_norm (norms_of_grammar gr) rules" using assms unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms va rulesa nbtl unnb)
-  then show ?case
-  proof (cases "v = va")
-    case True
-      have "nog_invariant gr rest norms" sorry
-      then have "set rest \<subseteq> set gr" using nog_invariant_def[of gr rest norms] by auto
-      then have "rules = rulesa" using sn_rules_equal assms Cons True by auto
-
-      then have "rules_have_norm norms rules"
-        using Cons(2) sn_fst_have_norms[of _ norms "(va, rulesa) # nbtl"] by auto
-      then show ?thesis using rhn_cons[of norms] by auto
-  next
-    case False then show ?thesis using Cons rhn_cons[of norms] by auto
-  qed
-qed auto
-
-lemma nog_has_norms:
-  assumes "gram_nsd gr"
-      and V: "(v, rules) \<in> set gr"
-    shows "rules_have_norm (norms_of_grammar gr) rules" using assms
-proof -
-  have G: "gram_sd gr" using gram_nsd_sd assms by auto
-  have "\<exists>nv. (v, nv) \<in> set (norms_of_grammar gr)" using nog_gr_keys_equal assms by force
-  then show ?thesis using nog_has_norms'[OF G V] by auto
-qed
-
-lemma nog_in_rules:
-  assumes "gram_nsd gr"
-      and "(v, rules) \<in> set gr"
-    shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
-by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
-
-lemma nog_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
-  unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms va rules nbtl unnb)
-  then show ?case
-  proof (cases "v = va")
-    case True
-    then have "rules_have_norm norms rules"
-      using Cons sn_fst_have_norms[of _ _ "(va, rules) # nbtl" unnb _ _] by auto
-    then have "0 < fst (min_norm_of_rules norms rules)" using mnor_norm_greater_zero by auto
-    then show ?thesis using Cons fst_predicate[of _ "min_norm_of_rules norms rules"] by auto
-  qed auto
-qed auto
-
-lemma nog_greater_zero_lookup:
-  "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
-  apply (rule lookup_forall[of "norms_of_grammar gr"])
-using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ _ gr] by auto
 
 
 (*****************************************************************************
