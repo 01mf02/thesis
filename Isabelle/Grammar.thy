@@ -289,6 +289,118 @@ by (simp add: gram_nsd2_def)
 lemma nog2_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar2 gr)" unfolding norms_of_grammar2_def
 using itno2_disjunct_alists[of gr "fst (iterate_norms2 gr)" "snd (iterate_norms2 gr)"] by auto
 
+lemma nog2_gr_keys_equal: "gram_nsd2 gr \<Longrightarrow> keys gr = keys (norms_of_grammar2 gr)"
+(*using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)*)
+sorry
+
+lemma helper:
+  assumes "rules_have_norm norms rules"
+      and "v \<notin> keys norms"
+      and "mn = min_norm_of_rules norms rules"
+    shows "mn = min_norm_of_rules ((v, mn) # norms) rules" using assms unfolding min_norm_of_rules_def
+  apply (auto)
+  apply (rule Min_predicate)  (* TODO: this is not going to work like this! *)
+  apply (auto simp add: mnor_in_nor nor_nonempty_cons)
+sorry
+
+lemma nog2_mnor':
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, nv) \<in> set (norms_of_grammar2 gr)"
+    shows "nv = min_norm_of_rules (norms_of_grammar2 gr) rules" using assms unfolding norms_of_grammar_def
+(*proof (induct rule: itno_induct')
+  case (Cons rest norms va rulesa nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+      have "nog_invariant gr rest norms" sorry
+      then have "set rest \<subseteq> set gr" using nog_invariant_def[of gr rest norms] by auto
+      then have "rules = rulesa" using sn_rules_equal assms Cons True by auto
+      then show ?thesis using Cons True apply auto sorry
+  next
+    case False
+      then have "nv = min_norm_of_rules norms rules" using Cons by auto
+      then show ?thesis using Cons apply auto (* use helper here, someday ... *) sorry
+  qed
+qed auto*)
+sorry
+
+
+lemma nog2_mnor:
+  assumes "gram_nsd2 gr"
+      and "(v, rules) \<in> set gr"
+    shows "lookup (norms_of_grammar2 gr) v = min_norm_of_rules (norms_of_grammar2 gr) rules"
+(*proof -
+  have "gram_sd gr" using gram_nsd_sd assms by auto
+  then have "is_alist (norms_of_grammar gr)" using nog_alist by auto
+  have "v \<in> keys gr" using assms by auto
+  then have "v \<in> keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by blast
+  then show ?thesis using lookup_predicate sorry
+qed*)
+sorry
+
+lemma nog2_has_norms':
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, nv) \<in> set (norms_of_grammar2 gr)"
+    shows "rules_have_norm (norms_of_grammar2 gr) rules" using assms unfolding norms_of_grammar_def
+(*proof (induct rule: itno_induct')
+  case (Cons rest norms va rulesa nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+      have "nog_invariant gr rest norms" sorry
+      then have "set rest \<subseteq> set gr" using nog_invariant_def[of gr rest norms] by auto
+      then have "rules = rulesa" using sn_rules_equal assms Cons True by auto
+
+      then have "rules_have_norm norms rules"
+        using Cons(2) sn_fst_have_norms[of _ norms "(va, rulesa) # nbtl"] by auto
+      then show ?thesis using rhn_cons[of norms] by auto
+  next
+    case False then show ?thesis using Cons rhn_cons[of norms] by auto
+  qed
+qed auto*)
+sorry
+
+lemma nog2_has_norms:
+  assumes "gram_nsd2 gr"
+      and V: "(v, rules) \<in> set gr"
+    shows "rules_have_norm (norms_of_grammar2 gr) rules" using assms
+(*proof -
+  have G: "gram_sd gr" using gram_nsd_sd assms by auto
+  have "\<exists>nv. (v, nv) \<in> set (norms_of_grammar gr)" using nog_gr_keys_equal assms by force
+  then show ?thesis using nog_has_norms'[OF G V] by auto
+qed*)
+sorry
+
+lemma nog2_in_rules:
+  assumes "gram_nsd2 gr"
+      and "(v, rules) \<in> set gr"
+    shows "snd (lookup (norms_of_grammar2 gr) v) \<in> set rules" using assms
+(*by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)*)
+sorry
+
+lemma nog2_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar2 gr) \<Longrightarrow> 0 < n"
+  unfolding norms_of_grammar_def
+(*proof (induct rule: itno_induct')
+  case (Cons rest norms va rules nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+    then have "rules_have_norm norms rules"
+      using Cons sn_fst_have_norms[of _ _ "(va, rules) # nbtl" unnb _ _] by auto
+    then have "0 < fst (min_norm_of_rules norms rules)" using mnor_norm_greater_zero by auto
+    then show ?thesis using Cons fst_predicate[of _ "min_norm_of_rules norms rules"] by auto
+  qed auto
+qed auto*)
+sorry
+
+lemma nog2_greater_zero_lookup:
+  "gram_nsd2 gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar2 gr) v)"
+(*  apply (rule lookup_forall[of "norms_of_grammar gr"])
+using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ _ gr] by auto*)
+sorry
+
 
 (*****************************************************************************
   norms_of_grammar
@@ -320,16 +432,6 @@ using itno_disjunct_alists[of gr] by auto
 
 lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
 using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
-
-lemma helper:
-  assumes "rules_have_norm norms rules"
-      and "v \<notin> keys norms"
-      and "mn = min_norm_of_rules norms rules"
-    shows "mn = min_norm_of_rules ((v, mn) # norms) rules" using assms unfolding min_norm_of_rules_def
-  apply (auto)
-  apply (rule Min_predicate)  (* TODO: this is not going to work like this! *)
-  apply (auto simp add: mnor_in_nor nor_nonempty_cons)
-sorry
 
 lemma nog_mnor':
   assumes "gram_sd gr"
@@ -442,6 +544,54 @@ lemma nov_mnor:
       and "(n, t, vs) = min_norm_of_rules norms rules"
     shows "norm_of_variables gr vs < n"
 sorry
+
+lemma nov_nog2':
+  assumes "gram_sd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar2 gr)"
+      and "(v, rules) \<in> set gr"
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms unfolding norms_of_grammar_def
+(*proof (induct rule: itno_induct')
+  case (Cons rest norms va rulesa nbtl unnb)
+  then show ?case
+  proof (cases "v = va")
+    case True
+      have I: "nog_invariant gr rest norms" sorry
+      have I1: "set rest \<subseteq> set gr" using I nog_invariant_def[of gr rest norms] by auto
+      have I2: "keys rest \<inter> keys norms = {}" using I nog_invariant_def[of gr rest norms] by auto
+
+      have "set rest \<subseteq> set gr" using I1 nog_invariant_def[of gr rest norms] by auto
+      then have E: "rules = rulesa" using sn_rules_equal assms Cons True by auto
+      then have R: "rules_have_norm norms rules"
+        using sn_fst_have_norms[of _ _ _ unnb va] Cons by auto
+
+      have "v \<in> keys rest" using Cons(2) sn_conserves True by force
+      then have N: "norm_of_variables gr vs < n" using I2 nov_mnor[OF R] Cons(4) E by auto
+      
+      have A: "is_alist (norms_of_grammar gr)" using nog_alist assms by auto
+      have "norm_of_variables gr [v] = n" unfolding nov_singleton
+        using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
+      then show ?thesis using Cons N by auto
+  qed auto
+qed auto*)
+sorry
+
+lemma nov_nog2:
+  assumes "gram_nsd2 gr"
+      and "(t, vs) = snd (lookup (norms_of_grammar2 gr) v)"
+      and "(v, rules) \<in> set gr"
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]"
+(*proof -
+  have "keys gr = keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by auto
+  then have V: "v \<in> keys (norms_of_grammar gr)" using assms by auto
+
+  have G: "gram_sd gr" using gram_nsd_sd assms by auto
+  then have A: "is_alist (norms_of_grammar gr)" using nog_alist by auto
+
+  def n \<equiv> "fst (lookup (norms_of_grammar gr) v)"
+  then show ?thesis using G nov_nog2'[of gr v n t] existence_from_lookup[OF A V] assms n_def by auto
+qed*)
+sorry
+
 
 lemma nov_nog':
   assumes "gram_sd gr"
