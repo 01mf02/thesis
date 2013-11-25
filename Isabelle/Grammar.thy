@@ -131,23 +131,40 @@ qed
   iterate_norms2
  *****************************************************************************)
 
+definition itno2_invariant where
+  "itno2_invariant gr norms rest \<equiv>
+     set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest \<and> keys rest \<inter> keys norms = {}*)"
+
+definition itno2_invariant_sd where
+  "itno2_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest"
+
 lemma itno2_induct [case_names Base Step]:
   assumes B: "P ([], gr)"
       and S: "\<And>norms rest yes no.
+                itno2_invariant gr norms rest \<Longrightarrow>
                 P (norms, rest) \<Longrightarrow> partition (itno_p norms) rest = (yes, no) \<Longrightarrow>
                 P (itno_f norms yes, no)"
-  shows "P (iterate_norms2 gr)" unfolding iterate_norms2_def using assms
-by (induct rule: pi_induct) auto
-
+      (*and G: "gram_sd gr"*)
+  shows "P (iterate_norms2 gr)"
+    and "itno2_invariant gr (fst (iterate_norms2 gr)) (snd (iterate_norms2 gr))" unfolding iterate_norms2_def
+proof (induct rule: pi_induct)
+  case Base
+    case 1 show ?case using B by auto
+    case 2 show ?case unfolding itno2_invariant_def by auto
+next
+  case (Step norms rest yes no)
+    case 1 show ?case using S Step by auto
+    case 2 show ?case using Step unfolding itno2_invariant_def by auto
+qed
 
 lemma itno2_superset_gr_keys:
   "keys gr \<subseteq> keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr))"
-apply (intro subsetI, induct rule: itno2_induct)
+apply (intro subsetI, induct rule: itno2_induct(1))
 by (auto simp add: itno_f_def mnor_map_def, force)
 
 lemma itno2_subset_gr_keys:
   "keys (fst (iterate_norms2 gr)) \<union> keys (snd (iterate_norms2 gr)) \<subseteq> keys gr"
-apply (intro subsetI, induct rule: itno2_induct)
+apply (intro subsetI, induct rule: itno2_induct(1))
 by (auto simp add: itno_f_def mnor_map_def)
 
 lemma itno2_gr_keys_equal:
@@ -160,7 +177,7 @@ lemma itno2_disjunct_alists:
     shows "is_alist norms"
       and "is_alist rest"
       and "keys norms \<inter> keys rest = {}" using assms(2)
-proof (induct arbitrary: norms rest rule: itno2_induct)
+proof (induct arbitrary: norms rest rule: itno2_induct(1))
   case (Step norms rest yes no)
   have S: "is_alist norms"
           "is_alist rest"
@@ -255,6 +272,22 @@ qed (auto simp add: gram_alist)
 
 lemma gram_nsd_sd: "gram_nsd gr \<Longrightarrow> gram_sd gr"
 by (simp add: gram_nsd_def)
+
+
+(*****************************************************************************
+  gram_nsd2
+ *****************************************************************************)
+
+lemma gram_nsd2_sd: "gram_nsd2 gr \<Longrightarrow> gram_sd gr"
+by (simp add: gram_nsd2_def)
+
+
+(*****************************************************************************
+  norms_of_grammar2
+ *****************************************************************************)
+
+lemma nog2_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar2 gr)" unfolding norms_of_grammar2_def
+using itno2_disjunct_alists[of gr "fst (iterate_norms2 gr)" "snd (iterate_norms2 gr)"] by auto
 
 
 (*****************************************************************************
