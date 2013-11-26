@@ -144,7 +144,6 @@ lemma itno_induct [case_names Base Step]:
                 itno_invariant gr norms rest \<Longrightarrow>
                 P (norms, rest) \<Longrightarrow> partition (itno_p norms) rest = (yes, no) \<Longrightarrow>
                 P (itno_f norms yes, no)"
-      (*and G: "gram_sd gr"*)
   shows "P (iterate_norms gr)"
     and "itno_invariant gr (fst (iterate_norms gr)) (snd (iterate_norms gr))" unfolding iterate_norms_def
 proof (induct rule: pi_induct)
@@ -326,9 +325,24 @@ lemma nog_in_rules:
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
 by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
 
-lemma nog_norms_greater_zero: "(v, n, rt, rv) \<in> set (norms_of_grammar gr) \<Longrightarrow> 0 < n"
-  (*unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
+lemma nog_norms_greater_zero:
+  assumes "(v, n, nrule) \<in> set (norms_of_grammar gr)"
+    shows "0 < n" using assms unfolding norms_of_grammar_def
+proof (induct rule: itno_induct(1))
+  case (Step norms rest yes no) show ?case
+  proof (cases "(v, n, nrule) \<in> set norms")
+    case False
+    def rules \<equiv> "lookup gr v"
+    have "(v, rules) \<in> set yes" sorry
+    have "rules_have_norm norms rules" sorry
+    have "0 < fst (min_norm_of_rules norms rules)" using mnor_norm_greater_zero sorry
+    have "(v, n, nrule) \<in> set (mnor_map norms yes)" using Step unfolding itno_f_def sorry
+    
+    then show ?thesis using Step unfolding mnor_map_def sorry
+  qed (auto simp add: Step)
+qed (auto)
+
+(*
   case (Cons rest norms va rules nbtl unnb)
   then show ?case
   proof (cases "v = va")
@@ -339,12 +353,11 @@ proof (induct rule: itno_induct')
     then show ?thesis using Cons fst_predicate[of _ "min_norm_of_rules norms rules"] by auto
   qed auto
 qed auto*)
-sorry
 
 lemma nog_greater_zero_lookup:
   "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
   apply (rule lookup_forall[of "norms_of_grammar gr"])
-using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ _ gr] by auto
+using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ gr] by auto
 
 
 (*****************************************************************************
