@@ -332,27 +332,18 @@ proof (induct rule: itno_induct(1))
   case (Step norms rest yes no) show ?case
   proof (cases "(v, n, nrule) \<in> set norms")
     case False
-    def rules \<equiv> "lookup gr v"
-    have "(v, rules) \<in> set yes" sorry
-    have "rules_have_norm norms rules" sorry
-    have "0 < fst (min_norm_of_rules norms rules)" using mnor_norm_greater_zero sorry
-    have "(v, n, nrule) \<in> set (mnor_map norms yes)" using Step unfolding itno_f_def sorry
-    
-    then show ?thesis using Step unfolding mnor_map_def sorry
+
+    have M: "(v, n, nrule) \<in> set (mnor_map norms yes)" using False Step(4)
+      unfolding itno_f_def by auto
+
+    have "\<forall>(v, rules) \<in> set yes. itno_p norms (v, rules)" using Step(3) by auto
+    then have "\<forall>(v, rules) \<in> set yes. 0 < fst (min_norm_of_rules norms rules)"
+      using mnor_norm_greater_zero unfolding itno_p_def by force
+    then have "\<forall>(v, mn) \<in> set (mnor_map norms yes). 0 < fst mn" unfolding mnor_map_def by auto
+    then show ?thesis using M by auto
+
   qed (auto simp add: Step)
 qed (auto)
-
-(*
-  case (Cons rest norms va rules nbtl unnb)
-  then show ?case
-  proof (cases "v = va")
-    case True
-    then have "rules_have_norm norms rules"
-      using Cons sn_fst_have_norms[of _ _ "(va, rules) # nbtl" unnb _ _] by auto
-    then have "0 < fst (min_norm_of_rules norms rules)" using mnor_norm_greater_zero by auto
-    then show ?thesis using Cons fst_predicate[of _ "min_norm_of_rules norms rules"] by auto
-  qed auto
-qed auto*)
 
 lemma nog_greater_zero_lookup:
   "gram_nsd gr \<Longrightarrow> v \<in> keys gr \<Longrightarrow> 0 < fst (lookup (norms_of_grammar gr) v)"
