@@ -14,17 +14,11 @@ definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
 lemma alist_fst_map: "is_alist l \<Longrightarrow> map fst l = map fst (f l) \<Longrightarrow> is_alist (f l)"
 by (simp add: is_alist_def)
 
-lemma alist_subset_is_alist: "is_alist (x # l) \<Longrightarrow> is_alist l"
-by (induct l) (auto simp add: is_alist_def)
-
 lemma alist_empty[simp]: "is_alist []"
 by (simp add: is_alist_def)
 
 lemma key_in_fst[simp]: "(k, v) \<in> A \<Longrightarrow> k \<in> fst ` A"
 by (rule Set.image_eqI) simp_all
-
-lemma key_filter_empty: "(k \<notin> fst ` set l) = ([(ka, v)\<leftarrow>l . ka = k] = [])"
-by (induct l) auto
 
 lemma lookup_from_existence: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> lookup l k = v"
 by (simp add: lookup_def is_alist_def)
@@ -47,9 +41,6 @@ unfolding is_alist_def apply (induct l arbitrary: yes no) by auto
 
 lemma alist_distr: "is_alist (l1 @ l2) = (is_alist l1 \<and> is_alist l2 \<and> keys l1 \<inter> keys l2 = {})"
 by (induct l1, auto simp add: is_alist_def)
-
-lemma alist_distr_cons: "is_alist ((k, v) # l) = (k \<notin> keys l \<and> is_alist l)"
-by (induct l, auto simp add: is_alist_def)
 
 lemma alist_values_equal: "is_alist l \<Longrightarrow> (k, v1) \<in> set l \<Longrightarrow> (k, v2) \<in> set l \<Longrightarrow> v1 = v2"
 by (induct l) (auto simp add: is_alist_def)

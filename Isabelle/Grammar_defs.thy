@@ -75,9 +75,6 @@ definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) norm_list" where
   "norms_of_grammar gr \<equiv> fst (iterate_norms gr)"
 
-definition split_normable where
-  "split_normable gr norms = partition (\<lambda>(v, rules). rules_have_norm norms rules) gr"
-
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 

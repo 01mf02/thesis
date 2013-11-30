@@ -90,44 +90,6 @@ by - (rule Min_predicate, auto simp add: nor_nonempty nor_norms_greater_zero)
 
 
 (*****************************************************************************
-  split_normable
- *****************************************************************************)
-
-lemma sn_fst_have_norms:
-  assumes "split_normable rest norms = (nb, unnb)"
-      and "(v, rules) \<in> set nb"
-    shows "rules_have_norm norms rules" using assms unfolding split_normable_def
-by auto
-
-lemma sn_fst_nil:
-  assumes "split_normable rest norms = ([], unnb)"
-    shows "unnb = rest" using assms
-by (auto simp add: split_normable_def) (induct rest, auto)
-
-lemma sn_conserves:
-  assumes "split_normable rest norms = (nb, unnb)"
-    shows "set rest = set nb \<union> set unnb" using assms unfolding split_normable_def
-by auto
-
-lemma sn_alist:
-  assumes "split_normable rest norms = (nb, unnb)"
-      and "is_alist rest"
-    shows "is_alist (nb @ unnb)"
-using assms alist_partition_distr by (auto simp add: split_normable_def)
-
-lemma sn_rules_equal:
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-      and "set rest \<subseteq> set gr"
-      and "split_normable rest norms = ((v, rules') # nbtl, unnb)"
-    shows "rules = rules'"
-proof -
-  have "(v, rules') \<in> set gr" using sn_conserves assms by force
-  then show ?thesis using gram_alist alist_values_equal assms by force
-qed
-
-
-(*****************************************************************************
   iterate_norms
  *****************************************************************************)
 
