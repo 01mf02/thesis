@@ -133,10 +133,10 @@ qed
 
 definition itno_invariant where
   "itno_invariant gr norms rest \<equiv>
-     set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest \<and> keys rest \<inter> keys norms = {}*)"
+     set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest *)"
 
 definition itno_invariant_sd where
-  "itno_invariant_sd gr norms rest \<equiv> (* is_alist norms \<and>*) is_alist rest"
+  "itno_invariant_sd gr norms rest \<equiv> (*is_alist norms \<and>*) is_alist rest \<and> keys rest \<inter> keys norms = {}"
 
 lemma itno_induct [case_names Base Step]:
   assumes B: "P ([], gr)"
@@ -153,7 +153,9 @@ proof (induct rule: pi_induct)
 next
   case (Step norms rest yes no)
     case 1 show ?case using S Step by auto
-    case 2 show ?case using Step unfolding itno_invariant_def by auto
+    case 2
+      have I1: "set no \<subseteq> set gr" using Step unfolding itno_invariant_def by auto
+      show ?case using I1 unfolding itno_invariant_def by auto
 qed
 
 lemma itno_induct_sd [case_names Base Step]:
@@ -173,8 +175,17 @@ proof (induct rule: itno_induct(1))
 next
   case (Step norms rest yes no)
     case 1 show ?case using S Step by auto
-    case 2 show ?case using Step unfolding itno_invariant_sd_def itno_f_def
+    case 2
+      have I1: "is_alist no" using Step unfolding itno_invariant_sd_def itno_f_def
       using alist_partition_distr[of rest yes no] alist_distr by auto
+      
+      have INN: "keys norms \<inter> keys no = {}" using Step(3-4) unfolding itno_invariant_sd_def by force
+      have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
+        using alist_partition_distr Step(3-4) alist_distr[of yes no] unfolding itno_invariant_sd_def by auto
+      
+      have I2: "keys no \<inter> keys (itno_f norms yes) = {}" using INN IYN unfolding itno_f_def by force
+
+      show ?case using Step unfolding itno_invariant_sd_def using I1 I2 by auto
 qed
 
 lemma itno_superset_gr_keys:
@@ -205,10 +216,10 @@ proof (induct arbitrary: norms rest rule: itno_induct(1))
           "partition (itno_p norms) rest = (yes, no)" using Step by auto
 
   have INY: "keys norms \<inter> keys (mnor_map norms yes) = {}"
-    unfolding mnor_map_def using S(3) S(4) by force
-  have INN: "keys norms \<inter> keys no = {}" using S by force
+    unfolding mnor_map_def using S(3-4) by force
+  have INN: "keys norms \<inter> keys no = {}" using S(3-4) by force
   have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
-    using alist_partition_distr S(2) S(4) alist_distr[of yes no] by auto
+    using alist_partition_distr S(2,4) alist_distr[of yes no] by auto
   have AY: "is_alist (mnor_map norms yes)"
     unfolding mnor_map_def using alist_filter alist_map S(2) S(4) by auto
 
@@ -284,7 +295,6 @@ qed
 
 (* TODO: appropriately rename grammar types!! *)
 
-
 lemma nog_has_norms':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
@@ -302,7 +312,7 @@ proof (induct rule: itno_induct_sd(1))
 
     have "(v, nv, nrule) \<in> set (mnor_map norms yes)" using False Step(5)
       unfolding itno_f_def by auto
-    then have "(v, rules) \<in> set yes" using alist_values_equal[of gr] G Y assms(2)
+    then have "(v, rules) \<in> set yes" using alist_values_equal[OF G assms(2)] Y
       unfolding mnor_map_def by auto
     then have "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
     then show ?thesis unfolding itno_f_def using rhn_concat by auto
@@ -375,31 +385,35 @@ lemma nov_nog':
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
-    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms (*unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms va rulesa nbtl unnb)
-  then show ?case
-  proof (cases "v = va")
-    case True
-      have I: "nog_invariant gr rest norms" sorry
-      have I1: "set rest \<subseteq> set gr" using I nog_invariant_def[of gr rest norms] by auto
-      have I2: "keys rest \<inter> keys norms = {}" using I nog_invariant_def[of gr rest norms] by auto
+    shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms(2) unfolding norms_of_grammar_def
+proof (induct rule: itno_induct_sd(1))
+  case (Step norms rest yes no) show ?case
+  proof (cases "(v, n, t, vs) \<in> set norms")
+    case False
+    have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
+      using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
+    have YG: "set yes \<subseteq> set gr" using Step(4) I(1) by auto
 
-      have "set rest \<subseteq> set gr" using I1 nog_invariant_def[of gr rest norms] by auto
-      then have E: "rules = rulesa" using sn_rules_equal assms Cons True by auto
-      then have R: "rules_have_norm norms rules"
-        using sn_fst_have_norms[of _ _ _ unnb va] Cons by auto
+    have G: "is_alist gr" using gram_alist assms(1) by auto
+    have AY: "is_alist yes" using alist_partition_distr[OF I(3) Step(4)[symmetric]] alist_distr
+      by auto
 
-      have "v \<in> keys rest" using Cons(2) sn_conserves True by force
-      then have N: "norm_of_variables gr vs < n" using I2 nov_mnor[OF R] Cons(4) E by auto
-      
-      have A: "is_alist (norms_of_grammar gr)" using nog_alist assms by auto
-      have "norm_of_variables gr [v] = n" unfolding nov_singleton
-        using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
-      then show ?thesis using Cons N by auto
-  qed auto
-qed auto*)
-sorry
+    have VM: "(v, n, t, vs) \<in> set (mnor_map norms yes)" using False Step(5) unfolding itno_f_def by auto
+    then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF G assms(3)] YG
+      unfolding mnor_map_def by auto
+    then have R: "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
+
+    have "(n, t, vs) = min_norm_of_rules norms rules"
+      using alist_map_values_equal[OF AY, of v _ "(n, t, vs)"] VY VM unfolding mnor_map_def by force
+    then have N: "norm_of_variables gr vs < n" using I(2) nov_mnor[OF R] by auto
+
+    have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
+    have "norm_of_variables gr [v] = n" unfolding nov_singleton
+      using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
+
+    then show ?thesis using N by auto
+  qed (auto simp add: Step)
+qed (auto simp add: assms)
 
 lemma nov_nog:
   assumes "gram_nsd gr"

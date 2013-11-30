@@ -60,4 +60,9 @@ by (induct l) (auto simp add: is_alist_def)
 lemma alist_map: "is_alist l \<Longrightarrow> is_alist (map (\<lambda>(a, b). (a, f b)) l)"
 by (induct l) (auto simp add: is_alist_def)
 
+lemma alist_map_values_equal:
+  "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> (k, v') \<in> set (map (\<lambda>(k, v). (k, f k v)) l) \<Longrightarrow> v' = f k v"
+by (induct l) (auto simp add: is_alist_def, force)
+
+
 end
