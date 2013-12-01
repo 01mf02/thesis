@@ -210,92 +210,52 @@ using itno_disjunct_alists[of gr "fst (iterate_norms gr)" "snd (iterate_norms gr
 lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
 using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
 
-lemma helper:
-  assumes "rules_have_norm norms rules"
-      and "v \<notin> keys norms"
-      and "mn = min_norm_of_rules norms rules"
-    shows "mn = min_norm_of_rules ((v, mn) # norms) rules" using assms unfolding min_norm_of_rules_def
-  apply (auto)
-  apply (rule Min_predicate)  (* TODO: this is not going to work like this! *)
-  apply (auto simp add: mnor_in_nor nor_nonempty_cons)
-sorry
-
-lemma nog_mnor':
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-      and "(v, nv) \<in> set (norms_of_grammar gr)"
-    shows "nv = min_norm_of_rules (norms_of_grammar gr) rules" using assms (*unfolding norms_of_grammar_def
-proof (induct rule: itno_induct')
-  case (Cons rest norms va rulesa nbtl unnb)
-  then show ?case
-  proof (cases "v = va")
-    case True
-      have "nog_invariant gr rest norms" sorry
-      then have "set rest \<subseteq> set gr" using nog_invariant_def[of gr rest norms] by auto
-      then have "rules = rulesa" using sn_rules_equal assms Cons True by auto
-      then show ?thesis using Cons True apply auto sorry
-  next
-    case False
-      then have "nv = min_norm_of_rules norms rules" using Cons by auto
-      then show ?thesis using Cons apply auto (* use helper here, someday ... *) sorry
-  qed
-qed auto*)
-sorry
-
-
-lemma nog_mnor:
-  assumes "gram_nsd gr"
-      and "(v, rules) \<in> set gr"
-    shows "lookup (norms_of_grammar gr) v = min_norm_of_rules (norms_of_grammar gr) rules"
-proof -
-  have "gram_sd gr" using gram_nsd_sd assms by auto
-  then have "is_alist (norms_of_grammar gr)" using nog_alist by auto
-  have "v \<in> keys gr" using assms by auto
-  then have "v \<in> keys (norms_of_grammar gr)" using nog_gr_keys_equal assms by blast
-  then show ?thesis using lookup_predicate sorry
-qed
 
 (* TODO: appropriately rename grammar types!! *)
 
-lemma nog_has_norms':
+lemma nog_in_rules':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
-      and "(v, nv, nrule) \<in> set (norms_of_grammar gr)"
-    shows "rules_have_norm (norms_of_grammar gr) rules" using assms(3) unfolding norms_of_grammar_def
+      and "(v, n, nrule) \<in> set (norms_of_grammar gr)"
+    shows "nrule \<in> set rules" using assms(3) unfolding norms_of_grammar_def
 proof (induct rule: itno_induct_sd(1))
   case (Step norms rest yes no) show ?case
-  proof (cases "(v, nv, nrule) \<in> set norms")
-    case True then show ?thesis using Step(3) unfolding itno_f_def using rhn_concat by auto
-  next
+  proof (cases "(v, n, nrule) \<in> set norms")
     case False
 
+    have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
+      using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
+    have YG: "set yes \<subseteq> set gr" using Step(4) I(1) by auto
+
     have G: "is_alist gr" using gram_alist assms(1) by auto
-    have Y: "set yes \<subseteq> set gr" using Step(1,4) unfolding itno_invariant_def by auto
+    have AY: "is_alist yes" using alist_partition_distr[OF I(3) Step(4)[symmetric]] alist_distr
+      by auto
 
-    have "(v, nv, nrule) \<in> set (mnor_map norms yes)" using False Step(5)
-      unfolding itno_f_def by auto
-    then have "(v, rules) \<in> set yes" using alist_values_equal[OF G assms(2)] Y
+    have VM: "(v, n, nrule) \<in> set (mnor_map norms yes)" using False Step(5) unfolding itno_f_def by auto
+    then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF G assms(2)] YG
       unfolding mnor_map_def by auto
-    then have "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
-    then show ?thesis unfolding itno_f_def using rhn_concat by auto
-  qed
-qed (auto simp add: assms)
+    then have R: "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
 
-lemma nog_has_norms:
-  assumes "gram_nsd gr"
-      and V: "(v, rules) \<in> set gr"
-    shows "rules_have_norm (norms_of_grammar gr) rules" using assms
-proof -
-  have G: "gram_sd gr" using gram_nsd_sd assms by auto
-  have "\<exists>nv. (v, nv) \<in> set (norms_of_grammar gr)" using nog_gr_keys_equal assms by force
-  then show ?thesis using nog_has_norms'[OF G V] by auto
-qed
+    have "(n, nrule) = min_norm_of_rules norms rules"
+      using alist_map_values_equal[OF AY VY VM[simplified mnor_map_def]] .
+    then have "nrule = snd (min_norm_of_rules norms rules)" by (metis snd_conv)
+    then show ?thesis using mnor_in_rules[OF R] by auto
+  qed (auto simp add: Step)
+qed (auto simp add: assms)
 
 lemma nog_in_rules:
   assumes "gram_nsd gr"
       and "(v, rules) \<in> set gr"
     shows "snd (lookup (norms_of_grammar gr) v) \<in> set rules" using assms
-by (auto simp add: nog_mnor nog_has_norms mnor_in_rules)
+proof -
+  have A: "is_alist (norms_of_grammar gr)" using nog_alist gram_nsd_sd assms(1) by auto
+  have G: "gram_sd gr" using assms gram_nsd_sd by auto
+
+  have "\<exists>nv. (v, nv) \<in> set (norms_of_grammar gr)" using nog_gr_keys_equal assms by force
+  then have "\<exists>nv. (v, nv) \<in> set (norms_of_grammar gr) \<and> snd nv \<in> set rules"
+    using nog_in_rules'[OF G assms(2)] by force
+  then show ?thesis using lookup_predicate[OF A, of v _ "\<lambda>v nv. snd nv \<in> set rules"] by auto
+qed
 
 lemma nog_norms_greater_zero:
   assumes "(v, n, nrule) \<in> set (norms_of_grammar gr)"
