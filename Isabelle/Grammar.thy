@@ -91,6 +91,17 @@ lemma mnor_norm_greater_zero:
     shows "0 < fst (min_norm_of_rules norms rules)" using assms unfolding min_norm_of_rules_def
 by - (rule Min_predicate, auto simp add: nor_nonempty nor_norms_greater_zero)
 
+lemma mnor_in_norms:
+  assumes "(n, t, vs) = min_norm_of_rules norms rules"
+    shows "set vs \<subseteq> keys norms"
+sorry
+
+lemma mnor_norm_smaller_variables_ns:
+  assumes "rules_have_norm norms rules"
+      and "(n, t, vs) = min_norm_of_rules norms rules"
+    shows "norm_sum norms vs < n"
+sorry
+
 
 (*****************************************************************************
   iterate_norms
@@ -324,6 +335,32 @@ lemma nog_greater_zero_lookup:
 using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ gr] by auto
 
 
+lemma nog_ns:
+  assumes "gram_sd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "(v, rules) \<in> set gr"
+    shows "set vs \<subseteq> keys (norms_of_grammar gr)"
+      and "norm_sum (norms_of_grammar gr) vs < n" using assms(2) unfolding norms_of_grammar_def
+proof (induct rule: nog_induct[of v n t vs gr _ rules])
+  case (Stepi norms rest yes no)
+    case 1 show ?case using Stepi unfolding itno_f_def by auto
+    case 2
+    have S: "set vs \<subseteq> keys norms" using Stepi by auto
+    then have N: "norm_sum norms vs < n" using Stepi by auto
+    then show ?case using N unfolding itno_f_def using ns_more_norms[OF S] by auto
+next
+  case (Stepo norms rest yes no)
+    have I: "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
+      using Stepo(4) unfolding nog_invariant_def by auto
+
+    case 1 show ?case unfolding itno_f_def using mnor_in_norms[OF I(2)] by auto
+    case 2
+    have A: "set vs \<subseteq> keys norms" using mnor_in_norms[OF I(2)] .
+    have "norm_sum norms vs < n" using mnor_norm_smaller_variables_ns[OF I] .
+    then show ?case using Stepo(1) unfolding itno_f_def using ns_more_norms[OF A] by auto
+qed (auto simp add: assms)
+
+
 (*****************************************************************************
   norm_of_variables
  *****************************************************************************)
@@ -338,32 +375,7 @@ by (rule nov_distr[of _ "[x]", simplified])
 lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
 by (simp add: norm_of_variables_def ns_singleton)
 
-
-lemma nov_mnor_new:
-  assumes "gram_sd gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-      and "(v, rules) \<in> set gr"
-    shows "set vs \<subseteq> keys (norms_of_grammar gr)"
-      and "norm_sum (norms_of_grammar gr) vs < n" using assms(2) unfolding norms_of_grammar_def
-proof (induct rule: itno_induct_sd(1))
-  case (Step norms rest yes no)
-  case 1
-  show ?case using Step sorry
-  case 2
-  show ?case
-  proof (cases "(v, n, t, vs) \<in> set norms")
-    case True
-    have S: "set vs \<subseteq> keys norms" using Step True by auto
-    then have N: "norm_sum norms vs < n" using Step True by auto
-    then show ?thesis using N unfolding itno_f_def using ns_more_norms[OF S] by auto
-  next
-    case False
-
-    then show ?thesis using Step unfolding itno_f_def sorry
-
-  qed
-qed (auto simp add: assms)
-
+(* TODO: replace with nog_ns! *)
 lemma nov_mnor:
   assumes "rules_have_norm norms rules"
       and "(n, t, vs) = min_norm_of_rules norms rules"
