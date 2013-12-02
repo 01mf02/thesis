@@ -375,33 +375,20 @@ lemma nov_nog':
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
     shows "norm_of_variables gr vs < norm_of_variables gr [v]" using assms(2) unfolding norms_of_grammar_def
-proof (induct rule: itno_induct_sd(1))
-  case (Step norms rest yes no) show ?case
-  proof (cases "(v, n, t, vs) \<in> set norms")
-    case False
-    have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
-      using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-    have YG: "set yes \<subseteq> set gr" using Step(4) I(1) by auto
+proof (induct rule: nog_induct[of v n t vs gr _ rules])
+  case (Stepo norms rest yes no)
+  have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
+      using Stepo(2-3) unfolding itno_invariant_def itno_invariant_sd_def by auto
+  have N: "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
+    using Stepo(4) unfolding nog_invariant_def by auto
 
-    have G: "is_alist gr" using gram_alist assms(1) by auto
-    have AY: "is_alist yes" using alist_partition_distr[OF I(3) Step(4)[symmetric]] alist_distr
-      by auto
+  then have S: "norm_of_variables gr vs < n" using N(2) nov_mnor by auto
 
-    have VM: "(v, n, t, vs) \<in> set (mnor_map norms yes)" using False Step(5) unfolding itno_f_def by auto
-    then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF G assms(3)] YG
-      unfolding mnor_map_def by auto
-    then have R: "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
+  have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
+  have "norm_of_variables gr [v] = n" unfolding nov_singleton
+    using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
 
-    have "(n, t, vs) = min_norm_of_rules norms rules"
-      using alist_map_values_equal[OF AY, of v _ "(n, t, vs)"] VY VM unfolding mnor_map_def by force
-    then have N: "norm_of_variables gr vs < n" using I(2) nov_mnor[OF R] by auto
-
-    have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
-    have "norm_of_variables gr [v] = n" unfolding nov_singleton
-      using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
-
-    then show ?thesis using N by auto
-  qed (auto simp add: Step)
+  then show ?thesis using S by auto
 qed (auto simp add: assms)
 
 lemma nov_nog:
