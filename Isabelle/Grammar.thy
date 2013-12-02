@@ -38,6 +38,9 @@ by (simp add: norm_sum_def)
 lemma ns_empty: "norm_sum ns [] = 0"
 by (simp add: norm_sum_def)
 
+lemma ns_more_norms: "set vs \<subseteq> keys norms \<Longrightarrow> norm_sum norms vs = norm_sum (norms @ x) vs"
+sorry
+
 
 (*****************************************************************************
   rules_have_norm
@@ -213,34 +216,72 @@ using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def 
 
 (* TODO: appropriately rename grammar types!! *)
 
-lemma nog_in_rules':
-  assumes "gram_sd gr"
+definition nog_invariant where
+  "nog_invariant norms rules n t vs \<equiv>
+     rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_rules norms rules"
+
+
+lemma nog_induct[case_names Stepi Stepo]:
+  assumes "\<And>norms rest yes no.
+                (v, n, t, vs) \<in> set norms \<Longrightarrow>
+                itno_invariant gr norms rest \<Longrightarrow>
+                itno_invariant_sd gr norms rest \<Longrightarrow>
+                P (norms, rest) \<Longrightarrow> partition (itno_p norms) rest = (yes, no) \<Longrightarrow>
+                P (itno_f norms yes, no)"
+      and "\<And>norms rest yes no.
+                (v, n, t, vs) \<notin> set norms \<Longrightarrow>
+                itno_invariant gr norms rest \<Longrightarrow>
+                itno_invariant_sd gr norms rest \<Longrightarrow>
+                nog_invariant norms rules n t vs \<Longrightarrow>
+                partition (itno_p norms) rest = (yes, no) \<Longrightarrow>
+                P (itno_f norms yes, no)"
+      and "gram_sd gr"
       and "(v, rules) \<in> set gr"
-      and "(v, n, nrule) \<in> set (norms_of_grammar gr)"
-    shows "nrule \<in> set rules" using assms(3) unfolding norms_of_grammar_def
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+  shows "P (iterate_norms gr)" using assms(5) unfolding norms_of_grammar_def
 proof (induct rule: itno_induct_sd(1))
+  case Base then show ?case by auto
+next
   case (Step norms rest yes no) show ?case
-  proof (cases "(v, n, nrule) \<in> set norms")
+  proof (cases "(v, n, t, vs) \<in> set norms")
+    case True then show ?thesis using assms(1) Step by auto
+  next
     case False
 
-    have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
+    have I: "set rest \<subseteq> set gr" "is_alist rest"
       using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
     have YG: "set yes \<subseteq> set gr" using Step(4) I(1) by auto
 
-    have G: "is_alist gr" using gram_alist assms(1) by auto
-    have AY: "is_alist yes" using alist_partition_distr[OF I(3) Step(4)[symmetric]] alist_distr
+    have AG: "is_alist gr" using gram_alist assms(3) by auto
+    have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(4)[symmetric]] alist_distr
       by auto
 
-    have VM: "(v, n, nrule) \<in> set (mnor_map norms yes)" using False Step(5) unfolding itno_f_def by auto
-    then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF G assms(2)] YG
+    have VM: "(v, n, t, vs) \<in> set (mnor_map norms yes)" using False Step(5) unfolding itno_f_def by auto
+    then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(4)] YG
       unfolding mnor_map_def by auto
     then have R: "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
 
-    have "(n, nrule) = min_norm_of_rules norms rules"
+    have "(n, t, vs) = min_norm_of_rules norms rules"
       using alist_map_values_equal[OF AY VY VM[simplified mnor_map_def]] .
-    then have "nrule = snd (min_norm_of_rules norms rules)" by (metis snd_conv)
-    then show ?thesis using mnor_in_rules[OF R] by auto
-  qed (auto simp add: Step)
+
+    then have NI: "nog_invariant norms rules n t vs" unfolding nog_invariant_def using R by auto
+
+    show ?thesis using assms(2)[OF False Step(1-2) NI Step(4)] .
+  qed
+qed (auto simp add: assms)
+
+
+lemma nog_in_rules':
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+    shows "(t, vs) \<in> set rules" using assms(3) unfolding norms_of_grammar_def
+proof (induct rule: nog_induct[of v n t vs gr _ rules])
+  case (Stepo norms rest yes no)
+  have I: "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
+    using Stepo(4) unfolding nog_invariant_def by auto
+  then have "(t, vs) = snd (min_norm_of_rules norms rules)" by (metis snd_conv)
+  then show ?case using mnor_in_rules[OF I(1)] by auto
 qed (auto simp add: assms)
 
 lemma nog_in_rules:
@@ -296,6 +337,32 @@ by (rule nov_distr[of _ "[x]", simplified])
 
 lemma nov_singleton: "norm_of_variables gr [v] = fst (lookup (norms_of_grammar gr) v)"
 by (simp add: norm_of_variables_def ns_singleton)
+
+
+lemma nov_mnor_new:
+  assumes "gram_sd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "(v, rules) \<in> set gr"
+    shows "set vs \<subseteq> keys (norms_of_grammar gr)"
+      and "norm_sum (norms_of_grammar gr) vs < n" using assms(2) unfolding norms_of_grammar_def
+proof (induct rule: itno_induct_sd(1))
+  case (Step norms rest yes no)
+  case 1
+  show ?case using Step sorry
+  case 2
+  show ?case
+  proof (cases "(v, n, t, vs) \<in> set norms")
+    case True
+    have S: "set vs \<subseteq> keys norms" using Step True by auto
+    then have N: "norm_sum norms vs < n" using Step True by auto
+    then show ?thesis using N unfolding itno_f_def using ns_more_norms[OF S] by auto
+  next
+    case False
+
+    then show ?thesis using Step unfolding itno_f_def sorry
+
+  qed
+qed (auto simp add: assms)
 
 lemma nov_mnor:
   assumes "rules_have_norm norms rules"
@@ -384,8 +451,7 @@ lemma mwov_dist:
     shows "minimal_word_of_variables gr (v1 @ v2) =
            minimal_word_of_variables gr v1 @ minimal_word_of_variables gr v2" using assms
 proof (induct v1 arbitrary: v2)
-  case (Cons a v1)
-  then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
+  case (Cons a v1) then show ?case by (case_tac "snd (lookup (norms_of_grammar gr) a)") auto
 qed auto
 
 lemma mwov_len_calcs_nog:
