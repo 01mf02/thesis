@@ -55,5 +55,21 @@ lemma alist_map_values_equal:
   "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> (k, v') \<in> set (map (\<lambda>(k, v). (k, f k v)) l) \<Longrightarrow> v' = f k v"
 by (induct l) (auto simp add: is_alist_def, force)
 
+lemma alist_superset_lookup_equal:
+  assumes "set l \<subseteq> keys A"
+      and "is_alist A"
+      and "is_alist B"
+      and "set A \<subseteq> set B"
+      and "k \<in> set l"
+    shows "lookup A k = lookup B k"
+proof -
+thm existence_from_lookup
+  have "(k, lookup A k) \<in> set A" using existence_from_lookup assms(1,2,5) by force
+  then have 1: "(k, lookup A k) \<in> set B" using assms(4) by auto
+
+  have "(k, lookup B k) \<in> set B" using existence_from_lookup assms by force
+  then show ?thesis using 1 alist_values_equal assms(3) by force
+qed
+
 
 end
