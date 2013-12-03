@@ -38,7 +38,12 @@ by (simp add: norm_sum_def)
 lemma ns_empty: "norm_sum ns [] = 0"
 by (simp add: norm_sum_def)
 
-lemma ns_more_norms: "set vs \<subseteq> keys norms \<Longrightarrow> norm_sum norms vs = norm_sum (norms @ x) vs"
+lemma "True" sorry
+
+lemma ns_more_norms:
+  assumes "set vs \<subseteq> keys norms"
+      and "keys norms \<inter> keys norms' = {}"
+    shows "norm_sum norms vs = norm_sum (norms @ norms') vs" unfolding norm_sum_def
 sorry
 
 
@@ -112,7 +117,7 @@ definition itno_invariant where
      set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest *)"
 
 definition itno_invariant_sd where
-  "itno_invariant_sd gr norms rest \<equiv> (*is_alist norms \<and>*) is_alist rest \<and> keys rest \<inter> keys norms = {}"
+  "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
 
 lemma itno_induct [case_names Base Step]:
   assumes B: "P ([], gr)"
@@ -152,16 +157,25 @@ next
   case (Step norms rest yes no)
     case 1 show ?case using S Step by auto
     case 2
-      have I1: "is_alist no" using Step unfolding itno_invariant_sd_def itno_f_def
-      using alist_partition_distr[of rest yes no] alist_distr by auto
-      
-      have INN: "keys norms \<inter> keys no = {}" using Step(3-4) unfolding itno_invariant_sd_def by force
-      have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
-        using alist_partition_distr Step(3-4) alist_distr[of yes no] unfolding itno_invariant_sd_def by auto
-      
-      have I2: "keys no \<inter> keys (itno_f norms yes) = {}" using INN IYN unfolding itno_f_def by force
 
-      show ?case using Step unfolding itno_invariant_sd_def using I1 I2 by auto
+    have INY: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def
+      using Step(3-4) unfolding itno_invariant_sd_def by force
+    have AY: "is_alist (mnor_map norms yes)" unfolding mnor_map_def
+      using alist_filter alist_map Step(3-4) unfolding itno_invariant_sd_def by auto
+    have I1: "is_alist (itno_f norms yes)" using Step
+      unfolding itno_invariant_sd_def itno_f_def using AY INY alist_distr[of norms] unfolding itno_f_def
+    by auto
+
+    have I2: "is_alist no" using Step unfolding itno_invariant_sd_def itno_f_def
+    using alist_partition_distr[of rest yes no] alist_distr by auto
+    
+    have INN: "keys norms \<inter> keys no = {}" using Step(3-4) unfolding itno_invariant_sd_def by force
+    have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
+      using alist_partition_distr Step(3-4) alist_distr[of yes no] unfolding itno_invariant_sd_def by auto
+    
+    have I3: "keys no \<inter> keys (itno_f norms yes) = {}" using INN IYN unfolding itno_f_def by force
+
+    show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
 
 lemma itno_superset_gr_keys:
@@ -178,32 +192,10 @@ lemma itno_gr_keys_equal:
   "keys gr = keys (fst (iterate_norms gr)) \<union> keys (snd (iterate_norms gr))"
 using itno_superset_gr_keys itno_subset_gr_keys by blast
 
-lemma itno_disjunct_alists:
+lemma itno_invariant_sd_holds:
   assumes "gram_sd gr"
-      and "iterate_norms gr = (norms, rest)"
-    shows "is_alist norms"
-      and "is_alist rest"
-      and "keys norms \<inter> keys rest = {}" using assms(2)
-proof (induct arbitrary: norms rest rule: itno_induct(1))
-  case (Step norms rest yes no)
-  have S: "is_alist norms"
-          "is_alist rest"
-          "keys norms \<inter> keys rest = {}"
-          "partition (itno_p norms) rest = (yes, no)" using Step by auto
-
-  have INY: "keys norms \<inter> keys (mnor_map norms yes) = {}"
-    unfolding mnor_map_def using S(3-4) by force
-  have INN: "keys norms \<inter> keys no = {}" using S(3-4) by force
-  have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
-    using alist_partition_distr S(2,4) alist_distr[of yes no] by auto
-  have AY: "is_alist (mnor_map norms yes)"
-    unfolding mnor_map_def using alist_filter alist_map S(2) S(4) by auto
-
-    case (1 norms' rest') then show ?case using S AY INY alist_distr[of norms] unfolding itno_f_def
-      by auto
-    case (2 norms' rest') then show ?case using S alist_filter by auto
-    case (3 norms' rest') then show ?case using INN IYN unfolding itno_f_def by force
-qed (auto simp add: assms gram_alist)
+    shows "itno_invariant_sd gr (fst (iterate_norms gr)) (snd (iterate_norms gr))"
+using itno_induct_sd(2) assms by auto
 
 
 (*****************************************************************************
@@ -219,7 +211,7 @@ by (simp add: gram_nsd_def)
  *****************************************************************************)
 
 lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" unfolding norms_of_grammar_def
-using itno_disjunct_alists[of gr "fst (iterate_norms gr)" "snd (iterate_norms gr)"] by auto
+using itno_invariant_sd_holds unfolding itno_invariant_sd_def by auto
 
 lemma nog_gr_keys_equal: "gram_nsd gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
 using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_def gram_normed_fun_def)
@@ -345,9 +337,13 @@ proof (induct rule: nog_induct[of v n t vs gr _ rules])
   case (Stepi norms rest yes no)
     case 1 show ?case using Stepi unfolding itno_f_def by auto
     case 2
+    have "keys rest \<inter> keys norms = {}" using Stepi(3) unfolding itno_invariant_sd_def by auto
+    then have "keys yes \<inter> keys norms = {}" using Stepi(6) by force
+    then have I: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def by auto
+
     have S: "set vs \<subseteq> keys norms" using Stepi by auto
-    then have N: "norm_sum norms vs < n" using Stepi by auto
-    then show ?case using N unfolding itno_f_def using ns_more_norms[OF S] by auto
+    have "norm_sum norms vs < n" using Stepi by auto
+    then show ?case unfolding itno_f_def using ns_more_norms[OF S I] by auto
 next
   case (Stepo norms rest yes no)
     have I: "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
@@ -355,9 +351,13 @@ next
 
     case 1 show ?case unfolding itno_f_def using mnor_in_norms[OF I(2)] by auto
     case 2
+    have "keys rest \<inter> keys norms = {}" using Stepo(3) unfolding itno_invariant_sd_def by auto
+    then have "keys yes \<inter> keys norms = {}" using Stepo(5) by force
+    then have IS: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def by auto
+
     have A: "set vs \<subseteq> keys norms" using mnor_in_norms[OF I(2)] .
     have "norm_sum norms vs < n" using mnor_norm_smaller_variables_ns[OF I] .
-    then show ?case using Stepo(1) unfolding itno_f_def using ns_more_norms[OF A] by auto
+    then show ?case using Stepo(1) unfolding itno_f_def using ns_more_norms[OF A IS] by auto
 qed (auto simp add: assms)
 
 
