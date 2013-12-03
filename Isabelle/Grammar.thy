@@ -38,9 +38,7 @@ by (simp add: norm_sum_def)
 lemma ns_empty: "norm_sum ns [] = 0"
 by (simp add: norm_sum_def)
 
-lemma "True" sorry
-
-lemma ns_more_norms:
+lemma ns_norms_superset:
   assumes "set vs \<subseteq> keys norms"
       and "keys norms \<inter> keys norms' = {}"
     shows "norm_sum norms vs = norm_sum (norms @ norms') vs" unfolding norm_sum_def
@@ -96,15 +94,11 @@ lemma mnor_norm_greater_zero:
     shows "0 < fst (min_norm_of_rules norms rules)" using assms unfolding min_norm_of_rules_def
 by - (rule Min_predicate, auto simp add: nor_nonempty nor_norms_greater_zero)
 
-lemma mnor_in_norms:
-  assumes "(n, t, vs) = min_norm_of_rules norms rules"
-    shows "set vs \<subseteq> keys norms"
-sorry
-
-lemma mnor_norm_smaller_variables_ns:
+lemma mnor_variables:
   assumes "rules_have_norm norms rules"
       and "(n, t, vs) = min_norm_of_rules norms rules"
-    shows "norm_sum norms vs < n"
+    shows "set vs \<subseteq> keys norms"
+      and "norm_sum norms vs < n"
 sorry
 
 
@@ -341,23 +335,21 @@ proof (induct rule: nog_induct[of v n t vs gr _ rules])
     then have "keys yes \<inter> keys norms = {}" using Stepi(6) by force
     then have I: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def by auto
 
-    have S: "set vs \<subseteq> keys norms" using Stepi by auto
-    have "norm_sum norms vs < n" using Stepi by auto
-    then show ?case unfolding itno_f_def using ns_more_norms[OF S I] by auto
+    have "set vs \<subseteq> keys norms" "norm_sum norms vs < n" using Stepi by auto
+    then show ?case unfolding itno_f_def using ns_norms_superset[OF _ I] by auto
 next
   case (Stepo norms rest yes no)
     have I: "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
       using Stepo(4) unfolding nog_invariant_def by auto
 
-    case 1 show ?case unfolding itno_f_def using mnor_in_norms[OF I(2)] by auto
+    case 1 show ?case unfolding itno_f_def using mnor_variables[OF I] by auto
     case 2
     have "keys rest \<inter> keys norms = {}" using Stepo(3) unfolding itno_invariant_sd_def by auto
     then have "keys yes \<inter> keys norms = {}" using Stepo(5) by force
     then have IS: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def by auto
 
-    have A: "set vs \<subseteq> keys norms" using mnor_in_norms[OF I(2)] .
-    have "norm_sum norms vs < n" using mnor_norm_smaller_variables_ns[OF I] .
-    then show ?case using Stepo(1) unfolding itno_f_def using ns_more_norms[OF A IS] by auto
+    have "set vs \<subseteq> keys norms" "norm_sum norms vs < n" using mnor_variables[OF I] by auto
+    then show ?case unfolding itno_f_def using ns_norms_superset[OF _ IS] by auto
 qed (auto simp add: assms)
 
 
