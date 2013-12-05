@@ -11,6 +11,8 @@ begin
   Types
  *****************************************************************************)
 
+(* TODO: appropriately rename grammar types!! *)
+
 type_synonym ('t, 'v) production_rule = "'t \<times> 'v list"
 type_synonym ('t, 'v) production_rules = "('t, 'v) production_rule list"
 type_synonym ('t, 'v) grammar = "('v \<times> ('t, 'v) production_rules) list"
