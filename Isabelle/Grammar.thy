@@ -50,13 +50,6 @@ proof -
   then show ?thesis unfolding norm_sum_def by metis
 qed
 
-(* TODO: remove this! *)
-lemma ns_norms_superset:
-  assumes "set vs \<subseteq> keys norms"
-      and "keys norms \<inter> keys norms' = {}"
-    shows "norm_sum norms vs = norm_sum (norms @ norms') vs" unfolding norm_sum_def
-sorry
-
 
 (*****************************************************************************
   rules_have_norm
@@ -397,32 +390,28 @@ proof (induct rule: nog_induct2[of gr v n t vs rules])
       using Step(3) unfolding nog_invariant_def by auto
     then show ?thesis unfolding itno_f_def using mnor_variables[OF I] by auto
   qed
-  case 2 show ?case
+  case 2
+
+  have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using Step(2)
+    unfolding itno_invariant_sd_def by auto
+  have AM: "is_alist (mnor_map norms yes)" unfolding mnor_map_def
+    using alist_filter alist_map S(2) Step(6) by auto
+  have NI: "set norms \<subseteq> set (itno_f norms yes)" unfolding itno_f_def by auto
+
+  have "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def
+    using S(3) Step(6) by force
+  then have AI: "is_alist (itno_f norms yes)" using Step AM alist_distr[of norms]
+    unfolding itno_invariant_sd_def itno_f_def by auto
+
+  show ?case
   proof (cases "(v, n, t, vs) \<in> set norms")
-    case True
-
-    have "keys rest \<inter> keys norms = {}" using Step(2) unfolding itno_invariant_sd_def by auto
-    then have "keys yes \<inter> keys norms = {}" using Step(6) by force
-    then have I: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def by auto
-
-    have "norm_sum norms vs < n" using Step True by auto
-    then show ?thesis unfolding itno_f_def using ns_norms_superset[OF _ I] Step True by auto
+    case True then show ?thesis using ns_norms_superset_equal[OF _ S(1) AI NI] Step(4-5) by auto
   next
     case False
-    then have I: "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
-      "is_alist norms" using Step(2-3) unfolding nog_invariant_def itno_invariant_sd_def by auto
-
-    have INY: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def
-      using Step(2,6) unfolding itno_invariant_sd_def by force
-    have AY: "is_alist (mnor_map norms yes)" unfolding mnor_map_def
-      using alist_filter alist_map Step(2,6) unfolding itno_invariant_sd_def by auto
-    have I1: "is_alist (itno_f norms yes)" using Step
-      unfolding itno_invariant_sd_def itno_f_def using AY INY alist_distr[of norms] unfolding itno_f_def
+    then have "rules_have_norm norms rules" "(n, t, vs) = min_norm_of_rules norms rules"
+      using Step(3) unfolding nog_invariant_def by auto
+    then show ?thesis using ns_norms_superset_equal[OF _ S(1) AI NI] mnor_variables[of norms]
       by auto
-
-    have X: "set norms \<subseteq> set (itno_f norms yes)" unfolding itno_f_def by auto
-    have "set vs \<subseteq> keys norms" "norm_sum norms vs < n" using mnor_variables[OF I(1-2)] by auto
-    then show ?thesis using ns_norms_superset_equal[OF _ I(3) I1 X] by auto
   qed
 qed (auto simp add: assms)
 
