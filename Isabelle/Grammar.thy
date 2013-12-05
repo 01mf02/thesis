@@ -130,7 +130,8 @@ lemma itno_induct [case_names Base Step]:
                 P (norms, rest) \<Longrightarrow> partition (itno_p norms) rest = (yes, no) \<Longrightarrow>
                 P (itno_f norms yes, no)"
   shows "P (iterate_norms gr)"
-    and "itno_invariant gr (fst (iterate_norms gr)) (snd (iterate_norms gr))" unfolding iterate_norms_def
+    and "itno_invariant gr (fst (iterate_norms gr)) (snd (iterate_norms gr))"
+  unfolding iterate_norms_def
 proof (induct rule: pi_induct)
   case Base
     case 1 show ?case using B by auto
@@ -159,28 +160,29 @@ lemma itno_induct_sd [case_names Base Step]:
 proof (induct rule: itno_induct(1))
   case Base
     case 1 show ?case using B by auto
-    case 2 show ?case unfolding itno_invariant_sd_def using G gram_alist by auto
+    case 2 show ?case unfolding itno_invariant_sd_def using gram_alist[OF G] by auto
 next
   case (Step norms rest yes no)
     case 1 show ?case using S Step by auto
     case 2
 
-    have INY: "keys norms \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def
-      using Step(3-4) unfolding itno_invariant_sd_def by force
-    have AY: "is_alist (mnor_map norms yes)" unfolding mnor_map_def
-      using alist_filter alist_map Step(3-4) unfolding itno_invariant_sd_def by auto
-    have I1: "is_alist (itno_f norms yes)" using Step
-      unfolding itno_invariant_sd_def itno_f_def using AY INY alist_distr[of norms] unfolding itno_f_def
-    by auto
+    have I: "is_alist norms" "is_alist rest" "keys rest \<inter> keys norms = {}" using Step(3)
+      unfolding itno_invariant_sd_def by auto
 
-    have I2: "is_alist no" using Step unfolding itno_invariant_sd_def itno_f_def
-    using alist_partition_distr[of rest yes no] alist_distr by auto
+    have NM: "keys norms \<inter> keys (mnor_map norms yes) = {}" using Step(4) I(3)
+      unfolding mnor_map_def by force
+    have AY: "is_alist (mnor_map norms yes)" using alist_filter alist_map Step(4) I(2)
+      unfolding mnor_map_def by auto
+    have I1: "is_alist (itno_f norms yes)" using I(1) AY NM alist_distr[of norms]
+      unfolding itno_f_def by auto
+
+    have AC: "is_alist (yes @ no)" using alist_partition_distr[OF I(2) Step(4)[symmetric]] .
+    then have I2: "is_alist no" using alist_distr[of yes] by simp
     
-    have INN: "keys norms \<inter> keys no = {}" using Step(3-4) unfolding itno_invariant_sd_def by force
-    have IYN: "keys (mnor_map norms yes) \<inter> keys no = {}" unfolding mnor_map_def
-      using alist_partition_distr Step(3-4) alist_distr[of yes no] unfolding itno_invariant_sd_def by auto
-    
-    have I3: "keys no \<inter> keys (itno_f norms yes) = {}" using INN IYN unfolding itno_f_def by force
+    have NN: "keys no \<inter> keys norms = {}" using Step(4) I(3) by force
+    have MN: "keys no \<inter> keys (mnor_map norms yes) = {}" unfolding mnor_map_def
+      using AC alist_distr[of yes no] by auto
+    have I3: "keys no \<inter> keys (itno_f norms yes) = {}" using NN MN unfolding itno_f_def by auto
 
     show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
@@ -218,7 +220,8 @@ next
     have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(4)[symmetric]] alist_distr
       by auto
 
-    have VM: "(v, n, t, vs) \<in> set (mnor_map norms yes)" using False Step(5) unfolding itno_f_def by auto
+    have VM: "(v, n, t, vs) \<in> set (mnor_map norms yes)" using False Step(5)
+      unfolding itno_f_def by auto
     then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(3)] YG
       unfolding mnor_map_def by auto
     then have R: "rules_have_norm norms rules" using Step(4) unfolding itno_p_def by auto
