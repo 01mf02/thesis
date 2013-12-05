@@ -79,6 +79,12 @@ by (auto simp add: rules_have_norm_def norms_of_rules_def filter_empty_conv rule
 lemma nor_norms_greater_zero: "(n, rt, rv) \<in> set (norms_of_rules norms rules) \<Longrightarrow> 0 < n"
 unfolding norms_of_rules_def by auto
 
+lemma nor_variables:
+  assumes "(n, t, vs) \<in> set (norms_of_rules norms rules)"
+    shows "set vs \<subseteq> keys norms"
+      and "norm_sum norms vs < n" using assms
+unfolding norms_of_rules_def rule_has_norm_def by auto
+
 
 (*****************************************************************************
   min_norm_of_rules
@@ -105,7 +111,8 @@ lemma mnor_variables:
       and "(n, t, vs) = min_norm_of_rules norms rules"
     shows "set vs \<subseteq> keys norms"
       and "norm_sum norms vs < n"
-sorry
+by (metis assms(1) assms(2) mnor_in_nor nor_variables(1))
+   (metis assms(1) assms(2) mnor_in_nor nor_variables(2))
 
 
 (*****************************************************************************
