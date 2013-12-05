@@ -23,6 +23,7 @@ value "norm_of_variables test_gr [0] = 1"
 value "norm_of_variables test_gr [1] = 2"
 value "word_in_variables test_gr ''a'' [0]"
 value "minimal_word_of_variables test_gr [1] = ''ba''"
+value "mwov2 test_gr [1] = ''ba''"
 
 value "gram_nsd test_gr2"
 value "norm_of_variables test_gr2 [0] = 1"

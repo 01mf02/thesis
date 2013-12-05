@@ -80,6 +80,13 @@ definition norms_of_grammar ::
 definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 
+function mwov2 where
+  "mwov2 gr vars = (
+     if gram_nsd gr \<and> set vars \<subseteq> keys gr then
+       concat (map (\<lambda>(n, t, vs). t # (mwov2 gr vs)) (map (lookup (norms_of_grammar gr)) vars))
+     else [])"
+by pat_completeness auto
+
 function minimal_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "minimal_word_of_variables gr [] = []"

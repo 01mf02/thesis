@@ -427,6 +427,14 @@ proof -
   then show ?thesis using G nov_nog'[of gr v n t] existence_from_lookup[OF A V] assms n_def by auto
 qed
 
+lemma nov_nog2:
+  assumes "gram_nsd gr"
+      and "set vars \<subseteq> keys gr"
+      and "(n, t, vs) = lookup (norms_of_grammar gr) v"
+      and "v \<in> set vars"
+    shows "norm_of_variables gr vs < norm_of_variables gr vars"
+sorry
+
 lemma nov_greater_zero:
   assumes "gram_nsd gr"
       and "set v \<subseteq> keys gr"
@@ -436,6 +444,14 @@ by (induct v) (auto, subst ns_distr_cons, simp add: ns_singleton nog_greater_zer
 
 lemma nov_empty: "norm_of_variables gr [] = 0"
 by (simp add: norm_of_variables_def ns_empty)
+
+
+(*****************************************************************************
+  mwov2
+ *****************************************************************************)
+
+termination mwov2
+by (relation "measure (\<lambda>(gr, vs). norm_of_variables gr vs)") (auto simp add: nov_nog2)
 
 
 (*****************************************************************************
