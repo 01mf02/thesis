@@ -174,7 +174,7 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
     | (h1::t1, h2::t2) -> if h1 = h2 then is_prefix (t1, t2) else (false, []) in
 
   let rewrite_with_grammar vh vt =
-    let gr = rules_of_variable prods vh in
+    let gr = assoc vh prods in
     sum_of_variable_rules (map (fun (t, v) -> (t, v@vt)) gr) in
 
   let rule_of_equivalence (a, b) =

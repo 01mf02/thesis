@@ -28,9 +28,6 @@ type grammar = v_rules * v_rules_norms;;
  *************** Auxiliary functions ************
  ************************************************)
 
-let rules_of_variable (rules : v_rules) (var : variable) =
-  assoc var rules;;
-
 let variable_of_terminal (rules : v_rules) (term : terminal) =
   fst (find (function (_, r) -> r = [(term, [])]) rules);;
 
@@ -85,7 +82,7 @@ let norms_of_v_rules (rules : v_rules) =
     let norms = Norm.norms_of_grammar el linorder_poly rules in
     map (fun (v, (Norm.Nat n, tr)) -> (v, (n, tr))) norms
   else
-    failwith "Grammar is not normed simple-deterministic!";;
+    failwith "Grammar is not simple-deterministic and normed!";;
 
 let grammar_of_v_rules (rules : v_rules) =
   (rules, norms_of_v_rules rules);;
@@ -108,7 +105,7 @@ let rec decompose (gram : grammar) (final_norm : norm_unit) = function
     else if ge_big_int final_norm head_norm then
       head::decompose gram (sub_big_int final_norm head_norm) tail
     else begin
-      let rules = rules_of_variable prods head in
+      let rules = assoc head prods in
       if length rules = 1 then
         let (term, vars) = hd rules in
         variable_of_terminal prods term ::
@@ -133,6 +130,6 @@ let rec norm_reduce (p : norm_unit) (vars : variables) (gram : grammar) =
       if ge_big_int p head_norm then
         norm_reduce (sub_big_int p head_norm) tail gram
       else
-        let first_production = snd (hd (rules_of_variable prods head)) in
-        (norm_reduce (pred_big_int p) first_production gram) @ tail;;
+        let (n, (t, vs)) = assoc head norms in
+        (norm_reduce (pred_big_int p) vs gram) @ tail;;
 
