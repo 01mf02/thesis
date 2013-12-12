@@ -1,5 +1,6 @@
 open List;;
 open Norm;;
+open Big_int;;
 
 (************************************************
  **************** Type definitions **************
@@ -9,7 +10,7 @@ type variable = string;;
 type terminal = char;;
 type variables = variable list;;
 
-type norm_unit = int;;
+type norm_unit = big_int;;
 
 type t_rule  = terminal * variables;;
 type t_rules = t_rule list;;
@@ -47,25 +48,20 @@ let min_list l =
  *************** Printing functions *************
  ************************************************)
 
-(* variables -> string *)
 let string_of_variables (vars : variables) =
   String.concat " " vars;;
 
-(* variable_rule -> string *)
-let string_of_variable_rule (term, vars) =
+let string_of_t_rule (term, vars) =
   String.concat " " ((String.make 1 term)::vars);;
 
-(* variable_rules -> string *)
-let string_of_variable_rules (rules : t_rules) =
-  String.concat " + " (map string_of_variable_rule rules);;
+let string_of_t_rules (rules : t_rules) =
+  String.concat " + " (map string_of_t_rule rules);;
 
-(* production_rule -> string *)
-let string_of_production_rule (v, rules) =
-  v ^ " -> " ^ (string_of_variable_rules rules);;
+let string_of_v_rule (v, rules) =
+  v ^ " -> " ^ (string_of_t_rules rules);;
 
-(* production_rules -> string *)
-let string_of_production_rules (rules : v_rules) =
-  String.concat "\n" (map string_of_production_rule rules);;
+let string_of_v_rules (rules : v_rules) =
+  String.concat "\n" (map string_of_v_rule rules);;
 
 
 (************************************************
@@ -74,7 +70,6 @@ let string_of_production_rules (rules : v_rules) =
 
 exception Norm_not_found;;
 
-(* norm_list -> variable -> int *)
 let norm_of_variable (norms : v_rules_norms) (var : variable) =
   try fst (assoc var norms) with Not_found -> raise Norm_not_found;;
 
@@ -84,17 +79,16 @@ let preorder_poly = {Norm.ord_preorder   = ord_poly};;
 let    order_poly = {Norm.preorder_order = preorder_poly};;
 let linorder_poly = {Norm.order_linorder = order_poly};;
 
-let norms_of_production_rules (rules : v_rules) =
+let norms_of_v_rules (rules : v_rules) =
   let el = (eq_poly, linorder_poly) in
   if Norm.gram_nsd el el rules then
     let norms = Norm.norms_of_grammar el linorder_poly rules in
-    map (fun (v, (Norm.Nat n, (t, vs))) ->
-      (v, (Big_int.int_of_big_int n, (t, vs)))) norms
+    map (fun (v, (Norm.Nat n, tr)) -> (v, (n, tr))) norms
   else
     failwith "Grammar is not normed simple-deterministic!";;
 
-let grammar_of_production_rules (prods : v_rules) =
-  (prods, norms_of_production_rules prods);;
+let grammar_of_v_rules (rules : v_rules) =
+  (rules, norms_of_v_rules rules);;
 
 
 (************************************************
@@ -104,32 +98,31 @@ let grammar_of_production_rules (prods : v_rules) =
 exception Negative_decompose
 exception Not_decomposable
 
-(* grammar -> int -> variables -> variables *)
-let rec decompose (gram : grammar) (final_norm : int) = function
-  | [] -> if final_norm = 0 then [] else raise Negative_decompose
+let rec decompose (gram : grammar) (final_norm : norm_unit) = function
+  | [] -> if final_norm = zero_big_int then [] else raise Negative_decompose
   | head::tail ->
     let (prods, norms) = gram in
     let head_norm = norm_of_variable norms head in
-    if final_norm < 0 then raise Negative_decompose
-    else if final_norm = 0 then []
-    else if final_norm >= head_norm then
-      head::decompose gram (final_norm - head_norm) tail
+    if lt_big_int final_norm zero_big_int then raise Negative_decompose
+    else if eq_big_int final_norm zero_big_int then []
+    else if ge_big_int final_norm head_norm then
+      head::decompose gram (sub_big_int final_norm head_norm) tail
     else begin
       let rules = rules_of_variable prods head in
       if length rules = 1 then
         let (term, vars) = hd rules in
-        variable_of_terminal prods term :: decompose gram (final_norm - 1) vars
+        variable_of_terminal prods term ::
+          decompose gram (pred_big_int final_norm) vars
       else
         raise Not_decomposable
     end;;
 
 exception Negative_norm_reduce
 
-(* int -> variables -> grammar -> variables *)
-let rec norm_reduce (p : int) (vars : variables) (gram : grammar) =
-  if p < 0 then
+let rec norm_reduce (p : norm_unit) (vars : variables) (gram : grammar) =
+  if lt_big_int p zero_big_int then
     raise Negative_norm_reduce
-  else if p = 0 then
+  else if eq_big_int p zero_big_int then
     vars
   else
     match vars with
@@ -137,9 +130,9 @@ let rec norm_reduce (p : int) (vars : variables) (gram : grammar) =
     | head::tail ->
       let (prods, norms) = gram in
       let head_norm = norm_of_variable norms head in
-      if p >= head_norm then
-        norm_reduce (p - head_norm) tail gram
+      if ge_big_int p head_norm then
+        norm_reduce (sub_big_int p head_norm) tail gram
       else
         let first_production = snd (hd (rules_of_variable prods head)) in
-        (norm_reduce (p - 1) first_production gram) @ tail;;
+        (norm_reduce (pred_big_int p) first_production gram) @ tail;;
 

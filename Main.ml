@@ -34,17 +34,17 @@ let rec range i j = if i > j then [] else i::(range (i+1) j);;
  ****************** Main function ***************
  ************************************************)
 
-let procedure prods vars strat =
+let procedure rules vars strat =
   print_newline ();
 
   if false then begin
-    print_endline "Production rules:";
-    print_endline (string_of_production_rules prods)
+    print_endline "Variable rules:";
+    print_endline (string_of_v_rules rules)
   end;
 
-  print_endline "Calculating norms and checking if productions are valid ...";
-  let gram = grammar_of_production_rules prods in
-  print_endline "Productions valid. :)";
+  print_endline "Calculating norms ...";
+  let gram = grammar_of_v_rules rules in
+  print_endline "Variable rules valid. :)";
 
   let mode = match strat with
   | Base          -> "base replacement"

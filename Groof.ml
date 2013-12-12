@@ -1,3 +1,4 @@
+open Big_int;;
 open Format;;
 open List;;
 
@@ -98,7 +99,7 @@ let size_of_sequent (eq, _) = size_of_equivalence eq;;
 
 let string_of_expression = function
   | Product (ph, pt) -> string_of_variables (ph::pt)
-  | Sum (sh, st) -> string_of_variable_rules (sh::st);;
+  | Sum (sh, st) -> string_of_t_rules (sh::st);;
 
 let string_of_equivalence (a, b) =
   (string_of_expression a) ^ " = " ^ (string_of_expression b);;
@@ -182,7 +183,7 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
     let rule_of_products (pah, pat) (pbh, pbt) =
       let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
 
-      if npah < npbh then
+      if lt_big_int npah npbh then
         Sym(b, a)
       else
         let base_repl = pbh::norm_reduce npbh [pah] gram in
@@ -211,7 +212,7 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
             trans gr
           | Product (pbh, pbt) ->
             let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
-            if npah <= npbh then
+            if le_big_int npah npbh then
               raise Proof_impossible
             else begin
               let reduct = pbh::norm_reduce npbh [pah] gram in
@@ -229,7 +230,7 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
         | Sum ((sbhc, []), []) ->
           raise Proof_impossible
         | Sum ((sbhc, sbhv), []) ->
-          if norm_of_variable norms pah = 1 then
+          if eq_big_int (norm_of_variable norms pah) unit_big_int then
             Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
           else
             trans (Product(variable_of_terminal prods sbhc, sbhv))

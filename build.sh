@@ -5,7 +5,7 @@ wc -l *.ml | tail -n 1 | cut -d " " -f 3 > programsize.txt
 echo Cumulative program size: `cat programsize.txt`
 
 echo Building OCaml files ...
-ocamlbuild Main.d.byte
+ocamlbuild -libs nums Main.d.byte
 
 echo Generating statistics from OCaml program ...
 ./Main.d.byte > /dev/null
