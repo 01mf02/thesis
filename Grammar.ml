@@ -1,4 +1,5 @@
 open List;;
+open Norm;;
 
 (************************************************
  **************** Type definitions **************
@@ -7,23 +8,29 @@ open List;;
 type variable = string;;
 type terminal = char;;
 type variables = variable list;;
-type variable_rule = terminal * variables;;
-type variable_rules = variable_rule list;;
-type production_rule = variable * variable_rules;;
-type production_rules = production_rule list;;
 
-type norm_list = (variable * int) list;;
-type grammar = production_rules * norm_list;;
+type norm_unit = int;;
+
+type t_rule  = terminal * variables;;
+type t_rules = t_rule list;;
+type v_rule  = variable * t_rules;;
+type v_rules = v_rule list;;
+
+type t_rule_norm   = norm_unit * t_rule;;
+type v_rule_norm   = variable * t_rule_norm;;
+type v_rules_norms = v_rule_norm list;;
+
+type grammar = v_rules * v_rules_norms;;
 
 
 (************************************************
  *************** Auxiliary functions ************
  ************************************************)
 
-let rules_of_variable (rules : production_rules) (var : variable) =
+let rules_of_variable (rules : v_rules) (var : variable) =
   assoc var rules;;
 
-let variable_of_terminal (rules : production_rules) (term : terminal) =
+let variable_of_terminal (rules : v_rules) (term : terminal) =
   fst (find (function (_, r) -> r = [(term, [])]) rules);;
 
 (* return smallest element of an int list, or raise Not_found if list empty *)
@@ -49,16 +56,16 @@ let string_of_variable_rule (term, vars) =
   String.concat " " ((String.make 1 term)::vars);;
 
 (* variable_rules -> string *)
-let string_of_variable_rules (r : variable_rules) =
-  String.concat " + " (map string_of_variable_rule r);;
+let string_of_variable_rules (rules : t_rules) =
+  String.concat " + " (map string_of_variable_rule rules);;
 
 (* production_rule -> string *)
 let string_of_production_rule (v, rules) =
   v ^ " -> " ^ (string_of_variable_rules rules);;
 
 (* production_rules -> string *)
-let string_of_production_rules (r : production_rules) =
-  String.concat "\n" (map string_of_production_rule r);;
+let string_of_production_rules (rules : v_rules) =
+  String.concat "\n" (map string_of_production_rule rules);;
 
 
 (************************************************
@@ -68,52 +75,25 @@ let string_of_production_rules (r : production_rules) =
 exception Norm_not_found;;
 
 (* norm_list -> variable -> int *)
-let norm_of_variable (norms : norm_list) (var : variable) =
-  try assoc var norms with Not_found -> raise Norm_not_found;;
+let norm_of_variable (norms : v_rules_norms) (var : variable) =
+  try fst (assoc var norms) with Not_found -> raise Norm_not_found;;
 
-(* norm_list -> variables -> int *)
-let rec norm_of_variables (norms : norm_list) =
-  fold_left (fun sum var -> sum + (norm_of_variable norms var)) 0;;
+let       eq_poly = {Norm.equal          = (=)};;
+let      ord_poly = {Norm.less_eq        = (<=); Norm.less = (<)};;
+let preorder_poly = {Norm.ord_preorder   = ord_poly};;
+let    order_poly = {Norm.preorder_order = preorder_poly};;
+let linorder_poly = {Norm.order_linorder = order_poly};;
 
-(* calculate norms of all variables in the production rules and
- * verify that production rules adhere to required restrictions:
-   * for all variables X_i in the production rules, norm(X_i) <= norm(X_(i+1))
-   * the first rule for each variable generates a norm-reducing transition,
-     i.e. norm(X_i) > norm(alpha_i1)
-   * norm(alpha_i1) <= norm(alpha_ij)
-   * X_i -> a alpha_ij /\ X_i -> a alpha_ik => j = k
- *)
-(* production_rules -> norm_list *)
-let norms_of_production_rules (prods : production_rules) =
-  let rec norm_list_of_rules norms acc = function
-    | [] -> acc
-    | (_, hdv)::tl ->
-      let acc' =
-        try (norm_of_variables norms hdv)::acc
-        with Norm_not_found -> acc in
-      norm_list_of_rules norms acc' tl in
+let norms_of_production_rules (rules : v_rules) =
+  let el = (eq_poly, linorder_poly) in
+  if Norm.gram_nsd el el rules then
+    let norms = Norm.norms_of_grammar el linorder_poly rules in
+    map (fun (v, (Norm.Nat n, (t, vs))) ->
+      (v, (Big_int.int_of_big_int n, (t, vs)))) norms
+  else
+    failwith "Grammar is not normed simple-deterministic!";;
 
-  let rec unique f = function
-    | [] -> true
-    | hd::tl -> (for_all (f hd) tl) && unique f tl in
-
-  let rec nopr norms prev_min_norm = function
-    | [] -> norms
-    | (hdv, hdr)::tl ->
-      let first_norm = norm_of_variables norms (snd (hd hdr)) in
-      let min_norm = min_list (norm_list_of_rules norms [] hdr) in
-      if not (unique (fun (t1, _) (t2, _) -> t1 <> t2) hdr) then
-        failwith "Terminals are not unique!"
-      else if first_norm > min_norm then
-        failwith "Norm of first production rule is not the smallest norm!"
-      else if prev_min_norm > min_norm then
-        failwith "Norm of current variable is smaller than previous variable!"
-      else
-        nopr ((hdv, 1 + min_norm)::norms) min_norm tl in
-
-  nopr [] 0 prods;;
-
-let grammar_of_production_rules (prods : production_rules) =
+let grammar_of_production_rules (prods : v_rules) =
   (prods, norms_of_production_rules prods);;
 
 

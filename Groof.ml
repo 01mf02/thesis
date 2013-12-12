@@ -10,7 +10,7 @@ open Grammar;;
 
 type expression =
   | Product of variable * variables
-  | Sum of variable_rule * variable_rules;;
+  | Sum of t_rule * t_rules;;
 
 type equivalence = expression * expression;;
 

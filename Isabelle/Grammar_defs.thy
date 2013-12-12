@@ -1,9 +1,9 @@
 theory Grammar_defs imports
   AList_ext
   Helpers
-  "~~/src/HOL/Library/Char_ord"
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Product_Lexorder"
+  "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
 
@@ -142,8 +142,7 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) v_rules \<Rightarrow> 'v li
      if Suc p < n then (norm_reduce gr v p) @ vt
      else norm_reduce gr vt (Suc p - n))"
 
-
-export_code norms_of_grammar in OCaml
+export_code gram_nsd norms_of_grammar in OCaml
   module_name Norm file "../Norm.ml"
 
 end
