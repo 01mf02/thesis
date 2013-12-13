@@ -29,29 +29,35 @@ let tests =
 (* returns [i; i+1; ...; j] *)
 let rec range i j = if i > j then [] else i::(range (i+1) j);;
 
+(* taken from OCaml 4.01 *)
+let rec iteri i f = function
+  [] -> ()
+| a::l -> f i a; iteri (i + 1) f l
+let iteri f l = iteri 0 f l
+
 
 (************************************************
  ****************** Main function ***************
  ************************************************)
 
-let procedure rules vars strat =
+let procedure gr vars strat =
   print_newline ();
 
   if false then begin
     print_endline "Variable rules:";
-    print_endline (string_of_v_rules rules)
+    print_endline (string_of_grammar gr)
   end;
 
   print_endline "Calculating norms ...";
-  let gram = grammar_of_v_rules rules in
-  print_endline "Variable rules valid. :)";
+  let norms = norms_of_grammar gr in
+  print_endline "Grammar valid. :)";
 
   let mode = match strat with
   | Base          -> "base replacement"
   | Decomposition -> "decomposition" in
   print_endline ("Constructing proof with " ^ mode ^ " ... ");
   let eq = pair_map product_of_variable vars in
-  let seqs = prove_equivalence eq gram strat in
+  let seqs = prove_equivalence gr norms strat eq in
 
   if false then begin
     print_endline "Proof:";
@@ -132,8 +138,7 @@ let _ =
 
   let es = combine (combine ps vs) ns in
 
-  for e = 0 to (length es) - 1 do
-    let ((p, v), n) = nth es e in
+  iteri (fun e ((p, v), n) ->
     iter (fun strat ->
       let proof_sizes = calc_proof_sizes p v n strat in
 
@@ -143,8 +148,7 @@ let _ =
       let prefix = "sizes_" ^ mode in
       let filename = (prefix ^ (string_of_int e) ^ ".dat") in
 
-      save_proof_sizes proof_sizes filename) [Base; Decomposition];
-  done;
+      save_proof_sizes proof_sizes filename) [Base; Decomposition]) es;
 
   exit 0;
 ;;

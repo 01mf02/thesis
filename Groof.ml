@@ -161,10 +161,10 @@ let latex_of_sequents seqs eq_root =
 exception Proof_impossible
 exception Circular_sequent
 
-let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
+let prove_equivalence
+  (gr : grammar) (norms : grammar_norms) (strat : strategy) (eq : equivalence) =
   let pov = product_of_variables in
   let sov = sum_of_variable_rules in
-  let (prods, norms) = gram in
 
   (* determine whether the first list is a prefix of the second list,
    * and if so, also return the remaining part of the second list *)
@@ -174,8 +174,8 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
     | (h1::t1, h2::t2) -> if h1 = h2 then is_prefix (t1, t2) else (false, []) in
 
   let rewrite_with_grammar vh vt =
-    let gr = assoc vh prods in
-    sum_of_variable_rules (map (fun (t, v) -> (t, v@vt)) gr) in
+    let vhgr = assoc vh gr in
+    sum_of_variable_rules (map (fun (t, v) -> (t, v@vt)) vhgr) in
 
   let rule_of_equivalence (a, b) =
     let trans x = Trans((a, x), (x, b)) in
@@ -186,11 +186,11 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
       if lt_big_int npah npbh then
         Sym(b, a)
       else
-        let base_repl = pbh::norm_reduce npbh [pah] gram in
+        let base_repl = pbh::norm_reduce gr norms npbh [pah] in
         let pah_repl = match strat with
           | Base -> base_repl
           | Decomposition ->
-            try decompose gram npah (pbh::pbt)
+            try decompose gr norms npah (pbh::pbt)
             with Not_decomposable -> base_repl in
 
           let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
@@ -205,22 +205,22 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
     else
       match a with
       | Product (pah, []) ->
-        let gr = rewrite_with_grammar pah [] in
-        if expression_equals (b, gr) then Gr
+        let pagr = rewrite_with_grammar pah [] in
+        if expression_equals (b, pagr) then Gr
         else begin match b with
           | Product (pbh, []) ->
-            trans gr
+            trans pagr
           | Product (pbh, pbt) ->
             let (npah, npbh) = pair_map (norm_of_variable norms) (pah, pbh) in
             if le_big_int npah npbh then
               raise Proof_impossible
             else begin
-              let reduct = pbh::norm_reduce npbh [pah] gram in
-              if reduct = pbh::pbt then trans gr
+              let reduct = pbh::norm_reduce gr norms npbh [pah] in
+              if reduct = pbh::pbt then trans pagr
               else trans (pov reduct)
             end
           | Sum(_, _) ->
-            trans gr
+            trans pagr
         end
       | Product (pah, pat) ->
         begin match b with
@@ -233,13 +233,13 @@ let prove_equivalence (eq : equivalence) (gram : grammar) (strat : strategy) =
           if eq_big_int (norm_of_variable norms pah) unit_big_int then
             Times((pov [pah], sum_of_terminal sbhc), (pov pat, pov sbhv))
           else
-            trans (Product(variable_of_terminal prods sbhc, sbhv))
+            trans (Product(variable_of_terminal gr sbhc, sbhv))
         | Sum(sbh, sbt) ->
-          let gr = rewrite_with_grammar pah pat in
-          if expression_equals (Sum(sbh, sbt), gr) then
+          let pagr = rewrite_with_grammar pah pat in
+          if expression_equals (Sum(sbh, sbt), pagr) then
             Times((pov [pah], rewrite_with_grammar pah []), (pov pat, pov pat))
           else
-            trans gr
+            trans pagr
         end
       | Sum ((sahc, []), []) ->
         begin match b with
