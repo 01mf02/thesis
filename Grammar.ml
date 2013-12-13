@@ -70,17 +70,17 @@ exception Norm_not_found;;
 let norm_of_variable (norms : v_rules_norms) (var : variable) =
   try fst (assoc var norms) with Not_found -> raise Norm_not_found;;
 
-let       eq_poly = {Norm.equal          = (=)};;
-let      ord_poly = {Norm.less_eq        = (<=); Norm.less = (<)};;
-let preorder_poly = {Norm.ord_preorder   = ord_poly};;
-let    order_poly = {Norm.preorder_order = preorder_poly};;
-let linorder_poly = {Norm.order_linorder = order_poly};;
+let       eq_poly = {HOL.equal = (=)};;
+let      ord_poly = {Orderings.less_eq = (<=); Orderings.less = (<)};;
+let preorder_poly = {Orderings.ord_preorder = ord_poly};;
+let    order_poly = {Orderings.preorder_order = preorder_poly};;
+let linorder_poly = {Orderings.order_linorder = order_poly};;
 
 let norms_of_v_rules (rules : v_rules) =
   let el = (eq_poly, linorder_poly) in
-  if Norm.gram_nsd el el rules then
-    let norms = Norm.norms_of_grammar el linorder_poly rules in
-    map (fun (v, (Norm.Nat n, tr)) -> (v, (n, tr))) norms
+  if Grammar_defs.gram_nsd el el rules then
+    let norms = Grammar_defs.norms_of_grammar el linorder_poly rules in
+    map (fun (v, (Arith.Nat n, tr)) -> (v, (n, tr))) norms
   else
     failwith "Grammar is not simple-deterministic and normed!";;
 

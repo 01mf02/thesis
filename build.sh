@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO: Run Isabelle to generate Norm.ml!
+
 echo "Writing OCaml program size to programsize.txt ..."
 wc -l Examples.ml Grammar.ml Groof.ml Main.ml | tail -n 1 | cut -d " " -f 3 > programsize.txt
 echo Cumulative program size: `cat programsize.txt`

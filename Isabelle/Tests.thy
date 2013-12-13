@@ -2,19 +2,19 @@ theory Tests imports Grammar
   "~~/src/HOL/Library/Char_ord"
 begin
 
-definition test_gr :: "(char, nat) v_rules" where
+definition test_gr :: "(char, nat) grammar" where
   "test_gr =
    [(0, [(CHR ''a'', [])]),
     (1, [(CHR ''b'', [0])])]"
 
-definition test_gr2 :: "(char, nat) v_rules" where
+definition test_gr2 :: "(char, nat) grammar" where
   "test_gr2 =
    [(0, [(CHR ''a'', [])]),
     (1, [(CHR ''b'', [0])]),
     (2, [(CHR ''c'', [1]), (CHR ''d'', [3])]),
     (3, [(CHR ''e'', [])])]"
 
-definition test_gr3 :: "(char, nat) v_rules" where
+definition test_gr3 :: "(char, nat) grammar" where
   "test_gr3 =
    [(0, [(CHR ''a'', [0])])]"
 
