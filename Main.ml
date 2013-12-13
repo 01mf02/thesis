@@ -1,6 +1,7 @@
 open Format;;
 open List;;
 
+open Aux;;
 open Grammar;;
 open Groof;;
 
@@ -20,20 +21,6 @@ let tests =
     print_endline "Test failed!"
   else
     print_endline "Test passed!";;
-
-
-(************************************************
- *************** Auxiliary functions ************
- ************************************************)
-
-(* returns [i; i+1; ...; j] *)
-let rec range i j = if i > j then [] else i::(range (i+1) j);;
-
-(* taken from OCaml 4.01 *)
-let rec iteri i f = function
-  [] -> ()
-| a::l -> f i a; iteri (i + 1) f l
-let iteri f l = iteri 0 f l
 
 
 (************************************************
@@ -71,7 +58,7 @@ let procedure gr vars strat =
 
   print_endline "Done.";
   let n_sequents = length seqs in
-  let n_symbols = sum (map size_of_sequent seqs) in
+  let n_symbols = ilsum (map size_of_sequent seqs) in
   print_endline ("Proof size: " ^
     string_of_int (n_sequents) ^ " sequents with " ^
     string_of_int (n_symbols ) ^ " symbols");
@@ -91,7 +78,7 @@ let procedure gr vars strat =
 let calc_proof_sizes prods vars_f max_i enable_decomposition =
   map (fun i ->
     let vars = vars_f (string_of_int i) in
-    (i, procedure prods vars enable_decomposition)) (range 1 max_i);;
+    (i, procedure prods vars enable_decomposition)) (range_incl 1 max_i);;
 
 let save_proof_sizes sizes filename =
   print_newline ();

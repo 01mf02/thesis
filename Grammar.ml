@@ -1,6 +1,8 @@
-open List;;
-open Norm;;
 open Big_int;;
+open List;;
+
+open Aux;;
+open Norm;;
 
 (************************************************
  **************** Type definitions **************
@@ -28,15 +30,6 @@ type grammar_norms = v_rule_norm list;;
 
 let variable_of_terminal (gr : grammar) (term : terminal) =
   fst (find (function (_, r) -> r = [(term, [])]) gr);;
-
-(* return smallest element of an int list, or raise Not_found if list empty *)
-let min_list l =
-  let rec ml curr_min = function
-    | [] -> curr_min
-    | hd::tl -> if hd < curr_min then ml hd tl else ml curr_min tl in
-  match l with
-  | [] -> raise Not_found
-  | hd::tl -> ml hd tl;;
 
 
 (************************************************

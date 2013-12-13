@@ -2,6 +2,7 @@ open Big_int;;
 open Format;;
 open List;;
 
+open Aux;;
 open Grammar;;
 
 
@@ -54,8 +55,6 @@ let equivalences_of_rule = function
   | Times (e1, e2)
   | Trans (e1, e2) -> [e1; e2];;
 
-let pair_map f (x, y) = (f x, f y);;
-
 let rec expression_equals = function
   | (Product(pah, pat), Product(pbh, pbt)) -> pah = pbh && pat = pbt
   | (Product(_, _), Sum(_, _)) -> false
@@ -80,12 +79,10 @@ let sequents_of_rule seqs rl =
 
 let size_of_variable_rule (term, vars) = 1 + length vars;;
 
-let sum = fold_left (+) 0;;
-
 let size_of_expression = function
   | Product (_, vt) -> 1 + length vt
   | Sum (rh, rt) ->
-    (size_of_variable_rule rh) + (sum (map size_of_variable_rule rt));;
+    (size_of_variable_rule rh) + (ilsum (map size_of_variable_rule rt));;
 
 let size_of_equivalence (ex1, ex2) =
   size_of_expression ex1 + size_of_expression ex2;;
@@ -166,13 +163,6 @@ let prove_equivalence
   let pov = product_of_variables in
   let sov = sum_of_variable_rules in
 
-  (* determine whether the first list is a prefix of the second list,
-   * and if so, also return the remaining part of the second list *)
-  let rec is_prefix = function
-    | ([], postfix) -> (true, postfix)
-    | (_::_, []) -> (false, [])
-    | (h1::t1, h2::t2) -> if h1 = h2 then is_prefix (t1, t2) else (false, []) in
-
   let rewrite_with_grammar vh vt =
     let vhgr = assoc vh gr in
     sum_of_variable_rules (map (fun (t, v) -> (t, v@vt)) vhgr) in
@@ -193,11 +183,10 @@ let prove_equivalence
             try decompose gr norms npah (pbh::pbt)
             with Not_decomposable -> base_repl in
 
-          let (repl_is_prefix, postfix) = is_prefix (pah_repl, (pbh::pbt)) in
-          if repl_is_prefix then
-            Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
-          else
-          trans (pov (pah_repl@pat)) in
+          match is_prefix (pah_repl, (pbh::pbt)) with
+          | Some postfix ->
+              Times((pov [pah], pov pah_repl), (pov pat, pov postfix))
+          | None -> trans (pov (pah_repl@pat)) in
 
 
     if expression_equals (a, b) then
