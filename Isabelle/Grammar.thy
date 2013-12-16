@@ -8,13 +8,13 @@ begin
   gram_sd
  *****************************************************************************)
 
-lemma gram_alist: "gram_sd gr \<Longrightarrow> is_alist gr"
+lemma gram_sd_alist: "gram_sd gr \<Longrightarrow> is_alist gr"
 by (simp add: gram_sd_def)
 
-lemma gram_rules_alist: "gram_sd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> is_alist rules"
+lemma gram_sd_rules_alist: "gram_sd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> is_alist rules"
 unfolding gram_sd_def by auto
 
-lemma gram_rule_vars_in_keys:
+lemma gram_sd_rule_vars_in_keys:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(t, vars) \<in> set rules"
@@ -157,7 +157,7 @@ lemma itno_induct_sd [case_names Base Step]:
 proof (induct rule: itno_induct(1))
   case Base
     case 1 show ?case using B by auto
-    case 2 show ?case unfolding itno_invariant_sd_def using gram_alist[OF G] by auto
+    case 2 show ?case unfolding itno_invariant_sd_def using gram_sd_alist[OF G] by auto
 next
   case (Step norms rest yes no)
     case 1 show ?case using S Step by auto
@@ -214,7 +214,7 @@ next
       using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
     have YG: "set yes \<subseteq> set gr" using Step(4) I(1) by auto
 
-    have AG: "is_alist gr" using gram_alist assms(2) by auto
+    have AG: "is_alist gr" using gram_sd_alist assms(2) by auto
     have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(4)[symmetric]] alist_distr
       by auto
 
@@ -474,7 +474,7 @@ proof -
 
   have G: "gram_sd gr" using gram_nsd_sd assms(1) by auto
   then have E: "\<exists>rules. (v, rules) \<in> set gr" using assms(2-3)
-    by (metis existence_from_lookup gram_alist in_mono)
+    by (metis existence_from_lookup gram_sd_alist in_mono)
   have I: "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     using existence_from_lookup[OF nog_alist[OF G] V assms(4)[symmetric]] .
   show ?thesis using nov_nog2'[OF assms(1) assms(2-3) _ I] E by auto
@@ -510,7 +510,10 @@ lemma mwov2_singleton:
   assumes "gram_nsd gr"
       and "(vh, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "mwov2 gr [vh] = t # (mwov2 gr vs)"
-sorry
+using assms
+  lookup_from_existence[OF nog_alist[OF gram_nsd_sd[OF assms(1)]] assms(2)]
+  nog_gr_keys_equal[OF assms(1)] by auto
+
 
 lemma mwov2_nog:
   assumes "gram_nsd gr"
@@ -586,11 +589,11 @@ proof -
   have GS: "gram_sd gr" using G by (rule gram_nsd_sd)
   have TN: "(th, nrth) \<in> set rules" using nog_in_rules[OF G V] SL by simp
   have LO: "lookup rules th = nrth"
-    using lookup_from_existence gram_rules_alist[OF GS V] TN .
+    using lookup_from_existence gram_sd_rules_alist[OF GS V] TN .
 
-  have "is_alist rules" using gram_rules_alist GS V .
+  have "is_alist rules" using gram_sd_rules_alist GS V .
   then have "(th, rth) \<in> set rules" using TN rth_def by (auto simp add: existence_from_lookup)
-  then have RT: "set rth \<subseteq> keys gr" using gram_rule_vars_in_keys GS V by simp
+  then have RT: "set rth \<subseteq> keys gr" using gram_sd_rule_vars_in_keys GS V by simp
 
   show ?thesis using assms SL LO[symmetric] rth_def mwov2_distr[OF G RT S]
     by (case_tac "lookup (norms_of_grammar gr) vh") simp
@@ -703,7 +706,7 @@ proof -
     using mwov_dist G VH T .
   have D2: "minimal_word_of_variables gr (rth @ vt) =
             minimal_word_of_variables gr rth @ minimal_word_of_variables gr vt"
-    using mwov_dist G gram_rule_vars_in_keys[OF gram_nsd_sd[OF G] V R] T .
+    using mwov_dist G gram_sd_rule_vars_in_keys[OF gram_nsd_sd[OF G] V R] T .
 
   show ?thesis using L D1 D2 by auto
 qed
@@ -735,11 +738,11 @@ proof -
   have GS: "gram_sd gr" using G by (rule gram_nsd_sd)
   have TN: "(th, nrth) \<in> set rules" using nog_in_rules[OF G V] SL by simp
   have LO: "lookup rules th = nrth"
-    using lookup_from_existence gram_rules_alist[OF GS V] TN .
+    using lookup_from_existence gram_sd_rules_alist[OF GS V] TN .
 
-  have "is_alist rules" using gram_rules_alist GS V .
+  have "is_alist rules" using gram_sd_rules_alist GS V .
   then have "(th, rth) \<in> set rules" using TN rth_def by (auto simp add: existence_from_lookup)
-  then have RT: "set rth \<subseteq> keys gr" using gram_rule_vars_in_keys GS V by simp
+  then have RT: "set rth \<subseteq> keys gr" using gram_sd_rule_vars_in_keys GS V by simp
 
   show ?thesis using assms SL LO rth_def mwov_dist[OF G RT S] by simp
 qed
@@ -796,8 +799,8 @@ lemma wiv_prefix:
       and T: "(th, rth) \<in> set rules"
     shows "word_in_variables gr (th#tt) (vh#vt) = word_in_variables gr tt (rth @ vt)"
 proof -
-  have 1: "lookup gr vh = rules" using lookup_from_existence gram_alist[OF G] V .
-  have 2: "lookup rules th = rth" using lookup_from_existence gram_rules_alist[OF G V] T .
+  have 1: "lookup gr vh = rules" using lookup_from_existence gram_sd_alist[OF G] V .
+  have 2: "lookup rules th = rth" using lookup_from_existence gram_sd_rules_alist[OF G V] T .
   show ?thesis using assms 1 2 unfolding word_in_variables_def by auto
 qed
 
@@ -814,9 +817,9 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
 
   have GS: "gram_sd gr" using normal by (simp add: gram_nsd_sd)
   have VT: "set vt \<subseteq> keys gr" using normal(4) by simp
-  have VR: "(vh, rules) \<in> set gr" using gram_alist[OF GS] normal rules_def
+  have VR: "(vh, rules) \<in> set gr" using gram_sd_alist[OF GS] normal rules_def
     by (simp add: existence_from_lookup)
-  have RA: "is_alist rules" using gram_rules_alist GS VR .
+  have RA: "is_alist rules" using gram_sd_rules_alist GS VR .
 
   have "th = fst (snd (lookup (norms_of_grammar gr) vh))"
     using mwov_hd_from_nog normal(3) VR VT normal(2) .
@@ -826,7 +829,7 @@ proof (induct gr "(minimal_word_of_variables gr v)" v rule: eat_word_induct)
   have TT: "tt = minimal_word_of_variables gr (rth @ vt)" unfolding rth_def
     using mwov_prefix normal(3) VR VT normal(2) .
   have TR: "(th, rth) \<in> set rules" using RA TH rth_def by (simp add: existence_from_lookup)
-  have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_rule_vars_in_keys[OF GS VR TR]
+  have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_sd_rule_vars_in_keys[OF GS VR TR]
     by simp
 
   show ?case using normal GS VR TR TT TH RV rules_def rth_def by (simp add: wiv_prefix[symmetric])
@@ -848,14 +851,14 @@ proof (induct gr w v rule: eat_word_induct)
 
   have GS: "gram_sd gr" using normal by (simp add: gram_nsd_sd)
   have VR: "(vh, rules) \<in> set gr" using GS normal rules_def
-    by (simp add: existence_from_lookup gram_alist)
-  have RA: "is_alist rules" using gram_rules_alist GS VR .
+    by (simp add: existence_from_lookup gram_sd_alist)
+  have RA: "is_alist rules" using gram_sd_rules_alist GS VR .
 
   have TH: "th \<in> keys rules" using normal rules_def wiv_word_head by simp
   have TR: "(th, rth) \<in> set rules" using rth_def RA TH by (simp add: existence_from_lookup)
 
   have VT: "set vt \<subseteq> keys gr" using normal by simp
-  have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_rule_vars_in_keys[OF GS VR TR] by auto
+  have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gram_sd_rule_vars_in_keys[OF GS VR TR] by auto
 
   have "length (minimal_word_of_variables gr (vh # vt)) \<le>
     1 + length (minimal_word_of_variables gr (rth @ vt))" using mwov_length normal(2) VT VR TR .
