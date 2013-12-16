@@ -502,21 +502,54 @@ lemma mwov2_distr:
   assumes "gram_nsd gr"
       and "set v1 \<subseteq> keys gr"
       and "set v2 \<subseteq> keys gr"
-    shows "mwov2 gr (v1 @ v2) = mwov2 gr v1 @ mwov2 gr v2" using assms
+    shows "mwov2 gr (v1 @ v2) = mwov2 gr v1 @ mwov2 gr v2"
+      and "length (mwov2 gr (v1 @ v2)) = length (mwov2 gr v1) + length (mwov2 gr v2)" using assms
 by auto
+
+lemma mwov2_singleton:
+  assumes "gram_nsd gr"
+      and "(vh, n, t, vs) \<in> set (norms_of_grammar gr)"
+    shows "mwov2 gr [vh] = t # (mwov2 gr vs)"
+sorry
+
+lemma mwov2_nog:
+  assumes "gram_nsd gr"
+      and "(vh, n, t, vs) \<in> set (norms_of_grammar gr)"
+    shows "Suc (length (mwov2 gr vs)) = n"
+sorry
 
 theorem mwov2_len_calcs_nov:
   assumes G: "gram_nsd gr"
-      and V: "set v \<subseteq> fst ` set gr"
-    shows "length (mwov2 gr v) = norm_of_variables gr v" using assms
-sorry
+      and V: "set v \<subseteq> keys gr"
+    shows "length (mwov2 gr v) = norm_of_variables gr v" using V
+proof (induct v)
+  case Nil
+  then show ?case by (auto simp add: nov_empty)
+next
+  case (Cons vh vt)
+  then have I: "length (mwov2 gr vt) = norm_of_variables gr vt" by auto
+
+  def l  \<equiv> "lookup (norms_of_grammar gr) vh"
+  def n  \<equiv> "fst l"
+  def t  \<equiv> "fst (snd l)"
+  def vs \<equiv> "snd (snd l)"
+
+  have A: "is_alist (norms_of_grammar gr)" using nog_alist[OF gram_nsd_sd[OF G]] .
+  then have E: "(vh, n, t, vs) \<in> set (norms_of_grammar gr)" using Cons(2) l_def n_def t_def vs_def
+    nog_gr_keys_equal[OF G] existence_from_lookup[OF A, of vh] by auto
+  have 1: "length (mwov2 gr [vh]) = fst l"
+    using mwov2_singleton[OF G E] mwov2_nog[OF G E] unfolding l_def n_def by auto
+  have "length (mwov2 gr (vh # vt)) = length (mwov2 gr [vh]) + length (mwov2 gr vt)"
+    using mwov2_distr(2)[OF G, of "[vh]" vt] Cons(2) by auto
+  then show ?case using I 1 l_def nov_distr_cons[of gr vh vt] nov_singleton[of gr vh] by auto
+qed
 
 lemma mwov2_empty:
   assumes "gram_nsd gr"
       and "set v \<subseteq> keys gr"
       and "mwov2 gr v = []"
     shows "v = []" using assms
-by (metis alist_keys_fst_set gr_implies_not0 list.size(3) mwov2_len_calcs_nov nov_greater_zero)
+by (metis gr_implies_not0 list.size(3) mwov2_len_calcs_nov nov_greater_zero)
 
 lemma mwov2_length:
   assumes G: "gram_nsd gr"
