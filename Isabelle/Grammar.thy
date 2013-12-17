@@ -514,21 +514,45 @@ using assms
   lookup_from_existence[OF nog_alist[OF gram_nsd_sd[OF assms(1)]] assms(2)]
   nog_gr_keys_equal[OF assms(1)] by auto
 
+lemma mwov2_induct:
+  assumes "(\<And>gr vars.
+            (\<And>n t vs.
+              gram_nsd gr \<Longrightarrow> set vars \<subseteq> keys gr \<Longrightarrow>
+              (n, t, vs) \<in> lookup (norms_of_grammar gr) ` set vars \<Longrightarrow> P gr vs) \<Longrightarrow>
+            P gr vars)"
+    shows "P gr vars"
+by (induct rule: mwov2.induct) (metis assms(1) image_set)
+
+lemma mwov2_induct_better:
+  assumes "gram_nsd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "\<forall>(v, n, t, vs) \<in> set (norms_of_grammar gr).
+            (\<forall>(v', n', t', vs') \<in> set (norms_of_grammar gr). v' \<in> set vs \<longrightarrow> P v' n' t' vs') \<longrightarrow>
+            P v n t vs"
+    shows "P v n t vs"
+sorry
+
+lemma mwov2_nog':
+  assumes "gram_nsd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "\<forall>(v', n', t', vs') \<in> set (norms_of_grammar gr).
+             v' \<in> set vs \<longrightarrow> Suc (length (mwov2 gr vs')) = n'"
+    shows "Suc (length (mwov2 gr vs)) = n" using assms
+sorry
 
 lemma mwov2_nog:
   assumes "gram_nsd gr"
-      and "(vh, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "Suc (length (mwov2 gr vs)) = n"
-sorry
+proof (induct rule: mwov2_induct_better[of gr v n t vs])
+  case 3 then show ?case using mwov2_nog'[OF assms(1)] by (auto simp del: mwov2.simps)
+qed (auto simp add: assms)
 
 theorem mwov2_len_calcs_nov:
   assumes G: "gram_nsd gr"
       and V: "set v \<subseteq> keys gr"
     shows "length (mwov2 gr v) = norm_of_variables gr v" using V
 proof (induct v)
-  case Nil
-  then show ?case by (auto simp add: nov_empty)
-next
   case (Cons vh vt)
   then have I: "length (mwov2 gr vt) = norm_of_variables gr vt" by auto
 
@@ -545,7 +569,7 @@ next
   have "length (mwov2 gr (vh # vt)) = length (mwov2 gr [vh]) + length (mwov2 gr vt)"
     using mwov2_distr(2)[OF G, of "[vh]" vt] Cons(2) by auto
   then show ?case using I 1 l_def nov_distr_cons[of gr vh vt] nov_singleton[of gr vh] by auto
-qed
+qed (auto simp add: nov_empty)
 
 lemma mwov2_empty:
   assumes "gram_nsd gr"
