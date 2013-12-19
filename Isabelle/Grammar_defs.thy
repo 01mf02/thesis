@@ -75,8 +75,8 @@ definition iterate_norms ::
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"
 
-definition gram_nsd :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
-  "gram_nsd gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
+definition gram_nsd_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
+  "gram_nsd_fun gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
 definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
@@ -88,7 +88,7 @@ definition norm_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> '
 function min_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
   "min_word_of_variables gr vars = (
-     if gram_nsd gr \<and> set vars \<subseteq> keys gr then
+     if gram_nsd_fun gr \<and> set vars \<subseteq> keys gr then
        concat (map (\<lambda>(n, t, vs). t # (min_word_of_variables gr vs))
                    (map (lookup (norms_of_grammar gr)) vars))
      else [])"
@@ -142,6 +142,6 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar_norms \<Rightarrow>
      if Suc p < n then (norm_reduce norms v p) @ vt
      else norm_reduce norms vt (Suc p - n))"
 
-export_code gram_nsd norms_of_grammar in OCaml file "../Norm.ml"
+export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"
 
 end
