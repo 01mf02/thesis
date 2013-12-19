@@ -522,28 +522,44 @@ using assms
   nog_gr_keys_equal[OF assms(1)] by auto
 
 lemma mwov_induct:
-  assumes "(\<And>gr vars.
-            (\<And>n t vs.
-              gram_nsd_fun gr \<Longrightarrow> set vars \<subseteq> keys gr \<Longrightarrow>
-              (n, t, vs) \<in> lookup (norms_of_grammar gr) ` set vars \<Longrightarrow> P gr vs) \<Longrightarrow>
-            P gr vars)"
+  assumes "\<And>gr vars.
+             (\<And>n t vs. gram_nsd_fun gr \<Longrightarrow> set vars \<subseteq> keys gr \<Longrightarrow>
+               (n, t, vs) \<in> lookup (norms_of_grammar gr) ` set vars \<Longrightarrow> P gr vs) \<Longrightarrow>
+             P gr vars"
     shows "P gr vars"
 by (induct rule: min_word_of_variables.induct) (metis assms(1) image_set)
 
-lemma mwov_induct_better:
+lemma X1:
   assumes "gram_nsd_fun gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-      and "\<forall>(v, n, t, vs) \<in> set (norms_of_grammar gr).
-            (\<forall>(v', n', t', vs') \<in> set (norms_of_grammar gr). v' \<in> set vs \<longrightarrow> P v' n' t' vs') \<longrightarrow>
-            P v n t vs"
-    shows "P v n t vs"
+      and "set vars \<subseteq> keys gr"
+    shows "norm_fun gr vars =
+           (\<Sum>v\<leftarrow>vars. Suc (norm_fun gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))"
+sorry
+
+lemma X2:
+  assumes "gram_nsd_fun gr"
+      and "set vars \<subseteq> keys gr"
+    shows "length (min_word_of_variables gr vars) =
+           (\<Sum>v\<leftarrow>vars. Suc (length (min_word_of_variables gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v)))))" using assms
 sorry
 
 lemma mwov_len_calcs_nf':
-  assumes "gram_sd gr"
+  assumes "gram_nsd_fun gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-    shows "length (min_word_of_variables gr vs) = norm_fun gr vs"
-sorry
+    shows "length (min_word_of_variables gr vs) = norm_fun gr vs" using assms
+proof (induct arbitrary: v n t rule: mwov_induct)
+  case (1 gr vars)
+  have X: "set vars \<subseteq> keys gr" using 1(3) nog_ns(1) nog_gr_keys_equal sorry
+  have D: "\<And>v n t vs. v \<in> set vars \<Longrightarrow> (n, t, vs) = lookup (norms_of_grammar gr) v \<Longrightarrow>
+             length (min_word_of_variables gr vs) = norm_fun gr vs" using 1(1)[OF 1(2) X _ 1(2)] sorry
+  have C: "map (\<lambda>v. Suc (length (min_word_of_variables gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))) vars =
+           map (\<lambda>v. Suc (norm_fun gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v)))) vars" using D
+    sorry
+  have E: "(\<Sum>v\<leftarrow>vars. Suc (length (min_word_of_variables gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))) =
+           (\<Sum>v\<leftarrow>vars. Suc (norm_fun gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))"
+    using HOL.arg_cong[OF C] .
+  show ?case using E X1[OF 1(2) X] X2[OF 1(2) X] by simp
+qed
 
 theorem mwov_len_calcs_nf:
   assumes "gram_nsd_fun gr"
@@ -565,7 +581,7 @@ proof (induct v)
     unfolding l_def n_def t_def vs_def by auto
 
   have LN: "length (min_word_of_variables gr [vh]) = n"
-    using mwov_singleton[OF assms(1) E] nog_ns(2)[OF G E] mwov_len_calcs_nf'[OF G E] Cons(2)
+    using mwov_singleton[OF assms(1) E] nog_ns(2)[OF G E] mwov_len_calcs_nf'[OF assms(1) E] Cons(2)
     unfolding l_def n_def by auto
   have LD: "length (min_word_of_variables gr (vh # vt)) =
             length (min_word_of_variables gr [vh]) +
