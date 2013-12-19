@@ -79,7 +79,7 @@ unfolding norms_of_t_rules_def by auto
 lemma notr_variables:
   assumes "(n, t, vs) \<in> set (norms_of_t_rules norms rules)"
     shows "set vs \<subseteq> keys norms"
-      and "norm_sum norms vs < n" using assms
+      and "n = Suc (norm_sum norms vs)" using assms
 unfolding norms_of_t_rules_def t_rule_has_norm_def by auto
 
 
@@ -107,7 +107,7 @@ lemma mnotr_variables:
   assumes "t_rules_have_norm norms rules"
       and "(n, t, vs) = min_norm_of_t_rules norms rules"
     shows "set vs \<subseteq> keys norms"
-      and "norm_sum norms vs < n"
+      and "n = Suc (norm_sum norms vs)"
 by (metis assms(1) assms(2) mnotr_in_nor notr_variables(1))
    (metis assms(1) assms(2) mnotr_in_nor notr_variables(2))
 
@@ -327,12 +327,33 @@ lemma nog_greater_zero_lookup:
   apply (rule lookup_forall[of "norms_of_grammar gr"])
 using nog_gr_keys_equal nog_norms_greater_zero[of _ _ _ gr] by auto
 
+lemma nog_ns_norms_un_equal:
+  assumes "itno_invariant_sd gr norms rest"
+      and "partition (v_rule_has_norm norms) rest = (yes, no)"
+      and "set vs \<subseteq> keys norms"
+    shows "norm_sum norms vs = norm_sum (update_norms norms yes) vs"
+proof -
+  have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using assms(1)
+    unfolding itno_invariant_sd_def by auto
+  have AM: "is_alist (mnotr_map norms yes)" unfolding mnotr_map_def
+    using alist_filter alist_map S(2) assms(2) by auto
+  have NI: "set norms \<subseteq> set (update_norms norms yes)" unfolding update_norms_def
+    by auto
+
+  have "keys norms \<inter> keys (mnotr_map norms yes) = {}" unfolding mnotr_map_def
+    using S(3) assms(2) by force
+  then have AI: "is_alist (update_norms norms yes)" using S(1) AM alist_distr[of norms]
+    unfolding update_norms_def by auto
+
+  show ?thesis using ns_norms_superset_equal[OF assms(3) S(1) AI NI] .
+qed
+
 lemma nog_ns:
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
     shows "set vs \<subseteq> keys (norms_of_grammar gr)"
-      and "norm_sum (norms_of_grammar gr) vs < n" using assms(2) unfolding norms_of_grammar_def
+      and "n = Suc (norm_of_variables gr vs)" unfolding norms_of_grammar_def norm_of_variables_def
 proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   case (Step norms rest yes no)
   case 1 show ?case
@@ -344,29 +365,14 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
       using Step(3) unfolding itno_invariant_sd_nin_def by auto
     then show ?thesis unfolding update_norms_def using mnotr_variables[OF I] by auto
   qed
-  case 2
-
-  have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using Step(2)
-    unfolding itno_invariant_sd_def by auto
-  have AM: "is_alist (mnotr_map norms yes)" unfolding mnotr_map_def
-    using alist_filter alist_map S(2) Step(6) by auto
-  have NI: "set norms \<subseteq> set (update_norms norms yes)" unfolding update_norms_def
-    by auto
-
-  have "keys norms \<inter> keys (mnotr_map norms yes) = {}" unfolding mnotr_map_def
-    using S(3) Step(6) by force
-  then have AI: "is_alist (update_norms norms yes)" using Step AM alist_distr[of norms]
-    unfolding itno_invariant_sd_def update_norms_def by auto
-
-  show ?case
+  case 2 show ?case
   proof (cases "(v, n, t, vs) \<in> set norms")
-    case True then show ?thesis using ns_norms_superset_equal[OF _ S(1) AI NI] Step(4-5) by auto
+    case True then show ?thesis using nog_ns_norms_un_equal[OF Step(2,6)] Step(4-5) by auto
   next
     case False
-    then have "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
+    then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
       using Step(3) unfolding itno_invariant_sd_nin_def by auto
-    then show ?thesis using ns_norms_superset_equal[OF _ S(1) AI NI] mnotr_variables[of norms]
-      by auto
+    show ?thesis using nog_ns_norms_un_equal[OF Step(2,6)] mnotr_variables[OF N] by auto
   qed
 qed (auto simp add: assms)
 
@@ -396,11 +402,10 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
     case False
     then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
       using Step(3) unfolding itno_invariant_sd_nin_def by auto
+
     have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
         using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-  
-    then have S: "norm_of_variables gr vs < n" unfolding norm_of_variables_def
-      using nog_ns(2)[OF assms(1-3)]  by auto
+    then have S: "norm_of_variables gr vs < n" using nog_ns(2)[OF assms(1-3)] by auto
   
     have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
     have "norm_of_variables gr [v] = n" unfolding nov_singleton
@@ -450,9 +455,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
     have G: "gram_sd gr" using gram_nsd_sd assms(1) .
     have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
         using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-  
-    then have S: "norm_of_variables gr vs < n" unfolding norm_of_variables_def
-      using nog_ns(2)[OF G assms(5,4)] by auto
+    then have S: "norm_of_variables gr vs < n" using nog_ns(2)[OF G assms(5,4)] by auto
 
     have A: "is_alist (norms_of_grammar gr)" using nog_alist G by auto
     have "norm_of_variables gr [v] = n" unfolding nov_singleton
@@ -532,26 +535,16 @@ lemma mwov2_induct_better:
     shows "P v n t vs"
 sorry
 
-lemma mwov2_nog':
-  assumes "gram_nsd gr"
+lemma mwov2_len_calcs_nov':
+  assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-      and "\<forall>(v', n', t', vs') \<in> set (norms_of_grammar gr).
-             v' \<in> set vs \<longrightarrow> Suc (length (mwov2 gr vs')) = n'"
-    shows "Suc (length (mwov2 gr vs)) = n" using assms
+    shows "length (mwov2 gr vs) = norm_of_variables gr vs"
 sorry
 
-lemma mwov2_nog:
-  assumes "gram_nsd gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-    shows "Suc (length (mwov2 gr vs)) = n"
-proof (induct rule: mwov2_induct_better[of gr v n t vs])
-  case 3 then show ?case using mwov2_nog'[OF assms(1)] by (auto simp del: mwov2.simps)
-qed (auto simp add: assms)
-
 theorem mwov2_len_calcs_nov:
-  assumes G: "gram_nsd gr"
-      and V: "set v \<subseteq> keys gr"
-    shows "length (mwov2 gr v) = norm_of_variables gr v" using V
+  assumes "gram_nsd gr"
+      and "set v \<subseteq> keys gr"
+    shows "length (mwov2 gr v) = norm_of_variables gr v" using assms(2)
 proof (induct v)
   case (Cons vh vt)
   then have I: "length (mwov2 gr vt) = norm_of_variables gr vt" by auto
@@ -561,14 +554,19 @@ proof (induct v)
   def t  \<equiv> "fst (snd l)"
   def vs \<equiv> "snd (snd l)"
 
-  have A: "is_alist (norms_of_grammar gr)" using nog_alist[OF gram_nsd_sd[OF G]] .
-  then have E: "(vh, n, t, vs) \<in> set (norms_of_grammar gr)" using Cons(2) l_def n_def t_def vs_def
-    nog_gr_keys_equal[OF G] existence_from_lookup[OF A, of vh] by auto
-  have 1: "length (mwov2 gr [vh]) = fst l"
-    using mwov2_singleton[OF G E] mwov2_nog[OF G E] unfolding l_def n_def by auto
-  have "length (mwov2 gr (vh # vt)) = length (mwov2 gr [vh]) + length (mwov2 gr vt)"
-    using mwov2_distr(2)[OF G, of "[vh]" vt] Cons(2) by auto
-  then show ?case using I 1 l_def nov_distr_cons[of gr vh vt] nov_singleton[of gr vh] by auto
+  have G: "gram_sd gr" using gram_nsd_sd[OF assms(1)] .
+  have A: "is_alist (norms_of_grammar gr)" using nog_alist[OF G] by auto
+  have E: "(vh, n, t, vs) \<in> set (norms_of_grammar gr)"
+    using Cons(2) nog_gr_keys_equal[OF assms(1)] existence_from_lookup[OF A, of vh l]
+    unfolding l_def n_def t_def vs_def by auto
+
+  have LN: "length (mwov2 gr [vh]) = n"
+    using mwov2_singleton[OF assms(1) E] nog_ns(2)[OF G E] mwov2_len_calcs_nov'[OF G E] Cons(2)
+    unfolding l_def n_def by auto
+  have LD: "length (mwov2 gr (vh # vt)) = length (mwov2 gr [vh]) + length (mwov2 gr vt)"
+    using mwov2_distr(2)[OF assms(1), of "[vh]" vt] Cons(2) by auto
+  show ?case using I LN LD nov_distr_cons[of gr vh vt] nov_singleton[of gr vh]
+    unfolding l_def n_def by auto
 qed (auto simp add: nov_empty)
 
 lemma mwov2_empty:
