@@ -271,7 +271,8 @@ lemma nog_alist: "gram_sd gr \<Longrightarrow> is_alist (norms_of_grammar gr)" u
 using itno_invariant_sd_holds unfolding itno_invariant_sd_def by auto
 
 lemma nog_gr_keys_equal: "gram_nsd_fun gr \<Longrightarrow> keys gr = keys (norms_of_grammar gr)"
-using itno_gr_keys_equal[of gr] by (simp add: norms_of_grammar_def gram_nsd_fun_def gram_normed_fun_def)
+using itno_gr_keys_equal[of gr]
+by (simp add: norms_of_grammar_def gram_nsd_fun_def gram_normed_fun_def)
 
 lemma nog_in_rules':
   assumes "gram_sd gr"
@@ -493,6 +494,13 @@ by (induct v) (auto, subst ns_distr_cons, simp add: ns_singleton nog_greater_zer
 lemma nf_empty: "norm_fun gr [] = 0"
 by (simp add: norm_fun_def ns_empty)
 
+lemma nf_recursion:
+  assumes "gram_nsd_fun gr"
+      and "set vars \<subseteq> keys gr"
+    shows "norm_fun gr vars =
+           (\<Sum>(n, t, vs)\<leftarrow>(map (lookup (norms_of_grammar gr)) vars). Suc (norm_fun gr vs))"
+sorry
+
 
 (*****************************************************************************
   min_word_of_variables
@@ -529,18 +537,11 @@ lemma mwov_induct:
     shows "P gr vars"
 by (induct rule: min_word_of_variables.induct) (metis assms(1) image_set)
 
-lemma X1:
-  assumes "gram_nsd_fun gr"
-      and "set vars \<subseteq> keys gr"
-    shows "norm_fun gr vars =
-           (\<Sum>v\<leftarrow>vars. Suc (norm_fun gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))"
-sorry
-
-lemma X2:
+lemma mwov_len_recursion:
   assumes "gram_nsd_fun gr"
       and "set vars \<subseteq> keys gr"
     shows "length (min_word_of_variables gr vars) =
-           (\<Sum>v\<leftarrow>vars. Suc (length (min_word_of_variables gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v)))))" using assms
+           (\<Sum>(n, t, vs)\<leftarrow>(map (lookup (norms_of_grammar gr)) vars). Suc (length (min_word_of_variables gr vs)))" using assms
 sorry
 
 lemma mwov_len_calcs_nf':
@@ -549,16 +550,36 @@ lemma mwov_len_calcs_nf':
     shows "length (min_word_of_variables gr vs) = norm_fun gr vs" using assms
 proof (induct arbitrary: v n t rule: mwov_induct)
   case (1 gr vars)
-  have X: "set vars \<subseteq> keys gr" using 1(3) nog_ns(1) nog_gr_keys_equal sorry
-  have D: "\<And>v n t vs. v \<in> set vars \<Longrightarrow> (n, t, vs) = lookup (norms_of_grammar gr) v \<Longrightarrow>
-             length (min_word_of_variables gr vs) = norm_fun gr vs" using 1(1)[OF 1(2) X _ 1(2)] sorry
-  have C: "map (\<lambda>v. Suc (length (min_word_of_variables gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))) vars =
-           map (\<lambda>v. Suc (norm_fun gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v)))) vars" using D
-    sorry
-  have E: "(\<Sum>v\<leftarrow>vars. Suc (length (min_word_of_variables gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))) =
-           (\<Sum>v\<leftarrow>vars. Suc (norm_fun gr ((\<lambda>(n, t, vs). vs) (lookup (norms_of_grammar gr) v))))"
-    using HOL.arg_cong[OF C] .
-  show ?case using E X1[OF 1(2) X] X2[OF 1(2) X] by simp
+
+  have G: "gram_sd gr" using gram_nsd_sd[OF 1(2)] .
+  have V: "v \<in> keys (norms_of_grammar gr)" using 1(3) by auto
+  have R: "\<exists>rules. (v, rules) \<in> set gr" using nog_gr_keys_equal[OF 1(2)] G V
+    by (metis existence_from_lookup gsd_alist)
+      
+  have X: "set vars \<subseteq> keys gr" using nog_ns(1)[OF G 1(3)] nog_gr_keys_equal[OF 1(2)] R by auto
+  have I: "\<And>v n t vs. v \<in> set vars \<Longrightarrow> (n, t, vs) = lookup (norms_of_grammar gr) v \<Longrightarrow>
+             length (min_word_of_variables gr vs) = norm_fun gr vs"
+    proof -
+      fix v n t vs
+      assume V: "v \<in> set vars"
+      assume N: "(n, t, vs) = lookup (norms_of_grammar gr) v"
+
+      have A: "is_alist (norms_of_grammar gr)" using nog_alist[OF G] by auto
+      have K: "v \<in> keys (norms_of_grammar gr)" using nog_gr_keys_equal[OF 1(2)] V X by auto
+      have L: "(n, t, vs) \<in> lookup (norms_of_grammar gr) ` set vars" using V N by auto
+      have M: "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+        using existence_from_lookup A K N[symmetric] .
+      show "length (min_word_of_variables gr vs) = norm_fun gr vs" using 1(1) 1(2) X L 1(2) M .
+    qed
+  have M: "\<And>e. e \<in> set (map (lookup (norms_of_grammar gr)) vars) \<longrightarrow>
+              (\<lambda>(n, t, vs). Suc (length (min_word_of_variables gr vs))) e =
+              (\<lambda>(n, t, vs). Suc (norm_fun gr vs)) e"
+    by (case_tac e) (metis (lifting, mono_tags) I image_iff image_set split_conv)
+  have L: "(\<Sum>(n, t, vs)\<leftarrow>map (lookup (norms_of_grammar gr)) vars.
+             Suc (length (min_word_of_variables gr vs))) =
+           (\<Sum>(n, t, vs)\<leftarrow>map (lookup (norms_of_grammar gr)) vars.
+             Suc (norm_fun gr vs))" using HOL.arg_cong[OF map_ext[OF M]] .
+  show ?case using L nf_recursion[OF 1(2) X] mwov_len_recursion[OF 1(2) X] by simp
 qed
 
 theorem mwov_len_calcs_nf:
