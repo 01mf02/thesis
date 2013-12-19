@@ -69,7 +69,7 @@ let linorder_poly = {Orderings.order_linorder = order_poly};;
 
 let norms_of_grammar (gr : grammar) =
   let el = (eq_poly, linorder_poly) in
-  if Grammar_defs.gram_nsd el el gr then
+  if Grammar_defs.gram_nsd_fun el el gr then
     let norms = Grammar_defs.norms_of_grammar el linorder_poly gr in
     map (fun (v, (Arith.Nat n, tr)) -> (v, (n, tr))) norms
   else

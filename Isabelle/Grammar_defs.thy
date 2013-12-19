@@ -82,23 +82,15 @@ definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "norms_of_grammar gr \<equiv> fst (iterate_norms gr)"
 
-definition norm_of_variables :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm_of_variables gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
+definition norm_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
+  "norm_fun gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 
-function mwov2 :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
-  "mwov2 gr vars = (
-     if gram_nsd gr \<and> set vars \<subseteq> keys gr then
-       concat (map (\<lambda>(n, t, vs). t # (mwov2 gr vs)) (map (lookup (norms_of_grammar gr)) vars))
-     else [])"
-by pat_completeness auto
-
-function minimal_word_of_variables ::
+function min_word_of_variables ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
-  "minimal_word_of_variables gr [] = []"
-| "minimal_word_of_variables gr (vh#vt) = (
-     if gram_nsd gr \<and> vh \<in> keys gr then
-       let (t, vars) = snd (lookup (norms_of_grammar gr) vh) in
-       t # minimal_word_of_variables gr vars @ minimal_word_of_variables gr vt
+  "min_word_of_variables gr vars = (
+     if gram_nsd gr \<and> set vars \<subseteq> keys gr then
+       concat (map (\<lambda>(n, t, vs). t # (min_word_of_variables gr vs))
+                   (map (lookup (norms_of_grammar gr)) vars))
      else [])"
 by pat_completeness auto
 
@@ -120,11 +112,14 @@ definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Righta
 definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
 
-definition gram_normed :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
-  "gram_normed gr \<equiv> \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
+definition gram_normed_def :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
+  "gram_normed_def gr \<equiv> \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
 
-definition norm :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm gr v \<equiv> Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"
+definition gram_nsd_def :: "('t::linorder, 'v::linorder) grammar \<Rightarrow> bool" where
+  "gram_nsd_def gr \<equiv> gram_sd gr \<and> gram_normed_def gr"
+
+definition norm_def :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
+  "norm_def gr v \<equiv> Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"
 
 
 (*****************************************************************************
