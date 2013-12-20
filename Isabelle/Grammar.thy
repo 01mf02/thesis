@@ -409,7 +409,7 @@ lemma nf_nog':
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
-    shows "norm_fun gr vs < norm_fun gr [v]" unfolding norms_of_grammar_def
+    shows "norm_fun gr [v] = Suc (norm_fun gr vs)" unfolding norms_of_grammar_def
 proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   case (Step norms rest yes no)
   show ?case proof (cases "(v, n, t, vs) \<in> set norms")
@@ -419,7 +419,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
 
     have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
         using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-    then have S: "norm_fun gr vs < n" using nog_ns(2)[OF assms(1-2)] by auto
+    then have S: "n = Suc (norm_fun gr vs)" using nog_ns(2)[OF assms(1-2)] by auto
   
     have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
     have "norm_fun gr [v] = n" unfolding nf_singleton
@@ -433,7 +433,7 @@ lemma nf_nog:
   assumes "gram_nsd_fun gr"
       and "(t, vs) = snd (lookup (norms_of_grammar gr) v)"
       and "(v, rules) \<in> set gr"
-    shows "norm_fun gr vs < norm_fun gr [v]"
+    shows "norm_fun gr [v] = Suc (norm_fun gr vs)"
 proof -
   have "keys gr = keys (norms_of_grammar gr)" using nog_gr_keys_equal[OF assms(1)] .
   then have V: "v \<in> keys (norms_of_grammar gr)" using assms(3) by auto
@@ -452,32 +452,6 @@ lemma nf_singleton_leq:
     shows "norm_fun gr [v] \<le> norm_fun gr vars" unfolding norm_fun_def
 using ns_singleton_leq[OF _ assms(3)] nog_gr_keys_equal[OF assms(1)] assms(2) by auto
 
-lemma nf_nog2':
-  assumes "gram_nsd_fun gr"
-      and "set vars \<subseteq> keys gr"
-      and "v \<in> set vars"
-      and "(v, rules) \<in> set gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-    shows "norm_fun gr vs < norm_fun gr vars" unfolding norms_of_grammar_def
-proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
-  case (Step norms rest yes no)
-  show ?case proof (cases "(v, n, t, vs) \<in> set norms")
-    case False
-    then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_nin_def by auto
-    have G: "gram_sd gr" using gram_nsd_sd assms(1) .
-    have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
-        using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-    then have S: "norm_fun gr vs < n" using nog_ns(2)[OF G assms(5)] by auto
-
-    have A: "is_alist (norms_of_grammar gr)" using nog_alist G by auto
-    have "norm_fun gr [v] = n" unfolding nf_singleton
-      using lookup_predicate[OF A assms(5), of "\<lambda>k v. fst v = n"] by auto
-  
-    then show ?thesis using S nf_singleton_leq[OF assms(1-3)] by auto
-  qed (auto simp add: Step)
-qed (auto simp add: assms gram_nsd_sd)
-
 lemma nf_nog2:
   assumes "gram_nsd_fun gr"
       and "set vars \<subseteq> keys gr"
@@ -485,15 +459,18 @@ lemma nf_nog2:
       and "(n, t, vs) = lookup (norms_of_grammar gr) v"
     shows "norm_fun gr vs < norm_fun gr vars"
 proof -
-  have V: "v \<in> keys (norms_of_grammar gr)"
-    using nog_gr_keys_equal[OF assms(1)] assms(2-3) by auto
+  have V: "set vars \<subseteq> keys (norms_of_grammar gr)" using nog_gr_keys_equal[OF assms(1)] assms(2)
+    by auto
+  have S: "v \<in> keys (norms_of_grammar gr)" using V assms(3) by auto
 
   have G: "gram_sd gr" using gram_nsd_sd assms(1) by auto
-  then have E: "\<exists>rules. (v, rules) \<in> set gr" using assms(2-3)
+  then have R: "\<exists>rules. (v, rules) \<in> set gr" using assms(2-3)
     by (metis existence_from_lookup gsd_alist in_mono)
   have I: "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-    using existence_from_lookup[OF nog_alist[OF G] V assms(4)[symmetric]] .
-  show ?thesis using nf_nog2'[OF assms(1) assms(2-3) _ I] E by auto
+    using existence_from_lookup[OF nog_alist[OF G] S assms(4)[symmetric]] .
+
+  have "norm_fun gr [v] = Suc (norm_fun gr vs)" using nf_nog'[OF G I] R by auto
+  then show ?thesis using nf_singleton_leq[OF assms(1-3)] by auto
 qed
 
 lemma nf_greater_zero:
@@ -663,22 +640,39 @@ lemma mwov_empty:
     shows "v = []" using assms
 by (metis gr_implies_not0 list.size(3) mwov_len_calcs_nf nf_greater_zero)
 
+(* TODO: move to norm_fun section when done! *)
+lemma nf_new:
+  assumes "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+      and "(v, rules) \<in> set gr"
+      and "(tr, vsr) \<in> set rules"
+    shows "norm_fun gr vs \<le> norm_fun gr vsr" unfolding norm_fun_def
+sorry
+
 lemma mwov_length:
   assumes "gram_nsd_fun gr"
-      and "(vh, rules) \<in> set gr"
-      and "(th, rth) \<in> set rules"
-    shows "length (min_word_of_variables gr [vh]) \<le> Suc (length (min_word_of_variables gr rth))"
+      and "(v, rules) \<in> set gr"
+      and "(tr, vsr) \<in> set rules"
+    shows "length (min_word_of_variables gr [v]) \<le> Suc (length (min_word_of_variables gr vsr))"
 proof -
-  def nvh \<equiv> "lookup (norms_of_grammar gr) vh"
+  have G: "gram_sd gr" using gram_nsd_sd[OF assms(1)] .
+  have A: "is_alist (norms_of_grammar gr)" using nog_alist[OF G] .
+  have K: "keys gr = keys (norms_of_grammar gr)" using nog_gr_keys_equal[OF assms(1)] .
+  have V: "v \<in> keys (norms_of_grammar gr)" using K assms(2) by auto
+
+  def nvh \<equiv> "lookup (norms_of_grammar gr) v"
   def n  \<equiv> "(\<lambda>(n, t, vs).  n) nvh"
   def t  \<equiv> "(\<lambda>(n, t, vs).  t) nvh"
   def vs \<equiv> "(\<lambda>(n, t, vs). vs) nvh"
-  have N: "(vh, n, t, vs) \<in> set (norms_of_grammar gr)" sorry
+  have N: "(v, n, t, vs) \<in> set (norms_of_grammar gr)" apply (case_tac nvh)
+    unfolding n_def t_def vs_def nvh_def using existence_from_lookup[OF A V] by auto
+
+  have 1: "set vs \<subseteq> keys gr" using nog_ns(1)[OF G N] K by auto
+  have 2: "set vsr \<subseteq> keys gr" using gsd_rule_vars_in_keys[OF G assms(2-3)] .
   
-  have 1: "min_word_of_variables gr [vh] = t # min_word_of_variables gr vs"
-    using mwov_singleton[OF assms(1) N] .
-  have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr rth)" sorry
-  then show ?thesis unfolding 1 by auto
+  have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr vsr)"
+    unfolding mwov_len_calcs_nf[OF assms(1) 1] mwov_len_calcs_nf[OF assms(1) 2]
+    using nf_new[OF N assms(2-3)] .
+  then show ?thesis unfolding mwov_singleton[OF assms(1) N] by auto
 qed
 
 lemma mwov_hd_from_nog:
