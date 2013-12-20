@@ -565,13 +565,28 @@ lemma mwov_induct:
     shows "P gr vars"
 by (induct rule: min_word_of_variables.induct) (metis assms(1) image_set)
 
+lemma mwov_recursion:
+  assumes "gram_nsd_fun gr"
+      and "set vars \<subseteq> keys gr"
+    shows "min_word_of_variables gr vars =
+           concat (map (\<lambda>(n, t, vs). t # (min_word_of_variables gr vs))
+                  (map (lookup (norms_of_grammar gr)) vars))" using assms
+by auto
+
 lemma mwov_len_recursion:
   assumes "gram_nsd_fun gr"
       and "set vars \<subseteq> keys gr"
     shows "length (min_word_of_variables gr vars) =
            (\<Sum>(n, t, vs)\<leftarrow>(map (lookup (norms_of_grammar gr)) vars).
-             Suc (length (min_word_of_variables gr vs)))" using assms
-sorry
+             Suc (length (min_word_of_variables gr vs)))"
+proof -
+  have "\<And>l f. (\<Sum>x\<leftarrow>l. length (case x of (n, t, vs) \<Rightarrow> t # f vs)) =
+          (\<Sum>(n, t, vs)\<leftarrow>l. length (t # f vs))"
+    by (metis (no_types) case_prod_distrib prod.exhaust split_conv)
+  then have E: "\<And>l f. length (concat (map (\<lambda>(n, t, vs). t # f vs) l)) =
+                  (\<Sum>(n, t, vs)\<leftarrow>l. Suc (length (f vs)))" unfolding map_concat_len by auto
+  show ?thesis unfolding mwov_recursion[OF assms] E by auto
+qed
 
 lemma mwov_len_calcs_nf':
   assumes "gram_nsd_fun gr"

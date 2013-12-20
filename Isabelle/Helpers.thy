@@ -32,6 +32,10 @@ qed
 lemma filter_one_empty_other_full: "(filter P l = []) \<Longrightarrow> (l = filter (Not \<circ> P) l)"
 by (metis (mono_tags) Set.filter_def comp_apply filter_True in_set_member member_filter member_rec(2) set_filter)
 
+lemma map_concat_len:
+  "length (concat (map f l)) = (\<Sum>x\<leftarrow>l. length (f x))"
+by (induct l) auto
+
 
 (*****************************************************************************
   partition_iterate
