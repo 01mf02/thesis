@@ -350,7 +350,7 @@ proof -
   show ?thesis using ns_norms_superset_equal[OF assms(3) S(1) AI NI] .
 qed
 
-lemma nog_ns:
+lemma nog_ns':
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
@@ -377,6 +377,18 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
     show ?thesis using nog_ns_norms_un_equal[OF Step(2,6)] mnotr_variables[OF N] by auto
   qed
 qed (auto simp add: assms)
+
+lemma nog_ns:
+  assumes "gram_sd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+    shows "set vs \<subseteq> keys (norms_of_grammar gr)"
+      and "n = Suc (norm_fun gr vs)"
+proof -
+  have "v \<in> keys gr" using itno_gr_keys_equal[of gr] assms(2) unfolding norms_of_grammar_def by auto
+  then have "\<exists>rules. (v, rules) \<in> set gr" by auto
+  then show "set vs \<subseteq> keys (norms_of_grammar gr)" "n = Suc (norm_fun gr vs)"
+    using nog_ns'[OF assms] by auto
+qed
 
 
 (*****************************************************************************
@@ -407,7 +419,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
 
     have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
         using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-    then have S: "norm_fun gr vs < n" using nog_ns(2)[OF assms(1-3)] by auto
+    then have S: "norm_fun gr vs < n" using nog_ns(2)[OF assms(1-2)] by auto
   
     have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
     have "norm_fun gr [v] = n" unfolding nf_singleton
@@ -456,7 +468,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
     have G: "gram_sd gr" using gram_nsd_sd assms(1) .
     have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
         using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-    then have S: "norm_fun gr vs < n" using nog_ns(2)[OF G assms(5,4)] by auto
+    then have S: "norm_fun gr vs < n" using nog_ns(2)[OF G assms(5)] by auto
 
     have A: "is_alist (norms_of_grammar gr)" using nog_alist G by auto
     have "norm_fun gr [v] = n" unfolding nf_singleton
@@ -499,7 +511,23 @@ lemma nf_recursion:
       and "set vars \<subseteq> keys gr"
     shows "norm_fun gr vars =
            (\<Sum>(n, t, vs)\<leftarrow>(map (lookup (norms_of_grammar gr)) vars). Suc (norm_fun gr vs))"
-sorry
+proof -
+  have E: "norm_fun gr vars = (\<Sum>(n, t, vs)\<leftarrow>map (lookup (norms_of_grammar gr)) vars. n)"
+    unfolding norm_fun_def norm_sum_def
+    by (metis (lifting) List.map.compositionality cond_split_eta fst_conv fst_def)
+
+  have G: "gram_sd gr" using gram_nsd_sd[OF assms(1)] .
+  have V: "set vars \<subseteq> keys (norms_of_grammar gr)" using nog_gr_keys_equal[OF assms(1)] assms(2)
+    by auto
+  have N: "\<forall>(v, n, t, vs) \<in> set (norms_of_grammar gr). n = Suc (norm_fun gr vs)"
+    using nog_ns(2)[OF G] by auto
+  have "\<forall>(n, t, vs) \<in> set (map (lookup (norms_of_grammar gr)) vars).
+          n = Suc (norm_fun gr vs)" using lookup_values_predicate[OF V N] by auto
+  then have M: "map (\<lambda>(n, t, vs). n)                    (map (lookup (norms_of_grammar gr)) vars) =
+                map (\<lambda>(n, t, vs). Suc (norm_fun gr vs)) (map (lookup (norms_of_grammar gr)) vars)"
+    using map_eq_conv[symmetric] by auto
+  show ?thesis unfolding E using HOL.arg_cong[OF M] .
+qed
 
 
 (*****************************************************************************
@@ -541,7 +569,8 @@ lemma mwov_len_recursion:
   assumes "gram_nsd_fun gr"
       and "set vars \<subseteq> keys gr"
     shows "length (min_word_of_variables gr vars) =
-           (\<Sum>(n, t, vs)\<leftarrow>(map (lookup (norms_of_grammar gr)) vars). Suc (length (min_word_of_variables gr vs)))" using assms
+           (\<Sum>(n, t, vs)\<leftarrow>(map (lookup (norms_of_grammar gr)) vars).
+             Suc (length (min_word_of_variables gr vs)))" using assms
 sorry
 
 lemma mwov_len_calcs_nf':

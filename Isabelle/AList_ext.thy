@@ -11,6 +11,9 @@ definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
   "keys l \<equiv> Mapping.keys (Mapping l)"
 
 
+lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
+by (induct l) (auto simp add: keys_def)
+
 lemma alist_fst_map: "is_alist l \<Longrightarrow> map fst l = map fst (f l) \<Longrightarrow> is_alist (f l)"
 by (simp add: is_alist_def)
 
@@ -29,11 +32,8 @@ by (auto simp add: keys_def lookup_def is_alist_def)
 lemma lookup_predicate: "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> P k v \<Longrightarrow> P k (lookup l k)"
 by (induct l) (auto simp add: lookup_def is_alist_def)
 
-lemma lookup_forall: "\<forall>(k, v) \<in> set l. P k v \<Longrightarrow> k \<in> fst ` set l \<Longrightarrow> P k (lookup l k)"
+lemma lookup_forall: "\<forall>(k, v) \<in> set l. P k v \<Longrightarrow> k \<in> keys l \<Longrightarrow> P k (lookup l k)"
 by (induct l) (auto simp add: lookup_def)
-
-lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
-by (induct l) (auto simp add: keys_def)
 
 (* TODO: improve proof speed! *)
 lemma alist_partition_distr: "is_alist l \<Longrightarrow> (yes, no) = partition P l \<Longrightarrow> is_alist (yes @ no)"
@@ -71,5 +71,19 @@ thm existence_from_lookup
   then show ?thesis using 1 alist_values_equal assms(3) by force
 qed
 
+lemma lookup_in_snd: "k \<in> keys l \<Longrightarrow> (lookup l) k \<in> snd ` set l"
+by (induct l) (auto simp add: lookup_def)
+
+lemma lookup_map_in_snd: "set ks \<subseteq> keys l \<Longrightarrow> set (map (lookup l) ks) \<subseteq> snd ` set l"
+by (metis (hide_lams, no_types) image_set image_subsetI in_mono lookup_in_snd)
+
+lemma lookup_values_predicate:
+  assumes "set ks \<subseteq> keys l"
+      and "\<forall>(k, v) \<in> set l. P v"
+    shows "\<forall>v \<in> set (map (lookup l) ks). P v"
+proof -
+  have "\<forall>v \<in> snd ` set l. P v" using assms(2) by auto
+  then show ?thesis using lookup_map_in_snd[OF assms(1)] by (metis in_mono)
+qed
 
 end
