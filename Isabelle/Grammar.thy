@@ -664,13 +664,22 @@ lemma mwov_empty:
 by (metis gr_implies_not0 list.size(3) mwov_len_calcs_nf nf_greater_zero)
 
 lemma mwov_length:
-  assumes G: "gram_nsd_fun gr"
-      and T: "set vt \<subseteq> keys gr"
-      and V: "(vh, rules) \<in> set gr"
-      and R: "(th, rth) \<in> set rules"
-    shows "length (min_word_of_variables gr (vh # vt)) \<le>
-       1 + length (min_word_of_variables gr (rth @ vt))" using assms
-sorry
+  assumes "gram_nsd_fun gr"
+      and "(vh, rules) \<in> set gr"
+      and "(th, rth) \<in> set rules"
+    shows "length (min_word_of_variables gr [vh]) \<le> Suc (length (min_word_of_variables gr rth))"
+proof -
+  def nvh \<equiv> "lookup (norms_of_grammar gr) vh"
+  def n  \<equiv> "(\<lambda>(n, t, vs).  n) nvh"
+  def t  \<equiv> "(\<lambda>(n, t, vs).  t) nvh"
+  def vs \<equiv> "(\<lambda>(n, t, vs). vs) nvh"
+  have N: "(vh, n, t, vs) \<in> set (norms_of_grammar gr)" sorry
+  
+  have 1: "min_word_of_variables gr [vh] = t # min_word_of_variables gr vs"
+    using mwov_singleton[OF assms(1) N] .
+  have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr rth)" sorry
+  then show ?thesis unfolding 1 by auto
+qed
 
 lemma mwov_hd_from_nog:
   assumes "gram_nsd_fun gr"
@@ -823,10 +832,19 @@ proof (induct gr w v rule: eat_word_induct)
 
   have VT: "set vt \<subseteq> keys gr" using normal by simp
   have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gsd_rule_vars_in_keys[OF GS VR TR] by auto
+  have RT: "set rth \<subseteq> keys gr" using RV by simp
+
+  have L1: "length (min_word_of_variables gr (vh # vt)) =
+           length (min_word_of_variables gr [vh]) + length (min_word_of_variables gr vt)"
+    using mwov_distr(2)[OF normal(2) _ VT, of "[vh]"] normal(3) by auto
+  have L2: "length (min_word_of_variables gr (rth @ vt)) =
+           length (min_word_of_variables gr rth) + length (min_word_of_variables gr vt)"
+    using mwov_distr(2)[OF normal(2) RT VT] .
 
   have "length (min_word_of_variables gr (vh # vt)) \<le>
-    1 + length (min_word_of_variables gr (rth @ vt))" using mwov_length normal(2) VT VR TR .
-  also have "... \<le> length (th # tt)" using normal rules_def rth_def RV TH
+   Suc (length (min_word_of_variables gr (rth @ vt)))"
+    using mwov_length[OF normal(2) VR TR] L1 L2 by auto
+  also have "... \<le> length (th # tt)" using normal RV TH unfolding rules_def rth_def 
     by (auto simp add: word_in_variables_def)
   finally show ?case .
 qed (auto simp add: word_in_variables_def)
