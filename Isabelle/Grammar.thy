@@ -642,7 +642,8 @@ by (metis gr_implies_not0 list.size(3) mwov_len_calcs_nf nf_greater_zero)
 
 (* TODO: move to norm_fun section when done! *)
 lemma nf_new:
-  assumes "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+  assumes "gram_nsd_fun gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
       and "(tr, vsr) \<in> set rules"
     shows "norm_fun gr vs \<le> norm_fun gr vsr" unfolding norm_fun_def
@@ -666,12 +667,12 @@ proof -
   have N: "(v, n, t, vs) \<in> set (norms_of_grammar gr)" apply (case_tac nvh)
     unfolding n_def t_def vs_def nvh_def using existence_from_lookup[OF A V] by auto
 
-  have 1: "set vs \<subseteq> keys gr" using nog_ns(1)[OF G N] K by auto
-  have 2: "set vsr \<subseteq> keys gr" using gsd_rule_vars_in_keys[OF G assms(2-3)] .
+  have V1: "set vs  \<subseteq> keys gr" using nog_ns(1)[OF G N] K by auto
+  have V2: "set vsr \<subseteq> keys gr" using gsd_rule_vars_in_keys[OF G assms(2-3)] .
   
   have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr vsr)"
-    unfolding mwov_len_calcs_nf[OF assms(1) 1] mwov_len_calcs_nf[OF assms(1) 2]
-    using nf_new[OF N assms(2-3)] .
+    unfolding mwov_len_calcs_nf[OF assms(1) V1] mwov_len_calcs_nf[OF assms(1) V2]
+    using nf_new[OF assms(1) N assms(2-3)] .
   then show ?thesis unfolding mwov_singleton[OF assms(1) N] by auto
 qed
 
@@ -865,8 +866,17 @@ unfolding words_of_variables_def using mwov_minimal_wiv[OF assms] by simp
   gram_normed_def
 *****************************************************************************)
 
-lemma gnf_calcs_gnd: "gram_normed_def gr = gram_normed_fun gr"
-sorry
+lemma gnf_calcs_gnd:
+  assumes "gram_sd gr"
+    shows "gram_normed_def gr = gram_normed_fun gr"
+proof (intro iffI)
+  assume P: "gram_normed_def gr"
+  show "gram_normed_fun gr" sorry
+next
+  assume "gram_normed_fun gr"
+  then have "gram_nsd_fun gr" using assms(1) unfolding gram_nsd_fun_def by simp
+  then show "gram_normed_def gr" unfolding gram_normed_def_def using wiv_mwov by auto
+qed
 
 
 (*****************************************************************************
@@ -874,7 +884,7 @@ sorry
 *****************************************************************************)
 
 lemma gnsdf_calcs_gnsdd: "gram_nsd_def gr = gram_nsd_fun gr"
-unfolding gram_nsd_def_def gram_nsd_fun_def gnf_calcs_gnd by simp
+unfolding gram_nsd_def_def gram_nsd_fun_def by (metis gnf_calcs_gnd)
 
 
 (*****************************************************************************
