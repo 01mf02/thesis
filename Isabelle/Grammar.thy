@@ -125,8 +125,21 @@ lemma mnotr_variables_rules:
   assumes "t_rules_have_norm norms rules"
       and "(n, t, vs) = min_norm_of_t_rules norms rules"
       and "(tr, vsr) \<in> set rules"
-    shows "norm_sum norms vs \<le> norm_sum norms vsr" using assms(2-3) mnotr_in_rules[OF assms(1)]
-unfolding norms_of_t_rules_def t_rule_has_norm_def min_norm_of_t_rules_def sorry
+      (*and "t_rule_has_norm norms (tr, vsr)"*)
+    shows "norm_sum norms vs \<le> norm_sum norms vsr"
+proof -
+  def normed \<equiv> "(filter (t_rule_has_norm norms) rules)"
+  def nr \<equiv> "norm_sum norms vsr"
+
+  have N: "n = norm_sum norms vs" sorry
+
+  have "(n, t, vs) = Min (set (map (\<lambda>(t, vs). (1 + norm_sum norms vs, t, vs)) normed))"
+    using assms(2) unfolding norms_of_t_rules_def min_norm_of_t_rules_def normed_def .
+  have "(nr, tr, vsr) \<in> set (norms_of_t_rules norms rules)" sorry
+  then have R: "n \<le> nr" using assms(2)[simplified min_norm_of_t_rules_def]
+    by (metis n_not_Suc_n notr_variables(2) nr_def)
+  show ?thesis using R unfolding N nr_def .
+qed
 
 
 (*****************************************************************************
