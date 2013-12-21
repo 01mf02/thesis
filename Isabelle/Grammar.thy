@@ -215,15 +215,17 @@ next
     show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
 
-definition itno_invariant_sd_nin where
-  "itno_invariant_sd_nin norms rules n t vs \<equiv>
+definition itno_invariant_sd_in where
+  "itno_invariant_sd_in norms rules n t vs \<equiv>
      t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
+
+
 
 lemma itno_induct_sd_in [case_names Step]:
   assumes "\<And>norms rest yes no.
                 itno_invariant gr norms rest \<Longrightarrow>
                 itno_invariant_sd gr norms rest \<Longrightarrow>
-                ((v, n, t, vs) \<notin> set norms \<Longrightarrow> itno_invariant_sd_nin norms rules n t vs) \<Longrightarrow>
+                ((v, n, t, vs) \<notin> set norms \<Longrightarrow> itno_invariant_sd_in norms rules n t vs) \<Longrightarrow>
                 ((v, n, t, vs) \<in> set norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
                 partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
                 P (update_norms norms yes, no)"
@@ -237,6 +239,8 @@ next
   case (Step norms rest yes no) show ?case
   proof (cases "(v, n, t, vs) \<in> set norms")
     case True then show ?thesis using assms(1) Step by auto
+    have R: "t_rules_have_norm norms rules" sorry
+    have "(n, t, vs) = min_norm_of_t_rules norms rules" sorry
   next
     case False
 
@@ -256,11 +260,73 @@ next
 
     have "(n, t, vs) = min_norm_of_t_rules norms rules"
       using alist_map_values_equal[OF AY VY VM[simplified mnotr_map_def]] .
-    then have NI: "itno_invariant_sd_nin norms rules n t vs"
-      unfolding itno_invariant_sd_nin_def using R by auto
+    then have IS: "itno_invariant_sd_in norms rules n t vs"
+      unfolding itno_invariant_sd_in_def using R by auto
 
-    show ?thesis using assms(1)[OF Step(1-2) NI _ Step(4)] False by auto
+    show ?thesis using assms(1)[OF Step(1-2) IS _ Step(4)] False by auto
   qed
+qed (auto simp add: assms)
+
+
+lemma un_conserves_invariant:
+  assumes "itno_invariant_sd_in norms rules n t vs"
+    shows "itno_invariant_sd_in (update_norms norms yes) rules n t vs"
+sorry
+
+lemma itno_induct_sd_in_new [case_names Step]:
+  assumes "\<And>norms rest yes no.
+                itno_invariant gr norms rest \<Longrightarrow>
+                itno_invariant_sd gr norms rest \<Longrightarrow>
+                itno_invariant_sd_in norms rules n t vs \<Longrightarrow>
+                ((v, n, t, vs) \<in> set norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
+                partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
+                P (update_norms norms yes, no)"
+      and "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
+  shows "P (iterate_norms gr)"
+    and "itno_invariant_sd_in (norms_of_grammar gr) rules n t vs"
+using assms(4) unfolding norms_of_grammar_def proof (induct rule: itno_induct_sd(1))
+  case Base
+    case 1 then show ?case by auto
+    case 2 then show ?case by auto
+next
+  case (Step norms rest yes no)
+  have IS: "(v, n, t, vs) \<in> set (update_norms norms yes) \<Longrightarrow>
+            itno_invariant_sd_in norms rules n t vs"
+    proof (cases "(v, n, t, vs) \<in> set norms")
+      case True then show ?thesis using Step(4) by auto
+    next
+      case False
+      assume P: "(v, n, t, vs) \<in> set (update_norms norms yes)"
+  
+      have I: "set rest \<subseteq> set gr" "is_alist rest"
+        using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
+      have YG: "set yes \<subseteq> set gr" using Step(5) I(1) by auto
+  
+      have AG: "is_alist gr" using gsd_alist assms(2) by auto
+      have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(5)[symmetric]] alist_distr
+        by auto
+  
+      have VM: "(v, n, t, vs) \<in> set (mnotr_map norms yes)" using False P
+        unfolding update_norms_def by auto
+      then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(3)] YG
+        unfolding mnotr_map_def by auto
+      then have R: "t_rules_have_norm norms rules" using Step(5) unfolding v_rule_has_norm_def by auto
+  
+      have "(n, t, vs) = min_norm_of_t_rules norms rules"
+        using alist_map_values_equal[OF AY VY VM[simplified mnotr_map_def]] .
+      then show ?thesis unfolding itno_invariant_sd_in_def using R by auto
+    qed
+
+    case 1 show ?case
+    proof (cases "(v, n, t, vs) \<in> set norms")
+      case True then show ?thesis using assms(1) Step by auto
+    next
+      case False then show ?thesis using assms(1)[OF Step(1-2) IS _ Step(5)] 1 by auto
+    qed
+
+    case 2 show ?case using un_conserves_invariant[OF IS[OF 2[simplified]]] by simp
 qed (auto simp add: assms)
 
 
@@ -313,7 +379,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   show ?case proof (cases "(v, n, t, vs) \<in> set norms")
     case False
     then have I: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_nin_def by auto
+      using Step(3) unfolding itno_invariant_sd_in_def by auto
     then have "(t, vs) = snd (min_norm_of_t_rules norms rules)" by (metis snd_conv)
     then show ?thesis using mnotr_in_rules[OF I(1)] by auto
   qed (auto simp add: Step)
@@ -396,7 +462,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   next
     case False
     then have I: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_nin_def by auto
+      using Step(3) unfolding itno_invariant_sd_in_def by auto
     then show ?thesis unfolding update_norms_def using mnotr_variables(1)[OF I] by auto
   qed
 
@@ -406,7 +472,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   next
     case False
     then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_nin_def by auto
+      using Step(3) unfolding itno_invariant_sd_in_def by auto
     show ?thesis using nog_ns_norms_un_equal[OF Step(2,7)] mnotr_variables[OF N] by auto
   qed
 
@@ -418,7 +484,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   next
     case False
     then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_nin_def by auto
+      using Step(3) unfolding itno_invariant_sd_in_def by auto
 
     have 1: "set vs \<subseteq> keys norms" using mnotr_variables(1)[OF N] .
     have 2: "set vsr \<subseteq> keys norms" sorry
@@ -479,7 +545,7 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   show ?case proof (cases "(v, n, t, vs) \<in> set norms")
     case False
     then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_nin_def by auto
+      using Step(3) unfolding itno_invariant_sd_in_def by auto
 
     have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
         using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
