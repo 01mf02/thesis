@@ -72,6 +72,17 @@ definition iterate_norms ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
   "iterate_norms gr = partition_iterate v_rule_has_norm update_norms [] gr"
 
+definition itno_invariant where
+  "itno_invariant gr norms rest \<equiv>
+     set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest *)"
+
+definition itno_invariant_sd where
+  "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
+
+definition itno_invariant_sd_in where
+  "itno_invariant_sd_in norms rules n t vs \<equiv>
+     t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
+
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"
 
