@@ -36,6 +36,11 @@ lemma map_concat_len:
   "length (concat (map f l)) = (\<Sum>x\<leftarrow>l. length (f x))"
 by (induct l) auto
 
+lemma list_subset_trans:
+  assumes "\<And>v. set v \<subseteq> A \<Longrightarrow> set v \<subseteq> B"
+    shows "A \<subseteq> B" using assms
+by (metis List.set_insert in_set_insert insert_Nil insert_subset not_Cons_self2 subsetI)
+
 
 (*****************************************************************************
   partition_iterate

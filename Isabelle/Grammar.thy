@@ -390,6 +390,20 @@ proof -
     using nog_ns'[OF assms] by auto
 qed
 
+lemma nog_keys_superset_gr_normed:
+  assumes "gram_sd gr"
+      and "keys gr \<subseteq> keys (norms_of_grammar gr)"
+    shows "gram_normed_fun gr"
+proof -
+  have "keys (fst (iterate_norms gr)) \<inter> keys (snd (iterate_norms gr)) = {}"
+    using itno_invariant_sd_holds[OF assms(1)] unfolding itno_invariant_sd_def by auto
+  then have "keys gr \<inter> keys (snd (iterate_norms gr)) = {}" 
+    by (metis itno_subset_gr_keys subset_antisym sup.bounded_iff norms_of_grammar_def assms(2))
+  then have "keys (snd (iterate_norms gr)) \<subseteq> - keys (snd (iterate_norms gr))"
+    using itno_subset_gr_keys[of gr] unfolding Set.disjoint_eq_subset_Compl by force
+  then show ?thesis unfolding gram_normed_fun_def using iffD1[OF Set.subset_Compl_self_eq] by auto
+qed
+
 
 (*****************************************************************************
   norm_fun
@@ -844,6 +858,13 @@ proof (induct gr w v rule: eat_word_induct)
   finally show ?case .
 qed (auto simp add: word_in_variables_def)
 
+lemma wiv_vars_in_norms:
+  assumes "gram_sd gr"
+      and "set v \<subseteq> keys gr"
+      and "word_in_variables gr w v"
+    shows "set v \<subseteq> keys (norms_of_grammar gr)"
+sorry
+
 
 (*****************************************************************************
   words_of_variables
@@ -871,7 +892,16 @@ lemma gnf_calcs_gnd:
     shows "gram_normed_def gr = gram_normed_fun gr"
 proof (intro iffI)
   assume P: "gram_normed_def gr"
-  show "gram_normed_fun gr" sorry
+  
+  have S: "\<And>v. set v \<subseteq> keys gr \<Longrightarrow> set v \<subseteq> keys (norms_of_grammar gr)"
+    proof -
+      fix v
+      assume V: "set v \<subseteq> keys gr"
+      then have "\<exists>w. word_in_variables gr w v" using P[simplified gram_normed_def_def] by auto
+      then show "set v \<subseteq> keys (norms_of_grammar gr)" using wiv_vars_in_norms[OF assms(1) V] by auto
+    qed
+  have "keys gr \<subseteq> keys (norms_of_grammar gr)" using list_subset_trans S .
+  then show "gram_normed_fun gr" using nog_keys_superset_gr_normed[OF assms(1)] by simp
 next
   assume "gram_normed_fun gr"
   then have "gram_nsd_fun gr" using assms(1) unfolding gram_nsd_fun_def by simp
