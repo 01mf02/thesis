@@ -14,6 +14,15 @@ by (simp add: gram_sd_def)
 lemma gsd_rules_alist: "gram_sd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> is_alist rules"
 unfolding gram_sd_def by auto
 
+lemma gsd_rules_rule_exists:
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+    shows "\<exists>t vs. (t, vs) \<in> set rules"
+proof -
+  have "rules \<noteq> []" using assms(1-2) unfolding gram_sd_def by auto
+  then show ?thesis by (metis hd_in_set surj_pair)
+qed
+
 lemma gsd_rule_vars_in_keys:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
@@ -111,6 +120,13 @@ lemma mnotr_variables:
       and "n = Suc (norm_sum norms vs)"
 by (metis assms(1) assms(2) mnotr_in_nor notr_variables(1))
    (metis assms(1) assms(2) mnotr_in_nor notr_variables(2))
+
+lemma mnotr_variables_rules:
+  assumes "t_rules_have_norm norms rules"
+      and "(n, t, vs) = min_norm_of_t_rules norms rules"
+      and "(tr, vsr) \<in> set rules"
+    shows "norm_sum norms vs \<le> norm_sum norms vsr" using assms(2-3) mnotr_in_rules[OF assms(1)]
+unfolding norms_of_t_rules_def t_rule_has_norm_def min_norm_of_t_rules_def sorry
 
 
 (*****************************************************************************
@@ -354,10 +370,13 @@ lemma nog_ns':
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
+      and "(tr, vsr) \<in> set rules"
     shows "set vs \<subseteq> keys (norms_of_grammar gr)"
-      and "n = Suc (norm_fun gr vs)" unfolding norms_of_grammar_def norm_fun_def
+      and "n = Suc (norm_fun gr vs)"
+      and "norm_fun gr vs \<le> norm_fun gr vsr" unfolding norms_of_grammar_def norm_fun_def
 proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
   case (Step norms rest yes no)
+
   case 1 show ?case
   proof (cases "(v, n, t, vs) \<in> set norms")
     case True then show ?thesis using Step unfolding update_norms_def by auto
@@ -365,16 +384,33 @@ proof (induct rule: itno_induct_sd_in[of gr v n t vs rules])
     case False
     then have I: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
       using Step(3) unfolding itno_invariant_sd_nin_def by auto
-    then show ?thesis unfolding update_norms_def using mnotr_variables[OF I] by auto
+    then show ?thesis unfolding update_norms_def using mnotr_variables(1)[OF I] by auto
   qed
+
   case 2 show ?case
   proof (cases "(v, n, t, vs) \<in> set norms")
-    case True then show ?thesis using nog_ns_norms_un_equal[OF Step(2,6)] Step(4-5) by auto
+    case True then show ?thesis using nog_ns_norms_un_equal[OF Step(2,7)] Step(4-5) by auto
   next
     case False
     then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
       using Step(3) unfolding itno_invariant_sd_nin_def by auto
-    show ?thesis using nog_ns_norms_un_equal[OF Step(2,6)] mnotr_variables[OF N] by auto
+    show ?thesis using nog_ns_norms_un_equal[OF Step(2,7)] mnotr_variables[OF N] by auto
+  qed
+
+  case 3 show ?case
+  proof (cases "(v, n, t, vs) \<in> set norms")
+    case True
+    have "set vsr \<subseteq> keys norms" sorry
+    then show ?thesis using nog_ns_norms_un_equal[OF Step(2,7)] Step(4,6)[OF True] by auto
+  next
+    case False
+    then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
+      using Step(3) unfolding itno_invariant_sd_nin_def by auto
+
+    have 1: "set vs \<subseteq> keys norms" using mnotr_variables(1)[OF N] .
+    have 2: "set vsr \<subseteq> keys norms" sorry
+    have "norm_sum norms vs \<le> norm_sum norms vsr" using mnotr_variables_rules[OF N assms(4)] by auto
+    then show ?thesis using nog_ns_norms_un_equal[OF Step(2,7)] 1 2 by auto
   qed
 qed (auto simp add: assms)
 
@@ -385,9 +421,10 @@ lemma nog_ns:
       and "n = Suc (norm_fun gr vs)"
 proof -
   have "v \<in> keys gr" using itno_gr_keys_equal[of gr] assms(2) unfolding norms_of_grammar_def by auto
-  then have "\<exists>rules. (v, rules) \<in> set gr" by auto
-  then show "set vs \<subseteq> keys (norms_of_grammar gr)" "n = Suc (norm_fun gr vs)"
-    using nog_ns'[OF assms] by auto
+  then have R: "\<exists>rules tr vsr. (v, rules) \<in> set gr \<and> (tr, vsr) \<in> set rules"
+    using gsd_rules_rule_exists[OF assms(1)] by auto
+  show "set vs \<subseteq> keys (norms_of_grammar gr)" using R nog_ns'[OF assms] by metis
+  show "n = Suc (norm_fun gr vs)"            using R nog_ns'[OF assms] by metis
 qed
 
 lemma nog_keys_superset_gr_normed:
@@ -654,15 +691,6 @@ lemma mwov_empty:
     shows "v = []" using assms
 by (metis gr_implies_not0 list.size(3) mwov_len_calcs_nf nf_greater_zero)
 
-(* TODO: move to norm_fun section when done! *)
-lemma nf_new:
-  assumes "gram_nsd_fun gr"
-      and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-      and "(v, rules) \<in> set gr"
-      and "(tr, vsr) \<in> set rules"
-    shows "norm_fun gr vs \<le> norm_fun gr vsr" unfolding norm_fun_def
-sorry
-
 lemma mwov_length:
   assumes "gram_nsd_fun gr"
       and "(v, rules) \<in> set gr"
@@ -686,7 +714,7 @@ proof -
   
   have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr vsr)"
     unfolding mwov_len_calcs_nf[OF assms(1) V1] mwov_len_calcs_nf[OF assms(1) V2]
-    using nf_new[OF assms(1) N assms(2-3)] .
+    using nog_ns'(3)[OF G N assms(2-3)] .
   then show ?thesis unfolding mwov_singleton[OF assms(1) N] by auto
 qed
 
