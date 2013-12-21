@@ -462,8 +462,7 @@ lemma nog_ns:
       and "n = Suc (norm_fun gr vs)"
 proof -
   have "v \<in> keys gr" using itno_gr_keys_equal[of gr] assms(2) unfolding norms_of_grammar_def by auto
-  then have R: "\<exists>rules tr vsr. (v, rules) \<in> set gr \<and> (tr, vsr) \<in> set rules"
-    using gsd_rules_rule_exists[OF assms(1)] by auto
+  then have R: "\<exists>rules. (v, rules) \<in> set gr" by auto
   show "set vs <= keys (norms_of_grammar gr)" using R nog_vs_in_norms'[OF assms] by metis
   show "n = Suc (norm_fun gr vs)"             using R nog_n_suc_nf'   [OF assms] by metis
 qed
