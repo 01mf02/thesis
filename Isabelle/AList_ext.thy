@@ -55,6 +55,9 @@ lemma alist_map_values_equal:
   "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> (k, v') \<in> set (map (\<lambda>(k, v). (k, f k v)) l) \<Longrightarrow> v' = f k v"
 by (induct l) (auto simp add: is_alist_def, force)
 
+lemma map_keys_equal: "keys (map (\<lambda>(k, v). (k, f v)) l) = keys l"
+by (induct l) auto
+
 lemma alist_superset_lookup_equal:
   assumes "set l \<subseteq> keys A"
       and "is_alist A"

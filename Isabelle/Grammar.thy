@@ -72,6 +72,21 @@ qed
 lemma trhn_conserves: "t_rule_has_norm norms rule \<Longrightarrow> t_rule_has_norm (norms@l) rule"
 unfolding t_rule_has_norm_def by auto
 
+lemma trhn_vars_normed: "(t_rule_has_norm norms (t, vs)) = (set vs \<subseteq> keys norms)"
+unfolding t_rule_has_norm_def by auto
+
+lemma trhn_conserves_cool:
+  assumes "t_rule_has_norm norms rule"
+      and "set norms \<subseteq> set norms_sl"
+    shows "t_rule_has_norm norms_sl rule" using assms
+by (case_tac rule) (auto simp add: trhn_vars_normed)
+
+lemma trshn_conserves_cool:
+  assumes "t_rules_have_norm norms rules"
+      and "set norms \<subseteq> set norms_sl"
+    shows "t_rules_have_norm norms_sl rule" using assms(1)
+unfolding t_rules_have_norm_def using trhn_conserves_cool[OF _ assms(2)] sorry
+
 lemma trshn_conserves:
   assumes "t_rules_have_norm norms rules"
     shows "t_rules_have_norm (norms@l) rules"
@@ -84,6 +99,13 @@ using assms unfolding t_rules_have_norm_def using trhn_conserves[of norms] by au
 
 lemma notr_in_rules: "snd ` set (norms_of_t_rules norms rules) \<subseteq> set rules"
 unfolding norms_of_t_rules_def by auto
+
+lemma notr_nonempty_cool:
+  assumes "t_rules_have_norm norms rules"
+      and "set norms_sl \<subseteq> set norms"
+    shows "norms_of_t_rules norms_sl rules \<noteq> []"
+using assms apply (simp add: t_rules_have_norm_def norms_of_t_rules_def filter_empty_conv)
+sorry
 
 lemma notr_nonempty:
   assumes "t_rules_have_norm norms rules"
@@ -103,6 +125,12 @@ lemma notr_variables:
     shows "set vs \<subseteq> keys norms"
       and "n = Suc (norm_sum norms vs)" using assms
 unfolding norms_of_t_rules_def t_rule_has_norm_def by auto
+
+lemma notr_rule_in:
+  assumes "(t, vs) \<in> set rules"
+      and "t_rule_has_norm norms (t, vs)"
+    shows "(Suc (norm_sum norms vs), t, vs) \<in> set (norms_of_t_rules norms rules)" using assms
+unfolding norms_of_t_rules_def by auto
 
 
 (*****************************************************************************
@@ -136,29 +164,35 @@ by (metis assms itno_invariant_sd_in_def mnotr_in_nor notr_variables(1))
 lemma mnotr_variables_rules:
   assumes "itno_invariant_sd_in norms rules n t vs"
       and "(tr, vsr) \<in> set rules"
-      (*and "t_rule_has_norm norms (tr, vsr)"*)
+      and "t_rule_has_norm norms (tr, vsr)"
     shows "norm_sum norms vs \<le> norm_sum norms vsr"
 proof -
-  def normed \<equiv> "(filter (t_rule_has_norm norms) rules)"
-  def nr \<equiv> "norm_sum norms vsr"
+  def nr \<equiv> "Suc (norm_sum norms vsr)"
 
-  (* TODO: check if we really need I(1) ... *)
   have I: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
     using assms(1) unfolding itno_invariant_sd_in_def by auto
-  have N: "n = norm_sum norms vs" sorry
+  have N: "n = Suc (norm_sum norms vs)"
+    using notr_variables(2) mnotr_in_nor[OF I(1), simplified I(2)[symmetric]] .
 
-  have "(n, t, vs) = Min (set (map (\<lambda>(t, vs). (1 + norm_sum norms vs, t, vs)) normed))"
-    using I(2) unfolding norms_of_t_rules_def min_norm_of_t_rules_def normed_def .
-  have "(nr, tr, vsr) \<in> set (norms_of_t_rules norms rules)" sorry
-  then have R: "n \<le> nr" using assms(2)[simplified min_norm_of_t_rules_def]
-    by (metis n_not_Suc_n notr_variables(2) nr_def)
-  show ?thesis using R unfolding N nr_def .
+  have M: "(n, t, vs) = Min (set (norms_of_t_rules norms rules))"
+    using I(2) unfolding min_norm_of_t_rules_def .
+
+  have "(nr, tr, vsr) \<in> set (norms_of_t_rules norms rules)"
+    using notr_rule_in[OF assms(2) assms(3)] unfolding nr_def by auto
+  then have "(n, t, vs) \<le> (nr, tr, vsr)" using M by auto
+  then have "n \<le> nr" by auto
+  then show ?thesis unfolding N nr_def by auto
 qed
 
 
 (*****************************************************************************
   update_norms
  *****************************************************************************)
+
+(* TODO: prove with map_keys_equal *)
+lemma un_keys: "keys (update_norms norms yes) = keys norms \<union> keys yes"
+unfolding update_norms_def mnotr_map_def apply auto
+sorry
 
 lemma un_conserves_ns:
   assumes "itno_invariant_sd gr norms rest"
@@ -169,7 +203,7 @@ proof -
   have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using assms(1)
     unfolding itno_invariant_sd_def by auto
   have AM: "is_alist (mnotr_map norms yes)" unfolding mnotr_map_def
-    using alist_filter alist_map S(2) assms(2) by auto
+    using alist_filter alist_map_alist S(2) assms(2) by auto
   have NI: "set norms \<subseteq> set (update_norms norms yes)" unfolding update_norms_def
     by auto
 
@@ -190,7 +224,7 @@ proof -
   have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using assms(1)
     unfolding itno_invariant_sd_def by auto
   have AM: "is_alist (mnotr_map norms yes)" unfolding mnotr_map_def
-    using alist_filter alist_map S(2) assms(3) by auto
+    using alist_filter alist_map_alist S(2) assms(3) by auto
   have NI: "set norms \<subseteq> set (update_norms norms yes)" unfolding update_norms_def
     by auto
 
@@ -259,7 +293,7 @@ next
 
     have NM: "keys norms \<inter> keys (mnotr_map norms yes) = {}" using Step(4) I(3)
       unfolding mnotr_map_def by force
-    have AY: "is_alist (mnotr_map norms yes)" using alist_filter alist_map Step(4) I(2)
+    have AY: "is_alist (mnotr_map norms yes)" using alist_filter alist_map_alist Step(4) I(2)
       unfolding mnotr_map_def by auto
     have I1: "is_alist (update_norms norms yes)" using I(1) AY NM alist_distr[of norms]
       unfolding update_norms_def by auto
@@ -318,7 +352,7 @@ next
       then have R: "t_rules_have_norm norms rules" using Step(5) unfolding v_rule_has_norm_def by auto
   
       have "(n, t, vs) = min_norm_of_t_rules norms rules"
-        using alist_map_values_equal[OF AY VY VM[simplified mnotr_map_def]] .
+        using alist_map_values_equal AY VY VM[simplified mnotr_map_def] .
       then show ?thesis unfolding itno_invariant_sd_in_def using R by auto
     qed
 
@@ -472,22 +506,28 @@ lemma nog_vs_leq_rules_vs:
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
       and "(tr, vsr) \<in> set rules"
-    shows "norm_fun gr vs \<le> norm_fun gr vsr" unfolding norms_of_grammar_def norm_fun_def
+      and "t_rule_has_norm (norms_of_grammar gr) (tr, vsr)"
+    shows "norm_fun gr vs \<le> norm_fun gr vsr" using assms(5) unfolding norms_of_grammar_def norm_fun_def
 proof (induct rule: itno_induct_sd_in(1)[of gr rules n t vs v])
   case (Step norms rest yes no)
-
-  have V1: "set vs  \<subseteq> keys norms" using mnotr_variables(1)[OF Step(3)] .
-  have V2: "set vsr \<subseteq> keys norms" sorry
-
-  have NS: "norm_sum norms vs \<le> norm_sum norms vsr"
-    proof (cases "(v, n, t, vs) \<in> set norms")
-      case True then show ?thesis using Step(4) by auto
-    next
-      case False then show ?thesis using mnotr_variables_rules[OF Step(3) assms(4)] by auto
-    qed
-
-  show ?case using un_conserves_ns[OF Step(2,5)] NS V1 V2 by auto
-qed (auto simp add: assms)
+  show ?case
+  proof (cases "set vsr \<inter> keys yes = {}")
+    case True
+    have HN: "t_rule_has_norm norms (tr, vsr)"
+      using iffD1[OF trhn_vars_normed, of norms] Step(6)[simplified] unfolding update_norms_def using True sorry
+  
+    have V1: "set vs  \<subseteq> keys norms" using mnotr_variables(1) Step(3) .
+    have V2: "set vsr \<subseteq> keys norms" using iffD1 trhn_vars_normed HN .
+  
+    have NS: "norm_sum norms vs \<le> norm_sum norms vsr"
+      using mnotr_variables_rules[OF Step(3) assms(4) HN] by auto
+  
+    show ?thesis using un_conserves_ns[OF Step(2,5)] NS V1 V2 by auto
+  next
+    case False
+    show ?thesis using Step sorry
+  qed
+qed (auto simp add: assms gram_nsd_sd)
 
 lemma nog_keys_superset_gr_normed:
   assumes "gram_sd gr"
@@ -773,10 +813,12 @@ proof -
 
   have V1: "set vs  \<subseteq> keys gr" using nog_ns(1)[OF G N] K by auto
   have V2: "set vsr \<subseteq> keys gr" using gsd_rule_vars_in_keys[OF G assms(2-3)] .
-  
+
+  have HN: "t_rule_has_norm (norms_of_grammar gr) (tr, vsr)" sorry
+
   have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr vsr)"
     unfolding mwov_len_calcs_nf[OF assms(1) V1] mwov_len_calcs_nf[OF assms(1) V2]
-    using nog_vs_leq_rules_vs[OF G N assms(2-3)] .
+    using nog_vs_leq_rules_vs G N assms(2-3) HN .
   then show ?thesis unfolding mwov_singleton[OF assms(1) N] by auto
 qed
 

@@ -63,6 +63,7 @@ definition v_rule_has_norm ::
 
 definition mnotr_map where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
+  (*"mnotr_map norms = value_map (\<lambda>rules. min_norm_of_t_rules norms rules)"*)
 
 definition update_norms ::
   "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
