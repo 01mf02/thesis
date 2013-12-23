@@ -63,7 +63,7 @@ definition v_rule_has_norm ::
 
 definition mnotr_map where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
-  (*"mnotr_map norms = value_map (\<lambda>rules. min_norm_of_t_rules norms rules)"*)
+  (*"mnotr_map norms = value_map (min_norm_of_t_rules norms)"*)
 
 definition update_norms ::
   "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
@@ -78,7 +78,9 @@ definition itno_invariant where
      set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest *)"
 
 definition itno_invariant_sd where
-  "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
+  "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {} \<and>
+     (\<forall>(v, n, t, vs) \<in> set norms.
+          (n, t, vs) < Min (snd ` set (mnotr_map norms (filter (v_rule_has_norm norms) rest))))"
 
 definition itno_invariant_sd_in where
   "itno_invariant_sd_in norms rules n t vs \<equiv>
