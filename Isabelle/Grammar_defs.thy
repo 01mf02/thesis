@@ -78,9 +78,7 @@ definition itno_invariant where
      set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest *)"
 
 definition itno_invariant_sd where
-  "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {} \<and>
-     (\<forall>(v, n, t, vs) \<in> set norms.
-          (n, t, vs) < Min (snd ` set (mnotr_map norms (filter (v_rule_has_norm norms) rest))))"
+  "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
 
 definition itno_invariant_sd_in where
   "itno_invariant_sd_in norms rules n t vs \<equiv>

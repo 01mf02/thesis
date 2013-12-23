@@ -318,10 +318,7 @@ next
     have I3: "keys no \<inter> keys (update_norms norms yes) = {}" using NN MN
       unfolding update_norms_def by auto
 
-    have I4: "\<forall>(v, n, t, vs)\<in>set (update_norms norms yes).
-       (n, t, vs) < Min (snd ` set (mnotr_map (update_norms norms yes) (filter (v_rule_has_norm (update_norms norms yes)) no)))" sorry
-
-    show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 I4 by auto
+    show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
 
 lemma itno_induct_sd_in [case_names Step]:
@@ -493,6 +490,25 @@ proof -
     using itno_invariant_sd_in_holds assms .
   then show ?thesis using mnotr_variables(1) by simp
 qed
+
+lemma nog_v_in_norms':
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(t, vs) \<in> set rules"
+      and "set vs \<subseteq> keys (norms_of_grammar gr)"
+      and "norms_of_grammar gr \<noteq> []"
+    shows "v \<in> keys (norms_of_grammar gr)" using assms(4-5) unfolding norms_of_grammar_def
+proof (induct rule: itno_induct_sd(1))
+  case (Step norms rest yes no) then show ?case sorry
+qed (auto simp add: assms)
+
+lemma nog_v_in_norms:
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(t, vs) \<in> set rules"
+      and "set vs \<subseteq> keys (norms_of_grammar gr)"
+    shows "v \<in> keys (norms_of_grammar gr)"
+sorry
 
 lemma nog_n_suc_nf':
   assumes "gram_sd gr"
@@ -979,7 +995,7 @@ proof (induct gr w v rule: eat_word_induct)
   def   rth \<equiv> "lookup rules th"
 
   have GS: "gram_sd gr" using normal by (simp add: gram_nsd_sd)
-  have VR: "(vh, rules) \<in> set gr" using GS normal rules_def
+  have VR: "(vh, rules) \<in> set gr" using GS normal(3) rules_def
     by (simp add: existence_from_lookup gsd_alist)
   have RA: "is_alist rules" using gsd_rules_alist GS VR .
 
@@ -1000,7 +1016,7 @@ proof (induct gr w v rule: eat_word_induct)
   have "length (min_word_of_variables gr (vh # vt)) \<le>
    Suc (length (min_word_of_variables gr (rth @ vt)))"
     using mwov_length[OF normal(2) VR TR] L1 L2 by auto
-  also have "... \<le> length (th # tt)" using normal RV TH unfolding rules_def rth_def 
+  also have "... \<le> length (th # tt)" using normal(1,4) RV TH unfolding rules_def rth_def
     by (auto simp add: word_in_variables_def)
   finally show ?case .
 qed (auto simp add: word_in_variables_def)
@@ -1010,7 +1026,34 @@ lemma wiv_vars_in_norms:
       and "set v \<subseteq> keys gr"
       and "word_in_variables gr w v"
     shows "set v \<subseteq> keys (norms_of_grammar gr)"
-sorry
+ using assms
+proof (induct gr w v rule: eat_word_induct)
+  case (normal gr th tt vh vt)
+
+  def rules \<equiv> "lookup gr vh"
+  def   rth \<equiv> "lookup rules th"
+
+  have GS: "gram_sd gr" using normal(2) .
+  have VR: "(vh, rules) \<in> set gr" using GS normal(3) rules_def
+    by (simp add: existence_from_lookup gsd_alist)
+  have RA: "is_alist rules" using gsd_rules_alist GS VR .
+
+  have TH: "th \<in> keys rules" using normal rules_def wiv_word_head by simp
+  have TR: "(th, rth) \<in> set rules" using rth_def RA TH by (simp add: existence_from_lookup)
+
+  have VT: "set vt \<subseteq> keys gr" using normal by simp
+  have RV: "set (rth @ vt) \<subseteq> keys gr" using normal gsd_rule_vars_in_keys[OF GS VR TR] by auto
+  have RT: "set rth \<subseteq> keys gr" using RV by simp
+
+  have "word_in_variables gr tt (rth @ vt)" using normal(4) RV TH unfolding rules_def rth_def
+    by (auto simp add: word_in_variables_def)
+  then have RVN: "set (rth @ vt) \<subseteq> keys (norms_of_grammar gr)"
+    using normal(1)[OF _ TH GS _ ] RV normal(4) unfolding rth_def rules_def by auto
+  then have RTN: "set rth \<subseteq> keys (norms_of_grammar gr)" by auto
+
+  have "vh \<in> keys (norms_of_grammar gr)" using nog_v_in_norms GS VR TR RTN .
+  then show ?case using RVN by auto
+qed (auto simp add: word_in_variables_def)
 
 
 (*****************************************************************************
