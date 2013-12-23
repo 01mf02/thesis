@@ -10,6 +10,9 @@ definition lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" w
 definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
   "keys l \<equiv> Mapping.keys (Mapping l)"
 
+definition value_map where
+  "value_map f \<equiv> map (\<lambda>(k, v). (k, f v))"
+
 
 lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
 by (induct l) (auto simp add: keys_def)
@@ -48,7 +51,7 @@ by (induct l) (auto simp add: is_alist_def)
 lemma alist_filter: "is_alist l \<Longrightarrow> is_alist (filter P l)"
 by (induct l) (auto simp add: is_alist_def)
 
-lemma alist_map: "is_alist l \<Longrightarrow> is_alist (map (\<lambda>(a, b). (a, f b)) l)"
+lemma alist_map_alist: "is_alist l \<Longrightarrow> is_alist (map (\<lambda>(a, b). (a, f b)) l)"
 by (induct l) (auto simp add: is_alist_def)
 
 lemma alist_map_values_equal:
