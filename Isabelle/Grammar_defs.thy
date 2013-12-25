@@ -51,7 +51,7 @@ definition t_rules_have_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t
 definition norms_of_t_rules ::
   "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rules_norms" where
   "norms_of_t_rules norms rules \<equiv>
-     map (\<lambda>(t, vs). (1 + norm_sum norms vs, (t, vs))) (filter (t_rule_has_norm norms) rules)"
+     map (\<lambda>(t, vs). (Suc (norm_sum norms vs), (t, vs))) (filter (t_rule_has_norm norms) rules)"
 
 definition min_norm_of_t_rules :: "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow>
   ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rule_norm" where

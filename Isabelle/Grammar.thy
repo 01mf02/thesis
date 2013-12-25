@@ -238,6 +238,10 @@ proof -
   show ?thesis unfolding min_norm_of_t_rules_def using ZZZ[OF assms(1-2) HN] .
 qed
 
+(* TODO: This is unprovable, due to the fact that we do not impose enough restrictions on rest,
+   which means we can actually have variables in rest s.t. they change the norms of already
+   inspected variables.
+   Fix by stronger requirements on rest? *)
 lemma un_conserves_invariant:
   assumes "itno_invariant_sd gr norms rest"
       and "itno_invariant_sd_in norms rules n t vs"
@@ -509,7 +513,9 @@ lemma nog_v_in_norms':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "t_rules_have_norm (norms_of_grammar gr) rules"
-    shows "v \<in> keys (update_norms (norms_of_grammar gr) (filter (v_rule_has_norm (norms_of_grammar gr)) (snd (iterate_norms gr))))" using assms(3) unfolding norms_of_grammar_def
+    shows "v \<in> keys ((\<lambda>(norms, rest).
+           update_norms norms (filter (v_rule_has_norm norms) rest)) (iterate_norms gr))"
+  using assms(3) unfolding norms_of_grammar_def
 proof (induct rule: itno_induct_sd(1))
   case (Step norms rest yes no)
   show ?case proof (cases "v \<in> keys (update_norms norms yes)")
@@ -541,9 +547,9 @@ next
   show ?case using un_var_in_keys[OF VF] by auto
 qed (auto simp add: assms)
 
-lemma nog_un_invariant: "update_norms (norms_of_grammar gr)
-             (filter (v_rule_has_norm (norms_of_grammar gr))
-             (snd (iterate_norms gr))) = norms_of_grammar gr"
+lemma nog_un_invariant:
+  "((\<lambda>(norms, rest). update_norms norms (filter (v_rule_has_norm norms) rest)) (iterate_norms gr)) =
+   norms_of_grammar gr"
 unfolding norms_of_grammar_def iterate_norms_def
 using pi_invariant[of update_norms v_rule_has_norm "[]" gr, OF un_nil_invariant]
 by (case_tac "partition_iterate v_rule_has_norm update_norms [] gr") auto
@@ -586,23 +592,26 @@ lemma nog_vs_leq_rules_vs:
     shows "norm_fun gr vs \<le> norm_fun gr vsr" using assms(5) unfolding norms_of_grammar_def norm_fun_def
 proof (induct rule: itno_induct_sd_in(1)[of gr rules n t vs v])
   case (Step norms rest yes no)
+
+  (*have V1: "set vs  \<subseteq> keys norms" using mnotr_variables(1) Step(3) .
+
   show ?case
   proof (cases "set vsr \<inter> keys yes = {}")
     case True
-    have HN: "t_rule_has_norm norms (tr, vsr)"
-      using iffD1[OF trhn_vars_normed Step(6)[simplified]] True using un_trhn_irrelevant by auto
+    then have HN: "t_rule_has_norm norms (tr, vsr)"
+      using iffD1[OF trhn_vars_normed Step(6)[simplified]] using un_trhn_irrelevant by auto
   
-    have V1: "set vs  \<subseteq> keys norms" using mnotr_variables(1) Step(3) .
     have V2: "set vsr \<subseteq> keys norms" using iffD1 trhn_vars_normed HN .
-  
     have NS: "norm_sum norms vs \<le> norm_sum norms vsr"
       using mnotr_variables_rules[OF Step(3) assms(4) HN] by auto
-  
+
     show ?thesis using un_conserves_ns[OF Step(2,5)] NS V1 V2 by auto
   next
-    case False
-    show ?thesis using Step sorry
-  qed
+    case False*)
+    have IU: "itno_invariant_sd_in (update_norms norms yes) rules n t vs"
+      using un_conserves_invariant[OF Step(2-3) Step(5)] .
+    show ?case using mnotr_variables_rules[OF IU assms(4) Step(6)[simplified]] by simp
+  (*qed*)
 qed (auto simp add: assms gram_nsd_sd)
 
 lemma nog_keys_superset_gr_normed:
@@ -891,9 +900,11 @@ proof -
     unfolding n_def t_def vs_def nvh_def using existence_from_lookup[OF A V] by auto
 
   have V1: "set vs  \<subseteq> keys gr" using nog_ns(1)[OF G N] K by auto
-  have V2: "set vsr \<subseteq> keys gr" using gsd_rule_vars_in_keys[OF G assms(2-3)] .
 
-  have HN: "t_rule_has_norm (norms_of_grammar gr) (tr, vsr)" sorry
+  have V2: "set vsr \<subseteq> keys gr" using gsd_rule_vars_in_keys[OF G assms(2-3)] .
+  then have "set vsr \<subseteq> keys (norms_of_grammar gr)" using nog_gr_keys_equal[OF assms(1)] by auto
+  then have HN: "t_rule_has_norm (norms_of_grammar gr) (tr, vsr)"
+    unfolding t_rule_has_norm_def by auto
 
   have "length (min_word_of_variables gr vs) \<le> length (min_word_of_variables gr vsr)"
     unfolding mwov_len_calcs_nf[OF assms(1) V1] mwov_len_calcs_nf[OF assms(1) V2]
