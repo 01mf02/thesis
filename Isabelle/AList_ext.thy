@@ -69,13 +69,21 @@ lemma alist_superset_lookup_equal:
       and "k \<in> set l"
     shows "lookup A k = lookup B k"
 proof -
-thm existence_from_lookup
   have "(k, lookup A k) \<in> set A" using existence_from_lookup assms(1,2,5) by force
   then have 1: "(k, lookup A k) \<in> set B" using assms(4) by auto
 
   have "(k, lookup B k) \<in> set B" using existence_from_lookup assms by force
   then show ?thesis using 1 alist_values_equal assms(3) by force
 qed
+
+lemma alist_subset_values_equal:
+  assumes "set l2 \<subseteq> set l1"
+      and "is_alist l1"
+      and "is_alist l2"
+      and "k \<in> keys l2"
+      and "(k, v) \<in> set l1"
+    shows "(k, v) \<in> set l2"
+sorry
 
 lemma lookup_in_snd: "k \<in> keys l \<Longrightarrow> (lookup l) k \<in> snd ` set l"
 by (induct l) (auto simp add: lookup_def)

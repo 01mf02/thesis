@@ -174,6 +174,9 @@ lemma un_keys: "keys (update_norms norms yes) = keys norms \<union> keys yes"
 unfolding update_norms_def mnotr_map_def using map_keys_equal[of "min_norm_of_t_rules norms" yes]
 by auto
 
+lemma un_var_in_keys: "(v, rules) \<in> set yes \<Longrightarrow> v \<in> keys (update_norms norms yes)"
+unfolding un_keys[of norms yes] by auto
+
 lemma un_conserves_ns:
   assumes "itno_invariant_sd gr norms rest"
       and "partition (v_rule_has_norm norms) rest = (yes, no)"
@@ -494,21 +497,50 @@ qed
 lemma nog_v_in_norms':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
-      and "(t, vs) \<in> set rules"
-      and "set vs \<subseteq> keys (norms_of_grammar gr)"
-      and "norms_of_grammar gr \<noteq> []"
-    shows "v \<in> keys (norms_of_grammar gr)" using assms(4-5) unfolding norms_of_grammar_def
+      and "t_rules_have_norm (norms_of_grammar gr) rules"
+    shows "v \<in> keys (update_norms (norms_of_grammar gr) (filter (v_rule_has_norm (norms_of_grammar gr)) (snd (iterate_norms gr))))" using assms(3) unfolding norms_of_grammar_def
 proof (induct rule: itno_induct_sd(1))
-  case (Step norms rest yes no) then show ?case sorry
+  case (Step norms rest yes no)
+  show ?case proof (cases "v \<in> keys (update_norms norms yes)")
+    case True show ?thesis using True unfolding update_norms_def by auto
+  next
+    case False
+    have GR: "is_alist gr" using gsd_alist[OF assms(1)] .
+    have II: "set rest \<subseteq> set gr" using Step(1) unfolding itno_invariant_def .
+    have IJ: "is_alist rest" "keys gr = keys norms \<union> keys rest"
+      using Step(2) unfolding itno_invariant_sd_def sorry
+
+    have "v \<notin> keys norms" using False unfolding update_norms_def by auto
+    then have VR: "v \<in> keys rest" using IJ(2) assms(2) by auto
+
+    have HN: "v_rule_has_norm (update_norms norms yes) (v, rules)"
+      unfolding v_rule_has_norm_def using Step(5) by auto
+    have VY: "(v, rules) \<notin> set yes" using False unfolding un_keys[of norms yes] by auto
+
+    have "(v, rules) \<in> set rest" using alist_subset_values_equal[OF II GR IJ(1) VR assms(2)] .
+    then have "(v, rules) \<in> set no" using VY Step(3) by auto
+    then have VF: "(v, rules) \<in> set (filter (v_rule_has_norm (update_norms norms yes)) no)"
+      using HN by auto
+    show ?thesis using un_var_in_keys[OF VF] by auto
+  qed
+next
+  case Base
+  have VF: "(v, rules) \<in> set (filter (v_rule_has_norm []) gr)"
+    unfolding v_rule_has_norm_def using Base assms(2) by auto
+  show ?case using un_var_in_keys[OF VF] by auto
 qed (auto simp add: assms)
+
+lemma nog_un_invariant: "update_norms (norms_of_grammar gr)
+             (filter (v_rule_has_norm (norms_of_grammar gr))
+             (snd (iterate_norms gr))) = norms_of_grammar gr"
+sorry
 
 lemma nog_v_in_norms:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
-      and "(t, vs) \<in> set rules"
-      and "set vs \<subseteq> keys (norms_of_grammar gr)"
+      and "t_rules_have_norm (norms_of_grammar gr) rules"
     shows "v \<in> keys (norms_of_grammar gr)"
-sorry
+using nog_v_in_norms'[OF assms] unfolding nog_un_invariant .
 
 lemma nog_n_suc_nf':
   assumes "gram_sd gr"
@@ -1049,9 +1081,11 @@ proof (induct gr w v rule: eat_word_induct)
     by (auto simp add: word_in_variables_def)
   then have RVN: "set (rth @ vt) \<subseteq> keys (norms_of_grammar gr)"
     using normal(1)[OF _ TH GS _ ] RV normal(4) unfolding rth_def rules_def by auto
-  then have RTN: "set rth \<subseteq> keys (norms_of_grammar gr)" by auto
+  then have "set rth \<subseteq> keys (norms_of_grammar gr)" by auto
+  then have HN: "t_rules_have_norm (norms_of_grammar gr) rules" using TR
+    unfolding t_rules_have_norm_def t_rule_has_norm_def by auto
 
-  have "vh \<in> keys (norms_of_grammar gr)" using nog_v_in_norms GS VR TR RTN .
+  have "vh \<in> keys (norms_of_grammar gr)" using nog_v_in_norms GS VR HN .
   then show ?case using RVN by auto
 qed (auto simp add: word_in_variables_def)
 
