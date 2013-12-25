@@ -201,6 +201,17 @@ proof -
   show ?thesis using ns_norms_superset_equal[OF assms(3) S(1) AI NI] .
 qed
 
+lemma un_trhn_irrelevant:
+  assumes "set vs \<subseteq> keys (update_norms norms yes)"
+      and "set vs \<inter> keys yes = {}"
+    shows "t_rule_has_norm norms (tr, vs)"
+proof -
+  have 1: "set vs \<inter> keys (mnotr_map norms yes) = {}" using assms(2) unfolding mnotr_map_def by auto
+  have "set vs \<subseteq> keys norms \<union> keys (mnotr_map norms yes)" using assms(1) unfolding update_norms_def by auto
+  then have "set vs \<subseteq> keys norms" using 1 by auto
+  then show ?thesis unfolding t_rule_has_norm_def by auto
+qed
+
 (* TODO: I don't think that I can prove the following four lemmata, but leave them there anyway
    for the moment ... *)
 lemma XXX:
@@ -579,7 +590,7 @@ proof (induct rule: itno_induct_sd_in(1)[of gr rules n t vs v])
   proof (cases "set vsr \<inter> keys yes = {}")
     case True
     have HN: "t_rule_has_norm norms (tr, vsr)"
-      using iffD1[OF trhn_vars_normed, of norms] Step(6)[simplified] unfolding update_norms_def using True sorry
+      using iffD1[OF trhn_vars_normed Step(6)[simplified]] True using un_trhn_irrelevant by auto
   
     have V1: "set vs  \<subseteq> keys norms" using mnotr_variables(1) Step(3) .
     have V2: "set vsr \<subseteq> keys norms" using iffD1 trhn_vars_normed HN .
