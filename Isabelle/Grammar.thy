@@ -177,6 +177,9 @@ by auto
 lemma un_var_in_keys: "(v, rules) \<in> set yes \<Longrightarrow> v \<in> keys (update_norms norms yes)"
 unfolding un_keys[of norms yes] by auto
 
+lemma un_nil_invariant: "update_norms norms [] = norms"
+unfolding update_norms_def mnotr_map_def by auto
+
 lemma un_conserves_ns:
   assumes "itno_invariant_sd gr norms rest"
       and "partition (v_rule_has_norm norms) rest = (yes, no)"
@@ -530,7 +533,9 @@ qed (auto simp add: assms)
 lemma nog_un_invariant: "update_norms (norms_of_grammar gr)
              (filter (v_rule_has_norm (norms_of_grammar gr))
              (snd (iterate_norms gr))) = norms_of_grammar gr"
-sorry
+unfolding norms_of_grammar_def iterate_norms_def
+using pi_invariant[of update_norms v_rule_has_norm "[]" gr, OF un_nil_invariant]
+by (case_tac "partition_iterate v_rule_has_norm update_norms [] gr") auto
 
 lemma nog_v_in_norms:
   assumes "gram_sd gr"

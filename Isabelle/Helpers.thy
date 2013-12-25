@@ -75,4 +75,18 @@ proof (induct l arbitrary: a rule: length_induct)
   qed
 qed
 
+lemma pi_invariant:
+  assumes "\<And>a. f a [] = a"
+    shows "partition_iterate P f a l =
+           (\<lambda>(acc, no). (f acc (filter (P acc) no), no)) (partition_iterate P f a l)"
+proof -
+  def  pi \<equiv> "partition_iterate P f a l"
+  def acc \<equiv> "fst pi"
+  def  no \<equiv> "snd pi"
+
+  have "filter (P acc) no = []" sorry
+  then have "f acc (filter (P acc) no) = acc" using assms by auto
+  then show ?thesis unfolding acc_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
+qed
+
 end
