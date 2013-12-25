@@ -74,8 +74,7 @@ definition iterate_norms ::
   "iterate_norms gr = partition_iterate v_rule_has_norm update_norms [] gr"
 
 definition itno_invariant where
-  "itno_invariant gr norms rest \<equiv>
-     set rest \<subseteq> set gr (*\<and> keys gr = keys norms \<union> keys rest *)"
+  "itno_invariant gr norms rest \<equiv> set rest \<subseteq> set gr \<and> keys gr = keys norms \<union> keys rest"
 
 definition itno_invariant_sd where
   "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"

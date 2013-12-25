@@ -278,8 +278,13 @@ next
   case (Step norms rest yes no)
     case 1 show ?case using S Step by auto
     case 2
-      have I1: "set no \<subseteq> set gr" using Step unfolding itno_invariant_def by auto
-      show ?case using I1 unfolding itno_invariant_def by auto
+      have I1: "set no \<subseteq> set gr" using Step(2-3) unfolding itno_invariant_def by auto
+      
+      have "keys gr = keys norms \<union> keys rest" using Step(2) unfolding itno_invariant_def by simp
+      then have I2: "keys gr = keys (update_norms norms yes) \<union> keys no"
+        unfolding un_keys[of norms yes] using Step(3) by force
+
+      show ?case using I1 I2 unfolding itno_invariant_def by auto
 qed
 
 lemma itno_induct_sd [case_names Base Step]:
@@ -381,20 +386,12 @@ next
     case 2 show ?case using un_conserves_invariant[OF Step(2) IS[OF 2[simplified]] Step(3)] by simp
 qed (auto simp add: assms)
 
-
-lemma itno_superset_gr_keys:
-  "keys gr \<subseteq> keys (fst (iterate_norms gr)) \<union> keys (snd (iterate_norms gr))"
-apply (intro subsetI, induct rule: itno_induct(1))
-by (auto simp add: update_norms_def mnotr_map_def, force)
-
-lemma itno_subset_gr_keys:
-  "keys (fst (iterate_norms gr)) \<union> keys (snd (iterate_norms gr)) \<subseteq> keys gr"
-apply (intro subsetI, induct rule: itno_induct(1))
-by (auto simp add: update_norms_def mnotr_map_def)
+lemma itno_invariant_holds: "itno_invariant gr (fst (iterate_norms gr)) (snd (iterate_norms gr))"
+using itno_induct(2) by auto
 
 lemma itno_gr_keys_equal:
   "keys gr = keys (fst (iterate_norms gr)) \<union> keys (snd (iterate_norms gr))"
-using itno_superset_gr_keys itno_subset_gr_keys by blast
+using itno_invariant_holds[of gr] unfolding itno_invariant_def by auto
 
 lemma itno_invariant_sd_holds:
   assumes "gram_sd gr"
@@ -506,18 +503,18 @@ proof (induct rule: itno_induct_sd(1))
   next
     case False
     have GR: "is_alist gr" using gsd_alist[OF assms(1)] .
-    have II: "set rest \<subseteq> set gr" using Step(1) unfolding itno_invariant_def .
-    have IJ: "is_alist rest" "keys gr = keys norms \<union> keys rest"
-      using Step(2) unfolding itno_invariant_sd_def sorry
+    have II: "set rest \<subseteq> set gr" "keys gr = keys norms \<union> keys rest"
+      using Step(1) unfolding itno_invariant_def by auto
+    have IS: "is_alist rest" using Step(2) unfolding itno_invariant_sd_def by simp
 
     have "v \<notin> keys norms" using False unfolding update_norms_def by auto
-    then have VR: "v \<in> keys rest" using IJ(2) assms(2) by auto
+    then have VR: "v \<in> keys rest" using II(2) assms(2) by auto
 
     have HN: "v_rule_has_norm (update_norms norms yes) (v, rules)"
       unfolding v_rule_has_norm_def using Step(5) by auto
     have VY: "(v, rules) \<notin> set yes" using False unfolding un_keys[of norms yes] by auto
 
-    have "(v, rules) \<in> set rest" using alist_subset_values_equal[OF II GR IJ(1) VR assms(2)] .
+    have "(v, rules) \<in> set rest" using alist_subset_values_equal[OF II(1) GR IS VR assms(2)] .
     then have "(v, rules) \<in> set no" using VY Step(3) by auto
     then have VF: "(v, rules) \<in> set (filter (v_rule_has_norm (update_norms norms yes)) no)"
       using HN by auto
@@ -597,12 +594,15 @@ lemma nog_keys_superset_gr_normed:
       and "keys gr \<subseteq> keys (norms_of_grammar gr)"
     shows "gram_normed_fun gr"
 proof -
+  have SS: "keys (fst (iterate_norms gr)) \<union> keys (snd (iterate_norms gr)) \<subseteq> keys gr"
+    using itno_gr_keys_equal[of gr] by auto
+
   have "keys (fst (iterate_norms gr)) \<inter> keys (snd (iterate_norms gr)) = {}"
     using itno_invariant_sd_holds[OF assms(1)] unfolding itno_invariant_sd_def by auto
-  then have "keys gr \<inter> keys (snd (iterate_norms gr)) = {}" 
-    by (metis itno_subset_gr_keys subset_antisym sup.bounded_iff norms_of_grammar_def assms(2))
+  then have "keys gr \<inter> keys (snd (iterate_norms gr)) = {}"
+    by (metis SS subset_antisym sup.bounded_iff norms_of_grammar_def assms(2))
   then have "keys (snd (iterate_norms gr)) \<subseteq> - keys (snd (iterate_norms gr))"
-    using itno_subset_gr_keys[of gr] unfolding Set.disjoint_eq_subset_Compl by force
+    using SS unfolding Set.disjoint_eq_subset_Compl by force
   then show ?thesis unfolding gram_normed_fun_def using iffD1[OF Set.subset_Compl_self_eq] by auto
 qed
 
