@@ -43,7 +43,7 @@ definition norm_sum :: "('t, 'v) grammar_norms \<Rightarrow> 'v list \<Rightarro
   "norm_sum norms vars \<equiv> listsum (map (fst \<circ> lookup norms) vars)"
 
 definition t_rule_has_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow> bool" where
-  "t_rule_has_norm norms \<equiv> \<lambda>(t, vs). \<forall>v \<in> set vs. v \<in> keys norms" (* TODO: subset *)
+  "t_rule_has_norm norms \<equiv> \<lambda>(t, vs). set vs \<subseteq> keys norms"
 
 definition t_rules_have_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> bool" where
   "t_rules_have_norm norms rules \<equiv> \<exists>r \<in> set rules. t_rule_has_norm norms r"

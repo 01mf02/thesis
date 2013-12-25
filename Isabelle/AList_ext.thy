@@ -83,7 +83,12 @@ lemma alist_subset_values_equal:
       and "k \<in> keys l2"
       and "(k, v) \<in> set l1"
     shows "(k, v) \<in> set l2"
-sorry
+proof -
+  have 1: "(k, lookup l2 k) \<in> set l2" using assms(3-4) by (metis existence_from_lookup)
+  then have "(k, lookup l2 k) \<in> set l1" using assms(1) by auto
+  then have "lookup l2 k = v" using assms(2,5) by (metis lookup_from_existence)
+  then show ?thesis using 1 by auto
+qed
 
 lemma lookup_in_snd: "k \<in> keys l \<Longrightarrow> (lookup l) k \<in> snd ` set l"
 by (induct l) (auto simp add: lookup_def)
