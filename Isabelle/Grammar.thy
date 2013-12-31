@@ -289,6 +289,156 @@ by (relation "measure (\<lambda>(norms, gr). norms_total norms)") (auto simp add
 
 
 (*****************************************************************************
+  update_norms
+ *****************************************************************************)
+
+lemma un_keys: "keys (update_norms gr norms yes) = keys norms \<union> keys yes"
+sorry
+
+lemma un_conserves_invariant:
+  assumes "itno_invariant_sd gr norms rest"
+      and "itno2_invariant_sd_in norms rules norm"
+      and "partition (v_rule_has_norm norms) rest = (yes, no)"
+    shows "itno2_invariant_sd_in (update_norms gr norms yes) rules (lookup (update_norms gr norms yes) v)"
+sorry
+
+
+(*****************************************************************************
+  iterate_norms2
+ *****************************************************************************)
+
+lemma itno2_induct [case_names Base Step]:
+  assumes B: "P ([], gr)"
+      and S: "\<And>norms rest yes no.
+                itno_invariant gr norms rest \<Longrightarrow>
+                partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
+                P (norms, rest) \<Longrightarrow>
+                P (update_norms gr norms yes, no)"
+  shows "P (iterate_norms2 gr)"
+    and "itno_invariant gr (fst (iterate_norms2 gr)) (snd (iterate_norms2 gr))"
+  unfolding iterate_norms2_def
+proof (induct rule: pi_induct)
+  case Base
+    case 1 show ?case using B by auto
+    case 2 show ?case unfolding itno_invariant_def by auto
+next
+  case (Step norms rest yes no)
+    case 1 show ?case using S Step by auto
+    case 2
+      have I1: "set no \<subseteq> set gr" using Step(2-3) unfolding itno_invariant_def by auto
+      
+      have "keys gr = keys norms \<union> keys rest" using Step(2) unfolding itno_invariant_def by simp
+      then have I2: "keys gr = keys (update_norms gr norms yes) \<union> keys no"
+        unfolding un_keys[of gr norms yes] using Step(3) by force
+
+      show ?case using I1 I2 unfolding itno_invariant_def by auto
+qed
+
+lemma itno2_induct_sd [case_names Base Step]:
+  assumes B: "P ([], gr)"
+      and S: "\<And>norms rest yes no.
+                itno_invariant gr norms rest \<Longrightarrow>
+                itno_invariant_sd gr norms rest \<Longrightarrow>
+                partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
+                P (norms, rest) \<Longrightarrow>
+                P (update_norms gr norms yes, no)"
+      and G: "gram_sd gr"
+  shows "P (iterate_norms2 gr)"
+    and "itno_invariant_sd gr (fst (iterate_norms2 gr)) (snd (iterate_norms2 gr))"
+proof (induct rule: itno2_induct(1))
+  case Base
+    case 1 show ?case using B by auto
+    case 2 show ?case unfolding itno_invariant_sd_def using gsd_alist[OF G] by auto
+next
+  case (Step norms rest yes no)
+    case 1 show ?case using S Step by auto
+    case 2
+
+    have I: "is_alist norms" "is_alist rest" "keys rest \<inter> keys norms = {}" using Step(4)
+      unfolding itno_invariant_sd_def by auto
+
+    have NM: "keys norms \<inter> keys (mnotr_map norms yes) = {}" using Step(2) I(3)
+      unfolding mnotr_map_def by force
+    have AY: "is_alist (mnotr_map norms yes)" using alist_filter alist_map_alist Step(2) I(2)
+      unfolding mnotr_map_def by auto
+    have I1: "is_alist (update_norms gr norms yes)" using I(1) AY NM alist_distr[of norms]
+      unfolding update_norms_def sorry
+
+    have AC: "is_alist (yes @ no)" using alist_partition_distr[OF I(2) Step(2)[symmetric]] .
+    then have I2: "is_alist no" using alist_distr[of yes] by simp
+    
+    have NN: "keys no \<inter> keys norms = {}" using Step(2) I(3) by force
+    have MN: "keys no \<inter> keys (mnotr_map norms yes) = {}" unfolding mnotr_map_def
+      using AC alist_distr[of yes no] by auto
+    have I3: "keys no \<inter> keys (update_norms gr norms yes) = {}" using NN MN
+      unfolding update_norms_def sorry
+
+    show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
+qed
+
+
+lemma itno2_induct_sd_in [case_names Step]:
+  assumes "\<And>norms rest yes no.
+             itno_invariant gr norms rest \<Longrightarrow>
+             itno_invariant_sd gr norms rest \<Longrightarrow>
+             itno2_invariant_sd_in norms rules (lookup norms v) \<Longrightarrow>
+             (v \<in> keys norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
+             partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
+             P (update_norms gr norms yes, no)"
+      and "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "v \<in> keys (fst (iterate_norms2 gr))"
+  shows "P (iterate_norms2 gr)"
+    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules (lookup (fst (iterate_norms2 gr)) v)"
+using assms(4) proof (induct rule: itno2_induct_sd(1))
+  case Base
+    case 1 then show ?case by auto
+    case 2 then show ?case by auto
+next
+  case (Step norms rest yes no)
+  have IS: "v \<in> keys (update_norms gr norms yes) \<Longrightarrow>
+            itno2_invariant_sd_in norms rules (lookup norms v)"
+    proof (cases "v \<in> keys norms")
+      case True then show ?thesis using Step(5) by auto
+    next
+      case False
+      assume P: "v \<in> keys (update_norms gr norms yes)"
+  
+      have I: "set rest \<subseteq> set gr" "is_alist rest"
+        using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
+      have YG: "set yes \<subseteq> set gr" using Step(3) I(1) by auto
+  
+      have AG: "is_alist gr" using gsd_alist assms(2) by auto
+      have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(3)[symmetric]] alist_distr
+        by auto
+  
+      have VM: "v \<in> keys (mnotr_map norms yes)" using False P
+        unfolding add_norms_def sorry
+      then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(3)] YG
+        unfolding mnotr_map_def by auto
+      then have R: "t_rules_have_norm norms rules" using Step(3)
+        unfolding v_rule_has_norm_def by auto
+  
+      have "lookup norms v = min_norm_of_t_rules norms rules"
+        using alist_map_values_equal AY VY VM[simplified mnotr_map_def] sorry
+      then show ?thesis unfolding itno2_invariant_sd_in_def using R by auto
+    qed
+
+    case 1 show ?case
+    proof (cases "v \<in> keys norms")
+      case True then show ?thesis using assms(1) Step by auto
+    next
+      case False then show ?thesis using assms(1)[OF Step(1-2) IS _ Step(3)] 1 by auto
+    qed
+
+    case 2
+    then have V: "v \<in> keys (update_norms gr norms yes)" by auto
+    show ?case using un_conserves_invariant[OF Step(2) IS[OF V] Step(3)] by simp
+qed (auto simp add: assms)
+
+
+
+(*****************************************************************************
   iterate_norms
  *****************************************************************************)
 
