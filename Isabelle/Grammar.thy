@@ -221,6 +221,7 @@ lemma XXX:
 unfolding mnotr_map_def
 sorry
 
+(* that should be provable *)
 lemma ZZZ:
   assumes "Max (snd ` set norms1) < Min (snd ` set norms2)"
       and "t_rules_have_norm  norms1           rules"
@@ -272,6 +273,19 @@ proof -
 
   show ?thesis unfolding itno_invariant_sd_in_def using C1 C2 by simp
 qed
+
+
+(*****************************************************************************
+  minimise_norms
+ *****************************************************************************)
+
+lemma nt_of_rn_decreases:
+  assumes "refine_norms norms gr \<noteq> norms"
+    shows "norms_total (refine_norms norms gr) < norms_total norms"
+sorry
+
+termination minimise_norms
+by (relation "measure (\<lambda>(norms, gr). norms_total norms)") (auto simp add: nt_of_rn_decreases)
 
 
 (*****************************************************************************

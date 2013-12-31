@@ -69,6 +69,20 @@ definition update_norms ::
   "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "update_norms norms yes = norms @ (mnotr_map norms yes)"
 
+definition v_rules_of_norms where
+  "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
+
+definition refine_norms where
+  "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
+
+definition norms_total where
+  "norms_total norms = listsum (map (\<lambda>(v, n, t, vs). n) norms)"
+
+function minimise_norms where
+  "minimise_norms norms gr =
+     (if refine_norms norms gr = norms then norms else minimise_norms (refine_norms norms gr) gr)"
+by auto
+
 definition iterate_norms ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
   "iterate_norms gr = partition_iterate v_rule_has_norm update_norms [] gr"
@@ -103,7 +117,7 @@ function min_word_of_variables ::
        concat (map (\<lambda>(n, t, vs). t # (min_word_of_variables gr vs))
                    (map (lookup (norms_of_grammar gr)) vars))
      else [])"
-by pat_completeness auto
+by auto
 
 
 (*****************************************************************************
