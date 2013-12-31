@@ -18,6 +18,14 @@ definition test_gr3 :: "(char, nat) grammar" where
   "test_gr3 =
    [(0, [(CHR ''a'', [0])])]"
 
+definition test_gr4 :: "(char, nat) grammar" where
+  "test_gr4 =
+   [(1, [(CHR ''a'', [])]),
+    (2, [(CHR ''a'', [1])]),
+    (3, [(CHR ''a'', [2])]),
+    (4, [(CHR ''a'', [1, 1, 1])]),
+    (5, [(CHR ''x'', [3]), (CHR ''y'', [4])])]"
+
 value "gram_nsd_fun test_gr"
 value "gram_max_vars test_gr = 1"
 value "norm_fun test_gr [0] = 1"
@@ -33,5 +41,10 @@ value "norm_fun test_gr2 [3] = 1"
 
 value "gram_sd test_gr3"
 value "gram_nsd_fun test_gr3 = False"
+
+value "gram_nsd_fun test_gr4"
+value "iterate_norms test_gr4"
+value "iterate_norms2 test_gr4"
+
 
 end

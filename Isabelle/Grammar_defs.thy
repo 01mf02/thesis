@@ -65,10 +65,6 @@ definition mnotr_map where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
   (*"mnotr_map norms = value_map (min_norm_of_t_rules norms)"*)
 
-definition update_norms ::
-  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "update_norms norms yes = norms @ (mnotr_map norms yes)"
-
 definition v_rules_of_norms where
   "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
 
@@ -83,9 +79,20 @@ function minimise_norms where
      (if refine_norms norms gr = norms then norms else minimise_norms (refine_norms norms gr) gr)"
 by auto
 
+definition add_norms ::
+  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "add_norms norms yes = norms @ (mnotr_map norms yes)"
+
+definition update_norms where
+  "update_norms gr norms yes = minimise_norms (add_norms norms yes) gr"
+
+definition iterate_norms2 ::
+  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
+  "iterate_norms2 gr = partition_iterate v_rule_has_norm (update_norms gr) [] gr"
+
 definition iterate_norms ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
-  "iterate_norms gr = partition_iterate v_rule_has_norm update_norms [] gr"
+  "iterate_norms gr = partition_iterate v_rule_has_norm add_norms [] gr"
 
 definition itno_invariant where
   "itno_invariant gr norms rest \<equiv> set rest \<subseteq> set gr \<and> keys gr = keys norms \<union> keys rest"
