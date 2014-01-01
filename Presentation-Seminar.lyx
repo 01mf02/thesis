@@ -1,0 +1,894 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usetheme[sealopacity=0.0,boxes,rounded,shadow,darker]{ComputationalLogic}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title (Plain Frame)
+Calculating norms of simple deterministic grammars
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Calculating norms of SDG
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Michael Färber
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+MF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+Institute of Computer Science
+\begin_inset Newline newline
+\end_inset
+
+University of Innsbruck
+\begin_inset Newline newline
+\end_inset
+
+Austria
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+ICS @ UIBK
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Motivation
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Master's thesis}
+\end_layout
+
+\end_inset
+
+My master's thesis is about constructing equivalence proofs of simple determinis
+tic grammars.
+ To construct these proofs, we need to calculate the norms of grammar variables.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Verification}
+\end_layout
+
+\end_inset
+
+We want to make sure that the norm calculation algorithm is correct.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Simple deterministic grammars
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Grammar}
+\end_layout
+
+\end_inset
+
+A simple deterministic grammar is a context-free grammar in Greibach normal
+ form such that for each terminal 
+\begin_inset Formula $a$
+\end_inset
+
+, there exists at most one production rule 
+\begin_inset Formula $X\to a\alpha$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Norm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\left\Vert X\right\Vert $
+\end_inset
+
+ equals the length of the shortest word producible by variable 
+\begin_inset Formula $X$
+\end_inset
+
+, or 
+\begin_inset Formula $\infty$
+\end_inset
+
+ if no such word exists.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Strictly normed grammars}
+\end_layout
+
+\end_inset
+
+A grammar is strictly normed iff all its variables have a finite norm.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Example grammar
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \onslide<2->{\left\Vert A_{1}\right\Vert =1}\\
+B & \to bAA+cA & \onslide<3->{\left\Vert B\right\Vert =2}\\
+C & \to cBA & \onslide<4->{\left\Vert C\right\Vert =4}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+How to calculate norms?
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Algorithm}
+\end_layout
+
+\end_inset
+
+Given a set of norms 
+\begin_inset Formula $N$
+\end_inset
+
+ and a grammar 
+\begin_inset Formula $G$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Take variables 
+\begin_inset Formula $V$
+\end_inset
+
+ from 
+\begin_inset Formula $G$
+\end_inset
+
+ which do not have norms in 
+\begin_inset Formula $N$
+\end_inset
+
+ yet, but can be normed given the norms 
+\begin_inset Formula $N$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Calculate norms 
+\begin_inset Formula $N'$
+\end_inset
+
+ for 
+\begin_inset Formula $V$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Call algorithm with 
+\begin_inset Formula $N'$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \onslide<2->{\rightsquigarrow\left(A_{1},1,a,\left[\right]\right)}\\
+B & \to bA_{1}A_{1}+cA_{1} & \onslide<3->{\rightsquigarrow\left(B,2,c,\left[A_{1}\right]\right)}\\
+C & \to cBA_{1} & \onslide<4->{\rightsquigarrow\left(C,4,c,\left[B,A_{1}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Problem
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Problem}
+\end_layout
+
+\end_inset
+
+We might have variables which change the norm of other variables that we
+ previously calculated.
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example:}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \onslide<2->{\rightsquigarrow\left(A_{1},1,a,\left[\right]\right)}\\
+A_{2} & \to aA_{1} & \onslide<3->{\rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)}\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & \onslide<3->{\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+How to calculate norms, second try
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Algorithm}
+\end_layout
+
+\end_inset
+
+Given a set of norms 
+\begin_inset Formula $N$
+\end_inset
+
+ and a grammar 
+\begin_inset Formula $G$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Take variables 
+\begin_inset Formula $V$
+\end_inset
+
+ from 
+\begin_inset Formula $G$
+\end_inset
+
+ which do not have norms in 
+\begin_inset Formula $N$
+\end_inset
+
+ yet, but can be normed given the norms 
+\begin_inset Formula $N$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Calculate norms 
+\begin_inset Formula $N'$
+\end_inset
+
+ for 
+\begin_inset Formula $V$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Refine 
+\begin_inset Formula $N\cup N'$
+\end_inset
+
+, yielding 
+\begin_inset Formula $N''$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Call algorithm with 
+\begin_inset Formula $N''$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Refinement}
+\end_layout
+
+\end_inset
+
+We look at each norm and see if it is still a minimal norm, given the other
+ norms, otherwise we calculate a smaller norm.
+ We repeat this process until all norms are minimal.
+\end_layout
+
+\begin_layout BeginFrame
+Verification
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Verification}
+\end_layout
+
+\end_inset
+
+To verify the correctness of the algorithm, I implemented it in Isabelle/HOL,
+ along with a definition of simple deterministic grammars and norms.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Norm definition
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Norm implementation
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{TODO}
+\end_layout
+
+\end_inset
+
+For the implementation, I heavily use association lists, for which I proved
+ several helper lemmata.
+ Furthermore, I created a versatile algorithm called partition_iterate.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+partition_iterate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: code here!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{What did I prove about it?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+termination
+\end_layout
+
+\begin_layout Itemize
+custom induction principle
+\end_layout
+
+\begin_layout Itemize
+invariant
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Applications}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+SAT of Horn clauses
+\end_layout
+
+\begin_layout Itemize
+...
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Proof strategies
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Applications}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Top-down: Start with central theorem and create helper lemmata as you go.
+\end_layout
+
+\begin_layout Itemize
+Bottom-up: Prove properties of simplest functions first and work your way
+ towards more complex ones.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{My choice}
+\end_layout
+
+\end_inset
+
+At first bottom-up, but often the properties I proved did not correspond
+ to later needed properties, so after some time I switched to a top-down
+ strategy.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Integration with existing code
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Goal}
+\end_layout
+
+\end_inset
+
+I wanted to use the norm calculation algorithm implemented in Isabelle/HOL
+ in an existing OCaml program.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Required changes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+On Isabelle side: Added theory Code_Target_Nat to export code with an OCaml-frie
+ndly integer representation.
+ 
+\end_layout
+
+\begin_layout Itemize
+On OCaml side: Converted rest of code to Big_int.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Statistics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Size of Isabelle theory files:
+\end_layout
+
+\begin_layout Itemize
+Number of lemmata:
+\end_layout
+
+\begin_layout Itemize
+Number of definitions/functions:
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Summary
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+
+\end_layout
+
+\begin_layout Standard
+\align center
+Thank you for your attention! Questions?
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
