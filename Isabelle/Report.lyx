@@ -1,0 +1,224 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass clseminar
+\begin_preamble
+\usepackage{color}
+\usepackage{graphicx}
+% import graphic files from other directories
+\usepackage{import}
+\usepackage{isabelle,isabellesym}
+\usepackage{listings}
+
+% to show DRAFT watermark
+%\usepackage[firstpage]{draftwatermark}
+
+
+% semantic brackets around some text/formula
+\newcommand{\sebr}[1]{$ [\![ $#1$ ]\!] $}
+% object-logic lambda
+\newcommand{\llambda}{\lambda\!\!\lambda}
+
+% include SVG files with text (as created by Inkscape)
+\newcommand{\includesvg}[1]{\import{Presentation/data/}{#1.pdf_tex}}
+% include Isabelle files
+\newcommand{\includeisabelle}[1]{\input{Presentation/generated/#1.tex}}
+
+\newcommand \List {\operatorname{List}}
+\newcommand \nil {\operatorname{nil}}
+\newcommand \cons {\operatorname{cons}}
+\newcommand \hd {\operatorname{nil}}
+\newcommand \tl {\operatorname{cons}}
+\renewcommand \succ {\operatorname{succ}}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Calculating norms of simple deterministic grammars
+\end_layout
+
+\begin_layout Author
+Michael Färber
+\end_layout
+
+\begin_layout Supervisor
+Cezary Kaliszyk
+\end_layout
+
+\begin_layout Abstract
+For normed simple deterministic grammars, there exist algorithms in PTIME
+ to calculate the length of the shortest word (norm) of each variable.
+ We implement and verify such an algorithm in Isabelle/HOL.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Subsection
+Motivation
+\end_layout
+
+\begin_layout Standard
+Why is the norm of SDG interesting?
+\end_layout
+
+\begin_layout Subsection
+Isabelle
+\end_layout
+
+\begin_layout Subsection
+SDG
+\end_layout
+
+\begin_layout Standard
+explain SDG, norms
+\end_layout
+
+\begin_layout Standard
+Example of SDG 
+\end_layout
+
+\begin_layout Section
+Norm formalisation
+\end_layout
+
+\begin_layout Standard
+include Grammar_defs
+\end_layout
+
+\begin_layout Section
+General-purpose parts
+\end_layout
+
+\begin_layout Subsection
+alist
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Norm/document/AList_ext.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+partition_iterate
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Norm/document/Helpers.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(topological ordering; example application: SAT of > Horn clauses) 
+\end_layout
+
+\begin_layout Section
+Norm calculation algorithm
+\end_layout
+
+\begin_layout Section
+Proof
+\end_layout
+
+\begin_layout Subsection
+Proof strategy
+\end_layout
+
+\begin_layout Standard
+(how did I create the proof, bottom-up vs.
+ top-down)
+\end_layout
+
+\begin_layout Subsection
+Statistics
+\end_layout
+
+\begin_layout Section
+Integration with existing code?
+\end_layout
+
+\end_body
+\end_document

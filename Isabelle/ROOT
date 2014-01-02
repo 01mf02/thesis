@@ -1,0 +1,11 @@
+session "Norm" = "HOL" +
+  options [quick_and_dirty, document = pdf, document_output = "output"]
+  theories [document = false]
+    "~~/src/HOL/Library/AList_Mapping"
+    "~~/src/HOL/Library/List_lexord"
+    "~~/src/HOL/Library/Product_Lexorder"
+    "~~/src/HOL/Library/Code_Target_Nat"
+    "~~/src/HOL/Library/Char_ord"
+  theories
+    Tests
+  files "document/root.tex"

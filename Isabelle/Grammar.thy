@@ -1,3 +1,5 @@
+header {* Grammar proofs *}
+
 theory Grammar imports
   "Grammar_defs"
   "Helpers"

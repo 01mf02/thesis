@@ -1,0 +1,15 @@
+#% Do not delete the line below; configure depends on this      
+#  \DeclareLaTeXClass[clseminar]{CL Seminar}
+
+# Read the definitions from article.layout
+Input scrartcl.layout
+
+Style Supervisor
+	CopyStyle             Author
+	LatexName             supervisor
+End
+
+Style Abstract
+	LatexType             Command
+	InTitle               1
+End

@@ -1,3 +1,5 @@
+header {* Extension of Association Lists *}
+
 theory AList_ext imports "~~/src/HOL/Library/AList_Mapping"
 begin
 
@@ -9,9 +11,6 @@ definition lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" w
 
 definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
   "keys l \<equiv> Mapping.keys (Mapping l)"
-
-definition value_map where
-  "value_map f \<equiv> map (\<lambda>(k, v). (k, f v))"
 
 
 lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"

@@ -1,3 +1,5 @@
+header {* Helpers *}
+
 theory Helpers imports Main
 begin
 

@@ -1,3 +1,5 @@
+header {* Tests *}
+
 theory Tests imports Grammar
   "~~/src/HOL/Library/Char_ord"
 begin

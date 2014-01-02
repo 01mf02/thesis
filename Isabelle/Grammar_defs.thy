@@ -1,3 +1,5 @@
+header {* Grammar definitions *}
+
 theory Grammar_defs imports
   AList_ext
   Helpers
