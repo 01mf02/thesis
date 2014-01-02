@@ -377,43 +377,21 @@ next
 qed
 
 
-lemma itno2_induct_sd_in_new [case_names Step]:
-  assumes "\<And>norms rest yes no.
-             itno_invariant gr norms rest \<Longrightarrow>
-             itno_invariant_sd gr norms rest \<Longrightarrow>
-             (v \<in> keys norms \<Longrightarrow> itno2_invariant_sd_in norms rules v) \<Longrightarrow>
-             (v \<in> keys norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
-             partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
-             P (update_norms gr norms yes, no)"
-      and "gram_sd gr"
+lemma itno2_induct_sd_in_new:
+  assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "v \<in> keys (fst (iterate_norms2 gr))"
-  shows "P (iterate_norms2 gr)"
-    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules v"
-using assms(4) proof (induct rule: itno2_induct_sd(1))
-  case Base
-    case 1 then show ?case by auto
-    case 2 then show ?case by auto
-next
+  shows "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules v"
+using assms(3) proof (induct rule: itno2_induct_sd(1))
   case (Step norms rest yes no)
-    case 1 show ?case
-    proof (cases "v \<in> keys norms")
-      case True then show ?thesis using assms(1) Step by auto
-    next
-      case False then show ?thesis using assms(1)[OF Step(1-2) _ _ Step(3)] by auto
-    qed
+  def un \<equiv> "update_norms gr norms yes"
+  have P: "v \<in> keys un" unfolding un_def using Step(5) by simp
 
-    case 2 then show ?case
-    proof -
-      def un \<equiv> "update_norms gr norms yes"
-      have P: "v \<in> keys un" unfolding un_def using 2 by simp
+  have I1: "t_rules_have_norm un rules" using P Step(1-3,5) sorry
+  have I2: "lookup un v = min_norm_of_t_rules un rules" sorry
 
-      have I1: "t_rules_have_norm un rules" using P Step(1-3,5) sorry
-      have I2: "lookup un v = min_norm_of_t_rules un rules" sorry
-
-      show ?thesis using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
-    qed
-qed (simp add: assms(2))
+  show ?case using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
+qed (auto simp add: assms(1))
 
 
 
@@ -554,7 +532,7 @@ next
     show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
 
-lemma itno_induct_sd_in [case_names Step]:
+lemma itno_induct_sd_in:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
