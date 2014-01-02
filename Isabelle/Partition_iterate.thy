@@ -1,4 +1,4 @@
-header {* partition_iterate *}
+header {* Find good title here *}
 
 theory Partition_iterate imports Helpers
 begin

@@ -8,11 +8,12 @@
 \usepackage{graphicx}
 % import graphic files from other directories
 \usepackage{import}
-\usepackage{isabelle,isabellesym}
+\usepackage{output/document/isabelle}
+\usepackage{output/document/isabellesym}
 \usepackage{listings}
 
 % to show DRAFT watermark
-%\usepackage[firstpage]{draftwatermark}
+\usepackage[firstpage]{draftwatermark}
 
 
 % semantic brackets around some text/formula
@@ -156,7 +157,13 @@ Norm formalisation
 \end_layout
 
 \begin_layout Standard
-include Grammar_defs
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Norm_defs.tex"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -170,7 +177,7 @@ alist
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "Norm/document/AList_ext.tex"
+filename "output/document/AList_ext.tex"
 
 \end_inset
 
@@ -184,7 +191,7 @@ partition_iterate
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "Norm/document/Helpers.tex"
+filename "output/document/Partition_iterate.tex"
 
 \end_inset
 
@@ -199,8 +206,28 @@ filename "Norm/document/Helpers.tex"
 Norm calculation algorithm
 \end_layout
 
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Norm_funs.tex"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Proof
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Norm_proofs.tex"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
