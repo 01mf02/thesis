@@ -22,6 +22,9 @@ by (simp add: is_alist_def)
 lemma alist_empty[simp]: "is_alist []"
 by (simp add: is_alist_def)
 
+lemma keys_fst_map: "set (map fst l) = keys l"
+by (induct l) (auto simp add: keys_def)
+
 lemma key_in_fst[simp]: "(k, v) \<in> A \<Longrightarrow> k \<in> fst ` A"
 by (rule Set.image_eqI) simp_all
 
@@ -56,6 +59,9 @@ by (induct l) (auto simp add: is_alist_def)
 lemma alist_map_values_equal:
   "is_alist l \<Longrightarrow> (k, v) \<in> set l \<Longrightarrow> (k, v') \<in> set (map (\<lambda>(k, v). (k, f k v)) l) \<Longrightarrow> v' = f k v"
 by (induct l) (auto simp add: is_alist_def, force)
+
+lemma map_fst_map: "map fst (map (\<lambda>(k, v). (k, f v)) l) = map fst l"
+by (induct l) auto
 
 lemma map_keys_equal: "keys (map (\<lambda>(k, v). (k, f v)) l) = keys l"
 by (induct l) auto

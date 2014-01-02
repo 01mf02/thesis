@@ -34,6 +34,7 @@ definition v_rule_has_norm ::
 definition mnotr_map where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
   (*"mnotr_map norms = value_map (min_norm_of_t_rules norms)"*)
+(* TODO: Use map_ran here? *)
 
 definition v_rules_of_norms where
   "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
