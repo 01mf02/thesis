@@ -794,30 +794,12 @@ lemma nog_vs_leq_rules_vs:
       and "(v, rules) \<in> set gr"
       and "(tr, vsr) \<in> set rules"
       and "t_rule_has_norm (norms_of_grammar gr) (tr, vsr)"
-    shows "norm_fun gr vs \<le> norm_fun gr vsr" using assms(5) unfolding norms_of_grammar_def norm_fun_def
-proof (induct rule: itno_induct_sd_in(1)[of gr rules n t vs v])
-  case (Step norms rest yes no)
-
-  (*have V1: "set vs  \<subseteq> keys norms" using mnotr_variables(1) Step(3) .
-
-  show ?case
-  proof (cases "set vsr \<inter> keys yes = {}")
-    case True
-    then have HN: "t_rule_has_norm norms (tr, vsr)"
-      using iffD1[OF trhn_vars_normed Step(6)[simplified]] using an_trhn_irrelevant by auto
-  
-    have V2: "set vsr \<subseteq> keys norms" using iffD1 trhn_vars_normed HN .
-    have NS: "norm_sum norms vs \<le> norm_sum norms vsr"
-      using mnotr_variables_rules[OF Step(3) assms(4) HN] by auto
-
-    show ?thesis using an_conserves_ns[OF Step(2,5)] NS V1 V2 by auto
-  next
-    case False*)
-    have IU: "itno_invariant_sd_in (add_norms norms yes) rules n t vs"
-      using an_conserves_invariant[OF Step(2-3) Step(5)] .
-    show ?case using mnotr_variables_rules[OF IU assms(4) Step(6)[simplified]] by simp
-  (*qed*)
-qed (auto simp add: assms gram_nsd_sd)
+    shows "norm_fun gr vs \<le> norm_fun gr vsr"
+proof -
+  have IU: "itno_invariant_sd_in (norms_of_grammar gr) rules n t vs"
+    using itno_invariant_sd_in_holds[OF assms(1-3)] .
+  show ?thesis using mnotr_variables_rules[OF IU assms(4-5)] unfolding norm_fun_def by simp
+qed
 
 lemma nog_keys_superset_gr_normed:
   assumes "gram_sd gr"
