@@ -106,7 +106,7 @@ definition itno_invariant_sd_in where
 
 definition itno2_invariant_sd_in where
   "itno2_invariant_sd_in norms rules v \<equiv>
-     t_rules_have_norm norms rules \<and> lookup norms v = min_norm_of_t_rules norms rules"
+     t_rules_have_norm norms rules \<and> lookup norms v = min_norm_of_t_rules norms rules \<and> snd (lookup norms v) \<in> set rules"
 
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"

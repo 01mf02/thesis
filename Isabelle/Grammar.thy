@@ -410,8 +410,9 @@ next
 
       have I1: "t_rules_have_norm un rules" using P Step(1-3,5) sorry
       have I2: "lookup un v = min_norm_of_t_rules un rules" sorry
+      have I3: "snd (lookup un v) \<in> set rules" sorry
 
-      show ?thesis using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
+      show ?thesis using I1 I2 I3 unfolding itno2_invariant_sd_in_def un_def by auto
     qed
 qed (simp add: assms(2))
 
@@ -858,24 +859,14 @@ lemma nf_nog':
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
     shows "norm_fun gr [v] = Suc (norm_fun gr vs)" unfolding norms_of_grammar_def
-proof (induct rule: itno_induct_sd_in(1)[of gr rules n t vs v])
-  case (Step norms rest yes no)
-  show ?case proof (cases "(v, n, t, vs) \<in> set norms")
-    case False
-    then have N: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_in_def by auto
+proof -
+  have S: "n = Suc (norm_fun gr vs)" using nog_ns(2)[OF assms(1-2)] by auto
+  have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
 
-    have I: "set rest \<subseteq> set gr" "keys rest \<inter> keys norms = {}" "is_alist rest"
-        using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-    then have S: "n = Suc (norm_fun gr vs)" using nog_ns(2)[OF assms(1-2)] by auto
-  
-    have A: "is_alist (norms_of_grammar gr)" using nog_alist assms(1) by auto
-    have "norm_fun gr [v] = n" unfolding nf_singleton
-      using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
-  
-    then show ?thesis using S by auto
-  qed (auto simp add: Step)
-qed (auto simp add: assms)
+  have "norm_fun gr [v] = n" unfolding nf_singleton
+    using lookup_predicate[OF A, of v _ "\<lambda>k v. fst v = n"] assms by auto
+  then show ?thesis using S by auto
+qed
 
 lemma nf_nog:
   assumes "gram_nsd_fun gr"
