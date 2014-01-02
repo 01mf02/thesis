@@ -249,7 +249,7 @@ lemma an_conserves_invariant:
       and "partition (v_rule_has_norm norms) rest = (yes, no)"
     shows "itno_invariant_sd_in (add_norms norms yes) rules n t vs"
 proof -
-  (*have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using assms(1)
+  have S: "is_alist norms" " is_alist rest" "keys rest \<inter> keys norms = {}" using assms(1)
     unfolding itno_invariant_sd_def by auto
   have AM: "is_alist (mnotr_map norms yes)" unfolding mnotr_map_def
     using alist_filter alist_map_alist S(2) assms(3) by auto
@@ -259,7 +259,7 @@ proof -
   have "keys norms \<inter> keys (mnotr_map norms yes) = {}" unfolding mnotr_map_def
     using S(3) assms(3) by force
   then have AI: "is_alist (add_norms norms yes)" using S(1) AM alist_distr[of norms]
-    unfolding add_norms_def by auto*)
+    unfolding add_norms_def by auto
 
   have P: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
     using assms(2) unfolding itno_invariant_sd_in_def by auto
@@ -656,16 +656,13 @@ lemma nog_in_rules':
       and "(v, rules) \<in> set gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
     shows "(t, vs) \<in> set rules" using assms(3)
-proof (induct rule: itno_induct_sd_in(1)[of gr rules n t vs v])
-  case (Step norms rest yes no)
-  show ?case proof (cases "(v, n, t, vs) \<in> set norms")
-    case False
-    then have I: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-      using Step(3) unfolding itno_invariant_sd_in_def by auto
-    then have "(t, vs) = snd (min_norm_of_t_rules norms rules)" by (metis snd_conv)
-    then show ?thesis using mnotr_in_rules[OF I(1)] by auto
-  qed (auto simp add: Step)
-qed (auto simp add: assms)
+proof -
+  have I: "t_rules_have_norm (norms_of_grammar gr) rules"
+          "(n, t, vs) = min_norm_of_t_rules (norms_of_grammar gr) rules"
+    using itno_invariant_sd_in_holds[OF assms(1,3,2)] unfolding itno_invariant_sd_in_def by auto
+  then have "(t, vs) = snd (min_norm_of_t_rules (norms_of_grammar gr) rules)" by (metis snd_conv)
+  then show ?thesis using mnotr_in_rules[OF I(1)] by auto
+qed
 
 lemma nog_in_rules:
   assumes "gram_nsd_fun gr"
