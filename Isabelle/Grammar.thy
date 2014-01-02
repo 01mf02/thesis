@@ -381,14 +381,14 @@ lemma itno2_induct_sd_in_new:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "v \<in> keys (fst (iterate_norms2 gr))"
-  shows "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules v"
+  shows "itno2_invariant_sd_in (fst (iterate_norms2 gr)) v rules"
 using assms(3) proof (induct rule: itno2_induct_sd(1))
   case (Step norms rest yes no)
   def un \<equiv> "update_norms gr norms yes"
   have P: "v \<in> keys un" unfolding un_def using Step(5) by simp
 
   have I1: "t_rules_have_norm un rules" using P Step(1-3,5) sorry
-  have I2: "lookup un v = min_norm_of_t_rules un rules" sorry
+  have I2: "(v, min_norm_of_t_rules un rules) \<in> set un" sorry
 
   show ?case using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
 qed (auto simp add: assms(1))
@@ -399,7 +399,7 @@ lemma itno2_induct_sd_in [case_names Step]:
   assumes "\<And>norms rest yes no.
              itno_invariant gr norms rest \<Longrightarrow>
              itno_invariant_sd gr norms rest \<Longrightarrow>
-             itno2_invariant_sd_in norms rules v \<Longrightarrow>
+             itno2_invariant_sd_in norms v rules \<Longrightarrow>
              (v \<in> keys norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
              partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
              P (update_norms gr norms yes, no)"
@@ -407,7 +407,7 @@ lemma itno2_induct_sd_in [case_names Step]:
       and "(v, rules) \<in> set gr"
       and "v \<in> keys (fst (iterate_norms2 gr))"
   shows "P (iterate_norms2 gr)"
-    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules v"
+    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) v rules"
 using assms(4) proof (induct rule: itno2_induct_sd(1))
   case Base
     case 1 then show ?case by auto
@@ -423,7 +423,7 @@ next
   have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(3)[symmetric]] alist_distr
     by auto
 
-  have IS: "v \<in> keys (update_norms gr norms yes) \<Longrightarrow> itno2_invariant_sd_in norms rules v" sorry
+  have IS: "v \<in> keys (update_norms gr norms yes) \<Longrightarrow> itno2_invariant_sd_in norms v rules" sorry
   (*  proof (cases "v \<in> keys norms")
       case True then show ?thesis using Step(5) by auto
     next
