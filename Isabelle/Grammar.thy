@@ -297,9 +297,9 @@ sorry
 
 lemma un_conserves_invariant:
   assumes "itno_invariant_sd gr norms rest"
-      and "itno2_invariant_sd_in norms rules norm"
+      and "itno2_invariant_sd_in norms rules v"
       and "partition (v_rule_has_norm norms) rest = (yes, no)"
-    shows "itno2_invariant_sd_in (update_norms gr norms yes) rules (lookup (update_norms gr norms yes) v)"
+    shows "itno2_invariant_sd_in (update_norms gr norms yes) rules v"
 sorry
 
 
@@ -377,11 +377,11 @@ next
 qed
 
 
-lemma itno2_induct_sd_in [case_names Step]:
+lemma itno2_induct_sd_in_new [case_names Step]:
   assumes "\<And>norms rest yes no.
              itno_invariant gr norms rest \<Longrightarrow>
              itno_invariant_sd gr norms rest \<Longrightarrow>
-             itno2_invariant_sd_in norms rules (lookup norms v) \<Longrightarrow>
+             (v \<in> keys norms \<Longrightarrow> itno2_invariant_sd_in norms rules v) \<Longrightarrow>
              (v \<in> keys norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
              partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
              P (update_norms gr norms yes, no)"
@@ -389,42 +389,86 @@ lemma itno2_induct_sd_in [case_names Step]:
       and "(v, rules) \<in> set gr"
       and "v \<in> keys (fst (iterate_norms2 gr))"
   shows "P (iterate_norms2 gr)"
-    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules (lookup (fst (iterate_norms2 gr)) v)"
+    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules v"
 using assms(4) proof (induct rule: itno2_induct_sd(1))
   case Base
     case 1 then show ?case by auto
     case 2 then show ?case by auto
 next
   case (Step norms rest yes no)
-  have IS: "v \<in> keys (update_norms gr norms yes) \<Longrightarrow>
-            itno2_invariant_sd_in norms rules (lookup norms v)"
+    case 1 show ?case
     proof (cases "v \<in> keys norms")
+      case True then show ?thesis using assms(1) Step by auto
+    next
+      case False then show ?thesis using assms(1)[OF Step(1-2) _ _ Step(3)] by auto
+    qed
+
+    case 2 then show ?case
+    proof -
+      def un \<equiv> "update_norms gr norms yes"
+      have P: "v \<in> keys un" unfolding un_def using 2 by simp
+
+      have I1: "t_rules_have_norm un rules" using P Step(1-3,5) sorry
+      have I2: "lookup un v = min_norm_of_t_rules un rules" sorry
+
+      show ?thesis using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
+    qed
+qed (simp add: assms(2))
+
+
+
+lemma itno2_induct_sd_in [case_names Step]:
+  assumes "\<And>norms rest yes no.
+             itno_invariant gr norms rest \<Longrightarrow>
+             itno_invariant_sd gr norms rest \<Longrightarrow>
+             itno2_invariant_sd_in norms rules v \<Longrightarrow>
+             (v \<in> keys norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
+             partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
+             P (update_norms gr norms yes, no)"
+      and "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "v \<in> keys (fst (iterate_norms2 gr))"
+  shows "P (iterate_norms2 gr)"
+    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) rules v"
+using assms(4) proof (induct rule: itno2_induct_sd(1))
+  case Base
+    case 1 then show ?case by auto
+    case 2 then show ?case by auto
+next
+  case (Step norms rest yes no)
+
+  have I: "set rest \<subseteq> set gr" "is_alist rest"
+    using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
+  have YG: "set yes \<subseteq> set gr" using Step(3) I(1) by auto
+
+  have AG: "is_alist gr" using gsd_alist assms(2) by auto
+  have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(3)[symmetric]] alist_distr
+    by auto
+
+  have IS: "v \<in> keys (update_norms gr norms yes) \<Longrightarrow> itno2_invariant_sd_in norms rules v" sorry
+  (*  proof (cases "v \<in> keys norms")
       case True then show ?thesis using Step(5) by auto
     next
       case False
       assume P: "v \<in> keys (update_norms gr norms yes)"
   
-      have I: "set rest \<subseteq> set gr" "is_alist rest"
-        using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-      have YG: "set yes \<subseteq> set gr" using Step(3) I(1) by auto
-  
-      have AG: "is_alist gr" using gsd_alist assms(2) by auto
-      have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(3)[symmetric]] alist_distr
-        by auto
-  
       have VM: "v \<in> keys (mnotr_map norms yes)" using False P
-        unfolding add_norms_def sorry
+        unfolding update_norms_def sorry
       then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(3)] YG
         unfolding mnotr_map_def by auto
-      then have R: "t_rules_have_norm norms rules" using Step(3)
+      then have I1: "t_rules_have_norm norms rules" using Step(3)
         unfolding v_rule_has_norm_def by auto
-  
-      have "lookup norms v = min_norm_of_t_rules norms rules"
-        using alist_map_values_equal AY VY VM[simplified mnotr_map_def] sorry
-      then show ?thesis unfolding itno2_invariant_sd_in_def using R by auto
-    qed
 
-    case 1 show ?case
+      have VL: "(v, lookup norms v) \<in> set (mnotr_map norms yes)" unfolding mnotr_map_def sorry
+
+      have I2: "lookup norms v = min_norm_of_t_rules norms rules"
+        using alist_map_values_equal AY VY VL[simplified mnotr_map_def] .
+
+      show ?thesis unfolding itno2_invariant_sd_in_def using I1 I2 by auto
+    qed*)
+
+    case 1
+    show ?case 
     proof (cases "v \<in> keys norms")
       case True then show ?thesis using assms(1) Step by auto
     next
@@ -432,8 +476,7 @@ next
     qed
 
     case 2
-    then have V: "v \<in> keys (update_norms gr norms yes)" by auto
-    show ?case using un_conserves_invariant[OF Step(2) IS[OF V] Step(3)] by simp
+    show ?case using un_conserves_invariant[OF Step(2) IS Step(3)] 2 by simp
 qed (auto simp add: assms)
 
 
