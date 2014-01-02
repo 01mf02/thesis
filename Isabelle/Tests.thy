@@ -1,6 +1,6 @@
 header {* Tests *}
 
-theory Tests imports Grammar
+theory Tests imports Norm_proofs
   "~~/src/HOL/Library/Char_ord"
 begin
 

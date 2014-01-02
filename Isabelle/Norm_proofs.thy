@@ -1,7 +1,7 @@
-header {* Grammar proofs *}
+header {* Norm proofs *}
 
-theory Grammar imports
-  "Grammar_defs"
+theory Norm_proofs imports
+  "Norm_funs"
   "Helpers"
 begin
 
