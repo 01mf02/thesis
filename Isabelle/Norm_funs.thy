@@ -57,13 +57,9 @@ definition add_norms ::
 definition update_norms where
   "update_norms gr norms yes = minimise_norms (add_norms norms yes) gr"
 
-definition iterate_norms2 ::
-  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
-  "iterate_norms2 gr = partition_iterate v_rule_has_norm (update_norms gr) [] gr"
-
 definition iterate_norms ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
-  "iterate_norms gr = partition_iterate v_rule_has_norm add_norms [] gr"
+  "iterate_norms gr = partition_iterate v_rule_has_norm (update_norms gr) [] gr"
 
 definition itno_invariant where
   "itno_invariant gr norms rest \<equiv> set rest \<subseteq> set gr \<and> keys gr = keys norms \<union> keys rest"
@@ -71,12 +67,12 @@ definition itno_invariant where
 definition itno_invariant_sd where
   "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
 
-definition itno_invariant_sd_in where
-  "itno_invariant_sd_in norms rules n t vs \<equiv>
+definition nog_invariant where
+  "nog_invariant norms rules n t vs \<equiv>
      t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
 
-definition itno2_invariant_sd_in where
-  "itno2_invariant_sd_in norms v rules \<equiv>
+definition nog_invariant_n_t_vs where
+  "nog_invariant_n_t_vs norms v rules \<equiv>
      t_rules_have_norm norms rules \<and> (v, min_norm_of_t_rules norms rules) \<in> set norms"
 
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
@@ -84,10 +80,6 @@ definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Righta
 
 definition gram_nsd_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_nsd_fun gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
-
-definition norms_of_grammar2 ::
-  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "norms_of_grammar2 gr \<equiv> fst (iterate_norms2 gr)"
 
 definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
@@ -118,6 +110,7 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar_norms \<Rightarrow>
      if Suc p < n then (norm_reduce norms v p) @ vt
      else norm_reduce norms vt (Suc p - n))"
 
-export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"
+(* TODO! *)
+(*export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"*)
 
 end
