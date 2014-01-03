@@ -67,16 +67,20 @@ qed
   t_rule_has_norm / t_rules_have_norm
  *****************************************************************************)
 
-lemma trhn_conserves: "t_rule_has_norm norms rule \<Longrightarrow> t_rule_has_norm (norms@l) rule"
-unfolding t_rule_has_norm_def by auto
+lemma trhn_conserves:
+  assumes "keys norms = keys norms1 \<union> keys norms2"
+      and "t_rule_has_norm norms1 rule"
+    shows "t_rule_has_norm norms  rule"
+using assms unfolding t_rule_has_norm_def by auto
 
 lemma trhn_vars_normed: "(t_rule_has_norm norms (t, vs)) = (set vs \<subseteq> keys norms)"
 unfolding t_rule_has_norm_def by auto
 
 lemma trshn_conserves:
-  assumes "t_rules_have_norm norms rules"
-    shows "t_rules_have_norm (norms@l) rules"
-using assms unfolding t_rules_have_norm_def using trhn_conserves[of norms] by auto
+  assumes "keys norms = keys norms1 \<union> keys norms2"
+      and "t_rules_have_norm norms1 rules"
+    shows "t_rules_have_norm norms  rules"
+using assms(2) trhn_conserves[OF assms(1)] unfolding t_rules_have_norm_def by auto
 
 
 (*****************************************************************************
@@ -254,6 +258,13 @@ lemma un_conserves_invariant:
     shows "itno2_invariant_sd_in (update_norms gr norms yes) v rules"
 sorry
 
+lemma un_minimal:
+  assumes "(v, rules) \<in> set gr"
+      and "(v, rules) \<in> set yes"
+      and "(v, norm) \<in> set (update_norms gr norms yes)"
+    shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
+sorry
+
 
 (*****************************************************************************
   iterate_norms2
@@ -341,82 +352,29 @@ using assms(3) proof (induct rule: itno2_induct_sd(1))
   case (Step norms rest yes no)
   def un \<equiv> "update_norms gr norms yes"
   have P: "v \<in> keys un" unfolding un_def using Step(5) by simp
+  have II: "set rest \<subseteq> set gr" using Step(1) unfolding itno_invariant_def by simp
+  have IS: "is_alist rest" using Step(2) unfolding itno_invariant_sd_def by simp
+  have AG: "is_alist gr" using gsd_alist assms(1) .
+  have YG: "set yes \<subseteq> set gr" using Step(3) II(1) by auto
 
   show ?case
   proof (cases "v \<in> keys norms")
     case True then show ?thesis using un_conserves_invariant[OF Step(2) _ Step(3)] Step(4) by auto
   next
     case False
-    have I1: "t_rules_have_norm un rules" using P Step(1-3,5) sorry
-    have I2: "(v, min_norm_of_t_rules un rules) \<in> set un" sorry
+    then have D: "v \<in> keys yes" using un_keys[of gr norms yes] P unfolding un_def by auto
+    then have A: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(2)] YG by auto
+    then have TR: "t_rules_have_norm norms rules" using Step(3)
+        unfolding v_rule_has_norm_def by auto
+    then have I1: "t_rules_have_norm un rules" using trshn_conserves[OF un_keys TR]
+      unfolding un_def by auto
+
+    have I2: "(v, min_norm_of_t_rules un rules) \<in> set un"
+      using un_minimal[OF assms(2) A] P unfolding un_def by auto
 
     show ?thesis using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
   qed
 qed (auto simp add: assms(1))
-
-
-lemma itno2_induct_sd_in [case_names Step]:
-  assumes "\<And>norms rest yes no.
-             itno_invariant gr norms rest \<Longrightarrow>
-             itno_invariant_sd gr norms rest \<Longrightarrow>
-             itno2_invariant_sd_in norms v rules \<Longrightarrow>
-             (v \<in> keys norms \<Longrightarrow> P (norms, rest)) \<Longrightarrow>
-             partition (v_rule_has_norm norms) rest = (yes, no) \<Longrightarrow>
-             P (update_norms gr norms yes, no)"
-      and "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-      and "v \<in> keys (fst (iterate_norms2 gr))"
-  shows "P (iterate_norms2 gr)"
-    and "itno2_invariant_sd_in (fst (iterate_norms2 gr)) v rules"
-using assms(4) proof (induct rule: itno2_induct_sd(1))
-  case Base
-    case 1 then show ?case by auto
-    case 2 then show ?case by auto
-next
-  case (Step norms rest yes no)
-
-  have I: "set rest \<subseteq> set gr" "is_alist rest"
-    using Step(1-2) unfolding itno_invariant_def itno_invariant_sd_def by auto
-  have YG: "set yes \<subseteq> set gr" using Step(3) I(1) by auto
-
-  have AG: "is_alist gr" using gsd_alist assms(2) by auto
-  have AY: "is_alist yes" using alist_partition_distr[OF I(2) Step(3)[symmetric]] alist_distr
-    by auto
-
-  have IS: "v \<in> keys (update_norms gr norms yes) \<Longrightarrow> itno2_invariant_sd_in norms v rules" sorry
-  (*  proof (cases "v \<in> keys norms")
-      case True then show ?thesis using Step(5) by auto
-    next
-      case False
-      assume P: "v \<in> keys (update_norms gr norms yes)"
-  
-      have VM: "v \<in> keys (mnotr_map norms yes)" using False P
-        unfolding update_norms_def sorry
-      then have VY: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(3)] YG
-        unfolding mnotr_map_def by auto
-      then have I1: "t_rules_have_norm norms rules" using Step(3)
-        unfolding v_rule_has_norm_def by auto
-
-      have VL: "(v, lookup norms v) \<in> set (mnotr_map norms yes)" unfolding mnotr_map_def sorry
-
-      have I2: "lookup norms v = min_norm_of_t_rules norms rules"
-        using alist_map_values_equal AY VY VL[simplified mnotr_map_def] .
-
-      show ?thesis unfolding itno2_invariant_sd_in_def using I1 I2 by auto
-    qed*)
-
-    case 1
-    show ?case 
-    proof (cases "v \<in> keys norms")
-      case True then show ?thesis using assms(1) Step by auto
-    next
-      case False then show ?thesis using assms(1)[OF Step(1-2) IS _ Step(3)] 1 by auto
-    qed
-
-    case 2
-    show ?case using un_conserves_invariant[OF Step(2) IS Step(3)] 2 by simp
-qed (auto simp add: assms)
-
 
 
 (*****************************************************************************
