@@ -172,9 +172,11 @@ qed
   add_norms
  *****************************************************************************)
 
+lemma an_fst_map: "map fst (add_norms norms yes) = map fst norms @ map fst yes"
+unfolding add_norms_def mnotr_map_def using map_fst_map[of "min_norm_of_t_rules norms" yes] by auto
+
 lemma an_keys: "keys (add_norms norms yes) = keys norms \<union> keys yes"
-unfolding add_norms_def mnotr_map_def using map_keys_equal[of "min_norm_of_t_rules norms" yes]
-by auto
+using an_fst_map keys_fst_map by (metis set_append)
 
 lemma an_var_in_keys: "(v, rules) \<in> set yes \<Longrightarrow> v \<in> keys (add_norms norms yes)"
 unfolding an_keys[of norms yes] by auto
@@ -220,6 +222,23 @@ subsection {* @{text v_rules_of_norms} *}
 lemma vron_fst_map: "map fst (v_rules_of_norms norms gr) = map fst norms"
 unfolding v_rules_of_norms_def by (induct norms) auto
 
+lemma vron_alist:
+  assumes "is_alist norms"
+    shows "is_alist (v_rules_of_norms norms gr)"
+using vron_fst_map[symmetric] alist_fst_map[OF assms] by auto
+
+lemma vron_gr:
+  assumes "is_alist gr"
+      and "v \<in> keys norms"
+      and "(v, rules) \<in> set gr"
+    shows "(v, rules) \<in> set (v_rules_of_norms norms gr)"
+proof -
+  have 1: "(v, lookup gr v) \<in> set (v_rules_of_norms norms gr)" unfolding v_rules_of_norms_def
+    using assms(2) by (induct norms) auto
+  have 2: "lookup gr v = rules" using lookup_from_existence[OF assms(1,3)] .
+  show ?thesis using 1 unfolding 2 .
+qed
+
 
 subsection {* @{text refine_norms} *}
 
@@ -230,6 +249,23 @@ sorry
 
 lemma rn_fst_map: "map fst (refine_norms norms gr) = map fst norms"
 unfolding refine_norms_def mnotr_map_def vron_fst_map map_fst_map by simp
+
+lemma rn_mnotr:
+  assumes "refine_norms norms gr = norms"
+      and "(v, norm) \<in> set norms"
+      and "(v, rules) \<in> set gr"
+      and "is_alist norms"
+      and "is_alist gr"
+    shows "norm = min_norm_of_t_rules norms rules"
+proof -
+  have VN: "v \<in> keys norms" using assms(2) by auto
+  have AV: "is_alist (v_rules_of_norms norms gr)" using vron_alist assms(4) .
+  have VR: "(v, rules) \<in> set (v_rules_of_norms norms gr)"
+    using vron_gr[OF assms(5) _ assms(3)] VN by auto
+  show ?thesis using assms(1)[symmetric] unfolding refine_norms_def mnotr_map_def
+    using alist_map_values_equal[OF AV VR, of norm "\<lambda>v rules. min_norm_of_t_rules norms rules"]
+      assms(2) by auto
+qed
 
 
 subsection {* @{text minimise_norms} *}
@@ -245,8 +281,19 @@ proof (induct norms gr rule: minimise_norms.induct)
   qed auto
 qed
 
+lemma mn_rn: "refine_norms (minimise_norms norms gr) gr = (minimise_norms norms gr)"
+proof (induct norms gr rule: minimise_norms.induct)
+  case (1 norms gr)
+  show ?case proof (cases "refine_norms norms gr = norms")
+    case False show ?thesis using 1[OF False] minimise_norms.simps by metis
+  qed auto
+qed
+
 
 subsection {* @{text update_norms} *}
+
+lemma un_fst_map: "map fst (update_norms gr norms yes) = map fst norms @ map fst yes"
+unfolding update_norms_def by (metis an_fst_map mn_map_fst)
 
 lemma un_keys: "keys (update_norms gr norms yes) = keys norms \<union> keys yes"
 using keys_fst_map an_keys mn_map_fst update_norms_def by metis
@@ -262,8 +309,10 @@ lemma un_minimal:
   assumes "(v, rules) \<in> set gr"
       and "(v, rules) \<in> set yes"
       and "(v, norm) \<in> set (update_norms gr norms yes)"
+      and "is_alist (update_norms gr norms yes)"
+      and "is_alist gr"
     shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
-sorry
+using rn_mnotr mn_rn assms(3,1,4-5) unfolding update_norms_def .
 
 
 (*****************************************************************************
@@ -353,9 +402,14 @@ using assms(3) proof (induct rule: itno2_induct_sd(1))
   def un \<equiv> "update_norms gr norms yes"
   have P: "v \<in> keys un" unfolding un_def using Step(5) by simp
   have II: "set rest \<subseteq> set gr" using Step(1) unfolding itno_invariant_def by simp
-  have IS: "is_alist rest" using Step(2) unfolding itno_invariant_sd_def by simp
+  have IS: "is_alist norms" "is_alist rest" "keys rest \<inter> keys norms = {}"
+    using Step(2) unfolding itno_invariant_sd_def by auto
   have AG: "is_alist gr" using gsd_alist assms(1) .
   have YG: "set yes \<subseteq> set gr" using Step(3) II(1) by auto
+  have AY: "is_alist yes" using alist_partition_distr[OF IS(2) Step(3)[symmetric]] alist_distr
+    by auto
+  have YR: "keys yes \<subseteq> keys rest" using Step(3) by auto
+  have NY: "keys norms \<inter> keys yes = {}" using YR IS(3) by auto
 
   show ?case
   proof (cases "v \<in> keys norms")
@@ -369,8 +423,9 @@ using assms(3) proof (induct rule: itno2_induct_sd(1))
     then have I1: "t_rules_have_norm un rules" using trshn_conserves[OF un_keys TR]
       unfolding un_def by auto
 
+    have AU: "is_alist un" unfolding un_def using alist_distr_fst_map[OF un_fst_map IS(1) AY NY] .
     have I2: "(v, min_norm_of_t_rules un rules) \<in> set un"
-      using un_minimal[OF assms(2) A] P unfolding un_def by auto
+      using un_minimal[OF assms(2) A _ _ AG] P AU unfolding un_def by auto
 
     show ?thesis using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
   qed

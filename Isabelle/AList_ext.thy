@@ -16,7 +16,7 @@ definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
 lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
 by (induct l) (auto simp add: keys_def)
 
-lemma alist_fst_map: "is_alist l \<Longrightarrow> map fst l = map fst (f l) \<Longrightarrow> is_alist (f l)"
+lemma alist_fst_map: "is_alist l1 \<Longrightarrow> map fst l1 = map fst l2 \<Longrightarrow> is_alist l2"
 by (simp add: is_alist_def)
 
 lemma alist_empty[simp]: "is_alist []"
@@ -46,6 +46,14 @@ unfolding is_alist_def apply (induct l arbitrary: yes no) by auto
 
 lemma alist_distr: "is_alist (l1 @ l2) = (is_alist l1 \<and> is_alist l2 \<and> keys l1 \<inter> keys l2 = {})"
 by (induct l1, auto simp add: is_alist_def)
+
+lemma alist_distr_fst_map:
+  assumes "map fst l = map fst l1 @ map fst l2"
+      and "is_alist l1"
+      and "is_alist l2"
+      and "keys l1 \<inter> keys l2 = {}"
+    shows "is_alist l"
+using assms by (induct l1, auto simp add: is_alist_def)
 
 lemma alist_values_equal: "is_alist l \<Longrightarrow> (k, v1) \<in> set l \<Longrightarrow> (k, v2) \<in> set l \<Longrightarrow> v1 = v2"
 by (induct l) (auto simp add: is_alist_def)
