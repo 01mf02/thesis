@@ -46,7 +46,5 @@ value "gram_nsd_fun test_gr3 = False"
 
 value "gram_nsd_fun test_gr4"
 value "iterate_norms test_gr4"
-value "iterate_norms2 test_gr4"
-
 
 end

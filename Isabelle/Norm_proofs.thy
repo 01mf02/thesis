@@ -267,6 +267,9 @@ proof -
       assms(2) by auto
 qed
 
+lemma rn_nil: "refine_norms [] gr = []"
+unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
+
 
 subsection {* @{text minimise_norms} *}
 
@@ -289,6 +292,9 @@ proof (induct norms gr rule: minimise_norms.induct)
   qed auto
 qed
 
+lemma mn_nil: "minimise_norms [] gr = []"
+by (metis minimise_norms.simps rn_nil)
+
 
 subsection {* @{text update_norms} *}
 
@@ -298,9 +304,6 @@ unfolding update_norms_def by (metis an_fst_map mn_map_fst)
 lemma un_keys: "keys (update_norms gr norms yes) = keys norms \<union> keys yes"
 using keys_fst_map an_keys mn_map_fst update_norms_def by metis
 
-lemma un_var_in_keys: "(v, rules) \<in> set yes \<Longrightarrow> v \<in> keys (update_norms gr norms yes)"
-sorry
-
 lemma un_minimal:
   assumes "(v, rules) \<in> set gr"
       and "(v, norm) \<in> set (update_norms gr norms yes)"
@@ -309,9 +312,17 @@ lemma un_minimal:
     shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
 using rn_mnotr mn_rn assms(2,1,3-4) unfolding update_norms_def .
 
-(* this is wrong, but it holds if refine_norms norms = norms *)
-lemma un_nil_invariant: "update_norms gr norms [] = norms"
-unfolding update_norms_def sorry
+lemma un_un_invariant: "update_norms gr (update_norms gr norms yes) [] = update_norms gr norms yes"
+proof -
+  def un \<equiv> "update_norms gr norms yes"
+  have "refine_norms un gr = un" unfolding update_norms_def un_def using mn_rn[of _ gr] by auto
+  then show ?thesis unfolding update_norms_def un_def
+    by (metis an_nil_invariant minimise_norms.simps)
+qed
+
+lemma un_nil_invariant: "update_norms gr [] [] = []"
+unfolding update_norms_def add_norms_def mnotr_map_def using mn_nil
+by (metis append_Nil map.simps(1))
 
 
 subsection {* @{text iterate_norms} *}
@@ -567,20 +578,21 @@ proof (induct rule: itno_induct_sd(1))
     then have "(v, rules) \<in> set no" using VY Step(3) by auto
     then have VF: "(v, rules) \<in> set (filter (v_rule_has_norm (update_norms gr norms yes)) no)"
       using HN by auto
-    show ?thesis using un_var_in_keys[OF VF] by auto
+    show ?thesis using un_keys VF by (metis (lifting) an_keys an_var_in_keys split_conv)
   qed
 next
   case Base
   have VF: "(v, rules) \<in> set (filter (v_rule_has_norm []) gr)"
     unfolding v_rule_has_norm_def using Base assms(2) by auto
-  show ?case using un_var_in_keys[OF VF] by auto
+  show ?case using un_keys VF by (metis (lifting) an_keys an_var_in_keys split_conv)
 qed (auto simp add: assms)
 
 lemma nog_un_invariant:
   "(\<lambda>(norms, rest). (update_norms gr) norms (filter (v_rule_has_norm norms) rest)) (iterate_norms gr) =
    norms_of_grammar gr"
 unfolding norms_of_grammar_def iterate_norms_def
-using pi_invariant[of "update_norms gr" v_rule_has_norm "[]" gr, OF un_nil_invariant]
+using pi_invariant_extended
+  [of "update_norms gr" "[]" v_rule_has_norm gr, OF un_nil_invariant un_un_invariant]
 by (case_tac "partition_iterate v_rule_has_norm (update_norms gr) [] gr") auto
 
 lemma nog_v_in_norms:

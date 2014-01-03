@@ -1,4 +1,4 @@
-header {* Find good title here *}
+header {* Partition iteration algorithm *}
 
 theory Partition_iterate imports Helpers
 begin
@@ -32,18 +32,53 @@ proof (induct l arbitrary: a rule: length_induct)
   qed
 qed
 
+lemma pi_termination_condition:
+  assumes "partition_iterate P f a l = (ac, no)"
+    shows "filter (P ac) no = []"
+sorry
+
+lemma pi_termination_condition_busy:
+  assumes "filter (P a) l = yesh # yest"
+      and "partition_iterate P f a l = (ac, no)"
+    shows "\<exists>a l. ac = f a l"
+sorry
+
+lemma pi_invariant_extended:
+  assumes "f a [] = a"
+      and "\<And>a l. f (f a l) [] = f a l"
+    shows "partition_iterate P f a l =
+           (\<lambda>(ac, no). (f ac (filter (P ac) no), no)) (partition_iterate P f a l)"
+proof -
+  def pi \<equiv> "partition_iterate P f a l"
+  def ac \<equiv> "fst pi"
+  def no \<equiv> "snd pi"
+  have PI: "partition_iterate P f a l = (ac, no)" using pi_def ac_def no_def by auto
+
+  have FE: "filter (P ac) no = []" using pi_termination_condition PI .
+  then have "f ac (filter (P ac) no) = ac"
+  proof (cases "filter (P a) l")
+    case Nil then show ?thesis using assms(1) unfolding ac_def no_def pi_def by auto
+  next
+    case (Cons yesh yest)
+    have "\<exists>a l. ac = f a l" using pi_termination_condition_busy[of P a l yesh yest, OF Cons PI] .
+    then show ?thesis unfolding FE using assms(2) by auto
+  qed
+  then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
+qed
+
 lemma pi_invariant:
   assumes "\<And>a. f a [] = a"
     shows "partition_iterate P f a l =
            (\<lambda>(acc, no). (f acc (filter (P acc) no), no)) (partition_iterate P f a l)"
 proof -
-  def  pi \<equiv> "partition_iterate P f a l"
-  def acc \<equiv> "fst pi"
-  def  no \<equiv> "snd pi"
+  def pi \<equiv> "partition_iterate P f a l"
+  def ac \<equiv> "fst pi"
+  def no \<equiv> "snd pi"
+  have PI: "partition_iterate P f a l = (ac, no)" using pi_def ac_def no_def by auto
 
-  have "filter (P acc) no = []" sorry
-  then have "f acc (filter (P acc) no) = acc" using assms by auto
-  then show ?thesis unfolding acc_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
+  have "filter (P ac) no = []" using pi_termination_condition PI .
+  then have "f ac (filter (P ac) no) = ac" using assms by auto
+  then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
 qed
 
 end
