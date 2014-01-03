@@ -298,21 +298,13 @@ unfolding update_norms_def by (metis an_fst_map mn_map_fst)
 lemma un_keys: "keys (update_norms gr norms yes) = keys norms \<union> keys yes"
 using keys_fst_map an_keys mn_map_fst update_norms_def by metis
 
-lemma un_conserves_invariant:
-  assumes "itno_invariant_sd gr norms rest"
-      and "itno2_invariant_sd_in norms v rules"
-      and "partition (v_rule_has_norm norms) rest = (yes, no)"
-    shows "itno2_invariant_sd_in (update_norms gr norms yes) v rules"
-sorry
-
 lemma un_minimal:
   assumes "(v, rules) \<in> set gr"
-      and "(v, rules) \<in> set yes"
       and "(v, norm) \<in> set (update_norms gr norms yes)"
       and "is_alist (update_norms gr norms yes)"
       and "is_alist gr"
     shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
-using rn_mnotr mn_rn assms(3,1,4-5) unfolding update_norms_def .
+using rn_mnotr mn_rn assms(2,1,3-4) unfolding update_norms_def .
 
 
 (*****************************************************************************
@@ -410,25 +402,23 @@ using assms(3) proof (induct rule: itno2_induct_sd(1))
     by auto
   have YR: "keys yes \<subseteq> keys rest" using Step(3) by auto
   have NY: "keys norms \<inter> keys yes = {}" using YR IS(3) by auto
+  have AU: "is_alist un" unfolding un_def using alist_distr_fst_map[OF un_fst_map IS(1) AY NY] .
 
-  show ?case
+  have T: "t_rules_have_norm norms rules"
   proof (cases "v \<in> keys norms")
-    case True then show ?thesis using un_conserves_invariant[OF Step(2) _ Step(3)] Step(4) by auto
+    case True then show ?thesis using Step(4) unfolding itno2_invariant_sd_in_def by auto
   next
     case False
-    then have D: "v \<in> keys yes" using un_keys[of gr norms yes] P unfolding un_def by auto
-    then have A: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(2)] YG by auto
-    then have TR: "t_rules_have_norm norms rules" using Step(3)
-        unfolding v_rule_has_norm_def by auto
-    then have I1: "t_rules_have_norm un rules" using trshn_conserves[OF un_keys TR]
-      unfolding un_def by auto
-
-    have AU: "is_alist un" unfolding un_def using alist_distr_fst_map[OF un_fst_map IS(1) AY NY] .
-    have I2: "(v, min_norm_of_t_rules un rules) \<in> set un"
-      using un_minimal[OF assms(2) A _ _ AG] P AU unfolding un_def by auto
-
-    show ?thesis using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
+    then have "v \<in> keys yes" using un_keys[of gr norms yes] P unfolding un_def by auto
+    then have "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(2)] YG by auto
+    then show ?thesis using Step(3) unfolding v_rule_has_norm_def by auto
   qed
+
+  have I1: "t_rules_have_norm un rules" using trshn_conserves un_keys T unfolding un_def .
+  have I2: "(v, min_norm_of_t_rules un rules) \<in> set un"
+    using un_minimal[OF assms(2) _ _ AG] P AU unfolding un_def by auto
+
+  show ?case using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
 qed (auto simp add: assms(1))
 
 
