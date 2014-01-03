@@ -85,6 +85,10 @@ definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Righta
 definition gram_nsd_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_nsd_fun gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
+definition norms_of_grammar2 ::
+  "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "norms_of_grammar2 gr \<equiv> fst (iterate_norms2 gr)"
+
 definition norms_of_grammar ::
   "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "norms_of_grammar gr \<equiv> fst (iterate_norms gr)"

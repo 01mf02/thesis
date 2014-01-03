@@ -384,12 +384,12 @@ next
     show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
 
-lemma itno2_induct_sd_in_new:
+lemma nog_invariant_holds:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
-      and "v \<in> keys (fst (iterate_norms2 gr))"
-  shows "itno2_invariant_sd_in (fst (iterate_norms2 gr)) v rules"
-using assms(3) proof (induct rule: itno2_induct_sd(1))
+      and "v \<in> keys (norms_of_grammar2 gr)"
+  shows "itno2_invariant_sd_in (norms_of_grammar2 gr) v rules"
+using assms(3) unfolding norms_of_grammar2_def proof (induct rule: itno2_induct_sd(1))
   case (Step norms rest yes no)
   def un \<equiv> "update_norms gr norms yes"
   have P: "v \<in> keys un" unfolding un_def using Step(5) by simp
@@ -420,6 +420,25 @@ using assms(3) proof (induct rule: itno2_induct_sd(1))
 
   show ?case using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
 qed (auto simp add: assms(1))
+
+lemma nog_invariant_n_t_vs_holds:
+  assumes "gram_sd gr"
+      and "(v, n, t, vs) \<in> set (norms_of_grammar2 gr)"
+      and "(v, rules) \<in> set gr"
+    shows "itno_invariant_sd_in (norms_of_grammar2 gr) rules n t vs"
+proof -
+  def norms \<equiv> "(norms_of_grammar2 gr)"
+  have "itno2_invariant_sd_in norms v rules" using nog_invariant_holds[OF assms(1,3)] assms(2)
+    unfolding norms_of_grammar2_def norms_def by auto
+  then have I: "t_rules_have_norm norms rules" "(v, min_norm_of_t_rules norms rules) \<in> set norms"
+    unfolding itno2_invariant_sd_in_def by auto
+
+  have AN: "is_alist norms" sorry
+  have I2: "(n, t, vs) = min_norm_of_t_rules norms rules"
+    using alist_values_equal AN assms(2) I(2) unfolding norms_def .
+
+  show ?thesis using I(1) I2 unfolding itno_invariant_sd_in_def norms_def by auto
+qed
 
 
 (*****************************************************************************
