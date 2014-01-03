@@ -68,12 +68,12 @@ definition itno_invariant_sd where
   "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
 
 definition nog_invariant where
-  "nog_invariant norms rules n t vs \<equiv>
-     t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
+  "nog_invariant norms v rules \<equiv>
+     t_rules_have_norm norms rules \<and> (v, min_norm_of_t_rules norms rules) \<in> set norms"
 
 definition nog_invariant_n_t_vs where
-  "nog_invariant_n_t_vs norms v rules \<equiv>
-     t_rules_have_norm norms rules \<and> (v, min_norm_of_t_rules norms rules) \<in> set norms"
+  "nog_invariant_n_t_vs norms rules n t vs \<equiv>
+     t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
 
 definition gram_normed_fun :: "('t :: linorder, 'v :: linorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"
