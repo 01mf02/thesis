@@ -138,14 +138,14 @@ lemma mnotr_norm_greater_zero:
 by - (rule Min_predicate, auto simp add: notr_nonempty notr_norms_greater_zero)
 
 lemma mnotr_variables:
-  assumes "itno_invariant_sd_in norms rules n t vs"
+  assumes "nog_invariant norms rules n t vs"
     shows "set vs \<subseteq> keys norms"
       and "n = Suc (norm_sum norms vs)" 
-by (metis assms itno_invariant_sd_in_def mnotr_in_nor notr_variables(1))
-   (metis assms itno_invariant_sd_in_def mnotr_in_nor notr_variables(2))
+by (metis assms nog_invariant_def mnotr_in_nor notr_variables(1))
+   (metis assms nog_invariant_def mnotr_in_nor notr_variables(2))
 
 lemma mnotr_variables_rules:
-  assumes "itno_invariant_sd_in norms rules n t vs"
+  assumes "nog_invariant norms rules n t vs"
       and "(tr, vsr) \<in> set rules"
       and "t_rule_has_norm norms (tr, vsr)"
     shows "norm_sum norms vs \<le> norm_sum norms vsr"
@@ -153,7 +153,7 @@ proof -
   def nr \<equiv> "Suc (norm_sum norms vsr)"
 
   have I: "t_rules_have_norm norms rules" "(n, t, vs) = min_norm_of_t_rules norms rules"
-    using assms(1) unfolding itno_invariant_sd_in_def by auto
+    using assms(1) unfolding nog_invariant_def by auto
   have N: "n = Suc (norm_sum norms vs)"
     using notr_variables(2) mnotr_in_nor[OF I(1), simplified I(2)[symmetric]] .
 
@@ -384,11 +384,11 @@ next
     show ?case using Step unfolding itno_invariant_sd_def using I1 I2 I3 by auto
 qed
 
-lemma nog_invariant_holds:
+lemma nog_invariant_holds':
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "v \<in> keys (norms_of_grammar2 gr)"
-  shows "itno2_invariant_sd_in (norms_of_grammar2 gr) v rules"
+  shows "nog_invariant_n_t_vs (norms_of_grammar2 gr) v rules"
 using assms(3) unfolding norms_of_grammar2_def proof (induct rule: itno2_induct_sd(1))
   case (Step norms rest yes no)
   def un \<equiv> "update_norms gr norms yes"
@@ -406,7 +406,7 @@ using assms(3) unfolding norms_of_grammar2_def proof (induct rule: itno2_induct_
 
   have T: "t_rules_have_norm norms rules"
   proof (cases "v \<in> keys norms")
-    case True then show ?thesis using Step(4) unfolding itno2_invariant_sd_in_def by auto
+    case True then show ?thesis using Step(4) unfolding nog_invariant_n_t_vs_def by auto
   next
     case False
     then have "v \<in> keys yes" using un_keys[of gr norms yes] P unfolding un_def by auto
@@ -418,26 +418,26 @@ using assms(3) unfolding norms_of_grammar2_def proof (induct rule: itno2_induct_
   have I2: "(v, min_norm_of_t_rules un rules) \<in> set un"
     using un_minimal[OF assms(2) _ _ AG] P AU unfolding un_def by auto
 
-  show ?case using I1 I2 unfolding itno2_invariant_sd_in_def un_def by auto
+  show ?case using I1 I2 unfolding nog_invariant_n_t_vs_def un_def by auto
 qed (auto simp add: assms(1))
 
 lemma nog_invariant_n_t_vs_holds:
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar2 gr)"
       and "(v, rules) \<in> set gr"
-    shows "itno_invariant_sd_in (norms_of_grammar2 gr) rules n t vs"
+    shows "nog_invariant (norms_of_grammar2 gr) rules n t vs"
 proof -
   def norms \<equiv> "(norms_of_grammar2 gr)"
-  have "itno2_invariant_sd_in norms v rules" using nog_invariant_holds[OF assms(1,3)] assms(2)
+  have "nog_invariant_n_t_vs norms v rules" using nog_invariant_holds'[OF assms(1,3)] assms(2)
     unfolding norms_of_grammar2_def norms_def by auto
   then have I: "t_rules_have_norm norms rules" "(v, min_norm_of_t_rules norms rules) \<in> set norms"
-    unfolding itno2_invariant_sd_in_def by auto
+    unfolding nog_invariant_n_t_vs_def by auto
 
   have AN: "is_alist norms" sorry
   have I2: "(n, t, vs) = min_norm_of_t_rules norms rules"
     using alist_values_equal AN assms(2) I(2) unfolding norms_def .
 
-  show ?thesis using I(1) I2 unfolding itno_invariant_sd_in_def norms_def by auto
+  show ?thesis using I(1) I2 unfolding nog_invariant_def norms_def by auto
 qed
 
 
@@ -518,13 +518,13 @@ lemma itno_induct_sd_in:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
-  shows "itno_invariant_sd_in (norms_of_grammar gr) rules n t vs"
+  shows "nog_invariant (norms_of_grammar gr) rules n t vs"
 using assms(3) unfolding norms_of_grammar_def proof (induct rule: itno_induct_sd(1))
   case Base then show ?case by auto
 next
   case (Step norms rest yes no)
   have IS: "(v, n, t, vs) \<in> set (add_norms norms yes) \<Longrightarrow>
-            itno_invariant_sd_in norms rules n t vs"
+            nog_invariant norms rules n t vs"
     proof (cases "(v, n, t, vs) \<in> set norms")
       case True then show ?thesis using Step(4) by auto
     next
@@ -548,7 +548,7 @@ next
   
       have "(n, t, vs) = min_norm_of_t_rules norms rules"
         using alist_map_values_equal AY VY VM[simplified mnotr_map_def] .
-      then show ?thesis unfolding itno_invariant_sd_in_def using R by auto
+      then show ?thesis unfolding nog_invariant_def using R by auto
     qed
 
     show ?case sorry
@@ -566,11 +566,11 @@ lemma itno_invariant_sd_holds:
     shows "itno_invariant_sd gr (fst (iterate_norms gr)) (snd (iterate_norms gr))"
 using itno_induct_sd(2) assms by auto
 
-lemma itno_invariant_sd_in_holds:
+lemma nog_invariant_holds:
   assumes "gram_sd gr"
       and "(v, n, t, vs) \<in> set (norms_of_grammar gr)"
       and "(v, rules) \<in> set gr"
-    shows "itno_invariant_sd_in (norms_of_grammar gr) rules n t vs"
+    shows "nog_invariant (norms_of_grammar gr) rules n t vs"
 using itno_induct_sd_in[OF assms(1,3,2)] .
 
 
@@ -601,7 +601,7 @@ lemma nog_in_rules':
 proof -
   have I: "t_rules_have_norm (norms_of_grammar gr) rules"
           "(n, t, vs) = min_norm_of_t_rules (norms_of_grammar gr) rules"
-    using itno_induct_sd_in[OF assms] unfolding itno_invariant_sd_in_def by auto
+    using itno_induct_sd_in[OF assms] unfolding nog_invariant_def by auto
   then have "(t, vs) = snd (min_norm_of_t_rules (norms_of_grammar gr) rules)" by (metis snd_conv)
   then show ?thesis using mnotr_in_rules[OF I(1)] by auto
 qed
@@ -652,7 +652,7 @@ lemma nog_variables:
     shows "set vs \<subseteq> keys (norms_of_grammar gr)"
       and "n = Suc (norm_fun gr vs)"
 proof -
-  have I: "itno_invariant_sd_in (norms_of_grammar gr) rules n t vs"
+  have I: "nog_invariant (norms_of_grammar gr) rules n t vs"
     using itno_induct_sd_in assms(1,3,2) .
   show "set vs \<subseteq> keys (norms_of_grammar gr)" using mnotr_variables(1)[OF I] by simp
   show "n = Suc (norm_fun gr vs)" using mnotr_variables(2)[OF I] unfolding norm_fun_def by simp
@@ -731,8 +731,8 @@ lemma nog_vs_leq_rules_vs:
       and "t_rule_has_norm (norms_of_grammar gr) (tr, vsr)"
     shows "norm_fun gr vs \<le> norm_fun gr vsr"
 proof -
-  have IU: "itno_invariant_sd_in (norms_of_grammar gr) rules n t vs"
-    using itno_invariant_sd_in_holds[OF assms(1-3)] .
+  have IU: "nog_invariant (norms_of_grammar gr) rules n t vs"
+    using nog_invariant_holds[OF assms(1-3)] .
   show ?thesis using mnotr_variables_rules[OF IU assms(4-5)] unfolding norm_fun_def by simp
 qed
 
