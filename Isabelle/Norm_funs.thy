@@ -32,19 +32,20 @@ definition v_rule_has_norm ::
   "v_rule_has_norm = (\<lambda>norms (v, rules). t_rules_have_norm norms rules)"
 
 (* TODO: Use map_ran here? *)
-definition mnotr_map where
+definition mnotr_map ::
+  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
 
-definition v_rules_of_norms where
+definition v_rules_of_norms ::
+  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar" where
   "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
 
-definition refine_norms where
+definition refine_norms ::
+  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
 
-definition norms_total where
-  "norms_total norms \<equiv> \<Sum>(v, n, t, vs)\<leftarrow>norms. n"
-
-function minimise_norms where
+function minimise_norms ::
+  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "minimise_norms norms gr =
      (if refine_norms norms gr = norms then norms else minimise_norms (refine_norms norms gr) gr)"
 by auto

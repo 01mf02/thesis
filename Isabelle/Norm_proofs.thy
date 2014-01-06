@@ -290,11 +290,10 @@ lemma mnotr_leq:
     shows "min_norm_of_t_rules r1 rules \<le> norm"
 sorry
 
-lemma nt_of_rn_decreases':
+lemma rn_decreases:
   assumes "r1 = refine_norms norms gr"
       and "r2 = refine_norms r1 gr"
-      and "r1 \<noteq> r2"
-    shows "norms_total r2 < norms_total r1"
+    shows "r1 <= r2"
 proof -
   have AG: "is_alist gr" sorry
   have S1: "keys norms \<subseteq> keys gr" sorry
@@ -306,7 +305,7 @@ proof -
     using rn_mnotr'[OF AG A1 S1] unfolding assms(1) by auto
   have "\<forall>(v, norm) \<in> set r2. norm =  min_norm_of_t_rules    r1 (lookup gr v)"
     using rn_mnotr'[OF AG A2 S2] unfolding assms(2) by auto
-  have "\<exists>(v, norm) \<in> set r1. norm >  min_norm_of_t_rules    r1 (lookup gr v)" using assms(3) sorry
+  (*have "\<exists>(v, norm) \<in> set r1. norm >  min_norm_of_t_rules    r1 (lookup gr v)" using assms(3) sorry*)
 
   have "\<exists>(v, n, rule) \<in> set r1. n >  fst (lookup r2 v)" sorry
   have "\<forall>(v, n, rule) \<in> set r1. n >= fst (lookup r2 v)" sorry
@@ -320,14 +319,8 @@ proof -
   have A: "\<forall>(n2, n1) \<in> set (zip r2n r1n). n2 <= n1" using mnotr_leq sorry
   have E: "\<exists>(n2, n1) \<in> set (zip r2n r1n). n2 <  n1" sorry
   
-  show ?thesis unfolding norms_total_def using listsum_smaller[OF L A E] unfolding r1n_def r2n_def
-    by auto
+  show ?thesis unfolding r1n_def r2n_def sorry
 qed
-
-lemma nt_of_rn_decreases:
-  assumes "refine_norms norms gr \<noteq> norms"
-    shows "norms_total (refine_norms norms gr) < norms_total norms"
-sorry
 
 lemma rn_nil: "refine_norms [] gr = []"
 unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
@@ -335,8 +328,11 @@ unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
 
 subsection {* @{text minimise_norms} *}
 
+
+
 termination minimise_norms
-by (relation "measure (\<lambda>(norms, gr). norms_total norms)") (auto simp add: nt_of_rn_decreases)
+(*by (relation "\<lambda>(norms, gr). norms") (auto simp add: nt_of_rn_decreases)*)
+sorry
 
 lemma mn_map_fst: "map fst norms = map fst (minimise_norms norms gr)"
 proof (induct norms gr rule: minimise_norms.induct)
