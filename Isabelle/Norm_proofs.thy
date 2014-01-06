@@ -242,30 +242,92 @@ qed
 
 subsection {* @{text refine_norms} *}
 
-lemma nt_of_rn_decreases:
-  assumes "refine_norms norms gr \<noteq> norms"
-    shows "norms_total (refine_norms norms gr) < norms_total norms"
-sorry
-
 lemma rn_fst_map: "map fst (refine_norms norms gr) = map fst norms"
 unfolding refine_norms_def mnotr_map_def vron_fst_map map_fst_map by simp
 
 lemma rn_mnotr:
+  assumes "(v, norm) \<in> set (refine_norms norms gr)"
+      and "(v, rules) \<in> set gr"
+      and "is_alist norms"
+      and "is_alist gr"
+    shows "norm = min_norm_of_t_rules norms rules"
+proof -
+  have VN: "v \<in> keys norms" using assms(1) rn_fst_map by (metis image_set key_in_fst keys_fst_map)
+  have AV: "is_alist (v_rules_of_norms norms gr)" using vron_alist assms(3) .
+  have VR: "(v, rules) \<in> set (v_rules_of_norms norms gr)"
+    using vron_gr[OF assms(4) _ assms(2)] VN by auto
+  show ?thesis using assms(1)[symmetric] unfolding refine_norms_def mnotr_map_def
+    using alist_map_values_equal[OF AV VR, of norm "\<lambda>v rules. min_norm_of_t_rules norms rules"]
+      assms(2) by auto
+qed
+
+lemma rn_mnotr_equal:
   assumes "refine_norms norms gr = norms"
       and "(v, norm) \<in> set norms"
       and "(v, rules) \<in> set gr"
       and "is_alist norms"
       and "is_alist gr"
     shows "norm = min_norm_of_t_rules norms rules"
+using rn_mnotr[OF _ assms(3-5)] unfolding assms(1) using assms(2) by auto
+
+lemma rn_mnotr':
+  assumes "is_alist gr"
+      and "is_alist norms"
+      and "keys norms \<subseteq> keys gr"
+      and "(v, norm) \<in> set (refine_norms norms gr)"
+    shows "norm = min_norm_of_t_rules norms (lookup gr v)"
 proof -
-  have VN: "v \<in> keys norms" using assms(2) by auto
-  have AV: "is_alist (v_rules_of_norms norms gr)" using vron_alist assms(4) .
-  have VR: "(v, rules) \<in> set (v_rules_of_norms norms gr)"
-    using vron_gr[OF assms(5) _ assms(3)] VN by auto
-  show ?thesis using assms(1)[symmetric] unfolding refine_norms_def mnotr_map_def
-    using alist_map_values_equal[OF AV VR, of norm "\<lambda>v rules. min_norm_of_t_rules norms rules"]
-      assms(2) by auto
+  have "keys (refine_norms norms gr) \<subseteq> keys gr" using assms(3) rn_fst_map by (metis keys_fst_map)
+  then have "v \<in> keys gr" using assms(4) by (metis alist_keys_fst_set key_in_fst set_rev_mp)
+  then have "(v, lookup gr v) \<in> set gr" using existence_from_lookup[OF assms(1)] by auto
+  then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
+
+lemma mnotr_leq:
+  assumes "\<forall>(v, norm) \<in> set r1. norm =  min_norm_of_t_rules norms (lookup gr v)"
+      and "(v, norm) \<in> set r1"
+      and "(v, rules) \<in> set gr"
+    shows "min_norm_of_t_rules r1 rules \<le> norm"
+sorry
+
+lemma nt_of_rn_decreases':
+  assumes "r1 = refine_norms norms gr"
+      and "r2 = refine_norms r1 gr"
+      and "r1 \<noteq> r2"
+    shows "norms_total r2 < norms_total r1"
+proof -
+  have AG: "is_alist gr" sorry
+  have S1: "keys norms \<subseteq> keys gr" sorry
+  then have S2: "keys r1 \<subseteq> keys gr" using rn_fst_map unfolding assms(1) by (metis keys_fst_map)
+  have A1: "is_alist norms" sorry
+  then have A2: "is_alist r1" using rn_fst_map unfolding assms(1) by (metis is_alist_def)
+
+  have "\<forall>(v, norm) \<in> set r1. norm =  min_norm_of_t_rules norms (lookup gr v)"
+    using rn_mnotr'[OF AG A1 S1] unfolding assms(1) by auto
+  have "\<forall>(v, norm) \<in> set r2. norm =  min_norm_of_t_rules    r1 (lookup gr v)"
+    using rn_mnotr'[OF AG A2 S2] unfolding assms(2) by auto
+  have "\<exists>(v, norm) \<in> set r1. norm >  min_norm_of_t_rules    r1 (lookup gr v)" using assms(3) sorry
+
+  have "\<exists>(v, n, rule) \<in> set r1. n >  fst (lookup r2 v)" sorry
+  have "\<forall>(v, n, rule) \<in> set r1. n >= fst (lookup r2 v)" sorry
+
+  def r1n \<equiv> "map (\<lambda>(v, n, t, vs). n) r1"
+  def r2n \<equiv> "map (\<lambda>(v, n, t, vs). n) r2"
+
+  have "length r2 = length r1" using rn_fst_map unfolding assms(1-2) by (metis length_map)
+  then have L: "length r2n = length r1n"  unfolding r1n_def r2n_def by auto
+
+  have A: "\<forall>(n2, n1) \<in> set (zip r2n r1n). n2 <= n1" using mnotr_leq sorry
+  have E: "\<exists>(n2, n1) \<in> set (zip r2n r1n). n2 <  n1" sorry
+  
+  show ?thesis unfolding norms_total_def using listsum_smaller[OF L A E] unfolding r1n_def r2n_def
+    by auto
+qed
+
+lemma nt_of_rn_decreases:
+  assumes "refine_norms norms gr \<noteq> norms"
+    shows "norms_total (refine_norms norms gr) < norms_total norms"
+sorry
 
 lemma rn_nil: "refine_norms [] gr = []"
 unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
@@ -310,7 +372,7 @@ lemma un_minimal:
       and "is_alist (update_norms gr norms yes)"
       and "is_alist gr"
     shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
-using rn_mnotr mn_rn assms(2,1,3-4) unfolding update_norms_def .
+using rn_mnotr_equal mn_rn assms(2,1,3-4) unfolding update_norms_def .
 
 lemma un_un_invariant: "update_norms gr (update_norms gr norms yes) [] = update_norms gr norms yes"
 proof -

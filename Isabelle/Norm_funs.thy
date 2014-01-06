@@ -31,10 +31,9 @@ definition v_rule_has_norm ::
   "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) v_rule \<Rightarrow> bool" where
   "v_rule_has_norm = (\<lambda>norms (v, rules). t_rules_have_norm norms rules)"
 
+(* TODO: Use map_ran here? *)
 definition mnotr_map where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
-  (*"mnotr_map norms = value_map (min_norm_of_t_rules norms)"*)
-(* TODO: Use map_ran here? *)
 
 definition v_rules_of_norms where
   "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
@@ -43,7 +42,7 @@ definition refine_norms where
   "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
 
 definition norms_total where
-  "norms_total norms = listsum (map (\<lambda>(v, n, t, vs). n) norms)"
+  "norms_total norms \<equiv> \<Sum>(v, n, t, vs)\<leftarrow>norms. n"
 
 function minimise_norms where
   "minimise_norms norms gr =

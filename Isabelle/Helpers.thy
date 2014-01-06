@@ -43,4 +43,11 @@ lemma list_subset_trans:
     shows "A \<subseteq> B" using assms
 by (metis List.set_insert in_set_insert insert_Nil insert_subset not_Cons_self2 subsetI)
 
+lemma listsum_smaller:
+  assumes "length l1 = length l2"
+      and "\<forall>(x1, x2) \<in> set (zip l1 l2). x1 <= x2"
+      and "\<exists>(x1, x2) \<in> set (zip l1 l2). x1 <  x2"
+    shows "listsum l1 < listsum l2"
+sorry
+
 end
