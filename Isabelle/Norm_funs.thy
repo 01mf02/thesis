@@ -44,10 +44,17 @@ definition refine_norms ::
   "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
 
+definition rn_invariant where
+  "rn_invariant norms gr \<equiv>
+     \<forall>(v, norm) \<in> set norms. norm \<ge> min_norm_of_t_rules norms (lookup gr v) \<and>
+     is_alist norms \<and> keys norms \<subseteq> keys gr"
+
 function minimise_norms ::
   "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "minimise_norms norms gr =
-     (if refine_norms norms gr = norms then norms else minimise_norms (refine_norms norms gr) gr)"
+  "minimise_norms norms gr = (
+     if is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms then
+       minimise_norms (refine_norms norms gr) gr
+     else norms)"
 by auto
 
 definition add_norms ::

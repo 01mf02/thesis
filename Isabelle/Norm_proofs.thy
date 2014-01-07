@@ -284,42 +284,58 @@ proof -
 qed
 
 lemma mnotr_leq:
-  assumes "\<forall>(v, norm) \<in> set r1. norm =  min_norm_of_t_rules norms (lookup gr v)"
-      and "(v, norm) \<in> set r1"
+  assumes "\<forall>(v, norm) \<in> set norms. norm \<ge> min_norm_of_t_rules norms (lookup gr v)"
+      and "(v, norm) \<in> set norms"
       and "(v, rules) \<in> set gr"
-    shows "min_norm_of_t_rules r1 rules \<le> norm"
+    shows "min_norm_of_t_rules norms rules \<le> norm"
+
 sorry
 
-lemma rn_decreases:
-  assumes "r1 = refine_norms norms gr"
-      and "r2 = refine_norms r1 gr"
-    shows "r1 <= r2"
-proof -
-  have AG: "is_alist gr" sorry
-  have S1: "keys norms \<subseteq> keys gr" sorry
-  then have S2: "keys r1 \<subseteq> keys gr" using rn_fst_map unfolding assms(1) by (metis keys_fst_map)
-  have A1: "is_alist norms" sorry
-  then have A2: "is_alist r1" using rn_fst_map unfolding assms(1) by (metis is_alist_def)
 
-  have "\<forall>(v, norm) \<in> set r1. norm =  min_norm_of_t_rules norms (lookup gr v)"
+lemma "x \<le> y \<Longrightarrow> x \<noteq> y \<Longrightarrow> x < y" nitpick using iffD1[OF Orderings.order_less_le[symmetric]]
+sorry
+
+
+lemma list_smaller:
+  assumes "length xs = length ys"
+      and "\<forall>(x, y) \<in> set (zip xs ys). x \<le> y"
+    shows "xs \<le> ys"
+proof -
+  show ?thesis using assms apply (induct rule: list_induct2) apply auto
+  proof -
+    fix x y
+    assume 1: "x \<le> y"
+    assume 2: "x \<noteq> y"
+    show "x < y"  sorry
+  qed
+qed
+
+
+lemma rn_decreases:
+  assumes "is_alist gr"
+      and "rn_invariant norms gr"
+    shows "refine_norms norms gr \<le> norms"
+      and "rn_invariant (refine_norms norms gr) gr"
+proof -
+  have I: "\<forall>(v, norm) \<in> set norms. norm \<ge> min_norm_of_t_rules norms (lookup gr v)"
+    "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def sorry
+
+  have I1: "\<forall>(v, norm) \<in> set (refine_norms norms gr).
+    norm \<ge> min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)" sorry
+  have I2: "is_alist (refine_norms norms gr)" using rn_fst_map I(2) by (metis is_alist_def)
+  have I3: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(3) by (metis keys_fst_map)
+
+  (*have "\<forall>(v, norm) \<in> set r1. norm =  min_norm_of_t_rules norms (lookup gr v)"
     using rn_mnotr'[OF AG A1 S1] unfolding assms(1) by auto
   have "\<forall>(v, norm) \<in> set r2. norm =  min_norm_of_t_rules    r1 (lookup gr v)"
-    using rn_mnotr'[OF AG A2 S2] unfolding assms(2) by auto
+    using rn_mnotr'[OF AG A2 S2] unfolding assms(2) by auto*)
   (*have "\<exists>(v, norm) \<in> set r1. norm >  min_norm_of_t_rules    r1 (lookup gr v)" using assms(3) sorry*)
-
-  have "\<exists>(v, n, rule) \<in> set r1. n >  fst (lookup r2 v)" sorry
-  have "\<forall>(v, n, rule) \<in> set r1. n >= fst (lookup r2 v)" sorry
-
-  def r1n \<equiv> "map (\<lambda>(v, n, t, vs). n) r1"
-  def r2n \<equiv> "map (\<lambda>(v, n, t, vs). n) r2"
-
-  have "length r2 = length r1" using rn_fst_map unfolding assms(1-2) by (metis length_map)
-  then have L: "length r2n = length r1n"  unfolding r1n_def r2n_def by auto
-
-  have A: "\<forall>(n2, n1) \<in> set (zip r2n r1n). n2 <= n1" using mnotr_leq sorry
-  have E: "\<exists>(n2, n1) \<in> set (zip r2n r1n). n2 <  n1" sorry
   
-  show ?thesis unfolding r1n_def r2n_def sorry
+  have L: "length (refine_norms norms gr) = length norms" by (metis length_map rn_fst_map)
+  have A: "\<forall>(n1, n2) \<in> set (zip (refine_norms norms gr) norms). n1 \<le> n2" using mnotr_leq sorry
+  
+  show "refine_norms norms gr \<le> norms" using list_smaller[OF L A] .
+  show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 unfolding rn_invariant_def by auto
 qed
 
 lemma rn_nil: "refine_norms [] gr = []"
