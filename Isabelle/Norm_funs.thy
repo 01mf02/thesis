@@ -3,7 +3,6 @@ header {* Norm functions *}
 theory Norm_funs imports
   Norm_defs
   Partition_iterate
-  "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Product_Lexorder"
   "~~/src/HOL/Library/Code_Target_Nat"
 begin
@@ -116,8 +115,5 @@ fun norm_reduce :: "('t :: linorder, 'v :: linorder) grammar_norms \<Rightarrow>
      let (n, _, v) = lookup norms vh in
      if Suc p < n then (norm_reduce norms v p) @ vt
      else norm_reduce norms vt (Suc p - n))"
-
-(* TODO! *)
-(*export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"*)
 
 end

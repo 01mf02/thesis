@@ -47,4 +47,6 @@ value "gram_nsd_fun test_gr3 = False"
 value "gram_nsd_fun test_gr4"
 value "iterate_norms test_gr4"
 
+export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"
+
 end

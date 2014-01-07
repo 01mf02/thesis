@@ -10,8 +10,7 @@ function partition_iterate where
 by auto
 
 termination partition_iterate
-apply (relation "measure (\<lambda>(p, f, a, l). length l)")
-by (auto simp add: filter_length_smaller)
+by (relation "measure (\<lambda>(p, f, a, l). length l)") (auto simp add: filter_length_smaller)
 
 lemma pi_induct [case_names Base Step]:
   assumes B: "P (a, l)"
@@ -32,9 +31,25 @@ proof (induct l arbitrary: a rule: length_induct)
   qed
 qed
 
+(*fun bla where
+  "bla (n :: nat) = (if n = 0 then (n, 42 :: nat) else bla (n - 1))"
+
+lemma assumes "bla n = (a, 42)" shows "a = 0"
+  apply (rule bla.elims[OF assms])
+  apply clarify
+  apply (induct n)
+  apply simp
+  apply simp
+done*)
+
 lemma pi_termination_condition:
   assumes "partition_iterate P f a l = (ac, no)"
-    shows "filter (P ac) no = []"
+  shows "filter (P ac) no = []"
+  apply (rule partition_iterate.elims[OF assms])
+  apply clarify
+  apply (induct l arbitrary: ac no rule: length_induct)
+  apply simp
+  (* TODO *)
 sorry
 
 lemma pi_termination_condition_busy:

@@ -288,28 +288,7 @@ lemma mnotr_leq:
       and "(v, norm) \<in> set norms"
       and "(v, rules) \<in> set gr"
     shows "min_norm_of_t_rules norms rules \<le> norm"
-
 sorry
-
-
-lemma "x \<le> y \<Longrightarrow> x \<noteq> y \<Longrightarrow> x < y" nitpick using iffD1[OF Orderings.order_less_le[symmetric]]
-sorry
-
-
-lemma list_smaller:
-  assumes "length xs = length ys"
-      and "\<forall>(x, y) \<in> set (zip xs ys). x \<le> y"
-    shows "xs \<le> ys"
-proof -
-  show ?thesis using assms apply (induct rule: list_induct2) apply auto
-  proof -
-    fix x y
-    assume 1: "x \<le> y"
-    assume 2: "x \<noteq> y"
-    show "x < y"  sorry
-  qed
-qed
-
 
 lemma rn_decreases:
   assumes "is_alist gr"
@@ -345,9 +324,15 @@ unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
 subsection {* @{text minimise_norms} *}
 
 
-
 termination minimise_norms
-(*by (relation "\<lambda>(norms, gr). norms") (auto simp add: nt_of_rn_decreases)*)
+apply default
+apply (rule wf_lex_prod)
+apply (rule wf_lenlex)
+apply (rule wf_lex_prod)
+apply (rule wf)
+
+(*...
+ (auto simp add: nt_of_rn_decreases) *)
 sorry
 
 lemma mn_map_fst: "map fst norms = map fst (minimise_norms norms gr)"

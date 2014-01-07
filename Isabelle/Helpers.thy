@@ -1,6 +1,7 @@
 header {* Helpers *}
 
-theory Helpers imports Main
+theory Helpers imports
+  "~~/src/HOL/Library/List_lexord"
 begin
 
 lemma Min_predicate: "finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> \<forall>x \<in> A. P x \<Longrightarrow> P (Min A)"
@@ -42,5 +43,11 @@ lemma list_subset_trans:
   assumes "\<And>v. set v \<subseteq> A \<Longrightarrow> set v \<subseteq> B"
     shows "A \<subseteq> B" using assms
 by (metis List.set_insert in_set_insert insert_Nil insert_subset not_Cons_self2 subsetI)
+
+lemma list_smaller:
+  assumes "length xs = length ys"
+      and "\<forall>(x, y) \<in> set (zip xs ys). (x :: 'a :: order) \<le> y"
+    shows "xs \<le> ys"
+using assms by (induct rule: list_induct2) auto
 
 end
