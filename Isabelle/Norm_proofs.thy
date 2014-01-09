@@ -350,13 +350,27 @@ proof (induct norms gr rule: minimise_norms.induct)
   qed
 qed
 
-lemma mn_rn: "refine_norms (minimise_norms norms gr) gr = (minimise_norms norms gr)"
+lemma mn_rn_new:
+  assumes "is_alist gr"
+      and "rn_invariant norms gr"
+    shows "refine_norms (minimise_norms norms gr) gr = minimise_norms norms gr" using assms
 proof (induct norms gr rule: minimise_norms.induct)
   case (1 norms gr)
   show ?case proof (cases "refine_norms norms gr = norms")
-    case False show ?thesis using 1[OF False] minimise_norms.simps by metis
-  qed auto
+    case True then show ?thesis by (metis minimise_norms.simps)
+  next
+    case False
+    have "rn_invariant (refine_norms norms gr) gr" using rn_decreases(2)[OF 1(2-3)] .
+    then have X: "refine_norms (minimise_norms (refine_norms norms gr) gr) gr =
+      minimise_norms (refine_norms norms gr) gr" using 1 False by auto
+    have Y: "minimise_norms (refine_norms norms gr) gr = minimise_norms norms gr"
+      using 1(2-3) by (metis minimise_norms.simps)
+    show ?thesis using X unfolding Y .
+  qed
 qed
+
+lemma mn_rn: "refine_norms (minimise_norms norms gr) gr = (minimise_norms norms gr)"
+sorry
 
 lemma mn_nil: "minimise_norms [] gr = []"
 by (metis minimise_norms.simps rn_nil)
