@@ -3,7 +3,6 @@ header {* Norm functions *}
 theory Norm_funs imports
   Norm_defs
   Partition_iterate
-  "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
 
