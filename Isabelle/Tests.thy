@@ -5,6 +5,8 @@ theory Tests imports
   "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
+export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"
+
 definition test_gr :: "(nat, nat) grammar" where
   "test_gr =
    [(0, [(0, [])]),
@@ -47,7 +49,5 @@ value "gram_nsd_fun test_gr3 = False"
 
 value "gram_nsd_fun test_gr4"
 value "iterate_norms test_gr4"
-
-export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"
 
 end
