@@ -1,6 +1,9 @@
 header {* Extension of Association Lists *}
 
-theory AList_ext imports "~~/src/HOL/Library/AList_Mapping"
+theory AList_ext imports
+  "~~/src/HOL/Library/AList_Mapping"
+  "~~/src/HOL/Library/List_lexord"
+  "~~/src/HOL/Library/Product_Lexorder"
 begin
 
 definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
@@ -11,6 +14,12 @@ definition lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" w
 
 definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
   "keys l \<equiv> Mapping.keys (Mapping l)"
+
+definition values_related where
+  "values_related r l1 l2 \<equiv> \<forall>(k1, v1) \<in> set l1. \<forall>(k2, v2) \<in> set l2. k1 = k2 \<longrightarrow> r v1 v2"
+
+definition values_leq where
+  "values_leq \<equiv> values_related less_eq"
 
 
 lemma alist_keys_fst_set[simp]: "keys l = fst ` set l"
@@ -116,6 +125,15 @@ lemma lookup_values_predicate:
 proof -
   have "\<forall>v \<in> snd ` set l. P v" using assms(2) by auto
   then show ?thesis using lookup_map_in_snd[OF assms(1)] by (metis in_mono)
+qed
+
+lemma map_ran_smaller:
+  assumes "\<forall>(k, v) \<in> set xs. f k v \<le> v"
+      and "ys = map_ran f xs"
+    shows "ys \<le> (xs :: ('a :: order \<times> 'b :: order) list)"
+proof -
+  have "length ys = length xs" using assms(2) unfolding map_ran_def by auto
+  then show ?thesis using assms apply (induct rule: list_induct2) by auto
 qed
 
 end

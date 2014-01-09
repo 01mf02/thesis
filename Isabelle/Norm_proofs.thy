@@ -62,6 +62,28 @@ proof -
   then show ?thesis unfolding norm_sum_def by metis
 qed
 
+lemma ns_leq:
+  assumes "map fst norms2 = map fst norms1"
+      and "values_leq norms2 norms1"
+      and "is_alist norms1"
+      and "set vs \<subseteq> keys norms1"
+    shows "norm_sum norms2 vs \<le> norm_sum norms1 vs"
+using assms(4) proof (induct vs)
+  case (Cons a vs)
+  then have I: "norm_sum norms2 vs \<le> norm_sum norms1 vs" by auto
+
+  have A1: "a \<in> keys norms1" using Cons(2) by auto
+  then have L2: "(a, lookup norms2 a) \<in> set norms2" using assms(3)
+    by (metis alist_fst_map assms(1) existence_from_lookup keys_fst_map)
+
+  have "(a, lookup norms1 a) \<in> set norms1" using assms(3) by (metis A1 existence_from_lookup)
+  then have "lookup norms2 a \<le> lookup norms1 a" using assms(2)
+    unfolding values_leq_def values_related_def using L2 by auto
+  then have "fst (lookup norms2 a) \<le> fst (lookup norms1 a)"
+    by (metis less_eq_prod_def order.strict_iff_order)
+  then show ?case using I unfolding norm_sum_def by auto
+qed (auto simp add: norm_sum_def)
+
 
 (*****************************************************************************
   t_rule_has_norm / t_rules_have_norm
@@ -283,12 +305,40 @@ proof -
   then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
 
+lemma notr_smaller:
+  assumes "norms2 = refine_norms norms1 gr"
+      and "norms2 \<le> norms1"
+    shows "norms_of_t_rules norms2 rules \<le> norms_of_t_rules norms1 rules"
+unfolding norms_of_t_rules_def using ns_leq
+sorry
+
+lemma mnotr_smaller:
+  assumes "map fst norms1 = map fst norms2"
+      and "norms2 \<le> norms1"
+      (*and "t_rules_have_norms norms1"*)
+    shows "min_norm_of_t_rules norms2 rules \<le> min_norm_of_t_rules norms1 rules"
+unfolding min_norm_of_t_rules_def
+sorry
+
 lemma mnotr_leq:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
-      and "(v, norm) \<in> set (refine_norms norms gr)"
-    shows "min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> norm"
-sorry
+      and "(v, rnorm) \<in> set (refine_norms norms gr)"
+    shows "min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> rnorm"
+proof -
+  have I: "\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm"
+    "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def sorry
+
+  def rules \<equiv> "lookup gr v"
+
+  have MF: "map fst norms = map fst (refine_norms norms gr)" sorry
+  have RN: "refine_norms norms gr \<le> norms" sorry
+  have Y: "rnorm = min_norm_of_t_rules norms rules" sorry
+  have Z: "min_norm_of_t_rules (refine_norms norms gr) rules \<le> rnorm"
+    unfolding Y using mnotr_smaller[OF MF RN] .
+
+  show ?thesis using Z unfolding rules_def .
+qed
 
 lemma rn_decreases:
   assumes "is_alist gr"
