@@ -343,9 +343,11 @@ qed
 lemma mn_map_fst: "map fst norms = map fst (minimise_norms norms gr)"
 proof (induct norms gr rule: minimise_norms.induct)
   case (1 norms gr)
-  show ?case proof (cases "refine_norms norms gr = norms")
-    case False show ?thesis using 1[OF False] minimise_norms.simps rn_fst_map by metis
-  qed auto
+  show ?case proof (cases "is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms")
+    case True show ?thesis using 1[OF True] minimise_norms.simps rn_fst_map by metis
+  next
+    case False then show ?thesis by (metis minimise_norms.simps)
+  qed
 qed
 
 lemma mn_rn: "refine_norms (minimise_norms norms gr) gr = (minimise_norms norms gr)"
