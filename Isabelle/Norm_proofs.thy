@@ -325,15 +325,20 @@ subsection {* @{text minimise_norms} *}
 
 
 termination minimise_norms
-apply default
-apply (rule wf_lex_prod)
-apply (rule wf_lenlex)
-apply (rule wf_lex_prod)
-apply (rule wf)
+proof
+  let ?no = "{(n' :: ('t::wellorder, 'v::wellorder) grammar_norms, n). n' < n}"
+  let ?mno = "{((n', g' :: ('t, 'v) grammar), n, g). (n', n) \<in> ?no}"
+  show "wf ?mno" sorry
 
-(*...
- (auto simp add: nt_of_rn_decreases) *)
-sorry
+  fix norms :: "('t::wellorder, 'v::wellorder) grammar_norms"
+  fix gr :: "('t, 'v) grammar"
+  assume "is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms"
+  then have AS: "is_alist gr" "rn_invariant norms gr" "refine_norms norms gr \<noteq> norms" by auto
+  
+  have "refine_norms norms gr < norms" using rn_decreases(1)[OF AS(1-2)] AS(3) by auto
+  then show "((refine_norms norms gr, gr), norms, gr) \<in> ?mno" by auto
+qed
+
 
 lemma mn_map_fst: "map fst norms = map fst (minimise_norms norms gr)"
 proof (induct norms gr rule: minimise_norms.induct)

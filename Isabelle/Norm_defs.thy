@@ -12,11 +12,6 @@ type_synonym ('t, 'v) t_rules = "('t, 'v) t_rule list"
 type_synonym ('t, 'v) v_rule  = "('v \<times> ('t, 'v) t_rules)"
 type_synonym ('t, 'v) grammar = "('t, 'v) v_rule list"
 
-type_synonym ('t, 'v) t_rule_norm   = "nat \<times> ('t, 'v) t_rule"
-type_synonym ('t, 'v) t_rules_norms = "('t, 'v) t_rule_norm list"
-type_synonym ('t, 'v) v_rule_norm   = "('v \<times> ('t, 'v) t_rule_norm)"
-type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
-
 
 subsection {* Grammar *}
 

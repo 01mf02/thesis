@@ -8,6 +8,16 @@ theory Norm_funs imports
 begin
 
 
+subsection {* Types *}
+
+type_synonym ('t, 'v) t_rule_norm   = "nat \<times> ('t, 'v) t_rule"
+type_synonym ('t, 'v) t_rules_norms = "('t, 'v) t_rule_norm list"
+type_synonym ('t, 'v) v_rule_norm   = "('v \<times> ('t, 'v) t_rule_norm)"
+type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
+
+
+subsection {* Functions *}
+
 definition norm_sum :: "('t, 'v) grammar_norms \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_sum norms vars \<equiv> listsum (map (fst \<circ> lookup norms) vars)"
 
