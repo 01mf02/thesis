@@ -1,6 +1,8 @@
 header {* Tests *}
 
-theory Tests imports Norm_proofs
+theory Tests imports
+  Norm_proofs
+  "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
 definition test_gr :: "(nat, nat) grammar" where

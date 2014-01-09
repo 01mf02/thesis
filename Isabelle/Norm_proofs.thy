@@ -284,10 +284,10 @@ proof -
 qed
 
 lemma mnotr_leq:
-  assumes "\<forall>(v, norm) \<in> set norms. norm \<ge> min_norm_of_t_rules norms (lookup gr v)"
-      and "(v, norm) \<in> set norms"
-      and "(v, rules) \<in> set gr"
-    shows "min_norm_of_t_rules norms rules \<le> norm"
+  assumes "is_alist gr"
+      and "rn_invariant norms gr"
+      and "(v, norm) \<in> set (refine_norms norms gr)"
+    shows "min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> norm"
 sorry
 
 lemma rn_decreases:
@@ -296,24 +296,19 @@ lemma rn_decreases:
     shows "refine_norms norms gr \<le> norms"
       and "rn_invariant (refine_norms norms gr) gr"
 proof -
-  have I: "\<forall>(v, norm) \<in> set norms. norm \<ge> min_norm_of_t_rules norms (lookup gr v)"
+  (* TODO: Caesar, why doesn't that work? *)
+  have I: "\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm"
     "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def sorry
 
+  have "refine_norms norms gr = map_ran (\<lambda>v norm. min_norm_of_t_rules norms (lookup gr v)) norms"
+    unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def map_ran_def by auto
+  then show "refine_norms norms gr \<le> norms" using map_ran_smaller[OF I(1)] by auto
+
   have I1: "\<forall>(v, norm) \<in> set (refine_norms norms gr).
-    norm \<ge> min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)" sorry
+    min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> norm"
+    using mnotr_leq[OF assms(1-2)] by auto
   have I2: "is_alist (refine_norms norms gr)" using rn_fst_map I(2) by (metis is_alist_def)
   have I3: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(3) by (metis keys_fst_map)
-
-  (*have "\<forall>(v, norm) \<in> set r1. norm =  min_norm_of_t_rules norms (lookup gr v)"
-    using rn_mnotr'[OF AG A1 S1] unfolding assms(1) by auto
-  have "\<forall>(v, norm) \<in> set r2. norm =  min_norm_of_t_rules    r1 (lookup gr v)"
-    using rn_mnotr'[OF AG A2 S2] unfolding assms(2) by auto*)
-  (*have "\<exists>(v, norm) \<in> set r1. norm >  min_norm_of_t_rules    r1 (lookup gr v)" using assms(3) sorry*)
-  
-  have L: "length (refine_norms norms gr) = length norms" by (metis length_map rn_fst_map)
-  have A: "\<forall>(n1, n2) \<in> set (zip (refine_norms norms gr) norms). n1 \<le> n2" using mnotr_leq sorry
-  
-  show "refine_norms norms gr \<le> norms" using list_smaller[OF L A] .
   show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 unfolding rn_invariant_def by auto
 qed
 
