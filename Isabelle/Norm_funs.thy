@@ -34,7 +34,7 @@ definition norms_of_t_rules ::
   "norms_of_t_rules norms rules \<equiv>
      map (norm_of_t_rule norms) (filter (t_rule_has_norm norms) rules)"
 
-definition min_norm_of_t_rules :: "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow>
+definition min_norm_of_t_rules :: "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow>
   ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rule_norm" where
   "min_norm_of_t_rules norms rules \<equiv> Min (set (norms_of_t_rules norms rules))"
 
