@@ -10,6 +10,21 @@ by auto
 lemma fst_predicate: "P (fst p) \<Longrightarrow> (f, s) = p \<Longrightarrow> P f"
 by auto
 
+lemma Min_insert_leq: "finite A \<Longrightarrow> (x :: 'a :: linorder) \<le> y \<Longrightarrow> Min (insert x A) \<le> y"
+by (cases "A = {}") (auto simp add: min_max.le_infI1)
+
+lemma list_all2_Min:
+  assumes "list_all2 less_eq xs ys"
+    shows "Min (set (xs :: 'a :: linorder list)) \<le> Min (set ys)"
+using assms apply (induct rule: list_all2_induct)
+  using Min_insert_leq by auto (metis (no_types) List.finite_set List.set.simps(2)
+    Min.coboundedI Min_in eq_iff insertCI list_all2_Nil min_def min_le_iff_disj set_empty)
+
+lemma list_all2_map:
+  assumes "\<forall>x \<in> set l. P (f x) (g x)"
+    shows "list_all2 P (map f l) (map g l)"
+using assms by (induct l) auto
+
 
 (*****************************************************************************
   filter and partition lemmata

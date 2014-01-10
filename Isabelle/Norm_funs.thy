@@ -25,10 +25,14 @@ definition t_rule_has_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_r
 definition t_rules_have_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> bool" where
   "t_rules_have_norm norms rules \<equiv> \<exists>r \<in> set rules. t_rule_has_norm norms r"
 
+definition norm_of_t_rule ::
+  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow> ('t, 'v) t_rule_norm" where
+  "norm_of_t_rule norms \<equiv> \<lambda>(t, vs). (Suc (norm_sum norms vs), (t, vs))"
+
 definition norms_of_t_rules ::
   "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rules_norms" where
   "norms_of_t_rules norms rules \<equiv>
-     map (\<lambda>(t, vs). (Suc (norm_sum norms vs), (t, vs))) (filter (t_rule_has_norm norms) rules)"
+     map (norm_of_t_rule norms) (filter (t_rule_has_norm norms) rules)"
 
 definition min_norm_of_t_rules :: "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow>
   ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rule_norm" where

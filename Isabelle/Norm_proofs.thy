@@ -110,7 +110,7 @@ using assms(2) trhn_conserves[OF assms(1)] unfolding t_rules_have_norm_def by au
  *****************************************************************************)
 
 lemma notr_in_rules: "snd ` set (norms_of_t_rules norms rules) \<subseteq> set rules"
-unfolding norms_of_t_rules_def by auto
+unfolding norms_of_t_rules_def norm_of_t_rule_def by auto
 
 lemma notr_nonempty:
   assumes "t_rules_have_norm norms rules"
@@ -123,19 +123,48 @@ lemma notr_nonempty_cons:
 by (auto simp add: t_rules_have_norm_def norms_of_t_rules_def filter_empty_conv t_rule_has_norm_def)
 
 lemma notr_norms_greater_zero: "(n, rt, rv) \<in> set (norms_of_t_rules norms rules) \<Longrightarrow> 0 < n"
-unfolding norms_of_t_rules_def by auto
+unfolding norms_of_t_rules_def norm_of_t_rule_def by auto
 
 lemma notr_variables:
   assumes "(n, t, vs) \<in> set (norms_of_t_rules norms rules)"
     shows "set vs \<subseteq> keys norms"
       and "n = Suc (norm_sum norms vs)" using assms
-unfolding norms_of_t_rules_def t_rule_has_norm_def by auto
+unfolding norms_of_t_rules_def norm_of_t_rule_def t_rule_has_norm_def by auto
 
 lemma notr_rule_in:
   assumes "(t, vs) \<in> set rules"
       and "t_rule_has_norm norms (t, vs)"
     shows "(Suc (norm_sum norms vs), t, vs) \<in> set (norms_of_t_rules norms rules)" using assms
-unfolding norms_of_t_rules_def by auto
+unfolding norms_of_t_rules_def norm_of_t_rule_def by auto
+
+lemma notr_leq:
+  assumes "\<And>vs. set vs \<subseteq> keys norms1 \<Longrightarrow> norm_sum norms2 vs \<le> norm_sum norms1 vs"
+      and "(t :: 't :: order, vs :: 'v :: order list) \<in> set (filter (t_rule_has_norm norms1) rules)"
+    shows "norm_of_t_rule norms2 (t, vs) \<le> norm_of_t_rule norms1 (t, vs)"
+proof -
+  have "set vs \<subseteq> keys norms1" using assms(2) trhn_vars_normed[of norms1 t vs] by auto
+  then have "norm_sum norms2 vs \<le> norm_sum norms1 vs" using assms(1) by auto
+  then show ?thesis unfolding norm_of_t_rule_def by simp
+qed
+
+lemma notr_smaller:
+  assumes "map fst norms2 = map fst norms1"
+      and "values_leq norms2 norms1"
+      and "is_alist (norms1 :: ('t :: order, 'v :: order) grammar_norms)"
+    shows "list_all2 less_eq (norms_of_t_rules norms2 rules) (norms_of_t_rules norms1 rules)"
+proof -
+  have "keys norms2 = keys norms1" using assms(1) by (metis keys_fst_map)
+  then have "(t_rule_has_norm norms2) = (t_rule_has_norm norms1)"
+    unfolding t_rule_has_norm_def by auto
+  then have FF: "filter (t_rule_has_norm norms2) rules = filter (t_rule_has_norm norms1) rules"
+    by auto
+
+  have LE: "\<forall>x \<in> set (filter (t_rule_has_norm norms1) rules).
+    norm_of_t_rule norms2 x \<le> norm_of_t_rule norms1 x"
+    using notr_leq[of norms1 norms2] ns_leq[OF assms(1-3)] by (metis prod.exhaust)
+  
+  show ?thesis unfolding norms_of_t_rules_def FF using list_all2_map[of _ less_eq, OF LE] .
+qed
 
 
 (*****************************************************************************
@@ -305,20 +334,12 @@ proof -
   then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
 
-lemma notr_smaller:
-  assumes "norms2 = refine_norms norms1 gr"
-      and "norms2 \<le> norms1"
-    shows "norms_of_t_rules norms2 rules \<le> norms_of_t_rules norms1 rules"
-unfolding norms_of_t_rules_def using ns_leq
-sorry
-
-lemma mnotr_smaller:
-  assumes "map fst norms1 = map fst norms2"
-      and "norms2 \<le> norms1"
-      (*and "t_rules_have_norms norms1"*)
+lemma mnotr_leq':
+  assumes "map fst norms2 = map fst norms1"
+      and "values_leq norms2 norms1"
+      and "is_alist (norms1 :: ('t :: linorder, 'v :: linorder) grammar_norms)"
     shows "min_norm_of_t_rules norms2 rules \<le> min_norm_of_t_rules norms1 rules"
-unfolding min_norm_of_t_rules_def
-sorry
+unfolding min_norm_of_t_rules_def using list_all2_Min notr_smaller[OF assms(1-3)] by auto
 
 lemma mnotr_leq:
   assumes "is_alist gr"
@@ -331,11 +352,11 @@ proof -
 
   def rules \<equiv> "lookup gr v"
 
-  have MF: "map fst norms = map fst (refine_norms norms gr)" sorry
-  have RN: "refine_norms norms gr \<le> norms" sorry
+  have MF: "map fst (refine_norms norms gr) = map fst norms" sorry
+  have RN: "values_leq (refine_norms norms gr) norms" sorry
   have Y: "rnorm = min_norm_of_t_rules norms rules" sorry
   have Z: "min_norm_of_t_rules (refine_norms norms gr) rules \<le> rnorm"
-    unfolding Y using mnotr_smaller[OF MF RN] .
+    unfolding Y using mnotr_leq'[OF MF RN I(2)] .
 
   show ?thesis using Z unfolding rules_def .
 qed
