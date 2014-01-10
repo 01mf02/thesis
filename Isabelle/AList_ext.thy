@@ -136,4 +136,44 @@ proof -
   then show ?thesis using assms apply (induct rule: list_induct2) by auto
 qed
 
+lemma values_leq_cons:
+  assumes "values_leq xs ys"
+      and "x \<le> y"
+      and "k \<notin> keys xs \<union> keys ys"
+    shows "values_leq ((k, x) # xs) ((k,y) # ys)"
+using assms unfolding values_leq_def values_related_def by auto
+
+lemma map_ran_values_leq:
+  assumes "\<forall>(k, v) \<in> set xs. f k v \<le> v"
+      and "ys = map_ran f xs"
+      and "is_alist xs"
+    shows "values_leq ys xs"
+proof -
+  have "length ys = length xs" using assms(2) unfolding map_ran_def by auto
+  then show ?thesis using assms proof (induct rule: list_induct2)
+    case (Cons x xs y ys)
+    then have "is_alist ys" using alist_distr[of "[y]" ys, simplified] by auto
+    then have I: "values_leq xs ys" using Cons by auto
+
+    def  k \<equiv> "fst y"
+    def vx \<equiv> "snd x"
+    def vy \<equiv> "snd y"
+
+    have FF: "fst y = fst x" using Cons(4) by (metis (mono_tags) fst_conv list.inject map.simps(2)
+      map_ran_def split_conv surjective_pairing)
+    have XP: "x = (k, vx)" unfolding k_def vx_def FF by auto
+    have YP: "y = (k, vy)" unfolding k_def vy_def by auto
+
+    have XY: "vx = f k vy" using Cons(4) unfolding XP YP by auto
+    have LE: "vx \<le> vy" unfolding XY using Cons(3) unfolding k_def vy_def by auto
+    have AL: "is_alist (x # xs)" using distinct_map_ran[of "y # ys"] Cons(4-5)
+      unfolding is_alist_def by auto
+
+    have NX: "k \<notin> keys xs" using k_def FF AL   alist_distr[of "[x]" xs] by auto
+    have NY: "k \<notin> keys ys" using k_def Cons(5) alist_distr[of "[y]" ys] by auto
+    have NU: "k \<notin> keys xs \<union> keys ys" using NX NY by auto
+    show ?case unfolding XP YP using values_leq_cons[OF I LE NU] .
+  qed (auto simp add: values_leq_def values_related_def)
+qed
+
 end
