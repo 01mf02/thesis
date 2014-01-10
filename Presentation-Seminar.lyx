@@ -134,7 +134,6 @@ status open
 
 My master's thesis is about constructing equivalence proofs of simple determinis
 tic grammars.
- To construct these proofs, we need to calculate the norms of grammar variables.
 \end_layout
 
 \begin_layout Standard
@@ -161,7 +160,29 @@ status open
 
 \end_inset
 
-We want to make sure that the norm calculation algorithm is correct.
+We could prove the correctness of many parts of the equivalence proof algorithm:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Norm calculation
+\end_layout
+
+\begin_layout Itemize
+Variable base construction
+\end_layout
+
+\begin_layout Itemize
+Proof construction
+\end_layout
+
+\begin_layout Itemize
+Proof verification
+\end_layout
+
+\end_deeper
+\begin_layout Block
+For this seminar, we concentrated on the norm calculation.
 \end_layout
 
 \begin_layout EndFrame
@@ -223,7 +244,8 @@ status open
 \begin_inset Formula $\left\Vert X\right\Vert $
 \end_inset
 
- equals the length of the shortest word producible by variable 
+ equals the length of the shortest finite terminal word producible by variable
+ (nonterminal) 
 \begin_inset Formula $X$
 \end_inset
 
@@ -695,10 +717,40 @@ SAT of Horn clauses
 \end_layout
 
 \begin_layout Itemize
-...
+Scheduling
+\end_layout
+
+\begin_layout Itemize
+Dependency resolution (topological sort? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO, also research linear dependency chain
+\end_layout
+
+\end_inset
+
+)
 \end_layout
 
 \end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Central theorems
+\end_layout
+
+\begin_layout Standard
+Statements about final theorems I proved about norm and partition_iterate
+\end_layout
+
+\begin_layout Standard
+Possibly example value calls
+\end_layout
+
 \begin_layout EndFrame
 
 \end_layout
@@ -782,6 +834,8 @@ status open
 
 I wanted to use the norm calculation algorithm implemented in Isabelle/HOL
  in an existing OCaml program.
+ Formalising the whole OCaml program turned out to be outside the scope
+ of this seminar.
 \end_layout
 
 \begin_layout Standard
