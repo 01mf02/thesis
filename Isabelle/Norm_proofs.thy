@@ -412,7 +412,7 @@ proof (induct norms gr rule: minimise_norms.induct)
   qed
 qed
 
-lemma mn_rn_new:
+lemma mn_rn:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
     shows "refine_norms (minimise_norms norms gr) gr = minimise_norms norms gr" using assms
@@ -422,7 +422,7 @@ proof (induct norms gr rule: minimise_norms.induct)
     case True then show ?thesis by (metis minimise_norms.simps)
   next
     case False
-    have "rn_invariant (refine_norms norms gr) gr" using rn_decreases(2)[OF 1(2-3)] .
+    have "rn_invariant (refine_norms norms gr) gr" using rn_decreases(2) 1(2-3) .
     then have X: "refine_norms (minimise_norms (refine_norms norms gr) gr) gr =
       minimise_norms (refine_norms norms gr) gr" using 1 False by auto
     have Y: "minimise_norms (refine_norms norms gr) gr = minimise_norms norms gr"
@@ -430,9 +430,6 @@ proof (induct norms gr rule: minimise_norms.induct)
     show ?thesis using X unfolding Y .
   qed
 qed
-
-lemma mn_rn: "refine_norms (minimise_norms norms gr) gr = (minimise_norms norms gr)"
-sorry
 
 lemma mn_nil: "minimise_norms [] gr = []"
 by (metis minimise_norms.simps rn_nil)
@@ -453,14 +450,19 @@ lemma un_minimal:
       and "is_alist gr"
       and "rn_invariant (add_norms norms yes) gr"
     shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
-using rn_mnotr_equal mn_rn_new[OF assms(4-5)] assms(2,1,3-4) unfolding update_norms_def .
+using rn_mnotr_equal mn_rn[OF assms(4-5)] assms(2,1,3-4) unfolding update_norms_def .
 
-lemma un_un_invariant: "update_norms gr (update_norms gr norms yes) [] = update_norms gr norms yes"
+lemma un_un_invariant:
+  assumes "gram_sd gr"
+    shows "update_norms gr (update_norms gr norms yes) [] = update_norms gr norms yes"
 proof -
   def un \<equiv> "update_norms gr norms yes"
-  have "refine_norms un gr = un" unfolding update_norms_def un_def using mn_rn[of _ gr] by auto
-  then show ?thesis unfolding update_norms_def un_def
-    by (metis an_nil_invariant minimise_norms.simps)
+  have AL: "is_alist gr" using gsd_alist assms(1) .
+  have RN: "rn_invariant (add_norms norms yes) gr" sorry
+  
+  have "refine_norms un gr = un" unfolding update_norms_def un_def using mn_rn[OF AL RN] by auto
+  then show ?thesis unfolding update_norms_def un_def an_nil_invariant using minimise_norms.simps
+    by auto
 qed
 
 lemma un_nil_invariant: "update_norms gr [] [] = []"
@@ -779,11 +781,12 @@ next
 qed (auto simp add: assms)
 
 lemma nog_un_invariant:
-  "(\<lambda>(norms, rest). (update_norms gr) norms (filter (v_rule_has_norm norms) rest)) (iterate_norms gr) =
-   norms_of_grammar gr"
+  assumes "gram_sd gr"
+    shows "(\<lambda>(norms, rest). update_norms gr norms (filter (v_rule_has_norm norms) rest))
+      (iterate_norms gr) = norms_of_grammar gr"
 unfolding norms_of_grammar_def iterate_norms_def
 using pi_invariant_extended
-  [of "update_norms gr" "[]" v_rule_has_norm gr, OF un_nil_invariant un_un_invariant]
+  [of "update_norms gr" "[]" v_rule_has_norm gr, OF un_nil_invariant un_un_invariant[OF assms]]
 by (case_tac "partition_iterate v_rule_has_norm (update_norms gr) [] gr") auto
 
 lemma nog_v_in_norms:
@@ -791,7 +794,7 @@ lemma nog_v_in_norms:
       and "(v, rules) \<in> set gr"
       and "t_rules_have_norm (norms_of_grammar gr) rules"
     shows "v \<in> keys (norms_of_grammar gr)"
-using nog_v_in_norms'[OF assms] unfolding nog_un_invariant .
+using nog_v_in_norms'[OF assms] unfolding nog_un_invariant[OF assms(1)] .
 
 
 lemma nog_ns:

@@ -57,7 +57,7 @@ definition refine_norms ::
 
 definition rn_invariant where
   "rn_invariant norms gr \<equiv>
-     (\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm)  \<and>
+     (\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm) \<and>
      is_alist norms \<and> keys norms \<subseteq> keys gr"
 
 function minimise_norms ::
