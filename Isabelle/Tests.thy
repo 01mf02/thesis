@@ -48,6 +48,6 @@ value "gram_sd test_gr3"
 value "gram_nsd_fun test_gr3 = False"
 
 value "gram_nsd_fun test_gr4"
-value "iterate_norms test_gr4"
+value "norms_of_grammar test_gr4"
 
 end
