@@ -334,7 +334,7 @@ proof -
   then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
 
-lemma mnotr_leq:
+lemma mnotr_rn_leq:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
       and "(v, rnorm) \<in> set (refine_norms norms gr)"
@@ -373,7 +373,7 @@ proof -
 
   have I1: "\<forall>(v, norm) \<in> set (refine_norms norms gr).
     min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> norm"
-    using mnotr_leq[OF assms(1-2)] by auto
+    using mnotr_rn_leq[OF assms(1-2)] by auto
   have I2: "is_alist (refine_norms norms gr)" using rn_fst_map I(2) by (metis is_alist_def)
   have I3: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(3) by (metis keys_fst_map)
   show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 unfolding rn_invariant_def by auto
@@ -451,8 +451,9 @@ lemma un_minimal:
       and "(v, norm) \<in> set (update_norms gr norms yes)"
       and "is_alist (update_norms gr norms yes)"
       and "is_alist gr"
+      and "rn_invariant (add_norms norms yes) gr"
     shows "norm = min_norm_of_t_rules (update_norms gr norms yes) rules"
-using rn_mnotr_equal mn_rn assms(2,1,3-4) unfolding update_norms_def .
+using rn_mnotr_equal mn_rn_new[OF assms(4-5)] assms(2,1,3-4) unfolding update_norms_def .
 
 lemma un_un_invariant: "update_norms gr (update_norms gr norms yes) [] = update_norms gr norms yes"
 proof -
@@ -567,6 +568,44 @@ by (simp add: gram_nsd_fun_def)
   norms_of_grammar
  *****************************************************************************)
 
+lemma mnotr_an_leq:
+  assumes "(v, norm) \<in> set norms"
+      and "rn_invariant norms gr"
+      and "is_alist stuff"
+      and "keys norms \<inter> keys stuff = {}"
+    shows "min_norm_of_t_rules (norms @ stuff) (lookup gr v) \<le> norm"
+proof -
+  show ?thesis using assms(2) unfolding rn_invariant_def unfolding min_norm_of_t_rules_def norms_of_t_rules_def sorry
+qed
+
+lemma an_rn_invariant:
+  assumes "rn_invariant norms gr"
+    shows "rn_invariant (add_norms norms yes) gr"
+proof -
+  have A1: "\<forall>(v, norm)\<in>set norms.
+    min_norm_of_t_rules (add_norms norms yes) (lookup gr v) \<le> norm" using mnotr_an_leq sorry
+  have A2: "\<forall>(v, norm)\<in>set (mnotr_map norms yes).
+    min_norm_of_t_rules (add_norms norms yes) (lookup gr v) \<le> norm" sorry
+
+  have R1: "(\<forall>(v, norm)\<in>set (add_norms norms yes).
+    min_norm_of_t_rules (add_norms norms yes) (lookup gr v) \<le> norm)"
+    using A1 A2 unfolding add_norms_def by auto
+  have R2: "is_alist (add_norms norms yes)" sorry
+  have R3: "keys (add_norms norms yes) \<subseteq> keys gr" sorry
+  show ?thesis using assms unfolding add_norms_def rn_invariant_def sorry
+qed
+
+lemma nog_rn_invariant_holds:
+  assumes "gram_sd gr"
+    shows "\<forall>(v, norm) \<in> set (norms_of_grammar gr).
+           min_norm_of_t_rules (norms_of_grammar gr) (lookup gr v) \<le> norm"
+unfolding norms_of_grammar_def proof (induct rule: itno_induct_sd(1))
+  case (Step norms rest yes no)
+  have "rn_invariant norms gr" sorry
+  then have "rn_invariant (add_norms norms yes) gr" using an_rn_invariant by auto
+  then show ?case using un_minimal sorry
+qed (auto simp add: assms(1)) 
+
 lemma nog_invariant_holds:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
@@ -575,8 +614,9 @@ lemma nog_invariant_holds:
 using assms(3) unfolding norms_of_grammar_def proof (induct rule: itno_induct_sd(1))
   case (Step norms rest yes no)
   def un \<equiv> "update_norms gr norms yes"
-  have P: "v \<in> keys un" unfolding un_def using Step(5) by simp
-  have II: "set rest \<subseteq> set gr" using Step(1) unfolding itno_invariant_def by simp
+  have P: "v \<in> keys un" unfolding un_def using Step(5) Step by simp
+  have II: "set rest \<subseteq> set gr" "keys gr = keys norms \<union> keys rest"
+    using Step(1) unfolding itno_invariant_def by auto
   have IS: "is_alist norms" "is_alist rest" "keys rest \<inter> keys norms = {}"
     using Step(2) unfolding itno_invariant_sd_def by auto
   have AG: "is_alist gr" using gsd_alist assms(1) .
@@ -597,9 +637,18 @@ using assms(3) unfolding norms_of_grammar_def proof (induct rule: itno_induct_sd
     then show ?thesis using Step(3) unfolding v_rule_has_norm_def by auto
   qed
 
+  have "\<forall>(v, norm)\<in>set norms. min_norm_of_t_rules norms rules \<le> norm" sorry
+  have R1: "\<forall>(v, norm)\<in>set (add_norms norms yes).
+    min_norm_of_t_rules (add_norms norms yes) (lookup gr v) \<le> norm" sorry
+  have R2: "is_alist (add_norms norms yes)" using an_fst_map NY AY IS(1)
+    by (metis alist_distr_fst_map)
+  have R3: "keys (add_norms norms yes) \<subseteq> keys gr" using an_keys YR II
+    by (metis (no_types) Un_least Un_upper1 Un_upper2 dual_order.trans)
+  have RN: "rn_invariant (add_norms norms yes) gr" using R1 R2 R3 unfolding rn_invariant_def by auto
+
   have I1: "t_rules_have_norm un rules" using trshn_conserves un_keys T unfolding un_def .
   have I2: "(v, min_norm_of_t_rules un rules) \<in> set un"
-    using un_minimal[OF assms(2) _ _ AG] P AU unfolding un_def by auto
+    using un_minimal[OF assms(2) _ _ AG RN] P AU unfolding un_def by auto
 
   show ?case using I1 I2 unfolding nog_invariant_def un_def by auto
 qed (auto simp add: assms(1))
