@@ -109,7 +109,7 @@ Austria
 status open
 
 \begin_layout Plain Layout
-ICS @ UIBK
+CL @ ICS @ UIBK
 \end_layout
 
 \end_inset
@@ -301,7 +301,7 @@ status open
 
 \begin_layout Plain Layout
 
-{Example:}
+{Example}
 \end_layout
 
 \end_inset
@@ -310,8 +310,8 @@ status open
 \begin_inset Formula 
 \begin{align*}
 A_{1} & \to a & \onslide<2->{\left\Vert A_{1}\right\Vert =1}\\
-B & \to bAA+cA & \onslide<3->{\left\Vert B\right\Vert =2}\\
-C & \to cBA & \onslide<4->{\left\Vert C\right\Vert =4}
+B & \to bA_{1}A_{1}+cA_{1} & \onslide<3->{\left\Vert B\right\Vert =2}\\
+C & \to cBA_{1} & \onslide<4->{\left\Vert C\right\Vert =4}
 \end{align*}
 
 \end_inset
@@ -321,6 +321,10 @@ C & \to cBA & \onslide<4->{\left\Vert C\right\Vert =4}
 
 \begin_layout EndFrame
 
+\end_layout
+
+\begin_layout Section
+Norm calculation algorithm
 \end_layout
 
 \begin_layout BeginFrame
@@ -397,7 +401,7 @@ status open
 
 \begin_layout Plain Layout
 
-{Example:}
+{Example}
 \end_layout
 
 \end_inset
@@ -444,7 +448,7 @@ status open
 
 \begin_layout Plain Layout
 
-{Example:}
+{Example}
 \end_layout
 
 \end_inset
@@ -575,6 +579,46 @@ We look at each norm and see if it is still a minimal norm, given the other
  We repeat this process until all norms are minimal.
 \end_layout
 
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Refinement example
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \onslide<2->{\rightsquigarrow\left(A_{1},1,a,\left[\right]\right)}\\
+A_{2} & \to aA_{1} & \onslide<3->{\rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)}\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & \onslide<3->{\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}\onslide<4->{\color{blue}\rightsquigarrow\left(B,3,c,\left[A_{2}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+Verification
+\end_layout
+
 \begin_layout BeginFrame
 Verification
 \end_layout
@@ -601,7 +645,7 @@ To verify the correctness of the algorithm, I implemented it in Isabelle/HOL,
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides.tex"
+filename "output/document/Slides_defs.tex"
 
 \end_inset
 
@@ -618,7 +662,7 @@ status open
 
 \begin_layout Plain Layout
 
-{TODO}
+{What do I use?}
 \end_layout
 
 \end_inset
@@ -632,21 +676,18 @@ For the implementation, I heavily use association lists, for which I proved
 
 \end_layout
 
-\begin_layout BeginFrame
-partition_iterate
-\end_layout
-
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: code here!
-\end_layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Slides_pi.tex"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout BeginFrame
+partition_iterate
 \end_layout
 
 \begin_layout Block
@@ -673,7 +714,7 @@ custom induction principle
 \end_layout
 
 \begin_layout Itemize
-invariant
+TODO: invariant
 \end_layout
 
 \end_deeper
@@ -714,17 +755,7 @@ Scheduling
 \end_layout
 
 \begin_layout Itemize
-Dependency resolution (topological sort? 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO, also research linear dependency chain
-\end_layout
-
-\end_inset
-
-)
+Topological sorting
 \end_layout
 
 \end_deeper
@@ -732,19 +763,13 @@ TODO, also research linear dependency chain
 
 \end_layout
 
-\begin_layout BeginFrame
-Central theorems
-\end_layout
-
 \begin_layout Standard
-Statements about final theorems I proved about norm and partition_iterate
-\end_layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Slides_proofs.tex"
 
-\begin_layout Standard
-Possibly example value calls
-\end_layout
+\end_inset
 
-\begin_layout EndFrame
 
 \end_layout
 
@@ -810,6 +835,10 @@ At first bottom-up, but often the properties I proved did not correspond
 
 \end_layout
 
+\begin_layout Section
+The easy stuff
+\end_layout
+
 \begin_layout BeginFrame
 Integration with existing code
 \end_layout
@@ -870,6 +899,10 @@ On OCaml side: Converted rest of code to Big_int.
 \end_layout
 
 \end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
 \begin_layout BeginFrame
 Statistics
 \end_layout
@@ -888,21 +921,34 @@ filename "statistics.tex"
 
 \end_layout
 
-\begin_layout BeginFrame
-Summary
-\end_layout
-
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Slides_demo.tex"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout BeginFrame
+Summary
+\end_layout
+
+\begin_layout Itemize
+Formalised simple deterministic grammars and their norms
+\end_layout
+
+\begin_layout Itemize
+Created algorithm to calculate norms
+\end_layout
+
+\begin_layout Itemize
+Verified algorithm, termination is TODO (estimated 90% done)
+\end_layout
+
+\begin_layout Itemize
+Integrated algorithm into OCaml program
 \end_layout
 
 \begin_layout EndFrame

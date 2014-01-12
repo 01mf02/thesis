@@ -10,5 +10,6 @@ FUNS=`grep '^fun' *.thy | wc -l`
 LEMS=`grep '^lemma' *.thy | wc -l`
 echo "\\item Number of definitions/functions: $DEFS/$FUNS"
 echo "\\item Number of lemmata: $LEMS"
+echo "\\onslide<2->\\item Amount of hair lost fighting with Isabelle: ..."
 
 echo "\\end{itemize}"
