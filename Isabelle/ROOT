@@ -1,5 +1,6 @@
 session "Norm" = "HOL" +
-  options [quick_and_dirty, document = pdf, document_output = "output"]
+  options [quick_and_dirty, skip_proofs, show_question_marks = false,
+           document = pdf, document_output = "output"]
   theories [document = false]
     "~~/src/HOL/Library/AList_Mapping"
     "~~/src/HOL/Library/List_lexord"
@@ -8,4 +9,5 @@ session "Norm" = "HOL" +
     "~~/src/HOL/Library/Char_ord"
   theories
     Tests
+    Slides
   files "document/root.tex"
