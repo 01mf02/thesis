@@ -4,6 +4,10 @@
 \begin_header
 \textclass beamer
 \begin_preamble
+\usepackage{output/document/isabelle}
+\usepackage{output/document/isabellesym}
+\usepackage{mathpartir}
+
 \usetheme[sealopacity=0.0,boxes,rounded,shadow,darker]{ComputationalLogic}
 \end_preamble
 \use_default_options true
@@ -594,24 +598,13 @@ To verify the correctness of the algorithm, I implemented it in Isabelle/HOL,
 
 \end_layout
 
-\begin_layout BeginFrame
-Norm definition
-\end_layout
-
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO!
-\end_layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Slides.tex"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout EndFrame
 
 \end_layout
 
@@ -882,28 +875,13 @@ Statistics
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "statistics.tex"
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Itemize
-Size of Isabelle theory files:
-\end_layout
-
-\begin_layout Itemize
-Number of lemmata:
-\end_layout
-
-\begin_layout Itemize
-Number of definitions/functions:
 \end_layout
 
 \begin_layout EndFrame
