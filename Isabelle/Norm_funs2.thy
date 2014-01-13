@@ -65,6 +65,10 @@ definition itno_invariant where
 definition itno_invariant_sd where
   "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
 
+definition itno_invariant_sd_member where
+  "itno_invariant_sd_member norms v rules \<equiv>
+     t_rules_have_norm norms rules \<and> lookup norms v \<in> set (norms_of_t_rules norms rules)"
+
 definition nog_invariant where
   "nog_invariant norms v rules \<equiv>
      t_rules_have_norm norms rules \<and> (v, min_norm_of_t_rules norms rules) \<in> set norms"
