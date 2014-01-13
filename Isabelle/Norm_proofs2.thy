@@ -644,6 +644,14 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
   show ?case using I1 I2 unfolding itno_invariant_sd_member_def an_def by auto
 qed (auto simp add: assms(1))
 
+lemma nog_invariant_holds:
+  assumes "gram_sd gr"
+      and "(v, rules) \<in> set gr"
+      and "(v, norm) \<in> set (norms_of_grammar gr)"
+    shows "nog_invariant (norms_of_grammar gr) v rules"
+using mn_rn rn_mnotr_equal unfolding norms_of_grammar_def
+sorry
+
 lemma nog_invariant_n_t_vs_holds:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
