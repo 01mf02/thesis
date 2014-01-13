@@ -12,7 +12,7 @@ text {*
 
 \begin{block}{Correctness theorem}
 \begin{center}
-@{thm[mode=Rule] nf_calcs_nd}
+@{thm [mode=Rule] nf_calcs_nd}
 \end{center}
 \end{block}
 

@@ -4,7 +4,7 @@
 begin(*>*)
 
 text {*
-@{thm pi_induct}
+@{thm [mode=Rule] pi_induct}
 *}
 
 (*<*)end(*>*)

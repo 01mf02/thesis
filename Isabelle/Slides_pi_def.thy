@@ -3,8 +3,11 @@
   "~~/src/HOL/Library/LaTeXsugar"
 begin(*>*)
 
-text {*
+
+text_raw {*
+\begin{block}{Definition}
 @{thm [display] partition_iterate.simps}
+\end{block}
 *}
 
 (*<*)end(*>*)

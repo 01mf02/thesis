@@ -117,6 +117,27 @@ CL @ ICS @ UIBK
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% removes excessive spaces in presentation blocks above math environments
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+abovedisplayskip=0pt 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
@@ -140,16 +161,7 @@ My master's thesis is about constructing equivalence proofs of simple determinis
 tic grammars.
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
+\begin_layout Pause
 
 \end_layout
 
@@ -174,14 +186,25 @@ Norm calculation
 
 \begin_layout Itemize
 Variable base construction
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Yoram Hirshfeld and Mark Jerrum and Faron Moller, "A Polynomial Algorithm
+ for Deciding Bisimilarity of Normed Context-Free Processes", 
+\emph on
+Theoretical Computer Science
+\emph default
+ (1996), 143--159.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-Proof construction
-\end_layout
-
-\begin_layout Itemize
-Proof verification
+Proof construction/verification
 \end_layout
 
 \end_deeper
@@ -220,16 +243,7 @@ A simple deterministic grammar is a context-free grammar in Greibach normal
 .
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
+\begin_layout Pause
 
 \end_layout
 
@@ -260,16 +274,7 @@ status open
  if no such word exists.
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
+\begin_layout Pause
 
 \end_layout
 
@@ -438,8 +443,7 @@ status open
 
 \end_inset
 
-We might have variables which change the norm of other variables that we
- previously calculated.
+The norms calculated with this algorithm might be not minimal.
 \end_layout
 
 \begin_layout ExampleBlock
@@ -464,6 +468,57 @@ B & \to bA_{1}A_{1}A_{1}+cA_{2} & \onslide<3->{\color{red}\rightsquigarrow\left(
 \end_inset
 
 
+\end_layout
+
+\begin_layout BeginFrame
+So why don't we ...?
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Question}
+\end_layout
+
+\end_inset
+
+Why do we not wait for all production rules of all variables to be normed,
+ but calculate a norm as soon as one production rule is normed?
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a\\
+B & \to bB\\
+C & \to aA_{1}+bB
+\end{align*}
+
+\end_inset
+
+Here, if we would wait for all production rules of 
+\begin_inset Formula $C$
+\end_inset
+
+ to have a norm, we would wait forever, because 
+\begin_inset Formula $B$
+\end_inset
+
+ is not normed!
 \end_layout
 
 \begin_layout EndFrame
@@ -680,18 +735,7 @@ For the implementation, I heavily use association lists, for which I proved
 partition_iterate
 \end_layout
 
-\begin_layout Block
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-{Definition}
-\end_layout
-
-\end_inset
-
-
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
 filename "output/document/Slides_pi_def.tex"
@@ -701,16 +745,7 @@ filename "output/document/Slides_pi_def.tex"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
+\begin_layout Pause
 
 \end_layout
 
@@ -766,24 +801,11 @@ termination
 \end_layout
 
 \begin_layout Itemize
-custom induction principle
-\end_layout
-
-\begin_layout Itemize
-TODO: invariant
+induction principle
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
+\begin_layout Pause
 
 \end_layout
 
@@ -847,16 +869,7 @@ I wanted to use the norm calculation algorithm implemented in Isabelle/HOL
  of this seminar.
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
+\begin_layout Pause
 
 \end_layout
 
@@ -908,7 +921,50 @@ filename "statistics.tex"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout BeginFrame
+Demo
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \onslide<2->{\left\Vert A_{1}\right\Vert =1} &  & B & \to aA_{1}A_{1}A_{1} & \onslide<2->{\left\Vert B\right\Vert =4}\\
+A_{2} & \to aA_{1} & \onslide<2->{\left\Vert A_{2}\right\Vert =2} &  & C & \to xA_{3}+yB & \onslide<2->{\left\Vert C\right\Vert =4}\\
+A_{3} & \to aA_{2} & \onslide<2->{\left\Vert A_{3}\right\Vert =3}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Isabelle version}
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset include
 LatexCommand include
 filename "output/document/Slides_demo.tex"
@@ -918,10 +974,29 @@ filename "output/document/Slides_demo.tex"
 
 \end_layout
 
+\begin_layout EndFrame
+
+\end_layout
+
 \begin_layout BeginFrame
 Summary
 \end_layout
 
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{What I did}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Formalised simple deterministic grammars and their norms
 \end_layout
@@ -931,13 +1006,52 @@ Created algorithm to calculate norms
 \end_layout
 
 \begin_layout Itemize
-Verified algorithm, termination is TODO (estimated 90% done)
+Proved correctness of algorithm
 \end_layout
 
 \begin_layout Itemize
 Integrated algorithm into OCaml program
 \end_layout
 
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{What is left to do}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Prove termination of algorithm (argument is simple, but implementation is
+ a bit harder)
+\end_layout
+
+\begin_layout Itemize
+Implement/verify equivalence decision algorithm
+\end_layout
+
+\end_deeper
 \begin_layout EndFrame
 
 \end_layout
