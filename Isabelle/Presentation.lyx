@@ -676,16 +676,72 @@ For the implementation, I heavily use association lists, for which I proved
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout BeginFrame
+partition_iterate
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Definition}
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides_pi.tex"
+filename "output/document/Slides_pi_def.tex"
 
 \end_inset
 
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Applications}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+SAT of Horn clauses
+\end_layout
+
+\begin_layout Itemize
+Scheduling
+\end_layout
+
+\begin_layout Itemize
+Topological sorting
+\end_layout
+
+\end_deeper
 \begin_layout BeginFrame
 partition_iterate
 \end_layout
@@ -737,28 +793,21 @@ status open
 
 \begin_layout Plain Layout
 
-{Applications}
+{Induction principle}
 \end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand include
+filename "output/document/Slides_pi_proofs.tex"
 
 \end_inset
 
 
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-SAT of Horn clauses
-\end_layout
-
-\begin_layout Itemize
-Scheduling
-\end_layout
-
-\begin_layout Itemize
-Topological sorting
-\end_layout
-
-\end_deeper
 \begin_layout EndFrame
 
 \end_layout
@@ -770,68 +819,6 @@ filename "output/document/Slides_proofs.tex"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout BeginFrame
-Proof strategies
-\end_layout
-
-\begin_layout Block
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-{Applications}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Top-down: Start with central theorem and create helper lemmata as you go.
-\end_layout
-
-\begin_layout Itemize
-Bottom-up: Prove properties of simplest functions first and work your way
- towards more complex ones.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Block
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-{My choice}
-\end_layout
-
-\end_inset
-
-At first bottom-up, but often the properties I proved did not correspond
- to later needed properties, so after some time I switched to a top-down
- strategy.
-\end_layout
-
-\begin_layout EndFrame
 
 \end_layout
 

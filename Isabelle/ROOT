@@ -10,7 +10,8 @@ session "Norm" = "HOL" +
   theories
     Slides_defs
     Slides_demo
-    Slides_pi
+    Slides_pi_def
+    Slides_pi_proofs
     Slides_proofs
     Tests
   files "document/root.tex"
