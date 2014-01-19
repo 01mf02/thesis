@@ -868,7 +868,7 @@ status open
 OCaml program (
 \begin_inset CommandInset include
 LatexCommand input
-filename "OCaml/programsize.txt"
+filename "OCaml/sizes/programsize.txt"
 
 \end_inset
 
@@ -1111,7 +1111,7 @@ Results for Fibonacci grammar
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "OCaml/sizes/proof_sizes1.tex"
+filename "OCaml/sizes/sizes1.tex"
 
 \end_inset
 
