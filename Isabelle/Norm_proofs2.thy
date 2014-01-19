@@ -483,7 +483,7 @@ proof -
   then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
 
-(*lemma mnotr_rn_leq:
+lemma mnotr_rn_leq:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
       and "(v, rnorm) \<in> set (refine_norms norms gr)"
@@ -505,7 +505,7 @@ proof -
     unfolding rules_def .
   then show ?thesis using list_all2_Min notr_smaller[OF MF VL I(2)]
     unfolding min_norm_of_t_rules_def rules_def by auto
-qed*)
+qed
 
 lemma rn_decreases:
   assumes "is_alist gr"
@@ -535,8 +535,18 @@ unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
 
 subsection {* @{text minimise_norms} *}
 
+definition norm_smaller :: "((nat \<times> 't :: wellorder) \<times> nat \<times> 't) set" where
+  "norm_smaller \<equiv> {(n1, n2). n1 < n2}"
+
+lemma wf_norm_smaller: "wf norm_smaller"
+unfolding norm_smaller_def by (metis wf)
+
+lemma "wf {(l1, l2). (l1, l2) \<in> lenlex {(n1, n2). n1 < n2}}"
+apply auto
+sorry
+
 termination minimise_norms
-(*proof
+proof
   let ?no = "{(n' :: ('t::wellorder, 'v::wellorder) grammar_norms, n). n' < n}"
   let ?mno = "{((n', g' :: ('t, 'v) grammar), n, g). (n', n) \<in> ?no}"
   show "wf ?mno" sorry
@@ -548,8 +558,7 @@ termination minimise_norms
   
   have "refine_norms norms gr < norms" using rn_decreases(1)[OF AS(1-2)] AS(3) by auto
   then show "((refine_norms norms gr, gr), norms, gr) \<in> ?mno" by auto
-qed*)
-sorry
+qed
 
 
 lemma mn_map_fst: "map fst norms = map fst (minimise_norms norms gr)"
@@ -638,18 +647,25 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
   qed
 
   have I1: "t_rules_have_norm an rules" using trshn_conserves an_keys T unfolding an_def .
-  have I2: "lookup an v \<in> set (norms_of_t_rules an rules)"
+  have I2: "lookup an v \<in> set (norms_of_t_rules an rules)" (* should be showable *)
     (* using un_minimal[OF assms(2) _ _ AG RN] P AU unfolding un_def by auto *) sorry
 
   show ?case using I1 I2 unfolding itno_invariant_sd_member_def an_def by auto
 qed (auto simp add: assms(1))
+
+lemma itno_rn_invariant:
+  assumes "gram_sd gr"
+    shows "rn_invariant (fst (iterate_norms gr)) gr"
+proof -
+  show ?thesis unfolding rn_invariant_def sorry
+qed
 
 lemma nog_invariant_holds:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"
       and "(v, norm) \<in> set (norms_of_grammar gr)"
     shows "nog_invariant (norms_of_grammar gr) v rules"
-using mn_rn rn_mnotr_equal unfolding norms_of_grammar_def
+using mn_rn itno_rn_invariant rn_mnotr_equal unfolding norms_of_grammar_def nog_invariant_def
 sorry
 
 lemma nog_invariant_n_t_vs_holds:

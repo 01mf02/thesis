@@ -95,6 +95,10 @@ MF
 
 \end_layout
 
+\begin_layout Date
+15th January 2014
+\end_layout
+
 \begin_layout Institute
 Institute of Computer Science
 \begin_inset Newline newline
@@ -393,7 +397,7 @@ Calculate norms
 
 \begin_layout Enumerate
 Call algorithm with 
-\begin_inset Formula $N'$
+\begin_inset Formula $N\cup N'$
 \end_inset
 
 .
@@ -1048,7 +1052,7 @@ Prove termination of algorithm (argument is simple, but implementation is
 \end_layout
 
 \begin_layout Itemize
-Implement/verify equivalence decision algorithm
+Implement/verify equivalence decision procedure
 \end_layout
 
 \end_deeper
