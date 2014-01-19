@@ -18,10 +18,10 @@
 \usepackage{graphicx}
 % import graphic files from other directories
 \usepackage{import}
-\usepackage{output/document/isabelle}
-\usepackage{output/document/isabellesym}
+\usepackage{Isabelle/output/document/isabelle}
+\usepackage{Isabelle/output/document/isabellesym}
 \usepackage{listings}
-\usepackage[svgpath=../graphics/]{svg}
+\usepackage[svgpath=Graphics/]{svg}
 
 % to show DRAFT watermark
 \usepackage[firstpage]{draftwatermark}
