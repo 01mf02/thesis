@@ -9,9 +9,12 @@
 %\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
 
 % to show DRAFT watermark
-%\usepackage[firstpage]{draftwatermark}
+\usepackage[firstpage]{draftwatermark}
 
 \usepackage{bussproofs}
+
+
+\usepackage[svgpath=Graphics/]{svg}
 
 % make sum/integral limits always appear above/below the operator, not next to it
 \everymath{\displaystyle}
@@ -26,7 +29,7 @@
 \makeatother
 
 % importing SVG files with LaTeX code in it, as created by Inkscape
-\newcommand{\includesvg}[1]{\input{#1.pdf_tex}}
+%\newcommand{\includesvg}[1]{\input{#1.pdf_tex}}
 
 % graph drawing
 \usepackage{pgf}
@@ -3272,7 +3275,7 @@ reference "fig:Motivation-Base"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -3282,16 +3285,7 @@ status open
 
 
 \backslash
-def
-\backslash
-svgwidth{200pt}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg{ABCD-base}
+includesvg[width=200pt]{ABCD-base}
 \end_layout
 
 \end_inset
@@ -3611,16 +3605,7 @@ status open
 
 
 \backslash
-def
-\backslash
-svgwidth{300pt}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg{FineWilf}
+includesvg[width=300pt]{FineWilf}
 \end_layout
 
 \end_inset
@@ -5537,16 +5522,7 @@ status open
 
 
 \backslash
-def
-\backslash
-svgwidth{200pt}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg{ABCD-decomposition}
+includesvg[width=200pt]{ABCD-decomposition}
 \end_layout
 
 \end_inset
@@ -6023,16 +5999,7 @@ status open
 
 
 \backslash
-def
-\backslash
-svgwidth{200pt}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg{Branching_Grammar}
+includesvg[width=200pt]{Branching_Grammar}
 \end_layout
 
 \end_inset
@@ -7365,7 +7332,7 @@ target "https://github.com/01mf02/thesis"
  (
 \begin_inset CommandInset include
 LatexCommand input
-filename "programsize.txt"
+filename "OCaml/programsize.txt"
 
 \end_inset
 
@@ -8176,7 +8143,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes0.tex"
+filename "OCaml/sizes/proof_sizes0.tex"
 
 \end_inset
 
@@ -8216,7 +8183,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes1.tex"
+filename "OCaml/sizes/proof_sizes1.tex"
 
 \end_inset
 
@@ -8251,7 +8218,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes2.tex"
+filename "OCaml/sizes/proof_sizes2.tex"
 
 \end_inset
 
@@ -8286,7 +8253,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes3.tex"
+filename "OCaml/sizes/proof_sizes3.tex"
 
 \end_inset
 
@@ -8328,7 +8295,7 @@ status collapsed
 \begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "proof_sizes4.tex"
+filename "OCaml/sizes/proof_sizes4.tex"
 
 \end_inset
 
@@ -9501,16 +9468,7 @@ status open
 
 
 \backslash
-def
-\backslash
-svgwidth{250pt}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg{Cluster}
+includesvg[width=250pt]{Cluster}
 \end_layout
 
 \end_inset

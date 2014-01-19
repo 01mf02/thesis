@@ -4,8 +4,8 @@
 \begin_header
 \textclass beamer
 \begin_preamble
-\usepackage{output/document/isabelle}
-\usepackage{output/document/isabellesym}
+\usepackage{Isabelle/output/document/isabelle}
+\usepackage{Isabelle/output/document/isabellesym}
 \usepackage{mathpartir}
 
 \usetheme[sealopacity=0.0,boxes,rounded,shadow,darker]{ComputationalLogic}
@@ -704,7 +704,7 @@ To verify the correctness of the algorithm, I implemented it in Isabelle/HOL,
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides_defs.tex"
+filename "IsaTeX/Slides_defs.tex"
 
 \end_inset
 
@@ -742,7 +742,7 @@ partition_iterate
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides_pi_def.tex"
+filename "IsaTeX/Slides_pi_def.tex"
 
 \end_inset
 
@@ -827,7 +827,7 @@ status open
 
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides_pi_proofs.tex"
+filename "IsaTeX/Slides_pi_proofs.tex"
 
 \end_inset
 
@@ -841,7 +841,7 @@ filename "output/document/Slides_pi_proofs.tex"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides_proofs.tex"
+filename "IsaTeX/Slides_proofs.tex"
 
 \end_inset
 
@@ -914,7 +914,7 @@ Statistics
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "statistics.tex"
+filename "Isabelle/statistics.tex"
 
 \end_inset
 
@@ -971,7 +971,7 @@ status open
 
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Slides_demo.tex"
+filename "IsaTeX/Slides_demo.tex"
 
 \end_inset
 

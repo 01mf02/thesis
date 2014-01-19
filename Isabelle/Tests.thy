@@ -5,7 +5,7 @@ theory Tests imports
   "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
-export_code gram_nsd_fun norms_of_grammar in OCaml file "../Norm.ml"
+export_code gram_nsd_fun norms_of_grammar in OCaml file "../OCaml/Norm.ml"
 
 definition test_gr :: "(nat, nat) grammar" where
   "test_gr =

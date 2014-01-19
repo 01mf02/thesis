@@ -4,16 +4,6 @@
 \begin_header
 \textclass clseminar
 \begin_preamble
-% Note:
-% To use the svg package, you need to add the "--shell-escape" option to converter options.
-% 1.) Go to Tools -> Preferences -> File Handling -> Converters.
-% 2.) Select LaTeX (pdflatex) -> PDF (pdflatex).
-% 3.) Add "--shell-escape" (without quotes) to the end of "Extra flag".
-% 4.) Select "Modify" (to the right of converter list), then "Save" and "Close".
-%
-% Taken from: http://tex.stackexchange.com/questions/144427/programmatically-load-an-image-from-lyx
-
-
 \usepackage{color}
 \usepackage{graphicx}
 % import graphic files from other directories
@@ -26,31 +16,10 @@
 % to show DRAFT watermark
 \usepackage[firstpage]{draftwatermark}
 
-
 % center figures in all float environments
 \makeatletter
 \g@addto@macro\@floatboxreset{\centering}
 \makeatother
-
-
-
-% semantic brackets around some text/formula
-\newcommand{\sebr}[1]{$ [\![ $#1$ ]\!] $}
-% object-logic lambda
-\newcommand{\llambda}{\lambda\!\!\lambda}
-
-% include SVG files with text (as created by Inkscape)
-%\newcommand{\includesvg}[1]{\import{Presentation/data/}{#1.pdf_tex}}
-
-% include Isabelle files
-\newcommand{\includeisabelle}[1]{\input{Presentation/generated/#1.tex}}
-
-\newcommand \List {\operatorname{List}}
-\newcommand \nil {\operatorname{nil}}
-\newcommand \cons {\operatorname{cons}}
-\newcommand \hd {\operatorname{nil}}
-\newcommand \tl {\operatorname{cons}}
-\renewcommand \succ {\operatorname{succ}}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -179,7 +148,7 @@ status open
 \backslash
 includesvg[width=0.6
 \backslash
-columnwidth]{logics}
+columnwidth]{Logics}
 \end_layout
 
 \end_inset
@@ -275,7 +244,7 @@ Norm formalisation
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Norm_defs.tex"
+filename "IsaTeX/Norm_defs.tex"
 
 \end_inset
 
@@ -293,7 +262,7 @@ alist
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/AList_ext.tex"
+filename "IsaTeX/AList_ext.tex"
 
 \end_inset
 
@@ -307,7 +276,7 @@ partition_iterate
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Partition_iterate.tex"
+filename "IsaTeX/Partition_iterate.tex"
 
 \end_inset
 
@@ -672,7 +641,7 @@ The construction has been chosen in such a way that
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Norm_funs.tex"
+filename "IsaTeX/Norm_funs.tex"
 
 \end_inset
 
@@ -686,7 +655,7 @@ Proof
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "output/document/Norm_proofs.tex"
+filename "IsaTeX/Norm_proofs.tex"
 
 \end_inset
 
