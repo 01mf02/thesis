@@ -1,5 +1,13 @@
 #!/bin/sh
 
-rm *.byte *.dat *.log *.pdf_tex *.pdf *.tex
-rm programsize.txt
-rm -r _build
+cd Isabelle
+./cleanup.sh
+cd ..
+
+cd OCaml
+./cleanup.sh
+cd ..
+
+cd Graphics
+rm *.pdf_tex *.pdf
+cd ..

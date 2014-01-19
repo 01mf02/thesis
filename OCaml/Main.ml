@@ -132,7 +132,7 @@ let _ =
       let mode = match strat with
       | Base          -> "b"
       | Decomposition -> "d" in
-      let prefix = "sizes_" ^ mode in
+      let prefix = "sizes/sizes_" ^ mode in
       let filename = (prefix ^ (string_of_int e) ^ ".dat") in
 
       save_proof_sizes proof_sizes filename) [Base; Decomposition]) es;

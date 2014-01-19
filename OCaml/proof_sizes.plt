@@ -5,8 +5,11 @@
 
 #set terminal pdf
 #set output "proof_sizes".i.".pdf"
+
+directory = "sizes/"
+
 set terminal tikz size 12cm,6cm
-set output "proof_sizes".i.".tex"
+set output directory."sizes".i.".tex"
 
 # show legend above the plot
 set key above
@@ -24,8 +27,8 @@ if (i == 4) { rules_max = 50000; symbs_max = 500000 }
 if (i == 5) { rules_max = 50000; symbs_max = 500000 }
 
 # filenames
-file_b = "sizes_b".i.".dat"
-file_d = "sizes_d".i.".dat"
+file_b = directory."sizes_b".i.".dat"
+file_d = directory."sizes_d".i.".dat"
 
 # show numbers like "500k", "5G", ...
 set format y "%.0s%c"
