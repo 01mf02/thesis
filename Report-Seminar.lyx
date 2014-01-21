@@ -160,7 +160,7 @@ columnwidth]{Logics}
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Logics.
+Object logics in Isabelle.
 \end_layout
 
 \end_inset
@@ -168,26 +168,12 @@ Logics.
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert image of logics in Isabelle!
-\end_layout
-
-\end_inset
-
- The most mature object logic in Isabelle at the time of writing is HOL
- (Higher Order Logic), which provides a comfortable programming environment
- similar to common functional programming languages, providing many auxiliary
- functions for e.g.
+The most mature object logic in Isabelle at the time of writing is HOL (Higher
+ Order Logic), which provides a comfortable programming environment similar
+ to common functional programming languages, providing many auxiliary functions
+ for e.g.
  list operations, along with lemmata about these operations.
 \end_layout
 
@@ -550,12 +536,64 @@ TODO
 \end_inset
 
  is the number of variables.
- Consider the following example:
+ Consider the following example, illustrated in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Norm-example-illustration"
+
+\end_inset
+
+:
 \begin_inset Formula 
 \begin{align*}
 L_{1} & \to l & E_{1} & \to e & X_{1} & \to lL_{4}+eE_{3}\\
 L_{n+1} & \to lL_{n} & E_{n+1} & \to eE_{n}E_{n} & X_{n+1} & \to xX_{n}
 \end{align*}
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includesvg[width=0.6
+\backslash
+columnwidth]{Norm_Dilemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Norm example illustration.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Norm-example-illustration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
