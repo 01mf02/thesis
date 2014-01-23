@@ -51,39 +51,23 @@ definition v_rules_of_norms ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar" where
   "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
 
-definition refine_norms ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
-
-definition rn_invariant where
-  "rn_invariant norms gr \<equiv>
-     (\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm) \<and>
-     is_alist norms \<and> keys norms \<subseteq> keys gr"
-
-function minimise_norms ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "minimise_norms norms gr = (
-     if is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms then
-       minimise_norms (refine_norms norms gr) gr
-     else norms)"
-by auto
-
 definition add_norms ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "add_norms norms yes = norms @ (mnotr_map norms yes)"
 
-definition update_norms where
-  "update_norms gr norms yes = minimise_norms (add_norms norms yes) gr"
-
 definition iterate_norms ::
   "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
-  "iterate_norms gr = partition_iterate v_rule_has_norm (update_norms gr) [] gr"
+  "iterate_norms gr = partition_iterate v_rule_has_norm add_norms [] gr"
 
 definition itno_invariant where
   "itno_invariant gr norms rest \<equiv> set rest \<subseteq> set gr \<and> keys gr = keys norms \<union> keys rest"
 
 definition itno_invariant_sd where
   "itno_invariant_sd gr norms rest \<equiv> is_alist norms \<and> is_alist rest \<and> keys rest \<inter> keys norms = {}"
+
+definition itno_invariant_sd_member where
+  "itno_invariant_sd_member norms v rules \<equiv>
+     t_rules_have_norm norms rules \<and> lookup norms v \<in> set (norms_of_t_rules norms rules)"
 
 definition nog_invariant where
   "nog_invariant norms v rules \<equiv>
@@ -99,9 +83,27 @@ definition gram_normed_fun :: "('t :: wellorder, 'v :: wellorder) grammar \<Righ
 definition gram_nsd_fun :: "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
   "gram_nsd_fun gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
+definition refine_norms ::
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
+
+definition rn_invariant where
+  "rn_invariant norms gr \<equiv>
+     (*(\<forall>(v, norm) \<in> set norms. norm \<in> set (norms_of_t_rules norms (lookup gr v))) \<and>*)
+     (\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm) \<and>
+     is_alist norms \<and> keys norms \<subseteq> keys gr"
+
+function minimise_norms ::
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "minimise_norms norms gr = (
+     if is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms then
+       minimise_norms (refine_norms norms gr) gr
+     else norms)"
+by auto
+
 definition norms_of_grammar ::
   "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "norms_of_grammar gr \<equiv> fst (iterate_norms gr)"
+  "norms_of_grammar gr \<equiv> minimise_norms (fst (iterate_norms gr)) gr"
 
 definition norm_fun :: "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_fun gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
