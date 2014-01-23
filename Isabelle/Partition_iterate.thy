@@ -1,9 +1,44 @@
 header {* Partition iteration algorithm *}
 
+(*<*)
 theory Partition_iterate imports Helpers
 begin
+(*>*)
 
-function partition_iterate where
+text {*
+The partition iteration algorithm @{text partition_iterate} takes four parameters:
+\begin{itemize}
+\item a predicate $P$,
+\item an accumulator update function $f$,
+\item an accumulator $a$,
+\item and finally a list $l$.
+\end{itemize}
+In each iteration of the algorithm, it splits the input list $l$
+into two lists $yes$ and $no$, which contain the list elements satisfying
+$P\, a$ respectively those which do not. Then, we calculate a new
+accumulator $a'$ using the accumulator update function $f$, i.e.
+$a'=f\, a\, yes$, and call the algorithm again with the updated accumulator
+$a'$ and those list elements which did not satisfy the predicate
+$P\, a$, namely $no$. We continue this process as long as there
+are list elements which satisfy the predicate; when this is no longer
+the case, we return the last accumulator and those list elements which
+never satisfied the predicate.
+
+This algorithm can be used in many scenarios, most notably when there
+exist dependencies between list elements which we need to resolve.
+Example applications include:
+\begin{itemize}
+\item SAT of Horn formulas
+\item Scheduling
+\item Topological sorting
+\end{itemize}
+Note that the complexity of this algorithm is quadratic in the size
+of the input list, because in each iteration, we determine all the
+elements of the input lists which satisfy the predicate.
+*}
+
+function partition_iterate ::
+  "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b list \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> 'a \<times> 'b list" where
   "partition_iterate P f a l = (case partition (P a) l of
        ([] , no) \<Rightarrow> (a, no)
      | (yes, no) \<Rightarrow> partition_iterate P f (f a yes) no)"
@@ -96,4 +131,4 @@ proof -
   then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
 qed
 
-end
+(*<*)end(*>*)
