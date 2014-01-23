@@ -14,15 +14,6 @@ by (simp add: gram_sd_def)
 lemma gsd_rules_alist: "gram_sd gr \<Longrightarrow> (v, rules) \<in> set gr \<Longrightarrow> is_alist rules"
 unfolding gram_sd_def by auto
 
-lemma gsd_rules_rule_exists:
-  assumes "gram_sd gr"
-      and "(v, rules) \<in> set gr"
-    shows "\<exists>t vs. (t, vs) \<in> set rules"
-proof -
-  have "rules \<noteq> []" using assms(1-2) unfolding gram_sd_def by auto
-  then show ?thesis by (metis hd_in_set surj_pair)
-qed
-
 lemma gsd_rule_vars_in_keys:
   assumes "gram_sd gr"
       and "(v, rules) \<in> set gr"

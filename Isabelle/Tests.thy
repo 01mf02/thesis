@@ -32,7 +32,6 @@ definition test_gr4 :: "(nat, nat) grammar" where
     (5, [(23, [3]), (24, [4])])]"
 
 value "gram_nsd_fun test_gr"
-value "gram_max_vars test_gr = 1"
 value "norm_fun test_gr [0] = 1"
 value "norm_fun test_gr [1] = 2"
 value "word_in_variables test_gr [0] [0]"

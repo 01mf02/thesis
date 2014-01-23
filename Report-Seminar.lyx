@@ -180,6 +180,15 @@ The most mature object logic in Isabelle at the time of writing is HOL (Higher
 \begin_layout Standard
 Isabelle/HOL also permits the export of code written in it into other languages,
  such as Scala, OCaml and Haskell.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Source!
+\end_layout
+
+\end_inset
+
  Having proven certain properties of functions in Isabelle, we can then
  use the exported functions in aforementioned languages, trusting they also
  behave according to our proved behaviour.
