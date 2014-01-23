@@ -32,9 +32,10 @@ Example applications include:
 \item Scheduling
 \item Topological sorting
 \end{itemize}
-Note that the complexity of this algorithm is quadratic in the size
+Note that the complexity of this algorithm is quadratic in the size $n$
 of the input list, because in each iteration, we determine all the
-elements of the input lists which satisfy the predicate.
+elements of the input list which satisfy the predicate, and we may have
+a maximal number of $n$ iterations.
 *}
 
 function partition_iterate ::
