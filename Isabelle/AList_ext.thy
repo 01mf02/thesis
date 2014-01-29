@@ -1,10 +1,17 @@
 header {* Extension of Association Lists *}
 
-theory AList_ext imports
+(*<*)theory AList_ext imports
   "~~/src/HOL/Library/AList_Mapping"
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Product_Lexorder"
-begin
+begin(*>*)
+
+text {*
+Association lists in Isabelle are implemented in the theory @{text AList} and extended by the theory
+@{text AList_Mapping}, which links association lists with mappings. However, we found the two theories
+to lack several useful lemmata, which we tried to remedy in our extension of association lists.
+Furthermore, we defined some short-hand notation for frequently used expressions.
+*}
 
 definition is_alist :: "('a \<times> 'b) list \<Rightarrow> bool" where
   "is_alist l \<equiv> distinct (map fst l)"
@@ -15,6 +22,7 @@ definition lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b" w
 definition keys :: "('a \<times> 'b) list \<Rightarrow> 'a set" where
   "keys l \<equiv> Mapping.keys (Mapping l)"
 
+(*<*)
 definition values_related where
   "values_related r l1 l2 \<equiv> \<forall>(k1, v1) \<in> set l1. \<forall>(k2, v2) \<in> set l2. k1 = k2 \<longrightarrow> r v1 v2"
 
@@ -176,4 +184,4 @@ proof -
   qed (auto simp add: values_leq_def values_related_def)
 qed
 
-end
+end(*>*)
