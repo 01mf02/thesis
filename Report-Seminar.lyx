@@ -236,12 +236,9 @@ The most mature object logic in Isabelle at the time of writing is HOL (Higher
 \begin_layout Standard
 Isabelle/HOL also permits the export of code written in it into other languages,
  such as Scala, OCaml and Haskell.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Source!
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "haftmann2013"
 
 \end_inset
 
@@ -270,6 +267,7 @@ Grammars
 \begin_layout Standard
 In this section, we discuss the basics of simple deterministic grammars
  and show what their norm is.
+ This part is largely based on parts of my master's thesis.
 \end_layout
 
 \begin_layout Subsection
@@ -1678,10 +1676,6 @@ filename "IsaTeX/Partition_iterate.tex"
 
 \end_layout
 
-\begin_layout Standard
-(topological ordering; example application: SAT of > Horn clauses) 
-\end_layout
-
 \begin_layout Section
 Norm calculation algorithm
 \end_layout
@@ -1722,9 +1716,12 @@ In the original OCaml program to construct equivalence proofs, the user
 
 \begin_layout Standard
 While this was a reliable and fast method to calculate norms, this method
- had the disadvantage that the user had to construct a variable order when
- formulating the grammar, and formalising variable orders would have imposed
- an unnatural and in principle unnecessary restriction on grammars.
+ had the disadvantage that the user had to construct a variable order 
+\begin_inset Formula $\preceq$
+\end_inset
+
+ when formulating the grammar, and formalising variable orders would have
+ imposed an unnatural and in principle unnecessary restriction on grammars.
  For this reason, we looked into different approaches to generate the norm:
  One was to identify variables 
 \begin_inset Formula $V_{\infty}$
@@ -1840,18 +1837,15 @@ This algorithm therefore gives as the means to calculate
 
 , for they will not induce any finite norm and are therefore irrelevant
  for norm calculation.
- Now the first idea might be to calculate the norm of a variable as soon
- as norms for all variables of the variable's
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-check possessive!
-\end_layout
-
+ Now the first idea might be to calculate the norm of a variable 
+\begin_inset Formula $X$
 \end_inset
 
- production rules have been calculated.
+ as soon as norms for all variables of the production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+ have been calculated.
  We can, however, easily find a counterexample for this approach:
 \begin_inset Formula 
 \begin{align*}
@@ -1887,12 +1881,12 @@ any
  of the variable's production rules have a known norm.
  This, however, will not always yield the correct norm, but merely an overestima
 tion of the norms --- observe:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Example here, best from slides!
-\end_layout
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
+A_{2} & \to aA_{1} & \rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}
+\end{align*}
 
 \end_inset
 
@@ -1902,41 +1896,37 @@ Example here, best from slides!
 \begin_layout Standard
 In this example, we have to choose of which variable we should calculate
  the norm first, and if we choose 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
+\begin_inset Formula $B$
 \end_inset
 
  instead of 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
+\begin_inset Formula $A_{2}$
 \end_inset
 
 , then the norm of 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
-\end_layout
-
+\begin_inset Formula $B$
 \end_inset
 
  will be too big, therefore wrong.
  However, because we overestimate norms, we can try to make the norms smaller
  after the calculation of the initial norms, thus finding a fixpoint where
- the norms to not change anymore, at which point they will be minimal and
- therefore valid.
- We can reach such a fixpoint after 
+ the norms to not change anymore, at which point the norms will be minimal
+ and therefore valid.
+ For the example above, we only need a single refinement step to reach the
+ fixpoint:
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
+A_{2} & \to aA_{1} & \rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}{\color{green}\rightsquigarrow\left(B,3,c,\left[A_{2}\right]\right)}
+\end{align*}
+
+\end_inset
+
+We can reach such a fixpoint after 
 \begin_inset Formula $\mathcal{O}(n)$
 \end_inset
 
@@ -1975,7 +1965,7 @@ status open
 
 
 \backslash
-includesvg[width=0.6
+includesvg[width=0.4
 \backslash
 columnwidth]{Norm_Dilemma}
 \end_layout
@@ -2123,7 +2113,69 @@ Statistics
 \end_layout
 
 \begin_layout Section
-Integration with existing code?
+Integration with existing code
+\end_layout
+
+\begin_layout Standard
+The export of the Isabelle code to OCaml turned out to be relatively simple.
+ However, by default, natural numbers are encoded as inductive datatype
+ of the form 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+datatype nat := 0 : nat | S : nat -> nat
+\end_layout
+
+\end_inset
+
+As this representation is very inconvenient to use in OCaml, we imported
+ the theory Code_Target_Nat to make Isabelle export the code using the OCaml
+ datatype big_int.
+ Following that, we only had to convert the OCaml code from int to big_int,
+ which turned out to be relatively simple and did not have a great impact
+ on the performance of the program.
+\end_layout
+
+\begin_layout Standard
+Furthermore, to use the exported functions in OCaml, we needed to supply
+ orderings for the used datatypes.
+ As we compare only tuples, lists, characters and integers, which are all
+ supported by the OCaml polymorphic comparison operator 
+\begin_inset Quotes eld
+\end_inset
+
+<
+\begin_inset Quotes erd
+\end_inset
+
+, we constructed the required orderings in OCaml using 
+\begin_inset Quotes eld
+\end_inset
+
+=
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+<
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+<=
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
