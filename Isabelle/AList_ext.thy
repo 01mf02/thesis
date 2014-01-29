@@ -1,15 +1,16 @@
 header {* Extension of Association Lists *}
 
-(*<*)theory AList_ext imports
+theory AList_ext imports
   "~~/src/HOL/Library/AList_Mapping"
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Product_Lexorder"
-begin(*>*)
+begin
 
 text {*
-Association lists in Isabelle are implemented in the theory @{text AList} and extended by the theory
-@{text AList_Mapping}, which links association lists with mappings. However, we found the two theories
-to lack several useful lemmata, which we tried to remedy in our extension of association lists.
+Association lists in Isabelle are implemented in the theory @{text AList} and extended by
+the theory @{text AList_Mapping}, which links association lists with mappings.
+However, we found the two theories to lack several useful lemmata, which we tried to remedy
+in our extension of association lists.
 Furthermore, we defined some short-hand notation for frequently used expressions.
 *}
 
@@ -184,4 +185,4 @@ proof -
   qed (auto simp add: values_leq_def values_related_def)
 qed
 
-end(*>*)
+end

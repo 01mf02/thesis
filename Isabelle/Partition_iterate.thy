@@ -39,15 +39,18 @@ a maximal number of $n$ iterations.
 *}
 
 function partition_iterate ::
-  "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b list \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> 'a \<times> 'b list" where
+  "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b list \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow>
+    'a \<times> 'b list" where
   "partition_iterate P f a l = (case partition (P a) l of
        ([] , no) \<Rightarrow> (a, no)
      | (yes, no) \<Rightarrow> partition_iterate P f (f a yes) no)"
 by auto
 
 termination partition_iterate
-by (relation "measure (\<lambda>(p, f, a, l). length l)") (auto simp add: filter_length_smaller)
+by (relation "measure (\<lambda>(p, f, a, l). length l)")
+   (auto simp add: filter_length_smaller)
 
+(*<*)
 lemma pi_induct [case_names Base Step]:
   assumes B: "P (a, l)"
       and S: "\<And>a l yes no. P (a, l) \<Longrightarrow> partition (p a) l = (yes, no) \<Longrightarrow> P (f a yes, no)"
@@ -131,5 +134,6 @@ proof -
   then have "f ac (filter (P ac) no) = ac" using assms by auto
   then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
 qed
+(*>*)
 
-(*<*)end(*>*)
+end

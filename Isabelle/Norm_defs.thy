@@ -1,10 +1,8 @@
 header {* Norm definitions *}
 
-(*<*)
 theory Norm_defs imports
   AList_ext
 begin
-(*>*)
 
 subsection {* Types *}
 
@@ -151,4 +149,4 @@ deterministic grammars, but also about their equivalence.
 definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "variables_equiv gr v1 v2 \<equiv> words_of_variables gr v1 = words_of_variables gr v2"
 
-(*<*)end(*>*)
+end

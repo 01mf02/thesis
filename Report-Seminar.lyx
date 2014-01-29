@@ -25,6 +25,9 @@
 \usepackage{pgf}
 \usepackage{tikz}
 \usetikzlibrary{arrows, positioning}
+
+
+\isadroptag{theory}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -1630,13 +1633,9 @@ What is the derivation relation?
 
 \end_layout
 
-\begin_layout Section
-Norm formalisation
-\end_layout
-
 \begin_layout Standard
 \begin_inset CommandInset include
-LatexCommand include
+LatexCommand input
 filename "IsaTeX/Norm_defs.tex"
 
 \end_inset
@@ -1648,27 +1647,33 @@ filename "IsaTeX/Norm_defs.tex"
 General-purpose parts
 \end_layout
 
-\begin_layout Subsection
-alist
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{
+\backslash
+subsection{#1}}
 \end_layout
 
-\begin_layout Standard
+\end_inset
+
+
 \begin_inset CommandInset include
-LatexCommand include
+LatexCommand input
 filename "IsaTeX/AList_ext.tex"
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-partition_iterate
-\end_layout
-
-\begin_layout Standard
 \begin_inset CommandInset include
-LatexCommand include
+LatexCommand input
 filename "IsaTeX/Partition_iterate.tex"
 
 \end_inset
@@ -1916,7 +1921,7 @@ In this example, we have to choose of which variable we should calculate
  fixpoint:
 \end_layout
 
-\begin_layout ExampleBlock
+\begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
 A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
@@ -2076,8 +2081,23 @@ The construction has been chosen in such a way that
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{}
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset include
-LatexCommand include
+LatexCommand input
 filename "IsaTeX/Norm_funs.tex"
 
 \end_inset
@@ -2085,27 +2105,31 @@ filename "IsaTeX/Norm_funs.tex"
 
 \end_layout
 
-\begin_layout Section
-Proof
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{
+\backslash
+section{#1}}
 \end_layout
 
-\begin_layout Standard
+\end_inset
+
+
 \begin_inset CommandInset include
-LatexCommand include
+LatexCommand input
 filename "IsaTeX/Norm_proofs.tex"
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Proof strategy
-\end_layout
-
-\begin_layout Standard
-(how did I create the proof, bottom-up vs.
- top-down)
 \end_layout
 
 \begin_layout Subsection
@@ -2126,7 +2150,7 @@ status open
 
 \begin_layout Plain Layout
 
-datatype nat := 0 : nat | S : nat -> nat
+type nat = Zero | Succ of nat
 \end_layout
 
 \end_inset
