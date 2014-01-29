@@ -17,7 +17,7 @@ type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
 subsection {* Functions *}
 
 definition norm_sum :: "('t, 'v) grammar_norms \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm_sum norms vars \<equiv> listsum (map (fst \<circ> lookup norms) vars)"
+  "norm_sum norms vars \<equiv> \<Sum>(n, t, vs)\<leftarrow>map (lookup norms) vars. n"
 
 definition t_rule_has_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow> bool" where
   "t_rule_has_norm norms \<equiv> \<lambda>(t, vs). set vs \<subseteq> keys norms"
@@ -42,7 +42,6 @@ definition v_rule_has_norm ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) v_rule \<Rightarrow> bool" where
   "v_rule_has_norm = (\<lambda>norms (v, rules). t_rules_have_norm norms rules)"
 
-(* TODO: Use map_ran here? *)
 definition mnotr_map ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
   "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"

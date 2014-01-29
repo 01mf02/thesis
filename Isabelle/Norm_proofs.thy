@@ -25,7 +25,10 @@ unfolding gram_sd_def by (metis (lifting) split_conv)
 subsection {* @{text norm_sum} *}
 
 lemma ns_singleton: "norm_sum ns [v] = fst (lookup ns v)"
-by (simp add: norm_sum_def)
+unfolding norm_sum_def by (case_tac "lookup ns v") auto
+
+lemma ns_conv: "norm_sum ns vars = listsum (map (fst \<circ> lookup ns) vars)"
+unfolding norm_sum_def apply (induct vars) by auto (metis fst_def)
 
 lemma ns_distr: "norm_sum ns (x @ y) = norm_sum ns x + norm_sum ns y"
 by (simp add: norm_sum_def)
@@ -33,10 +36,9 @@ by (simp add: norm_sum_def)
 lemma ns_distr_cons: "norm_sum ns (x # y) = norm_sum ns [x] + norm_sum ns y"
 by (simp add: norm_sum_def)
 
-lemma ns_singleton_leq:
-  "set vars \<subseteq> keys ns \<Longrightarrow> v \<in> set vars \<Longrightarrow> norm_sum ns [v] \<le> norm_sum ns vars"
-by (simp add: norm_sum_def)
-   (metis (hide_lams, no_types) comp_apply imageI image_set member_le_listsum_nat)
+lemma ns_singleton_leq: "v \<in> set vars \<Longrightarrow> norm_sum ns [v] \<le> norm_sum ns vars"
+using member_le_listsum_nat[of "fst (lookup ns v)" "map (fst \<circ> lookup ns) vars"]
+unfolding ns_singleton unfolding norm_sum_def ns_conv[symmetric] by auto
 
 lemma ns_empty: "norm_sum ns [] = 0"
 by (simp add: norm_sum_def)
@@ -50,7 +52,7 @@ lemma ns_norms_superset_equal:
 proof -
   have "map (fst \<circ> lookup norms) vs = map (fst \<circ> lookup norms') vs"
     using alist_superset_lookup_equal[OF assms(1-4)] by auto
-  then show ?thesis unfolding norm_sum_def by metis
+  then show ?thesis unfolding norm_sum_def by (metis norm_sum_def ns_conv)
 qed
 
 lemma ns_leq:
@@ -72,13 +74,11 @@ using assms(4) proof (induct vs)
     unfolding values_leq_def values_related_def using L2 by auto
   then have "fst (lookup norms2 a) \<le> fst (lookup norms1 a)"
     by (metis less_eq_prod_def order.strict_iff_order)
-  then show ?case using I unfolding norm_sum_def by auto
+  then show ?case using I  unfolding ns_distr_cons[of _ "a" "vs"] ns_singleton by auto
 qed (auto simp add: norm_sum_def)
 
 
-(*****************************************************************************
-  t_rule_has_norm / t_rules_have_norm
- *****************************************************************************)
+subsection {* @{text t_rule_has_norm} / @{text t_rules_have_norm} *}
 
 lemma trhn_conserves:
   assumes "keys norms = keys norms1 \<union> keys norms2"
@@ -102,9 +102,7 @@ lemma trshn_keys_superset:
 using assms unfolding t_rules_have_norm_def by (metis Un_absorb1 trhn_conserves)
 
 
-(*****************************************************************************
-  norms_of_t_rules
- *****************************************************************************)
+subsection {* @{text norms_of_t_rules} *}
 
 lemma notr_in_rules: "snd ` set (norms_of_t_rules norms rules) \<subseteq> set rules"
 unfolding norms_of_t_rules_def norm_of_t_rule_def by auto
@@ -164,9 +162,7 @@ proof -
 qed
 
 
-(*****************************************************************************
-  min_norm_of_t_rules
- *****************************************************************************)
+subsection {* @{text min_norm_of_t_rules} *}
 
 lemma mnotr_in_nor:
   assumes "t_rules_have_norm norms rules"
@@ -216,9 +212,7 @@ proof -
 qed
 
 
-(*****************************************************************************
-  add_norms
- *****************************************************************************)
+subsection {* @{text add_norms} *}
 
 lemma an_fst_map: "map fst (add_norms norms yes) = map fst norms @ map fst yes"
 unfolding add_norms_def mnotr_map_def using map_fst_map[of "min_norm_of_t_rules norms" yes] by auto
@@ -425,7 +419,7 @@ lemma itno_v_in_norms:
 using itno_v_in_norms'[OF assms] unfolding itno_an_invariant[of gr] .
 
 
-subsection {* @{text gram_nsd_sd} *}
+subsection {* @{text gram_nsd_fun} *}
 
 lemma gram_nsd_sd: "gram_nsd_fun gr \<Longrightarrow> gram_sd gr"
 by (simp add: gram_nsd_fun_def)
@@ -585,9 +579,7 @@ lemma mn_nil: "minimise_norms [] gr = []"
 by (metis minimise_norms.simps rn_nil)
 
 
-(*****************************************************************************
-  norms_of_grammar
- *****************************************************************************)
+subsection {* @{text norms_of_grammar} *}
 
 lemma nog_map_fst:
   shows "map fst (norms_of_grammar gr) = map fst (fst (iterate_norms gr))"
@@ -797,9 +789,7 @@ proof -
 qed
 
 
-(*****************************************************************************
-  norm_fun
- *****************************************************************************)
+subsection {* @{text norm_fun} *}
 
 lemma nf_distr: "norm_fun gr (x @ y) = norm_fun gr x + norm_fun gr y"
 by (simp add: norm_fun_def ns_distr)
@@ -843,10 +833,9 @@ qed
 
 lemma nf_singleton_leq:
   assumes "gram_nsd_fun gr"
-      and "set vars \<subseteq> keys gr"
       and "v \<in> set vars"
     shows "norm_fun gr [v] \<le> norm_fun gr vars" unfolding norm_fun_def
-using ns_singleton_leq[OF _ assms(3)] nog_gr_keys_equal[OF assms(1)] assms(2) by auto
+using ns_singleton_leq[OF assms(2)] nog_gr_keys_equal[OF assms(1)] by auto
 
 lemma nf_nog2:
   assumes "gram_nsd_fun gr"
@@ -866,7 +855,7 @@ proof -
     using existence_from_lookup[OF nog_alist[OF G] S assms(4)[symmetric]] .
 
   have "norm_fun gr [v] = Suc (norm_fun gr vs)" using nf_nog'[OF G I] R by auto
-  then show ?thesis using nf_singleton_leq[OF assms(1-3)] by auto
+  then show ?thesis using nf_singleton_leq[OF assms(1,3)] by auto
 qed
 
 lemma nf_greater_zero:
@@ -903,9 +892,7 @@ proof -
 qed
 
 
-(*****************************************************************************
-  min_word_of_variables
- *****************************************************************************)
+subsection {* @{text min_word_of_variables} *}
 
 termination min_word_of_variables
 by (relation "measure (\<lambda>(gr, vs). norm_fun gr vs)") (auto simp add: nf_nog2)
@@ -1105,9 +1092,7 @@ proof -
 qed
 
 
-(*****************************************************************************
-  word_in_variables
- *****************************************************************************)
+subsection {* @{text word_in_variables} *}
 
 lemmas eat_word_induct = eat_word.induct[case_names normal nil_word nil_vars]
 
@@ -1272,9 +1257,7 @@ proof (induct gr w v rule: eat_word_induct)
 qed (auto simp add: word_in_variables_def)
 
 
-(*****************************************************************************
-  words_of_variables
- *****************************************************************************)
+subsection {* @{text words_of_variables} *}
 
 lemma mwov_in_wov:
   assumes "gram_nsd_fun gr"
@@ -1289,9 +1272,7 @@ lemma mwov_min_wov:
 unfolding words_of_variables_def using mwov_minimal_wiv[OF assms] by simp
 
 
-(*****************************************************************************
-  gram_normed_def
- *****************************************************************************)
+subsection {* @{text gram_normed_def} *}
 
 lemma gnf_calcs_gnd:
   assumes "gram_sd gr"
@@ -1315,17 +1296,13 @@ next
 qed
 
 
-(*****************************************************************************
-  gram_nsd_def
- *****************************************************************************)
+subsection {* @{text gram_nsd_def} *}
 
 lemma gnsdf_calcs_gnsdd: "gram_nsd_def gr = gram_nsd_fun gr"
 unfolding gram_nsd_def_def gram_nsd_fun_def by (metis gnf_calcs_gnd)
 
 
-(*****************************************************************************
-  norm
- *****************************************************************************)
+subsection {* @{text norm_def} *}
 
 theorem mwov_len_calcs_nd:
   assumes "gram_nsd_def gr"
