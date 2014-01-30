@@ -1,7 +1,7 @@
-(*<*)theory Slides_proofs imports
+theory Slides_proofs imports
   "../Norm_proofs"
   "~~/src/HOL/Library/LaTeXsugar"
-begin(*>*)
+begin
 
 text {*
 \lyxframe{Central theorem}
@@ -19,4 +19,4 @@ text {*
 \lyxframeend{}
 *}
 
-(*<*)end(*>*)
+end
