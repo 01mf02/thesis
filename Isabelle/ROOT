@@ -8,7 +8,7 @@ session "Norm" = "HOL" +
     "~~/src/HOL/Library/Code_Target_Nat"
     "~~/src/HOL/Library/Char_ord"
   theories
-    "slides/Slides"
-    "slides/Report_proofs"
+    "docs/Slides"
+    "docs/Report_proofs"
     Tests
   files "document/root.tex"
