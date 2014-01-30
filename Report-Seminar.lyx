@@ -10,6 +10,8 @@
 \usepackage{import}
 \usepackage{Isabelle/output/document/isabelle}
 \usepackage{Isabelle/output/document/isabellesym}
+\usepackage{mathpartir}
+
 \usepackage{listings}
 \usepackage[svgpath=Graphics/]{svg}
 
@@ -2136,11 +2138,11 @@ filename "IsaTeX/Norm_funs.tex"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
+\begin_layout Section
+Proof
+\end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -2160,12 +2162,7 @@ section{#1}}
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "IsaTeX/Norm_proofs.tex"
-
-\end_inset
-
-
-\end_layout
+filename "IsaTeX/Report_proofs.tex"
 
 \end_inset
 
@@ -2174,6 +2171,10 @@ filename "IsaTeX/Norm_proofs.tex"
 
 \begin_layout Subsection
 Statistics
+\end_layout
+
+\begin_layout Standard
+TODO!
 \end_layout
 
 \begin_layout Section
