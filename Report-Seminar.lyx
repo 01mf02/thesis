@@ -137,6 +137,19 @@ LatexCommand tableofcontents
 Introduction
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Outline of the document structure.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Motivation
 \end_layout
@@ -191,7 +204,14 @@ Isabelle
 Isabelle is an interactive theorem prover programmed in Standard ML.
  It provides a meta-logic to formalise a multitude of different object logics,
  such as ZF (Zermelo-Fraenkel Set Theory), CTT (Constructive Type Theory),
- FOL (First Order Logic).
+ FOL (First Order Logic) --- see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Object-logics."
+
+\end_inset
+
+.
 \begin_inset Float figure
 wide false
 sideways false
@@ -220,6 +240,13 @@ columnwidth]{Logics}
 
 \begin_layout Plain Layout
 Object logics in Isabelle.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Object-logics."
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1683,6 +1710,10 @@ filename "IsaTeX/Partition_iterate.tex"
 
 \begin_layout Section
 Norm calculation algorithm
+\end_layout
+
+\begin_layout Subsection
+Idea
 \end_layout
 
 \begin_layout Standard

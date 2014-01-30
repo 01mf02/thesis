@@ -489,7 +489,7 @@ lemma rn_decreases:
       and "rn_invariant norms gr"
     shows "refine_norms norms gr \<le> norms"
       and "rn_invariant (refine_norms norms gr) gr"
-(*proof -
+proof -
   have I: "\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm"
     "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def by auto
 
@@ -503,8 +503,7 @@ lemma rn_decreases:
   have I2: "is_alist (refine_norms norms gr)" using rn_fst_map I(2) by (metis is_alist_def)
   have I3: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(3) by (metis keys_fst_map)
   show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 unfolding rn_invariant_def by auto
-qed*)
-sorry
+qed
 
 lemma rn_nil: "refine_norms [] gr = []"
 unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
