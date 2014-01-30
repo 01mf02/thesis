@@ -1,7 +1,7 @@
-(*<*)theory Slides_pi_def imports
-  Partition_iterate
+theory Slides_pi_def imports
+  "../Partition_iterate"
   "~~/src/HOL/Library/LaTeXsugar"
-begin(*>*)
+begin
 
 
 text_raw {*
@@ -10,4 +10,4 @@ text_raw {*
 \end{block}
 *}
 
-(*<*)end(*>*)
+end

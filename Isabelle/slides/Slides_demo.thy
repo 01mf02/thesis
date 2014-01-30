@@ -1,7 +1,7 @@
-(*<*)theory Slides_demo imports
-  Tests
+theory Slides_demo imports
+  "../Tests"
   "~~/src/HOL/Library/LaTeXsugar"
-begin(*>*)
+begin
 
 text {*
 @{thm [display] test_gr4_def}
@@ -9,4 +9,4 @@ text {*
    [(1, 1, 0, []), (2, 2, 0, [1]), (4, 4, 0, [1, 1, 1]), (3, 3, 0, [2]), (5, 4, 23, [3])]" by eval}
 *}
 
-(*<*)end(*>*)
+end

@@ -1,7 +1,7 @@
-(*<*)theory Slides_defs imports
-  Norm_defs
+theory Slides_defs imports
+  "../Norm_defs"
   "~~/src/HOL/Library/LaTeXsugar"
-begin(*>*)
+begin
 
 
 text_raw {*
@@ -77,4 +77,4 @@ text_raw {*
 \lyxframeend{}
 *}
 
-(*<*)end(*>*)
+end

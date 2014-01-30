@@ -9,6 +9,8 @@
 \usepackage{mathpartir}
 
 \usetheme[sealopacity=0.0,boxes,rounded,shadow,darker]{ComputationalLogic}
+
+\isadroptag{theory}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false

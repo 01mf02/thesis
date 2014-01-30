@@ -1,5 +1,5 @@
 (*<*)theory Slides_proofs imports
-  Norm_proofs
+  "../Norm_proofs"
   "~~/src/HOL/Library/LaTeXsugar"
 begin(*>*)
 
