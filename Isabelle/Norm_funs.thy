@@ -31,8 +31,7 @@ definition norm_of_t_rule ::
 
 definition norms_of_t_rules ::
   "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rules_norms" where
-  "norms_of_t_rules norms rules \<equiv>
-     map (norm_of_t_rule norms) (filter (t_rule_has_norm norms) rules)"
+  "norms_of_t_rules norms rules \<equiv> [norm_of_t_rule norms r. r <- rules, t_rule_has_norm norms r]"
 
 definition min_norm_of_t_rules :: "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow>
   ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rule_norm" where
