@@ -106,7 +106,8 @@ Cezary Kaliszyk
 \begin_layout Abstract
 For normed simple deterministic grammars, there exist algorithms in PTIME
  to calculate the length of the shortest word (norm) of each variable.
- We implement and verify such an algorithm in Isabelle/HOL.
+ We worked on the implementation and verification of such an algorithm in
+ Isabelle/HOL.
 \end_layout
 
 \begin_layout Standard
@@ -140,16 +141,67 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Outline of the document structure.
+In this document, we show our work that has gone towards the formalisation,
+ implementation and verification of an algorithm to calculate the norms
+ of simple deterministic grammars.
 \end_layout
+
+\begin_layout Standard
+In this introductory section, we give a short overview of the motivation
+ behind this work and introduce the interactive theorem prover Isabelle,
+ which we used for our work.
+ Then, in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Grammars"
 
 \end_inset
 
+, we explain simple deterministic grammars and their norms.
+ Following this, in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:General-purpose-Isabelle-parts"
 
+\end_inset
+
+ we introduce some general-purpose Isabelle components we developed for
+ the formalisation and implementation of the algorithm.
+ With this knowledge, we can tackle the Isabelle formalisation of grammars
+ and norms in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Norm-formalisation"
+
+\end_inset
+
+.
+ Afterwards, we present the norm calculation algorithm and its implementation
+ in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Norm-calculation-algorithm"
+
+\end_inset
+
+.
+ In 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Proof"
+
+\end_inset
+
+, we very briefly introduce the idea behind the correctness proof of the
+ algorithm.
+ Last but not least, we conclude with the results of our work in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Results"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -278,7 +330,7 @@ key "haftmann2013"
  use the exported functions in aforementioned languages, trusting they also
  behave according to our proved behaviour.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Of course, we can not exclude the possibility of a faulty target language
@@ -292,14 +344,37 @@ Of course, we can not exclude the possibility of a faulty target language
 
 \end_layout
 
+\begin_layout Standard
+We used Isabelle/HOL to formalise simple deterministic grammars and norms,
+ and based on that, we implemented a norm calculation algorithm in it.
+ Then, we showed the correctness of the algorithm, thus establishing a link
+ between the formalisation and the implementation.
+ Furthermore, we used Isabelle's code export to automatically generate OCaml
+ code from our algorithm, which we embedded in an existing OCaml program
+ --- see subsection 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Integration-with-OCaml"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Section
 Grammars
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Grammars"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-In this section, we discuss the basics of simple deterministic grammars
- and show what their norm is.
- This part is largely based on parts of my master's thesis.
+In this section, which is largely based on parts of my master's thesis,
+ we discuss the basics of simple deterministic grammars and their norms.
 \end_layout
 
 \begin_layout Subsection
@@ -1662,18 +1737,21 @@ What is the derivation relation?
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand input
-filename "IsaTeX/Norm_defs.tex"
+\begin_layout Section
+General-purpose Isabelle parts
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:General-purpose-Isabelle-parts"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Section
-General-purpose parts
+\begin_layout Standard
+For the implementation, we heavily used association lists, for which we
+ proved several helper lemmata.
+ Furthermore, we created a versatile algorithm called partition_iterate.
 \end_layout
 
 \begin_layout Standard
@@ -1711,7 +1789,55 @@ filename "IsaTeX/Partition_iterate.tex"
 \end_layout
 
 \begin_layout Section
+Norm formalisation
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Norm-formalisation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Norm_defs.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Norm calculation algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Norm-calculation-algorithm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, we give the idea behind the norm calculation algorithm
+ and present our implementation of it.
 \end_layout
 
 \begin_layout Subsection
@@ -2114,6 +2240,117 @@ The construction has been chosen in such a way that
 \end_layout
 
 \begin_layout Standard
+The idea of the final algorithm is depicted in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Norm-calculation-algorithm."
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+Given a set of norms 
+\begin_inset Formula $N$
+\end_inset
+
+ (initially 
+\begin_inset Formula $N=\emptyset$
+\end_inset
+
+) and a grammar 
+\begin_inset Formula $G$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+Take variables 
+\begin_inset Formula $V$
+\end_inset
+
+ from 
+\begin_inset Formula $G$
+\end_inset
+
+ which do not have norms in 
+\begin_inset Formula $N$
+\end_inset
+
+ yet, but can be normed given the norms 
+\begin_inset Formula $N$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+If 
+\begin_inset Formula $V=\emptyset$
+\end_inset
+
+, return 
+\begin_inset Formula $N$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Calculate norms 
+\begin_inset Formula $N'$
+\end_inset
+
+ for 
+\begin_inset Formula $V$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Call algorithm with 
+\begin_inset Formula $N'$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+Finally, refine resulting norms until norms do not change anymore.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Norm calculation algorithm.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Norm-calculation-algorithm."
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ In the next subsection, we are going to present the implementation of the
+ algorithm.
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -2140,26 +2377,16 @@ filename "IsaTeX/Norm_funs.tex"
 
 \begin_layout Section
 Proof
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand{
-\backslash
-isamarkupheader}[1]{
-\backslash
-section{#1}}
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Proof"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 filename "IsaTeX/Report_proofs.tex"
@@ -2169,58 +2396,71 @@ filename "IsaTeX/Report_proofs.tex"
 
 \end_layout
 
-\begin_layout Subsection
-Statistics
+\begin_layout Section
+Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Results"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{itemize}
+In this section, we show how to use the resulting program, how to integrate
+ it with other programs, and give a conclusion of our work.
 \end_layout
+
+\begin_layout Subsection
+Demonstration
+\end_layout
+
+\begin_layout Standard
+We are going to show how to use of the norm calculation algorithm in Isabelle.
+ First, let us define an example grammar:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \left\Vert A_{1}\right\Vert =1 &  & B & \to aA_{1}A_{1}A_{1} & \left\Vert B\right\Vert =4\\
+A_{2} & \to aA_{1} & \left\Vert A_{2}\right\Vert =2 &  & C & \to xA_{3}+yB & \left\Vert C\right\Vert =4\\
+A_{3} & \to aA_{2} & \left\Vert A_{3}\right\Vert =3
+\end{align*}
 
 \end_inset
 
+To use this grammar in Isabelle, we need to translate the grammar to an
+ Isabelle representation.
+ In this process we need to use types with a well-founded order to represent
+ variables and terminals.
+ Unfortunately, this means that we cannot use characters like 'a' to represent
+ terminals, because for characters, there does not exist a well-founded
+ order in Isabelle.
+ Therefore, we translate characters and variables to natural numbers (which
+ are well-founded), yielding the following representation:
+\end_layout
 
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
-filename "Isabelle/statistics.tex"
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{itemize}
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO!
-\end_layout
+filename "IsaTeX/Report_demo.tex"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Integration with existing code
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Integration-with-OCaml"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2280,6 +2520,114 @@ Furthermore, to use the exported functions in OCaml, we needed to supply
 
 <=
 \begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Status
+\end_layout
+
+\begin_layout Standard
+Let us give some statistics about our Isabelle theory:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{itemize}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "Isabelle/statistics.tex"
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{itemize}
+\end_layout
+
+\end_inset
+
+At the moment, there are still about five lemmata left to show, most of
+ which are related to the termination of the norm refinement procedure.
+\end_layout
+
+\begin_layout Subsection
+Conclusion
+\end_layout
+
+\begin_layout Standard
+In this seminar, we achieved the following goals:
+\end_layout
+
+\begin_layout Itemize
+Formalised simple deterministic grammars and their norms
+\end_layout
+
+\begin_layout Itemize
+Created algorithm to calculate norms
+\end_layout
+
+\begin_layout Itemize
+Worked on correctness proof of algorithm
+\end_layout
+
+\begin_layout Itemize
+Integrated algorithm into OCaml program
+\end_layout
+
+\begin_layout Standard
+It remains to finish the correctness proof of the algorithm, which is mostly
+ done, but just lacks some more work to account for the termination proof
+ of the norm refinement procedure.
+\end_layout
+
+\begin_layout Standard
+In the future, a verified decision procedure for variable equivalence would
+ also be desirable, i.e., a verified algorithm to decide whether for two variables
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+, their sets of producible words are equivalent, so 
+\begin_inset Formula $\lang X=\lang Y$
+\end_inset
+
+.
+ For this purpose, one might use the algorithm described in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+ or the improved version in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lasota2006"
+
 \end_inset
 
 .

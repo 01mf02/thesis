@@ -9,6 +9,6 @@ session "Norm" = "HOL" +
     "~~/src/HOL/Library/Char_ord"
   theories
     "docs/Slides"
-    "docs/Report_proofs"
+    "docs/Report"
     Tests
   files "document/root.tex"
