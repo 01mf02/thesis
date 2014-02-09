@@ -4,16 +4,20 @@
 \begin_header
 \textclass clseminar
 \begin_preamble
-\usepackage{color}
-\usepackage{graphicx}
 % import graphic files from other directories
-\usepackage{import}
+\usepackage[svgpath=Graphics/]{svg}
+
+% Isabelle
 \usepackage{Isabelle/output/document/isabelle}
 \usepackage{Isabelle/output/document/isabellesym}
 \usepackage{mathpartir}
+\isadroptag{theory}
 
-\usepackage{listings}
-\usepackage[svgpath=Graphics/]{svg}
+% algorithms
+\usepackage{algpseudocode}
+% to fix nested calls in algorithms --- if not, nested calls produce LaTeX errors
+\usepackage{fixltx2e}
+\MakeRobust{\Call}
 
 % to show DRAFT watermark
 \usepackage[firstpage]{draftwatermark}
@@ -28,8 +32,9 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows, positioning}
 
-
-\isadroptag{theory}
+% change default colours
+\definecolor{green}{RGB}{0, 200, 0}
+\definecolor{red}{RGB}{180,0,0}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -618,6 +623,15 @@ Context-free grammars
 \end_layout
 
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Context-free grammar
+\end_layout
+
+\end_inset
+
 A context-free grammar (CFG) is a triple 
 \begin_inset Formula $(V,T,P)$
 \end_inset
@@ -629,10 +643,13 @@ A context-free grammar (CFG) is a triple
 \begin_inset Formula $V$
 \end_inset
 
- is a finite set of variables,
+ is a finite set of nonterminals, which we call 
+\emph on
+variables
+\emph default
+,
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $T$
 \end_inset
@@ -676,12 +693,20 @@ X\to\sum_{\left(X,\alpha\right)\in P}\alpha.
 
 \end_layout
 
-\end_deeper
 \begin_layout Standard
 Now we define the different types of words.
 \end_layout
 
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Words
+\end_layout
+
+\end_inset
+
 A variable word denotes a finite sequence of variables 
 \begin_inset Formula $w_{V}\in V^{*}$
 \end_inset
@@ -718,6 +743,15 @@ An important property of a variable is the length of its shortest producible
 \end_layout
 
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Variable norm
+\end_layout
+
+\end_inset
+
 The variable norm is a function 
 \begin_inset Formula $\norm{\cdot}:V^{*}\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
 \end_inset
@@ -776,6 +810,15 @@ status open
 \end_layout
 
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Normed grammar
+\end_layout
+
+\end_inset
+
 A grammar is normed iff all its variables produce at least one finite word,
  i.e.
 \begin_inset Formula 
@@ -802,6 +845,15 @@ status open
 \end_layout
 
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Greibach normal form
+\end_layout
+
+\end_inset
+
 A grammar 
 \begin_inset Formula $G$
 \end_inset
@@ -1002,7 +1054,6 @@ Production graph for example grammar.
 Each edge represents a variable word.
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 Each vertex with label 
 \begin_inset Formula $a\in T$
@@ -1059,7 +1110,6 @@ The length of the shortest path from a terminal word
 .
 \end_layout
 
-\end_deeper
 \begin_layout Example
 For example, 
 \begin_inset Formula $\norm X=2$
@@ -1090,6 +1140,15 @@ Simple deterministic grammars
 \end_layout
 
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Simple deterministic grammar
+\end_layout
+
+\end_inset
+
 A simple deterministic grammar (or simple context-free grammar), short SDG,
  is a context-free grammar in Greibach normal form, with the condition that
  for each variable 
@@ -1116,7 +1175,7 @@ Simple deterministic grammars are a subclass of context-free grammars; in
  fact, the relation between several language classes is 
 \begin_inset Formula 
 \[
-\lang{\mathrm{SDG}}\subset\lang{\mathrm{DETCF}}\subset\lang{\mathrm{CF}},
+\lang{\mathrm{SDG}}\subsetneq\lang{\mathrm{DETCF}}\subsetneq\lang{\mathrm{CF}},
 \]
 
 \end_inset
@@ -1195,7 +1254,6 @@ By induction on
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $n+1$
 \end_inset
@@ -1207,7 +1265,6 @@ By induction on
 .
 \end_layout
 
-\end_deeper
 \begin_layout Subsection
 Polynomials
 \begin_inset CommandInset label
@@ -1282,7 +1339,6 @@ For all
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 For all 
 \begin_inset Formula $a,b,c\in A$
@@ -1311,8 +1367,16 @@ There exists a neutral element
 .
 \end_layout
 
-\end_deeper
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Commutative monoid
+\end_layout
+
+\end_inset
+
 If it holds additionally for all 
 \begin_inset Formula $a,b\in A$
 \end_inset
@@ -1365,7 +1429,6 @@ A semiring is a 3-tuple
  is a commutative monoid, whose neutral element is noted 0.
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $\left(A,\cdot\right)$
 \end_inset
@@ -1396,8 +1459,16 @@ For each
 .
 \end_layout
 
-\end_deeper
 \begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Commutative semiring
+\end_layout
+
+\end_inset
+
 If it holds additionally for all 
 \begin_inset Formula $a,b\in A$
 \end_inset
@@ -1920,7 +1991,7 @@ As we can see, none of these variables has a finite norm, but to find that
 \end_inset
 
  with 
-\begin_inset Formula $V_{\infty}\cap V_{n}=\emptyset$
+\begin_inset Formula $V_{\infty}\cap V_{n}=\varnothing$
 \end_inset
 
 , we can obtain 
@@ -1945,7 +2016,7 @@ As we can see, none of these variables has a finite norm, but to find that
 \end_inset
 
  with 
-\begin_inset Formula $\emptyset$
+\begin_inset Formula $\varnothing$
 \end_inset
 
 :
@@ -2119,7 +2190,7 @@ L_{n+1} & \to lL_{n} & E_{n+1} & \to eE_{n}E_{n} & X_{n+1} & \to xX_{n}
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -2240,89 +2311,202 @@ The construction has been chosen in such a way that
 \end_layout
 
 \begin_layout Standard
-The idea of the final algorithm is depicted in 
+The idea of the final algorithm is depicted in algorithm 
 \begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Norm-calculation-algorithm."
+LatexCommand ref
+reference "alg:Norm-calculation-algorithm."
 
 \end_inset
 
 .
-\begin_inset Float figure
+\begin_inset Float algorithm
 wide false
 sideways false
 status collapsed
 
 \begin_layout Plain Layout
-Given a set of norms 
-\begin_inset Formula $N$
-\end_inset
+\begin_inset ERT
+status open
 
- (initially 
-\begin_inset Formula $N=\emptyset$
-\end_inset
+\begin_layout Plain Layout
 
-) and a grammar 
-\begin_inset Formula $G$
-\end_inset
 
-:
-\end_layout
-
-\begin_layout Enumerate
-Take variables 
-\begin_inset Formula $V$
-\end_inset
-
- from 
-\begin_inset Formula $G$
-\end_inset
-
- which do not have norms in 
-\begin_inset Formula $N$
-\end_inset
-
- yet, but can be normed given the norms 
-\begin_inset Formula $N$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
-If 
-\begin_inset Formula $V=\emptyset$
-\end_inset
-
-, return 
-\begin_inset Formula $N$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
-Calculate norms 
-\begin_inset Formula $N'$
-\end_inset
-
- for 
-\begin_inset Formula $V$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
-Call algorithm with 
-\begin_inset Formula $N'$
-\end_inset
-
-.
+\backslash
+begin{algorithmic}[1]
 \end_layout
 
 \begin_layout Plain Layout
-Finally, refine resulting norms until norms do not change anymore.
+
+
+\backslash
+Function{iterate
+\backslash
+_norms}{$N, G$} 
+\backslash
+Comment{calculate preliminary norms}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+State $V 
+\backslash
+gets 
+\backslash
+Call{filter}{
+\backslash
+Call{v
+\backslash
+_rule
+\backslash
+_has
+\backslash
+_norm}{N}, G}$ 
+\backslash
+Comment{normable variables}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+If{$V=
+\backslash
+varnothing$}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State 
+\backslash
+Return $N$
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+Else
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State $N'
+\backslash
+gets 
+\backslash
+Call{map}{
+\backslash
+Call{min
+\backslash
+_norm
+\backslash
+_of
+\backslash
+_t
+\backslash
+_rules}{N}, V}$
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State 
+\backslash
+Return 
+\backslash
+Call{iterate
+\backslash
+_norms}{$N@N',G$}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{norms
+\backslash
+_of
+\backslash
+_grammar}{$G$} 
+\backslash
+Comment{calculate final norms}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+State $N 
+\backslash
+gets 
+\backslash
+Call{iterate
+\backslash
+_norms}{
+\backslash
+varnothing, G}$
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+State 
+\backslash
+Return $
+\backslash
+Call{refine
+\backslash
+_norms}{N,G}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -2332,7 +2516,7 @@ Finally, refine resulting norms until norms do not change anymore.
 Norm calculation algorithm.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Norm-calculation-algorithm."
+name "alg:Norm-calculation-algorithm."
 
 \end_inset
 
@@ -2346,8 +2530,11 @@ name "fig:Norm-calculation-algorithm."
 
 \end_inset
 
- In the next subsection, we are going to present the implementation of the
- algorithm.
+
+\end_layout
+
+\begin_layout Standard
+In the next subsection, we present the implementation of the algorithm.
 \end_layout
 
 \begin_layout Standard

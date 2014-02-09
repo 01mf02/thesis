@@ -1581,7 +1581,7 @@ the variables
 \end_inset
 
  are equivalent, because 
-\begin_inset Formula $\lang A=\lang B=\emptyset$
+\begin_inset Formula $\lang A=\lang B=\varnothing$
 \end_inset
 
 , as they both produce no single finite word.
@@ -2010,7 +2010,7 @@ We prove this by induction on
 \end_inset
 
  it holds that 
-\begin_inset Formula $\alpha_{1j}=\emptyset$
+\begin_inset Formula $\alpha_{1j}=\varnothing$
 \end_inset
 
 , therefore 
@@ -4202,7 +4202,7 @@ where
 \begin_inset Formula 
 \[
 \Premstartimes r:=\begin{cases}
-\emptyset & \ifc r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
+\varnothing & \ifc r=\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}};\\
 r\cup\bigcup_{r_{p}\in\PremR r}\Premstartimes{r_{p}} & \text{otherwise}.
 \end{cases}
 \]
@@ -6257,7 +6257,7 @@ Comment{construct proof}
 \backslash
 If{$toprove=
 \backslash
-emptyset$}
+varnothing$}
 \end_layout
 
 \begin_layout Plain Layout
@@ -6324,8 +6324,6 @@ Call{tl}{toprove}}$
 	
 \backslash
 EndIf
-\backslash
-label{euclidendwhile}
 \end_layout
 
 \begin_layout Plain Layout

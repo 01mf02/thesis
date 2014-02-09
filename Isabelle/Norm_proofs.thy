@@ -517,6 +517,12 @@ definition norm_smaller :: "((nat \<times> 't :: wellorder) \<times> nat \<times
 lemma wf_norm_smaller: "wf norm_smaller"
 unfolding norm_smaller_def by (metis wf)
 
+definition n_smaller :: "(('v :: wellorder \<times> nat \<times> 't :: wellorder) \<times> 'v \<times> nat \<times> 't) set" where
+  "n_smaller \<equiv> {(n1, n2). n1 < n2}"
+
+lemma "wf n_smaller"
+unfolding n_smaller_def by (metis wf)
+
 lemma "wf {(l1, l2). (l1, l2) \<in> lenlex {(n1, n2). n1 < n2}}"
 apply auto
 sorry
