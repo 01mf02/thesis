@@ -54,11 +54,14 @@ text {*
 normed using an existing set of norms.
 *}
 
-definition t_rule_has_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow> bool" where
+definition t_rule_has_norm ::
+  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow> bool" where
   "t_rule_has_norm norms \<equiv> \<lambda>(t, vs). set vs \<subseteq> keys norms"
 
-definition t_rules_have_norm :: "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> bool" where
-  "t_rules_have_norm norms rules \<equiv> \<exists>r \<in> set rules. t_rule_has_norm norms r"
+definition t_rules_have_norm ::
+  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> bool" where
+  "t_rules_have_norm norms rules \<equiv>
+     \<exists>r \<in> set rules. t_rule_has_norm norms r"
 
 text {*
 @{text norm_of_t_rule} calculates the norm of a terminal rule, by summing
@@ -71,7 +74,8 @@ construct the shortest terminal word producible by a variable word.
 *}
 
 definition norm_of_t_rule ::
-  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow> ('t, 'v) t_rule_norm" where
+  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rule \<Rightarrow>
+   ('t, 'v) t_rule_norm" where
   "norm_of_t_rule norms \<equiv> \<lambda>(t, vs). (Suc (norm_sum norms vs), t, vs)"
 
 text {*
@@ -80,20 +84,27 @@ It just considers those rules which can be normed.
 *}
 
 definition norms_of_t_rules ::
-  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rules_norms" where
-  "norms_of_t_rules norms rules \<equiv> [norm_of_t_rule norms r. r <- rules, t_rule_has_norm norms r]"
+  "('t, 'v) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow>
+   ('t, 'v) t_rules_norms" where
+  "norms_of_t_rules norms rules \<equiv>
+     [norm_of_t_rule norms r. r <- rules, t_rule_has_norm norms r]"
 
-definition min_norm_of_t_rules :: "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow>
-  ('t, 'v) t_rules \<Rightarrow> ('t, 'v) t_rule_norm" where
-  "min_norm_of_t_rules norms rules \<equiv> Min (set (norms_of_t_rules norms rules))"
+definition min_norm_of_t_rules ::
+  "('t::linorder, 'v::linorder) grammar_norms \<Rightarrow> ('t, 'v) t_rules \<Rightarrow>
+   ('t, 'v) t_rule_norm" where
+  "min_norm_of_t_rules norms rules \<equiv>
+     Min (set (norms_of_t_rules norms rules))"
 
 definition v_rule_has_norm ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) v_rule \<Rightarrow> bool" where
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) v_rule \<Rightarrow>
+   bool" where
   "v_rule_has_norm norms \<equiv> \<lambda>(v, rules). t_rules_have_norm norms rules"
 
 definition mnotr_map ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
-  "mnotr_map norms = map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
+   ('t, 'v) grammar_norms" where
+  "mnotr_map norms =
+     map (\<lambda>(v, rules). (v, min_norm_of_t_rules norms rules))"
 
 text {*
 When given a set of norms and a grammar, @{text v_rules_of_norms} obtains
@@ -107,8 +118,10 @@ This function will later be useful in the refinement of norms.
 *}
 
 definition v_rules_of_norms ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar" where
-  "v_rules_of_norms norms gr = map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
+   ('t, 'v) grammar" where
+  "v_rules_of_norms norms gr =
+     map (\<lambda>(v, n, t, vs). (v, lookup gr v)) norms"
 
 text {*
 @{text add_norms} takes a set of norms and variable rules (which should be
@@ -116,7 +129,8 @@ normable with the norms) and calculates an updated set of norms.
 *}
 
 definition add_norms ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
+   ('t, 'v) grammar_norms" where
   "add_norms norms yes = norms @ (mnotr_map norms yes)"
 
 text {*
@@ -135,7 +149,8 @@ minimise the obtained norms.
 *}
 
 definition iterate_norms ::
-  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
+  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow>
+   (('t, 'v) grammar_norms \<times> ('t, 'v) grammar)" where
   "iterate_norms gr = partition_iterate v_rule_has_norm add_norms [] gr"
 
 (*<*)
@@ -158,10 +173,12 @@ definition nog_invariant_n_t_vs where
      t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
 (*>*)
 
-definition gram_normed_fun :: "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
+definition gram_normed_fun ::
+  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"
 
-definition gram_nsd_fun :: "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
+definition gram_nsd_fun ::
+  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
   "gram_nsd_fun gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
 text {*
@@ -178,13 +195,13 @@ rest the same.
 *}
 
 definition refine_norms ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
+   ('t, 'v) grammar_norms" where
   "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
 
 definition rn_invariant where
-  "rn_invariant norms gr \<equiv>
-     (*(\<forall>(v, norm) \<in> set norms. norm \<in> set (norms_of_t_rules norms (lookup gr v))) \<and>*)
-     (\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm) \<and>
+  "rn_invariant norms gr \<equiv> (\<forall>(v, norm) \<in> set norms.
+     min_norm_of_t_rules norms (lookup gr v) \<le> norm) \<and>
      is_alist norms \<and> keys norms \<subseteq> keys gr"
 
 text {*
@@ -194,22 +211,26 @@ some conditional guards.
 *}
 
 function minimise_norms ::
-  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
+   ('t, 'v) grammar_norms" where
   "minimise_norms norms gr = (
-     if is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms then
+     if is_alist gr \<and> rn_invariant norms gr \<and>
+        refine_norms norms gr \<noteq> norms then
        minimise_norms (refine_norms norms gr) gr
      else norms)"
 by auto
 
 definition norms_of_grammar ::
-  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> ('t, 'v) grammar_norms" where
+  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow>
+   ('t, 'v) grammar_norms" where
   "norms_of_grammar gr \<equiv> minimise_norms (fst (iterate_norms gr)) gr"
 
 text {*
 @{text norm_fun} is the central norm calculation function.
 *}
 
-definition norm_fun :: "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
+definition norm_fun ::
+  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_fun gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 
 text {*
@@ -219,7 +240,8 @@ for the correctness proof of @{text norm_fun}.
 *}
 
 function min_word_of_variables ::
-  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> 'v list \<Rightarrow> 't list" where
+  "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> 'v list \<Rightarrow>
+   't list" where
   "min_word_of_variables gr vars = (
      if gram_nsd_fun gr \<and> set vars \<subseteq> keys gr then
        concat (map (\<lambda>(n, t, vs). t # (min_word_of_variables gr vs))

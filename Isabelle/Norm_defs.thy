@@ -86,7 +86,9 @@ word can be produced by a variable word, which the function word\_in\_variables
 does by verifying whether @{text eat_word} returns two empty lists.
 *}
 
-fun eat_word :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> ('t list \<times> 'v list)" where
+fun eat_word ::
+  "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow>
+   ('t list \<times> 'v list)" where
   "eat_word gr (th#tt) (vh#vt) = (
      let prods = lookup gr vh in
      if th \<in> keys prods then eat_word gr tt ((lookup prods th) @ vt)
@@ -99,7 +101,8 @@ word can be produced by a variable word, which the function @{text word_in_varia
 does by verifying whether @{text eat_word} returns two empty lists.
 *}
 
-definition word_in_variables :: "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
+definition word_in_variables ::
+  "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
 
 text {*
@@ -108,7 +111,8 @@ words which can be produced by a given variable word. Note that this
 set can be infinite, for example for the grammar $X\to a+bX$.
 *}
 
-definition words_of_variables :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
+definition words_of_variables ::
+  "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
 
 text {*
@@ -119,7 +123,8 @@ from $v$.
 *}
 
 definition gram_normed_def :: "('t, 'v) grammar \<Rightarrow> bool" where
-  "gram_normed_def gr \<equiv> \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
+  "gram_normed_def gr \<equiv>
+     \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
 
 text {*
 The predicate @{text gram_nsd_def} just expresses that a grammar is normed
@@ -136,7 +141,8 @@ length of the shortest of these terminal words.
 *}
 
 definition norm_def :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
-  "norm_def gr v \<equiv> Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"
+  "norm_def gr v \<equiv>
+     Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"
 
 
 subsection {* Equivalence *}
@@ -146,7 +152,9 @@ In the future, we might reason not only about the norms of simple
 deterministic grammars, but also about their equivalence.
 *}
 
-definition variables_equiv :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 'v list \<Rightarrow> bool" where
-  "variables_equiv gr v1 v2 \<equiv> words_of_variables gr v1 = words_of_variables gr v2"
+definition variables_equiv ::
+  "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 'v list \<Rightarrow> bool" where
+  "variables_equiv gr v1 v2 \<equiv>
+     words_of_variables gr v1 = words_of_variables gr v2"
 
 end
