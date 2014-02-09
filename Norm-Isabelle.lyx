@@ -1,0 +1,1016 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+General-purpose Isabelle parts
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:General-purpose-Isabelle-parts"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the implementation, we heavily used association lists, for which we
+ proved several helper lemmata.
+ Furthermore, we created a versatile algorithm called partition_iterate.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{
+\backslash
+subsection{#1}}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/AList_ext.tex"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Partition_iterate.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Norm formalisation
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Norm-formalisation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Norm_defs.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Norm calculation algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Norm-calculation-algorithm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, we give the idea behind the norm calculation algorithm
+ and present our implementation of it.
+\end_layout
+
+\begin_layout Subsection
+Idea
+\end_layout
+
+\begin_layout Standard
+In the original OCaml program to construct equivalence proofs, the user
+ had to provide an order 
+\begin_inset Formula $\preceq$
+\end_inset
+
+ with the grammar, meaning that for all variables 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ of the grammar, if 
+\begin_inset Formula $X\preceq Y$
+\end_inset
+
+, then 
+\begin_inset Formula $\left\Vert X\right\Vert \leq\left\Vert Y\right\Vert $
+\end_inset
+
+.
+ In the implementation, this was solved by providing the variables in a
+ list, and this list had to be sorted by ascending norm.
+ That way, we could ignore production rules with variables not having appeared
+ before in the list, because their norm would by definition be greater or
+ equal to the norm of the current variable and could therefore not induce
+ the norm for the current variable.
+ In case that the norm of a variable was calculated to be smaller than the
+ norm of a variable at an earlier position in the list, the norm calculation
+ quit with an error.
+\end_layout
+
+\begin_layout Standard
+While this was a reliable and fast method to calculate norms, this method
+ had the disadvantage that the user had to construct a variable order 
+\begin_inset Formula $\preceq$
+\end_inset
+
+ when formulating the grammar, and formalising variable orders would have
+ imposed an unnatural and in principle unnecessary restriction on grammars.
+ For this reason, we looked into different approaches to generate the norm:
+ One was to identify variables 
+\begin_inset Formula $V_{\infty}$
+\end_inset
+
+ with an infinite norm, remove them from the grammar, then also remove all
+ production rules containing elements of 
+\begin_inset Formula $V_{\infty}$
+\end_inset
+
+ from the grammar.
+ But how to find all variables with infinite norm? Consider the following
+ example:
+\begin_inset Formula 
+\begin{align*}
+X & \to aY\\
+Y & \to aZ\\
+Z & \to aX
+\end{align*}
+
+\end_inset
+
+As we can see, none of these variables has a finite norm, but to find that
+ out, we have to look at each of these variables.
+ An easier problem is to find the set 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+ of all variables which have a finite norm --- having this set and knowing
+ that 
+\begin_inset Formula $V=V_{\infty}\cup V_{n}$
+\end_inset
+
+ with 
+\begin_inset Formula $V_{\infty}\cap V_{n}=\varnothing$
+\end_inset
+
+, we can obtain 
+\begin_inset Formula $V_{\infty}$
+\end_inset
+
+ from 
+\begin_inset Formula $V$
+\end_inset
+
+ and 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+.
+ So how to calculate 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+? We can use the following algorithm to do that, initialising 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+ with 
+\begin_inset Formula $\varnothing$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+Obtain all variables from grammar which have a production rule containing
+ only variables in 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+If such variables exist, remove those variables from grammar and add them
+ to 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+, otherwise the algorithm terminates and returns 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Go to 1.
+\end_layout
+
+\begin_layout Standard
+As we can see, the amount of variables in the grammar constantly decreases,
+ therefore the algorithm terminates, because we consider only grammars with
+ a finite set of variables.
+\end_layout
+
+\begin_layout Standard
+This algorithm therefore gives as the means to calculate 
+\begin_inset Formula $V_{n}$
+\end_inset
+
+, and thus also 
+\begin_inset Formula $V_{\infty}$
+\end_inset
+
+.
+ Knowing this information, does it help us to calculate the norms? One thing
+ that we can do now is to remove all production rules from the grammar which
+ contain variables in 
+\begin_inset Formula $V_{\infty}$
+\end_inset
+
+, for they will not induce any finite norm and are therefore irrelevant
+ for norm calculation.
+ Now the first idea might be to calculate the norm of a variable 
+\begin_inset Formula $X$
+\end_inset
+
+ as soon as norms for all variables of the production rules of 
+\begin_inset Formula $X$
+\end_inset
+
+ have been calculated.
+ We can, however, easily find a counterexample for this approach:
+\begin_inset Formula 
+\begin{align*}
+A & \to a\\
+B & \to bAA+cC\\
+C & \to cAA+bB
+\end{align*}
+
+\end_inset
+
+Here, using the approach above, we will wait for 
+\begin_inset Formula $B$
+\end_inset
+
+ to be normed because 
+\begin_inset Formula $C$
+\end_inset
+
+ was not normed yet, but also 
+\begin_inset Formula $C$
+\end_inset
+
+ will wait for 
+\begin_inset Formula $B$
+\end_inset
+
+, so we are in a deadlock.
+ Therefore, we decided to calculate a norm for a variable as soon as all
+ variables of 
+\emph on
+any
+\emph default
+ of the variable's production rules have a known norm.
+ This, however, will not always yield the correct norm, but merely an overestima
+tion of the norms --- observe:
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
+A_{2} & \to aA_{1} & \rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this example, we have to choose of which variable we should calculate
+ the norm first, and if we choose 
+\begin_inset Formula $B$
+\end_inset
+
+ instead of 
+\begin_inset Formula $A_{2}$
+\end_inset
+
+, then the norm of 
+\begin_inset Formula $B$
+\end_inset
+
+ will be too big, therefore wrong.
+ However, because we overestimate norms, we can try to make the norms smaller
+ after the calculation of the initial norms, thus finding a fixpoint where
+ the norms to not change anymore, at which point the norms will be minimal
+ and therefore valid.
+ For the example above, we only need a single refinement step to reach the
+ fixpoint:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
+A_{2} & \to aA_{1} & \rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}{\color{green}\rightsquigarrow\left(B,3,c,\left[A_{2}\right]\right)}
+\end{align*}
+
+\end_inset
+
+We can reach such a fixpoint after 
+\begin_inset Formula $\mathcal{O}(n)$
+\end_inset
+
+ iterations, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of variables.
+ Consider the following example, illustrated in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Norm-example-illustration"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+L_{1} & \to l & E_{1} & \to e & X_{1} & \to lL_{4}+eE_{3}\\
+L_{n+1} & \to lL_{n} & E_{n+1} & \to eE_{n}E_{n} & X_{n+1} & \to xX_{n}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includesvg[width=0.4
+\backslash
+columnwidth]{Norm_Dilemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Norm example illustration.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Norm-example-illustration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+The construction has been chosen in such a way that 
+\begin_inset Formula $L_{i}$
+\end_inset
+
+ grows linearly, while 
+\begin_inset Formula $E_{i}$
+\end_inset
+
+ grows exponentially.
+ If we then iteratively calculate the norms, we can calculate the norms
+ of 
+\begin_inset Formula $E_{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $L_{3}$
+\end_inset
+
+ in the same iteration.
+ At that point, let us assume we calculate 
+\begin_inset Formula $\left\Vert X_{1}\right\Vert $
+\end_inset
+
+ to be 
+\begin_inset Formula $1+\left\Vert E_{3}\right\Vert $
+\end_inset
+
+ instead of 
+\begin_inset Formula $1+\left\Vert L_{4}\right\Vert $
+\end_inset
+
+, because we have previously already calculated the norm of 
+\begin_inset Formula $E_{3}$
+\end_inset
+
+, but the norm of 
+\begin_inset Formula $L_{4}$
+\end_inset
+
+ is unknown yet.
+ However, 
+\begin_inset Formula $E_{3}$
+\end_inset
+
+ was a wrong choice, because the norm of 
+\begin_inset Formula $L_{4}$
+\end_inset
+
+ will be calculated one step later to be smaller than the norm of 
+\begin_inset Formula $E_{3}$
+\end_inset
+
+, but having already calculated 
+\begin_inset Formula $\left\Vert X_{1}\right\Vert $
+\end_inset
+
+, this error will propagate until 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+.
+ In every iteration of the following fixpoint calculation, however, only
+ one 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ will decrease, thus amounting to a total of about 
+\begin_inset Formula $n$
+\end_inset
+
+ iterations.
+ Because in every iteration, we look through all norms if they are correct,
+ our fixpoint calculation has complexity 
+\begin_inset Formula $\mathcal{O}(n^{2})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The idea of the final algorithm is depicted in algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Norm-calculation-algorithm."
+
+\end_inset
+
+.
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}[1]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{iterate
+\backslash
+_norms}{$N, G$} 
+\backslash
+Comment{calculate preliminary norms}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+State $V 
+\backslash
+gets 
+\backslash
+Call{filter}{
+\backslash
+Call{v
+\backslash
+_rule
+\backslash
+_has
+\backslash
+_norm}{N}, G}$ 
+\backslash
+Comment{normable variables}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+If{$V=
+\backslash
+varnothing$}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State 
+\backslash
+Return $N$
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+Else
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State $N'
+\backslash
+gets 
+\backslash
+Call{map}{
+\backslash
+Call{min
+\backslash
+_norm
+\backslash
+_of
+\backslash
+_t
+\backslash
+_rules}{N}, V}$
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+State 
+\backslash
+Return 
+\backslash
+Call{iterate
+\backslash
+_norms}{$N@N',G$}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{norms
+\backslash
+_of
+\backslash
+_grammar}{$G$} 
+\backslash
+Comment{calculate final norms}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+State $N 
+\backslash
+gets 
+\backslash
+Call{iterate
+\backslash
+_norms}{
+\backslash
+varnothing, G}$
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+State 
+\backslash
+Return $
+\backslash
+Call{refine
+\backslash
+_norms}{N,G}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Norm calculation algorithm.
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Norm-calculation-algorithm."
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the next subsection, we present the implementation of the algorithm.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Norm_funs.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Proof
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Proof"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Report_proofs.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Results
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Results"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, we show how to use the resulting program, how to integrate
+ it with other programs, and show some statistics.
+\end_layout
+
+\begin_layout Subsection
+Demonstration
+\end_layout
+
+\begin_layout Standard
+We are going to show how to use of the norm calculation algorithm in Isabelle.
+ First, let us define an example grammar:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+A_{1} & \to a & \left\Vert A_{1}\right\Vert =1 &  & B & \to aA_{1}A_{1}A_{1} & \left\Vert B\right\Vert =4\\
+A_{2} & \to aA_{1} & \left\Vert A_{2}\right\Vert =2 &  & C & \to xA_{3}+yB & \left\Vert C\right\Vert =4\\
+A_{3} & \to aA_{2} & \left\Vert A_{3}\right\Vert =3
+\end{align*}
+
+\end_inset
+
+To use this grammar in Isabelle, we need to translate the grammar to an
+ Isabelle representation.
+ In this process we need to use types with a well-founded order to represent
+ variables and terminals.
+ Unfortunately, this means that we cannot use characters like 'a' to represent
+ terminals, because for characters, there does not exist a well-founded
+ order in Isabelle.
+ Therefore, we translate characters and variables to natural numbers (which
+ are well-founded), yielding the following representation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Report_demo.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Integration with existing code
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Integration-with-OCaml"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The export of the Isabelle code to OCaml turned out to be relatively simple.
+ However, by default, natural numbers are encoded as inductive datatype
+ of the form 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type nat = Zero | Succ of nat
+\end_layout
+
+\end_inset
+
+As this representation is very inconvenient to use in OCaml, we imported
+ the theory Code_Target_Nat to make Isabelle export the code using the OCaml
+ datatype big_int.
+ Following that, we only had to convert the OCaml code from int to big_int,
+ which turned out to be relatively simple and did not have a noticable impact
+ on the performance of the program.
+\end_layout
+
+\begin_layout Standard
+Furthermore, to use the exported functions in OCaml, we needed to supply
+ orderings for the used datatypes.
+ As we compare only tuples, lists, characters and integers, which are all
+ supported by the OCaml polymorphic comparison operator 
+\begin_inset Quotes eld
+\end_inset
+
+<
+\begin_inset Quotes erd
+\end_inset
+
+, we constructed the required orderings in OCaml using 
+\begin_inset Quotes eld
+\end_inset
+
+=
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+<
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+<=
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Status
+\end_layout
+
+\begin_layout Standard
+Let us give some statistics about our Isabelle theory:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{itemize}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "Isabelle/statistics.tex"
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{itemize}
+\end_layout
+
+\end_inset
+
+At the moment, there are still about five lemmata left to show, most of
+ which are related to the termination of the norm refinement procedure.
+\end_layout
+
+\end_body
+\end_document

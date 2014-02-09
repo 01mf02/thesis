@@ -13,7 +13,13 @@
 
 \usepackage{bussproofs}
 
+% Isabelle
+\usepackage{Isabelle/output/document/isabelle}
+\usepackage{Isabelle/output/document/isabellesym}
+\usepackage{mathpartir}
+\isadroptag{theory}
 
+% import SVG files
 \usepackage[svgpath=Graphics/]{svg}
 
 % make sum/integral limits always appear above/below the operator, not next to it
@@ -28,16 +34,12 @@
 \g@addto@macro\@floatboxreset{\centering}
 \makeatother
 
-% importing SVG files with LaTeX code in it, as created by Inkscape
-%\newcommand{\includesvg}[1]{\input{#1.pdf_tex}}
-
 % graph drawing
 \usepackage{pgf}
 \usepackage{tikz}
 \usetikzlibrary{arrows, positioning}
 
 % algorithms
-\usepackage{algorithm}
 \usepackage{algpseudocode}
 % to fix nested calls in algorithms --- if not, nested calls produce LaTeX errors
 \usepackage{fixltx2e}
@@ -49,6 +51,10 @@
 % don't show "section §1.1" and "equation (3.2)" in references, but "section 1.1" and "equation 3.2"
 \newref{sec}{name = {section~}, refcmd = {\ref{#1}}}
 \newref{eq}{name = {equation~}, refcmd = {\ref{#1}}}
+
+% change default colours
+\definecolor{green}{RGB}{0, 200, 0}
+\definecolor{red}{RGB}{180,0,0}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -429,7 +435,17 @@ reference "chap:Implementation-Experiments"
 \end_inset
 
 .
- We conclude our study in 
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Verification!
+\end_layout
+
+\end_inset
+
+We conclude our study in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "chap:Conclusion"
@@ -8322,6 +8338,43 @@ As all production rules for this grammar are (strict) sums, we cannot apply
 \end_layout
 
 \begin_layout Chapter
+Verification
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write introduction, conclusion.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Present Isabelle.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "Norm-Isabelle.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
 Conclusion
 \begin_inset CommandInset label
 LatexCommand label
@@ -8394,6 +8447,19 @@ One last, but for us rather important aspect of this work is the creation
  literature.
  May they serve as inspiration for those who walk this rocky road well after
  us.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Verification!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
