@@ -511,34 +511,42 @@ unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
 
 subsection {* @{text minimise_norms} *}
 
-definition norm_smaller :: "((nat \<times> 't :: wellorder) \<times> nat \<times> 't) set" where
-  "norm_smaller \<equiv> {(n1, n2). n1 < n2}"
+definition norm_hd_smaller ::
+  "(('v :: wellorder \<times> nat \<times> 't :: wellorder) \<times> 'v \<times> nat \<times> 't) set" where
+  "norm_hd_smaller \<equiv> {(n1, n2). n1 < n2}"
 
-lemma wf_norm_smaller: "wf norm_smaller"
-unfolding norm_smaller_def by (metis wf)
+lemma nhs_wf: "wf norm_hd_smaller"
+unfolding norm_hd_smaller_def by (metis wf)
 
-definition n_smaller :: "(('v :: wellorder \<times> nat \<times> 't :: wellorder) \<times> 'v \<times> nat \<times> 't) set" where
-  "n_smaller \<equiv> {(n1, n2). n1 < n2}"
+definition norm_strip_vs where
+  "norm_strip_vs \<equiv> \<lambda>(v, n, t, vs). (v, n, t)"
 
-lemma "wf n_smaller"
-unfolding n_smaller_def by (metis wf)
+definition norm_smaller ::
+  "(('t :: wellorder, 'v :: wellorder) v_rule_norm \<times> ('t, 'v) v_rule_norm) set" where
+  "norm_smaller = {(n1, n2). norm_strip_vs n1 < norm_strip_vs n2}"
 
-lemma "wf {(l1, l2). (l1, l2) \<in> lenlex {(n1, n2). n1 < n2}}"
-apply auto
-sorry
+lemma ns_wf: "wf norm_smaller"
+proof -
+  have id: "norm_smaller = inv_image norm_hd_smaller norm_strip_vs"
+    unfolding inv_image_def norm_smaller_def norm_hd_smaller_def by auto
+  show ?thesis unfolding id by (rule wf_inv_image[OF nhs_wf])
+qed
 
 termination minimise_norms
 proof
-  let ?no = "{(n' :: ('t::wellorder, 'v::wellorder) grammar_norms, n). n' < n}"
-  let ?mno = "{((n', g' :: ('t, 'v) grammar), n, g). (n', n) \<in> ?no}"
-  show "wf ?mno" sorry
+  let ?ll = "{(l1, l2). (l1, l2) \<in> lenlex norm_smaller}"
+  have wf: "wf ?ll" using ns_wf by auto
+  let ?mno = "{((n', g' :: ('t::wellorder, 'v::wellorder) grammar), n, g). (n', n) \<in> ?ll}"
+  have id: "?mno = inv_image ?ll fst" unfolding inv_image_def by auto
+  show "wf ?mno" unfolding id by (rule wf_inv_image[OF wf])
 
   fix norms :: "('t::wellorder, 'v::wellorder) grammar_norms"
   fix gr :: "('t, 'v) grammar"
   assume "is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms"
   then have AS: "is_alist gr" "rn_invariant norms gr" "refine_norms norms gr \<noteq> norms" by auto
   
-  have "refine_norms norms gr < norms" using rn_decreases(1)[OF AS(1-2)] AS(3) by auto
+  (*have "refine_norms norms gr < norms" using rn_decreases(1)[OF AS(1-2)] AS(3) by auto*)
+  have "(refine_norms norms gr, norms) \<in> lenlex norm_smaller" sorry
   then show "((refine_norms norms gr, gr), norms, gr) \<in> ?mno" by auto
 qed
 
