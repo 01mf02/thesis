@@ -70,28 +70,46 @@ proof (induct l arbitrary: a rule: length_induct)
   qed
 qed
 
-(*fun bla where
-  "bla (n :: nat) = (if n = 0 then (n, 42 :: nat) else bla (n - 1))"
-
-lemma assumes "bla n = (a, 42)" shows "a = 0"
-  apply (rule bla.elims[OF assms])
-  apply clarify
-  apply (induct n)
-  apply simp
-  apply simp
-done*)
-
 lemma pi_termination_condition:
   assumes "partition_iterate P f a l = (ac, no)"
   shows "filter (P ac) no = []"
-  apply (rule partition_iterate.elims[OF assms])
-  apply clarify
-  apply (induct l arbitrary: ac no rule: length_induct)
-  apply simp
-  (* TODO *)
-sorry
+proof -
+  have "(ac, no) = (case partition (P a) l of ([], no) \<Rightarrow>
+    (a, no) | (x # l, no) \<Rightarrow> partition_iterate P f (f a (x # l)) no)" using assms by simp
+  then show ?thesis proof (induct l arbitrary: ac no a rule: length_induct)
+    case (1 l)
+    def yes \<equiv> "filter (P a) l"
+    def noa \<equiv> "filter (Not \<circ> P a) l"
+    then show ?case proof (cases yes)
+      case Nil then show ?thesis using 1 yes_def by simp
+    next
+      case Cons
+      then have E: "(ac, no) = (partition_iterate P f (f a yes) noa)" using 1(2)
+        unfolding yes_def partition_filter_conv noa_def by (metis list.simps(5) split_conv)
 
-lemma pi_termination_condition_busy:
+      have S: "length noa < length l" using Cons filter_length_smaller[of _ _ P a l]
+        unfolding yes_def noa_def by auto
+      then show ?thesis using 1 E by (metis (mono_tags) partition_iterate.simps)
+    qed
+  qed
+qed
+
+lemma pi_invariant:
+  assumes "\<And>a. f a [] = a"
+    shows "partition_iterate P f a l =
+           (\<lambda>(acc, no). (f acc (filter (P acc) no), no)) (partition_iterate P f a l)"
+proof -
+  def pi \<equiv> "partition_iterate P f a l"
+  def ac \<equiv> "fst pi"
+  def no \<equiv> "snd pi"
+  have PI: "partition_iterate P f a l = (ac, no)" using pi_def ac_def no_def by auto
+
+  have "filter (P ac) no = []" using pi_termination_condition PI .
+  then have "f ac (filter (P ac) no) = ac" using assms by auto
+  then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
+qed
+
+(*lemma pi_termination_condition_busy:
   assumes "filter (P a) l = yesh # yest"
       and "partition_iterate P f a l = (ac, no)"
     shows "\<exists>a l. ac = f a l"
@@ -118,22 +136,7 @@ proof -
     then show ?thesis unfolding FE using assms(2) by auto
   qed
   then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
-qed
-
-lemma pi_invariant:
-  assumes "\<And>a. f a [] = a"
-    shows "partition_iterate P f a l =
-           (\<lambda>(acc, no). (f acc (filter (P acc) no), no)) (partition_iterate P f a l)"
-proof -
-  def pi \<equiv> "partition_iterate P f a l"
-  def ac \<equiv> "fst pi"
-  def no \<equiv> "snd pi"
-  have PI: "partition_iterate P f a l = (ac, no)" using pi_def ac_def no_def by auto
-
-  have "filter (P ac) no = []" using pi_termination_condition PI .
-  then have "f ac (filter (P ac) no) = ac" using assms by auto
-  then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
-qed
+qed*)
 (*>*)
 
 end
