@@ -6,6 +6,59 @@ theory Norm_proofs imports
 begin
 
 
+subsection {* Norm orders *}
+
+definition v_rule_norm_hd_ord ::
+  "(('v :: wellorder \<times> nat \<times> 't :: wellorder) \<times> ('v \<times> nat \<times> 't)) set" where
+  "v_rule_norm_hd_ord \<equiv> {(n1, n2). n1 < n2}"
+
+definition t_rule_norm_hd_ord ::
+  "((nat \<times> 't :: wellorder) \<times> (nat \<times> 't)) set" where
+  "t_rule_norm_hd_ord \<equiv> {(n1, n2). n1 < n2}"
+
+lemma vrnhl_wf: "wf v_rule_norm_hd_ord"
+unfolding v_rule_norm_hd_ord_def by (metis wf)
+
+lemma vrnl_wf: "wfP v_rule_norm_less"
+proof -
+  let ?rel = "{(n1, n2). v_rule_norm_less n1 n2}"
+  have id: "?rel = inv_image v_rule_norm_hd_ord v_rule_norm_strip_vs"
+    unfolding inv_image_def v_rule_norm_less_def v_rule_norm_hd_ord_def by auto
+  have "wf ?rel" unfolding id by (rule wf_inv_image[OF vrnhl_wf])
+  then show ?thesis by (metis wfP_def)
+qed
+
+lemma gno_wf: "wf grammar_norms_ord"
+sorry
+
+lemma vrnsv_trnsv_conv: "v_rule_norm_strip_vs (v, n) = (v, t_rule_norm_strip_vs n)"
+unfolding v_rule_norm_strip_vs_def t_rule_norm_strip_vs_def
+by (metis (lifting) split_conv surj_pair)
+
+lemma vrnl_trnl:
+  assumes "t_rule_norm_less n1 n2"
+    shows "v_rule_norm_less (v, n1) (v, n2)"
+proof -
+  have "t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2" using assms
+    unfolding t_rule_norm_less_def by simp
+  then have "(v, t_rule_norm_strip_vs n1) < (v, t_rule_norm_strip_vs n2)" by auto
+  then show ?thesis unfolding v_rule_norm_less_def vrnsv_trnsv_conv[symmetric] by auto
+qed
+
+lemma vrnle_trnle:
+  assumes "t_rule_norm_less_eq n1 n2"
+    shows "v_rule_norm_less_eq (v, n1) (v, n2)"
+using assms vrnl_trnl sorry
+
+lemma vrno_vrnle:
+  assumes "v_rule_norm_less_eq n1 n2"
+    shows "(n1, n2) \<in> v_rule_norm_ord\<^sup>="
+proof -
+  show ?thesis using assms unfolding v_rule_norm_ord_def v_rule_norm_less_eq_def
+    using v_rule_norm_less_def sorry
+qed
+
+
 subsection {* @{text gram_sd} *}
 
 lemma gsd_alist: "gram_sd gr \<Longrightarrow> is_alist gr"
@@ -466,7 +519,8 @@ lemma mnotr_rn_leq:
       and "(v, rnorm) \<in> set (refine_norms norms gr)"
     shows "min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> rnorm"
 proof -
-  have I: "\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm"
+  have I: "\<forall>(v, norm) \<in> set norms.
+    t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm"
     "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def by auto
 
   def rules \<equiv> "lookup gr v"
@@ -475,8 +529,8 @@ proof -
 
   have "refine_norms norms gr = map_ran (\<lambda>v norm. min_norm_of_t_rules norms (lookup gr v)) norms"
     unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def map_ran_def by auto
-  then have VL: "values_leq (refine_norms norms gr) norms" using map_ran_values_leq[OF I(1) _ I(2)]
-    by auto
+  then have VL: "values_leq (refine_norms norms gr) norms" (*using map_ran_values_leq[OF I(1) _ I(2)]*)
+    (*by auto*) sorry
   
   have "rnorm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
     unfolding rules_def .
@@ -487,19 +541,29 @@ qed
 lemma rn_decreases:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
-    shows "refine_norms norms gr \<le> norms"
+      and "refine_norms norms gr \<noteq> norms"
+    shows "(refine_norms norms gr, norms) \<in> grammar_norms_ord"
       and "rn_invariant (refine_norms norms gr) gr"
 proof -
-  have I: "\<forall>(v, norm) \<in> set norms. min_norm_of_t_rules norms (lookup gr v) \<le> norm"
+  have I: "\<forall>(v, norm) \<in> set norms.
+    t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm"
     "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def by auto
+
+  have "\<forall>(v, norm)\<in>set norms.
+    v_rule_norm_less_eq (v, min_norm_of_t_rules norms (lookup gr v)) (v, norm)"
+    using vrnle_trnle I(1) by (metis (lifting, no_types) prod.exhaust split_conv)
+  then have VO: "\<forall>(v, norm)\<in>set norms.
+    ((v, min_norm_of_t_rules norms (lookup gr v)), (v, norm)) \<in> v_rule_norm_ord\<^sup>="
+    using vrno_vrnle by (metis (lifting, no_types) prod.exhaust split_conv)
 
   have "refine_norms norms gr = map_ran (\<lambda>v norm. min_norm_of_t_rules norms (lookup gr v)) norms"
     unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def map_ran_def by auto
-  then show "refine_norms norms gr \<le> norms" using map_ran_smaller[OF I(1)] by auto
+  then show "(refine_norms norms gr, norms) \<in> grammar_norms_ord" using map_ran_lex[OF VO] assms(3)
+    unfolding grammar_norms_ord_def by auto
 
   have I1: "\<forall>(v, norm) \<in> set (refine_norms norms gr).
-    min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> norm"
-    using mnotr_rn_leq[OF assms(1-2)] by auto
+    t_rule_norm_less_eq (min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)) norm"
+    using mnotr_rn_leq[OF assms(1-2)] (*by auto*) sorry
   have I2: "is_alist (refine_norms norms gr)" using rn_fst_map I(2) by (metis is_alist_def)
   have I3: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(3) by (metis keys_fst_map)
   show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 unfolding rn_invariant_def by auto
@@ -511,42 +575,18 @@ unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def by auto
 
 subsection {* @{text minimise_norms} *}
 
-definition norm_hd_smaller ::
-  "(('v :: wellorder \<times> nat \<times> 't :: wellorder) \<times> 'v \<times> nat \<times> 't) set" where
-  "norm_hd_smaller \<equiv> {(n1, n2). n1 < n2}"
-
-lemma nhs_wf: "wf norm_hd_smaller"
-unfolding norm_hd_smaller_def by (metis wf)
-
-definition norm_strip_vs where
-  "norm_strip_vs \<equiv> \<lambda>(v, n, t, vs). (v, n, t)"
-
-definition norm_smaller ::
-  "(('t :: wellorder, 'v :: wellorder) v_rule_norm \<times> ('t, 'v) v_rule_norm) set" where
-  "norm_smaller = {(n1, n2). norm_strip_vs n1 < norm_strip_vs n2}"
-
-lemma ns_wf: "wf norm_smaller"
-proof -
-  have id: "norm_smaller = inv_image norm_hd_smaller norm_strip_vs"
-    unfolding inv_image_def norm_smaller_def norm_hd_smaller_def by auto
-  show ?thesis unfolding id by (rule wf_inv_image[OF nhs_wf])
-qed
-
 termination minimise_norms
 proof
-  let ?ll = "{(l1, l2). (l1, l2) \<in> lenlex norm_smaller}"
-  have wf: "wf ?ll" using ns_wf by auto
-  let ?mno = "{((n', g' :: ('t::wellorder, 'v::wellorder) grammar), n, g). (n', n) \<in> ?ll}"
-  have id: "?mno = inv_image ?ll fst" unfolding inv_image_def by auto
-  show "wf ?mno" unfolding id by (rule wf_inv_image[OF wf])
+  let ?mno = "{((n', g' :: ('t::wellorder, 'v::wellorder) grammar), n, g). (n', n) \<in> grammar_norms_ord}"
+  have id: "?mno = inv_image grammar_norms_ord fst" unfolding inv_image_def by auto
+  show "wf ?mno" unfolding id by (rule wf_inv_image[OF gno_wf])
 
   fix norms :: "('t::wellorder, 'v::wellorder) grammar_norms"
   fix gr :: "('t, 'v) grammar"
   assume "is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms"
   then have AS: "is_alist gr" "rn_invariant norms gr" "refine_norms norms gr \<noteq> norms" by auto
-  
-  (*have "refine_norms norms gr < norms" using rn_decreases(1)[OF AS(1-2)] AS(3) by auto*)
-  have "(refine_norms norms gr, norms) \<in> lenlex norm_smaller" sorry
+
+  have "(refine_norms norms gr, norms) \<in> grammar_norms_ord" using rn_decreases(1)[OF AS] .
   then show "((refine_norms norms gr, gr), norms, gr) \<in> ?mno" by auto
 qed
 
@@ -571,7 +611,7 @@ proof (induct norms gr rule: minimise_norms.induct)
     case True then show ?thesis by (metis minimise_norms.simps)
   next
     case False
-    have "rn_invariant (refine_norms norms gr) gr" using rn_decreases(2) 1(2-3) .
+    have "rn_invariant (refine_norms norms gr) gr" using rn_decreases(2) 1(2-3) False .
     then have X: "refine_norms (minimise_norms (refine_norms norms gr) gr) gr =
       minimise_norms (refine_norms norms gr) gr" using 1 False by auto
     have Y: "minimise_norms (refine_norms norms gr) gr = minimise_norms norms gr"

@@ -145,6 +145,16 @@ proof -
   then show ?thesis using assms apply (induct rule: list_induct2) by auto
 qed
 
+lemma map_ran_lex:
+  assumes "\<forall>(k, v) \<in> set xs. ((k, f k v), (k, v)) \<in> r\<^sup>="
+      and "ys = map_ran f xs"
+      and "xs \<noteq> ys"
+    shows "(ys, xs) \<in> lex r"
+proof -
+  have "length ys = length xs" using assms(2) unfolding map_ran_def by auto
+  then show ?thesis using assms by (induct rule: list_induct2) auto
+qed
+
 lemma values_leq_cons:
   assumes "values_leq xs ys"
       and "x \<le> y"

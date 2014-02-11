@@ -40,6 +40,38 @@ type_synonym ('t, 'v) v_rule_norm   = "('v \<times> ('t, 'v) t_rule_norm)"
 type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
 
 
+subsection {* Norm orders *}
+
+definition t_rule_norm_strip_vs where
+  "t_rule_norm_strip_vs \<equiv> \<lambda>(n, t, vs). (n, t)"
+
+definition v_rule_norm_strip_vs where
+  "v_rule_norm_strip_vs \<equiv> \<lambda>(v, n, t, vs). (v, n, t)"
+
+definition t_rule_norm_less ::
+  "('t :: wellorder, 'v :: wellorder) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
+  "t_rule_norm_less n1 n2 \<equiv> t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2"
+
+definition t_rule_norm_less_eq ::
+  "('t :: wellorder, 'v :: wellorder) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
+  "t_rule_norm_less_eq n1 n2 \<equiv> t_rule_norm_strip_vs n1 \<le> t_rule_norm_strip_vs n2"
+
+definition v_rule_norm_less ::
+  "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow> ('t, 'v) v_rule_norm \<Rightarrow> bool" where
+  "v_rule_norm_less n1 n2 \<equiv> v_rule_norm_strip_vs n1 < v_rule_norm_strip_vs n2"
+
+definition v_rule_norm_less_eq ::
+  "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow> ('t, 'v) v_rule_norm \<Rightarrow> bool" where
+  "v_rule_norm_less_eq n1 n2 \<equiv> v_rule_norm_strip_vs n1 \<le> v_rule_norm_strip_vs n2"
+
+definition v_rule_norm_ord where
+  "v_rule_norm_ord = {(n1, n2). v_rule_norm_less n1 n2}"
+
+definition grammar_norms_ord ::
+  "(('t :: wellorder, 'v :: wellorder) grammar_norms \<times> ('t, 'v) grammar_norms) set" where
+  "grammar_norms_ord = lex v_rule_norm_ord"
+
+
 subsection {* Functions *}
 
 text {*
@@ -199,9 +231,11 @@ definition refine_norms ::
    ('t, 'v) grammar_norms" where
   "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
 
-definition rn_invariant where
+definition rn_invariant ::
+  "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
+   bool" where
   "rn_invariant norms gr \<equiv> (\<forall>(v, norm) \<in> set norms.
-     min_norm_of_t_rules norms (lookup gr v) \<le> norm) \<and>
+     t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm) \<and>
      is_alist norms \<and> keys norms \<subseteq> keys gr"
 
 text {*
