@@ -514,8 +514,8 @@ qed
 lemma mnotr_rn_leq:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
-      and "(v, rnorm) \<in> set (refine_norms norms gr)"
-    shows "min_norm_of_t_rules (refine_norms norms gr) (lookup gr v) \<le> rnorm"
+      and "(v, norm) \<in> set (refine_norms norms gr)"
+    shows "t_rule_norm_less_eq (min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)) norm"
 proof -
   have I: "\<forall>(v, norm) \<in> set norms.
     t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm"
@@ -530,10 +530,10 @@ proof -
   then have VL: "values_leq (refine_norms norms gr) norms" (*using map_ran_values_leq[OF I(1) _ I(2)]*)
     (*by auto*) sorry
   
-  have "rnorm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
+  have "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
     unfolding rules_def .
   then show ?thesis using list_all2_Min notr_smaller[OF MF VL I(2)]
-    unfolding min_norm_of_t_rules_def rules_def by auto
+    unfolding min_norm_of_t_rules_def rules_def (*by auto*) sorry
 qed
 
 lemma rn_decreases:
@@ -561,7 +561,7 @@ proof -
 
   have I1: "\<forall>(v, norm) \<in> set (refine_norms norms gr).
     t_rule_norm_less_eq (min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)) norm"
-    using mnotr_rn_leq[OF assms(1-2)] (*by auto*) sorry
+    using mnotr_rn_leq[OF assms(1-2)] by auto
   have I2: "is_alist (refine_norms norms gr)" using rn_fst_map I(2) by (metis is_alist_def)
   have I3: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(3) by (metis keys_fst_map)
   show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 unfolding rn_invariant_def by auto
@@ -692,8 +692,26 @@ lemma nog_invariant_holds:
       and "(v, rules) \<in> set gr"
       and "(v, norm) \<in> set (norms_of_grammar gr)"
     shows "nog_invariant (norms_of_grammar gr) v rules"
-using mn_rn itno_rn_invariant rn_mnotr_equal unfolding norms_of_grammar_def nog_invariant_def
-sorry
+proof -
+  have AG: "is_alist gr" using gsd_alist[OF assms(1)] .
+  have AN: "is_alist (norms_of_grammar gr)" using nog_alist[OF assms(1)] .
+  have RI: "rn_invariant (fst (iterate_norms gr)) gr" using itno_rn_invariant[OF assms(1)] .
+  have RE: "refine_norms (norms_of_grammar gr) gr = norms_of_grammar gr" using mn_rn[OF AG RI]
+    unfolding norms_of_grammar_def .
+
+  have "v \<in> keys (fst (iterate_norms gr))" using nog_map_fst assms(3)
+    by (metis image_set key_in_fst keys_fst_map)
+  then have "itno_invariant_sd_member (fst (iterate_norms gr)) v rules"
+    using itno_invariant_sd_member_holds[OF assms(1-2)] by simp
+  then have "t_rules_have_norm (fst (iterate_norms gr)) rules"
+    unfolding itno_invariant_sd_member_def by auto
+  then have I1: "t_rules_have_norm (norms_of_grammar gr) rules"
+    using trshn_keys_superset nog_map_fst by (metis eq_iff keys_fst_map)
+
+  have I2: "(v, min_norm_of_t_rules (norms_of_grammar gr) rules) \<in> set (norms_of_grammar gr)"
+    using rn_mnotr_equal[OF RE _ assms(2) AN AG] assms(3) by auto
+  show ?thesis using I1 I2 unfolding nog_invariant_def by simp
+qed
 
 lemma nog_invariant_n_t_vs_holds:
   assumes "gram_sd gr"
