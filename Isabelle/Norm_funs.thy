@@ -53,7 +53,7 @@ definition t_rule_norm_less ::
   "t_rule_norm_less n1 n2 \<equiv> t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2"
 
 definition t_rule_norm_less_eq ::
-  "('t :: wellorder, 'v :: wellorder) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
+  "('t :: order, 'v :: order) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
   "t_rule_norm_less_eq n1 n2 \<equiv> t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2 \<or> n1 = n2"
 
 definition v_rule_norm_less ::
@@ -194,7 +194,7 @@ definition itno_invariant_sd where
 
 definition itno_invariant_sd_member where
   "itno_invariant_sd_member norms v rules \<equiv>
-     t_rules_have_norm norms rules \<and> lookup norms v \<in> set (norms_of_t_rules norms rules)"
+     t_rules_have_norm norms rules (*\<and> lookup norms v \<in> set (norms_of_t_rules norms rules)*)"
 
 definition nog_invariant where
   "nog_invariant norms v rules \<equiv>
