@@ -28,8 +28,11 @@ proof -
   then show ?thesis by (metis wfP_def)
 qed
 
+lemma vrno_wf: "wf v_rule_norm_ord"
+unfolding v_rule_norm_ord_def using vrnl_wf by (metis wfP_def)
+
 lemma gno_wf: "wf grammar_norms_ord"
-sorry
+unfolding grammar_norms_ord_def using vrno_wf by (rule wf_lex)
 
 lemma vrnsv_trnsv_conv: "v_rule_norm_strip_vs (v, n) = (v, t_rule_norm_strip_vs n)"
 unfolding v_rule_norm_strip_vs_def t_rule_norm_strip_vs_def
@@ -45,18 +48,13 @@ proof -
   then show ?thesis unfolding v_rule_norm_less_def vrnsv_trnsv_conv[symmetric] by auto
 qed
 
-lemma vrnle_trnle:
-  assumes "t_rule_norm_less_eq n1 n2"
-    shows "v_rule_norm_less_eq (v, n1) (v, n2)"
-using assms vrnl_trnl sorry
+lemma vrnle_trnle: "t_rule_norm_less_eq n1 n2 = v_rule_norm_less_eq (v, n1) (v, n2)"
+unfolding t_rule_norm_less_eq_def t_rule_norm_less_def v_rule_norm_less_eq_def v_rule_norm_less_def
+by (metis (hide_lams, no_types) leI less_eq_prod_simp less_le_not_le prod.inject vrnsv_trnsv_conv)
 
-lemma vrno_vrnle:
-  assumes "v_rule_norm_less_eq n1 n2"
-    shows "(n1, n2) \<in> v_rule_norm_ord\<^sup>="
-proof -
-  show ?thesis using assms unfolding v_rule_norm_ord_def v_rule_norm_less_eq_def
-    using v_rule_norm_less_def sorry
-qed
+lemma vrno_vrnle: "(v_rule_norm_less_eq n1 n2) = ((n1, n2) \<in> v_rule_norm_ord\<^sup>=)"
+using v_rule_norm_less_def unfolding v_rule_norm_less_eq_def v_rule_norm_ord_def
+by (metis (no_types) Un_iff mem_Collect_eq pair_in_Id_conv split_conv)
 
 
 subsection {* @{text gram_sd} *}

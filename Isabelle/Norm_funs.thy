@@ -54,7 +54,7 @@ definition t_rule_norm_less ::
 
 definition t_rule_norm_less_eq ::
   "('t :: wellorder, 'v :: wellorder) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
-  "t_rule_norm_less_eq n1 n2 \<equiv> t_rule_norm_strip_vs n1 \<le> t_rule_norm_strip_vs n2"
+  "t_rule_norm_less_eq n1 n2 \<equiv> t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2 \<or> n1 = n2"
 
 definition v_rule_norm_less ::
   "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow> ('t, 'v) v_rule_norm \<Rightarrow> bool" where
@@ -62,7 +62,7 @@ definition v_rule_norm_less ::
 
 definition v_rule_norm_less_eq ::
   "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow> ('t, 'v) v_rule_norm \<Rightarrow> bool" where
-  "v_rule_norm_less_eq n1 n2 \<equiv> v_rule_norm_strip_vs n1 \<le> v_rule_norm_strip_vs n2"
+  "v_rule_norm_less_eq n1 n2 \<equiv> v_rule_norm_strip_vs n1 < v_rule_norm_strip_vs n2 \<or> n1 = n2"
 
 definition v_rule_norm_ord where
   "v_rule_norm_ord = {(n1, n2). v_rule_norm_less n1 n2}"
