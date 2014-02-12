@@ -642,7 +642,8 @@ proof -
     t_rule_norm_less_eq (min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)) norm"
     using mnotr_rn_leq[OF assms(1-2)] by auto
   have I2: "(\<forall>v \<in> keys (refine_norms norms gr).
-    t_rules_have_norm (refine_norms norms gr) (lookup gr v))" sorry
+    t_rules_have_norm (refine_norms norms gr) (lookup gr v))"
+    using I(2) trshn_keys_superset rn_fst_map by (metis keys_fst_map order_refl)
   have I3: "is_alist (refine_norms norms gr)" using rn_fst_map I(3) by (metis is_alist_def)
   have I4: "keys (refine_norms norms gr) \<subseteq> keys gr" using rn_fst_map I(4) by (metis keys_fst_map)
   show "rn_invariant (refine_norms norms gr) gr" using I1 I2 I3 I4 unfolding rn_invariant_def by auto
@@ -763,12 +764,17 @@ lemma itno_rn_invariant:
     shows "rn_invariant (fst (iterate_norms gr)) gr"
 proof -
   let ?in = "fst (iterate_norms gr)"
+  
+  have AG: "is_alist gr" using gsd_alist[OF assms] .
+
+  have I4: "keys ?in \<subseteq> keys gr" using itno_gr_keys_equal by auto
 
   have I1: "\<forall>(v, norm)\<in>set ?in. t_rule_norm_less_eq (min_norm_of_t_rules ?in (lookup gr v)) norm" sorry
-  have I2: "(\<forall>v \<in> keys ?in. t_rules_have_norm ?in (lookup gr v))" sorry
+  have I2: "(\<forall>v \<in> keys ?in. t_rules_have_norm ?in (lookup gr v))"
+    using itno_invariant_sd_member_holds[OF assms(1)] unfolding itno_invariant_sd_member_def
+    using existence_from_lookup[OF AG] I4 by (metis (no_types) set_rev_mp)
   have I3: "is_alist ?in" using itno_invariant_sd_holds[OF assms(1)]
     unfolding itno_invariant_sd_def by auto
-  have I4: "keys ?in \<subseteq> keys gr" using itno_gr_keys_equal by auto
 
   show ?thesis using I1 I2 I3 I4 unfolding rn_invariant_def by simp
 qed
