@@ -537,7 +537,6 @@ next
 sorry
 qed
 
-
 lemma mnotr_rn_leq:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
@@ -547,17 +546,22 @@ proof -
   have I: "\<forall>(v, norm) \<in> set norms.
     t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm"
     "is_alist norms" "keys norms \<subseteq> keys gr" using assms(2) unfolding rn_invariant_def by auto
+  
+  have VR: "\<forall>(v, norm) \<in> set norms.
+    v_rule_norm_less_eq (v, min_norm_of_t_rules norms (lookup gr v)) (v, norm)"
+    using I(1) vrnle_trnle by (metis (lifting, no_types) prod.exhaust split_conv)
 
   def rules \<equiv> "lookup gr v"
 
   have MF: "map fst (refine_norms norms gr) = map fst norms" by (metis rn_fst_map)
 
-  have "refine_norms norms gr = map_ran (\<lambda>v norm. min_norm_of_t_rules norms (lookup gr v)) norms"
+  have ID: "refine_norms norms gr = map_ran (\<lambda>v norm. min_norm_of_t_rules norms (lookup gr v)) norms"
     unfolding refine_norms_def mnotr_map_def v_rules_of_norms_def map_ran_def by auto
-  then have LA: "list_all2 v_rule_norm_less_eq (refine_norms norms gr) norms" using I(1) vrnle_trnle sorry
-  (*then have VL: "values_leq (refine_norms norms gr) norms" (*using map_ran_values_leq[OF I(1) _ I(2)]*)
-    (*by auto*) sorry*)
-  
+  have LA: "list_all2 v_rule_norm_less_eq (refine_norms norms gr) norms"
+    unfolding map_ran_def ID using VR list_all2_map[of norms v_rule_norm_less_eq "(\<lambda>(v, norm).
+    (v, min_norm_of_t_rules norms (lookup gr v)))" "\<lambda>x. x", simplified]
+    by (metis (lifting, no_types) split_conv surj_pair)
+
   have EQ: "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
     unfolding rules_def .
   show ?thesis using list_all2_Min notr_smaller[OF MF LA I(2)] list_all2_trnle
