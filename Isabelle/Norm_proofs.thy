@@ -197,16 +197,6 @@ unfolding norms_of_t_rules_def norm_of_t_rule_def by auto (metis (lifting) Int_C
 lemma notr_leq:
   assumes "\<And>vs. set vs \<subseteq> keys norms\<^sub>2 \<Longrightarrow> norm_sum norms\<^sub>1 vs \<le> norm_sum norms\<^sub>2 vs"
       and "(t :: 't :: order, vs :: 'v :: order list) \<in> set (filter (t_rule_has_norm norms\<^sub>2) rules)"
-    shows "norm_of_t_rule norms\<^sub>1 (t, vs) \<le> norm_of_t_rule norms\<^sub>2 (t, vs)"
-proof -
-  have "set vs \<subseteq> keys norms\<^sub>2" using assms(2) trhn_vars_normed[of norms\<^sub>2 t vs] by auto
-  then have "norm_sum norms\<^sub>1 vs \<le> norm_sum norms\<^sub>2 vs" using assms(1) by auto
-  then show ?thesis unfolding norm_of_t_rule_def by simp
-qed
-
-lemma notr_leq_new:
-  assumes "\<And>vs. set vs \<subseteq> keys norms\<^sub>2 \<Longrightarrow> norm_sum norms\<^sub>1 vs \<le> norm_sum norms\<^sub>2 vs"
-      and "(t :: 't :: order, vs :: 'v :: order list) \<in> set (filter (t_rule_has_norm norms\<^sub>2) rules)"
     shows "t_rule_norm_less_eq (norm_of_t_rule norms\<^sub>1 (t, vs)) (norm_of_t_rule norms\<^sub>2 (t, vs))"
 proof -
   have "set vs \<subseteq> keys norms\<^sub>2" using assms(2) trhn_vars_normed[of norms\<^sub>2 t vs] by auto
@@ -216,24 +206,6 @@ proof -
 qed
 
 lemma notr_smaller:
-  assumes "map fst norms\<^sub>1 = map fst norms\<^sub>2"
-      and "values_leq norms\<^sub>1 norms\<^sub>2"
-      and "is_alist (norms\<^sub>2 :: ('t :: order, 'v :: order) grammar_norms)"
-    shows "list_all2 less_eq (norms_of_t_rules norms\<^sub>1 rules) (norms_of_t_rules norms\<^sub>2 rules)"
-proof -
-  have "keys norms\<^sub>1 = keys norms\<^sub>2" using assms(1) by (metis keys_fst_map)
-  then have "t_rule_has_norm norms\<^sub>1 = t_rule_has_norm norms\<^sub>2" unfolding t_rule_has_norm_def by auto
-  then have FF: "filter (t_rule_has_norm norms\<^sub>1) rules = filter (t_rule_has_norm norms\<^sub>2) rules"
-    by auto
-
-  have LE: "\<forall>x \<in> set (filter (t_rule_has_norm norms\<^sub>2) rules).
-    norm_of_t_rule norms\<^sub>1 x \<le> norm_of_t_rule norms\<^sub>2 x"
-    using notr_leq[of norms\<^sub>2 norms\<^sub>1] ns_leq[OF assms(1-3)] by (metis prod.exhaust)
-  
-  show ?thesis unfolding notr_conv FF using list_all2_map[of _ less_eq, OF LE] .
-qed
-
-lemma notr_smaller_new:
   assumes "map fst norms\<^sub>1 = map fst norms\<^sub>2"
       and "list_all2 v_rule_norm_less_eq norms\<^sub>1 norms\<^sub>2"
       and "is_alist (norms\<^sub>2 :: ('t :: wellorder, 'v :: wellorder) grammar_norms)"
@@ -247,7 +219,7 @@ proof -
 
   have LE: "\<forall>x \<in> set (filter (t_rule_has_norm norms\<^sub>2) rules).
     t_rule_norm_less_eq (norm_of_t_rule norms\<^sub>1 x) (norm_of_t_rule norms\<^sub>2 x)"
-    using notr_leq_new[of norms\<^sub>2 norms\<^sub>1] ns_leq_new[OF assms(1-3)] by (metis prod.exhaust)
+    using notr_leq[of norms\<^sub>2 norms\<^sub>1] ns_leq_new[OF assms(1-3)] by (metis prod.exhaust)
   
   show ?thesis unfolding notr_conv FF using list_all2_map[of _ t_rule_norm_less_eq, OF LE] .
 qed
@@ -581,7 +553,7 @@ proof -
   
   have "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
     unfolding rules_def .
-  then show ?thesis using list_all2_Min notr_smaller_new[OF MF LA I(2)] (*[OF MF VL I(2)]*)
+  then show ?thesis using list_all2_Min notr_smaller[OF MF LA I(2)] (*[OF MF VL I(2)]*)
     unfolding min_norm_of_t_rules_def rules_def (*by auto*) sorry
 qed
 
