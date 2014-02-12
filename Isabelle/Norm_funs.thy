@@ -236,6 +236,7 @@ definition rn_invariant ::
    bool" where
   "rn_invariant norms gr \<equiv> (\<forall>(v, norm) \<in> set norms.
      t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm) \<and>
+     (\<forall>v \<in> keys norms. t_rules_have_norm norms (lookup gr v)) \<and>
      is_alist norms \<and> keys norms \<subseteq> keys gr"
 
 text {*
@@ -248,7 +249,7 @@ function minimise_norms ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
    ('t, 'v) grammar_norms" where
   "minimise_norms norms gr = (
-     if is_alist gr \<and> rn_invariant norms gr \<and>
+     if gram_sd gr \<and> rn_invariant norms gr \<and>
         refine_norms norms gr \<noteq> norms then
        minimise_norms (refine_norms norms gr) gr
      else norms)"
