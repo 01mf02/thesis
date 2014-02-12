@@ -52,13 +52,57 @@ by (metis (no_types) Un_iff mem_Collect_eq pair_in_Id_conv split_conv)
 lemma trnle_norm_le: "n1 \<le> n2 \<Longrightarrow> t_rule_norm_less_eq (n1, t, vs) (n2, t, vs)"
 unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def by auto
 
+lemma vrnle_le: "v_rule_norm_less_eq n1 n2 \<Longrightarrow> n1 \<le> n2"
+unfolding v_rule_norm_less_eq_def v_rule_norm_strip_vs_def
+apply (case_tac n1) apply (case_tac n2) by auto
+
 lemma trnle_le: "t_rule_norm_less_eq n1 n2 \<Longrightarrow> n1 \<le> n2"
 unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def
 apply (case_tac n1) apply (case_tac n2) by auto
 
-lemma vrnle_le: "v_rule_norm_less_eq n1 n2 \<Longrightarrow> n1 \<le> n2"
-unfolding v_rule_norm_less_eq_def v_rule_norm_strip_vs_def
-apply (case_tac n1) apply (case_tac n2) by auto
+lemma trnle_le2:
+  assumes "norm\<^sub>1 \<le> norm\<^sub>2"
+      and "snd norm\<^sub>1 \<in> set rules"
+      and "snd norm\<^sub>2 \<in> set rules"
+      and "is_alist rules"
+    shows "t_rule_norm_less_eq norm\<^sub>1 norm\<^sub>2"
+proof (cases "norm\<^sub>1 = norm\<^sub>2")
+  case True then show ?thesis unfolding t_rule_norm_less_eq_def by simp
+next
+  case False
+  then have LE: "norm\<^sub>1 < norm\<^sub>2" using assms(1) by simp
+
+  let ?n1 = "fst norm\<^sub>1"
+  let ?n2 = "fst norm\<^sub>2"
+  let ?t1 = "fst (snd norm\<^sub>1)"
+  let ?t2 = "fst (snd norm\<^sub>2)"
+  let ?vs1 = "snd (snd norm\<^sub>1)"
+  let ?vs2 = "snd (snd norm\<^sub>2)"
+
+  have R1: "(?t1, ?vs1) \<in> set rules" using assms(2) by auto
+  have R2: "(?t2, ?vs2) \<in> set rules" using assms(3) by auto
+
+  show ?thesis proof (cases "?n1 < ?n2")
+    case True then show ?thesis unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def
+      apply (case_tac norm\<^sub>1) apply (case_tac norm\<^sub>2) by auto
+  next
+    case False then have NL: "?n1 = ?n2" using LE by (metis less_prod_def')
+    show ?thesis proof (cases "?t1 < ?t2")
+      case True then show ?thesis unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def
+        apply (case_tac norm\<^sub>1) apply (case_tac norm\<^sub>2) using NL by auto
+    next
+      case False then have TL: "?t1 = ?t2" using NL LE by (metis less_irrefl less_prod_def')
+      show ?thesis proof (cases "?vs1 < ?vs2")
+        case True
+        have "?vs1 = ?vs2" using alist_values_equal[OF assms(4) R1[simplified TL] R2] .
+        then show ?thesis using True by simp
+      next
+        case False then show ?thesis using NL TL LE
+          by (metis (hide_lams, no_types) dual_order.irrefl prod_less_def)
+      qed
+    qed
+  qed
+qed
 
 
 subsection {* @{text gram_sd} *}
@@ -520,25 +564,8 @@ proof -
   then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
 
-
-(* TODO!! *)
-lemma list_all2_trnle:
-  assumes "list_all2 t_rule_norm_less_eq xs ys"
-      and "distinct (map (\<lambda>(n, t, vs). t) xs)"
-    shows "t_rule_norm_less_eq (Min (set (xs :: ('t :: linorder, 'v :: linorder) t_rule_norm list))) (Min (set ys))"
-using assms proof (induct rule: list_all2_induct)
-  case Nil show ?case unfolding t_rule_norm_less_eq_def by simp
-next
-  case (Cons x xs y ys)
-  have "t_rule_norm_less_eq (Min (set xs)) (Min (set ys))" using Cons(3-4) by auto
-  then show ?case using Cons(1-2,4) 
-  (*using Min_insert_leq by auto (metis (no_types) List.finite_set List.set.simps(2)
-    Min.coboundedI Min_in eq_iff insertCI list_all2_Nil min_def min_le_iff_disj set_empty)*)
-sorry
-qed
-
 lemma mnotr_rn_leq:
-  assumes "is_alist gr"
+  assumes "gram_sd gr"
       and "rn_invariant norms gr"
       and "(v, norm) \<in> set (refine_norms norms gr)"
     shows "t_rule_norm_less_eq (min_norm_of_t_rules (refine_norms norms gr) (lookup gr v)) norm"
@@ -562,14 +589,31 @@ proof -
     (v, min_norm_of_t_rules norms (lookup gr v)))" "\<lambda>x. x", simplified]
     by (metis (lifting, no_types) split_conv surj_pair)
 
-  have EQ: "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
+  have GA: "is_alist gr" using gsd_alist[OF assms(1)] .
+  have EQ: "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF GA I(2-3) assms(3)]
     unfolding rules_def .
-  show ?thesis using list_all2_Min notr_smaller[OF MF LA I(2)] list_all2_trnle
-    unfolding min_norm_of_t_rules_def rules_def EQ sorry
+
+  have VG: "v \<in> keys gr" using I(3) rn_fst_map assms(3)
+    by (metis alist_keys_fst_set in_mono key_in_fst keys_fst_map)
+  have GA: "is_alist gr" using gsd_alist[OF assms(1)] .
+
+  have TN: "t_rules_have_norm norms rules" sorry 
+  have TR: "t_rules_have_norm (refine_norms norms gr) rules"
+    using trshn_keys_superset TN rn_fst_map by (metis keys_fst_map order_refl)
+
+  have LE: "(min_norm_of_t_rules (refine_norms norms gr) rules) \<le> norm"
+    using list_all2_Min notr_smaller[OF MF LA I(2)] trnle_le unfolding min_norm_of_t_rules_def EQ
+    by (metis list_all2_mono)
+  have MR: "snd (min_norm_of_t_rules (refine_norms norms gr) rules) \<in> set rules"
+    using mnotr_in_rules[OF TR] .
+  have NR: "snd norm \<in> set rules" unfolding EQ using mnotr_in_rules[OF TN] .
+  have RA: "is_alist rules" using gsd_rules_alist[OF assms(1)]
+    using rules_def existence_from_lookup[OF GA VG] by auto
+  show ?thesis using trnle_le2[OF LE MR NR RA, simplified rules_def] .
 qed
 
 lemma rn_decreases:
-  assumes "is_alist gr"
+  assumes "gram_sd gr"
       and "rn_invariant norms gr"
       and "refine_norms norms gr \<noteq> norms"
     shows "(refine_norms norms gr, norms) \<in> grammar_norms_ord"
@@ -613,8 +657,8 @@ proof
 
   fix norms :: "('t::wellorder, 'v::wellorder) grammar_norms"
   fix gr :: "('t, 'v) grammar"
-  assume "is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms"
-  then have AS: "is_alist gr" "rn_invariant norms gr" "refine_norms norms gr \<noteq> norms" by auto
+  assume "gram_sd gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms"
+  then have AS: "gram_sd gr" "rn_invariant norms gr" "refine_norms norms gr \<noteq> norms" by auto
 
   have "(refine_norms norms gr, norms) \<in> grammar_norms_ord" using rn_decreases(1)[OF AS] .
   then show "((refine_norms norms gr, gr), norms, gr) \<in> ?mno" by auto
@@ -624,7 +668,7 @@ qed
 lemma mn_map_fst: "map fst norms = map fst (minimise_norms norms gr)"
 proof (induct norms gr rule: minimise_norms.induct)
   case (1 norms gr)
-  show ?case proof (cases "is_alist gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms")
+  show ?case proof (cases "gram_sd gr \<and> rn_invariant norms gr \<and> refine_norms norms gr \<noteq> norms")
     case True show ?thesis using 1[OF True] minimise_norms.simps rn_fst_map by metis
   next
     case False then show ?thesis by (metis minimise_norms.simps)
@@ -632,7 +676,7 @@ proof (induct norms gr rule: minimise_norms.induct)
 qed
 
 lemma mn_rn:
-  assumes "is_alist gr"
+  assumes "gram_sd gr"
       and "rn_invariant norms gr"
     shows "refine_norms (minimise_norms norms gr) gr = minimise_norms norms gr" using assms
 proof (induct norms gr rule: minimise_norms.induct)
@@ -732,7 +776,7 @@ proof -
   have AG: "is_alist gr" using gsd_alist[OF assms(1)] .
   have AN: "is_alist (norms_of_grammar gr)" using nog_alist[OF assms(1)] .
   have RI: "rn_invariant (fst (iterate_norms gr)) gr" using itno_rn_invariant[OF assms(1)] .
-  have RE: "refine_norms (norms_of_grammar gr) gr = norms_of_grammar gr" using mn_rn[OF AG RI]
+  have RE: "refine_norms (norms_of_grammar gr) gr = norms_of_grammar gr" using mn_rn[OF assms(1) RI]
     unfolding norms_of_grammar_def .
 
   have "v \<in> keys (fst (iterate_norms gr))" using nog_map_fst assms(3)
