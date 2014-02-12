@@ -195,4 +195,38 @@ proof -
   qed (auto simp add: values_leq_def values_related_def)
 qed
 
+lemma list_all2_alist:
+  assumes "map fst xs = map fst ys"
+      and "is_alist xs"
+      and "(k, v1) \<in> set xs"
+      and "(k, v2) \<in> set ys"
+      and "list_all2 P xs ys"
+    shows "P (k, v1) (k, v2)"
+proof -
+  have "length xs = length ys" using assms(1) by (metis length_map)
+  then show ?thesis using assms proof (induct rule: list_induct2)
+    case (Cons x xs y ys)
+    have MF: "map fst xs = map fst ys" using Cons(3) by auto
+    have AX: "is_alist xs" using Cons(4) alist_distr[of "[x]" xs] by auto
+    have LA: "list_all2 P xs ys" using Cons(7) by auto
+    have AY: "is_alist (y#ys)" using Cons(3-4) by (metis alist_fst_map)
+
+    show ?case
+    proof (cases "(k, v1) \<in> set xs")
+      case True
+      then have "k \<in> keys ys" using MF by (metis alist_keys_fst_set key_in_fst keys_fst_map)
+      then have "k \<notin> keys [y]" using AY unfolding is_alist_def keys_def by auto
+      then have "(k, v2) \<in> set ys" using Cons(6) AY unfolding keys_def is_alist_def by auto
+      then show ?thesis using True Cons(2)[OF MF AX _ _ LA] by auto
+    next
+      case False
+      then have V1: "x = (k, v1)" using Cons(5) by auto
+      then have "fst y = k" using Cons(3) by auto
+      then have V2: "y = (k, v2)" using Cons(6) AY
+        by (metis alist_values_equal fst_conv in_set_member member_rec(1) surj_pair)
+      show ?thesis using Cons(7,1) unfolding V1 V2 by auto
+    qed
+  qed auto
+qed
+
 end

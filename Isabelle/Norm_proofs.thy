@@ -52,6 +52,14 @@ by (metis (no_types) Un_iff mem_Collect_eq pair_in_Id_conv split_conv)
 lemma trnle_norm_le: "n1 \<le> n2 \<Longrightarrow> t_rule_norm_less_eq (n1, t, vs) (n2, t, vs)"
 unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def by auto
 
+lemma trnle_le: "t_rule_norm_less_eq n1 n2 \<Longrightarrow> n1 \<le> n2"
+unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def
+apply (case_tac n1) apply (case_tac n2) by auto
+
+lemma vrnle_le: "v_rule_norm_less_eq n1 n2 \<Longrightarrow> n1 \<le> n2"
+unfolding v_rule_norm_less_eq_def v_rule_norm_strip_vs_def
+apply (case_tac n1) apply (case_tac n2) by auto
+
 
 subsection {* @{text gram_sd} *}
 
@@ -103,45 +111,26 @@ proof -
 qed
 
 lemma ns_leq:
-  assumes "map fst norms2 = map fst norms1"
-      and "values_leq norms2 norms1"
-      and "is_alist norms1"
-      and "set vs \<subseteq> keys norms1"
-    shows "norm_sum norms2 vs \<le> norm_sum norms1 vs"
+  assumes "map fst norms\<^sub>1 = map fst norms\<^sub>2"
+      and "list_all2 v_rule_norm_less_eq norms\<^sub>1 norms\<^sub>2"
+      and "is_alist norms\<^sub>2"
+      and "set vs \<subseteq> keys norms\<^sub>2"
+    shows "norm_sum norms\<^sub>1 vs \<le> norm_sum norms\<^sub>2 vs"
 using assms(4) proof (induct vs)
   case (Cons a vs)
-  then have I: "norm_sum norms2 vs \<le> norm_sum norms1 vs" by auto
+  then have I: "norm_sum norms\<^sub>1 vs \<le> norm_sum norms\<^sub>2 vs" by auto
 
-  have A1: "a \<in> keys norms1" using Cons(2) by auto
-  then have L2: "(a, lookup norms2 a) \<in> set norms2" using assms(3)
+  have AN: "is_alist norms\<^sub>1" using assms(1,3) by (metis alist_fst_map)
+  have A1: "a \<in> keys norms\<^sub>2" using Cons(2) by auto
+
+  have L1: "(a, lookup norms\<^sub>2 a) \<in> set norms\<^sub>2" using assms(3) by (metis A1 existence_from_lookup)
+  have L2: "(a, lookup norms\<^sub>1 a) \<in> set norms\<^sub>1" using assms(3) A1
     by (metis alist_fst_map assms(1) existence_from_lookup keys_fst_map)
 
-  have "(a, lookup norms1 a) \<in> set norms1" using assms(3) by (metis A1 existence_from_lookup)
-  then have "lookup norms2 a \<le> lookup norms1 a" using assms(2)
-    unfolding values_leq_def values_related_def using L2 by auto
-  then have "fst (lookup norms2 a) \<le> fst (lookup norms1 a)"
-    by (metis less_eq_prod_def order.strict_iff_order)
-  then show ?case using I  unfolding ns_distr_cons[of _ "a" "vs"] ns_singleton by auto
-qed (auto simp add: norm_sum_def)
+  have LE: "list_all2 op \<le> norms\<^sub>1 norms\<^sub>2" using list_all2_mono[OF assms(2) vrnle_le] by auto
 
-lemma ns_leq_new:
-  assumes "map fst norms2 = map fst norms1"
-      and "list_all2 v_rule_norm_less_eq norms2 norms1"
-      and "is_alist norms1"
-      and "set vs \<subseteq> keys norms1"
-    shows "norm_sum norms2 vs \<le> norm_sum norms1 vs"
-using assms(4) proof (induct vs)
-  case (Cons a vs)
-  then have I: "norm_sum norms2 vs \<le> norm_sum norms1 vs" by auto
-
-  have A1: "a \<in> keys norms1" using Cons(2) by auto
-  then have L2: "(a, lookup norms2 a) \<in> set norms2" using assms(3)
-    by (metis alist_fst_map assms(1) existence_from_lookup keys_fst_map)
-
-  have "(a, lookup norms1 a) \<in> set norms1" using assms(3) by (metis A1 existence_from_lookup)
-  then have "lookup norms2 a \<le> lookup norms1 a" using assms(2)
-    unfolding values_leq_def values_related_def using L2 (*by auto*) sorry
-  then have "fst (lookup norms2 a) \<le> fst (lookup norms1 a)"
+  have "lookup norms\<^sub>1 a \<le> lookup norms\<^sub>2 a" using list_all2_alist[OF assms(1) AN L2 L1 LE] by auto
+  then have "fst (lookup norms\<^sub>1 a) \<le> fst (lookup norms\<^sub>2 a)"
     by (metis less_eq_prod_def order.strict_iff_order)
   then show ?case using I unfolding ns_distr_cons[of _ "a" "vs"] ns_singleton by auto
 qed (auto simp add: norm_sum_def)
@@ -219,7 +208,7 @@ proof -
 
   have LE: "\<forall>x \<in> set (filter (t_rule_has_norm norms\<^sub>2) rules).
     t_rule_norm_less_eq (norm_of_t_rule norms\<^sub>1 x) (norm_of_t_rule norms\<^sub>2 x)"
-    using notr_leq[of norms\<^sub>2 norms\<^sub>1] ns_leq_new[OF assms(1-3)] by (metis prod.exhaust)
+    using notr_leq[of norms\<^sub>2 norms\<^sub>1] ns_leq[OF assms(1-3)] by (metis prod.exhaust)
   
   show ?thesis unfolding notr_conv FF using list_all2_map[of _ t_rule_norm_less_eq, OF LE] .
 qed
@@ -531,6 +520,24 @@ proof -
   then show ?thesis using rn_mnotr[OF assms(4) _ assms(2,1)] by auto
 qed
 
+
+(* TODO!! *)
+lemma list_all2_trnle:
+  assumes "list_all2 t_rule_norm_less_eq xs ys"
+      and "distinct (map (\<lambda>(n, t, vs). t) xs)"
+    shows "t_rule_norm_less_eq (Min (set (xs :: ('t :: linorder, 'v :: linorder) t_rule_norm list))) (Min (set ys))"
+using assms proof (induct rule: list_all2_induct)
+  case Nil show ?case unfolding t_rule_norm_less_eq_def by simp
+next
+  case (Cons x xs y ys)
+  have "t_rule_norm_less_eq (Min (set xs)) (Min (set ys))" using Cons(3-4) by auto
+  then show ?case using Cons(1-2,4) 
+  (*using Min_insert_leq by auto (metis (no_types) List.finite_set List.set.simps(2)
+    Min.coboundedI Min_in eq_iff insertCI list_all2_Nil min_def min_le_iff_disj set_empty)*)
+sorry
+qed
+
+
 lemma mnotr_rn_leq:
   assumes "is_alist gr"
       and "rn_invariant norms gr"
@@ -551,10 +558,10 @@ proof -
   (*then have VL: "values_leq (refine_norms norms gr) norms" (*using map_ran_values_leq[OF I(1) _ I(2)]*)
     (*by auto*) sorry*)
   
-  have "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
+  have EQ: "norm = min_norm_of_t_rules norms rules" using rn_mnotr'[OF assms(1) I(2-3) assms(3)]
     unfolding rules_def .
-  then show ?thesis using list_all2_Min notr_smaller[OF MF LA I(2)] (*[OF MF VL I(2)]*)
-    unfolding min_norm_of_t_rules_def rules_def (*by auto*) sorry
+  show ?thesis using list_all2_Min notr_smaller[OF MF LA I(2)] list_all2_trnle
+    unfolding min_norm_of_t_rules_def rules_def EQ sorry
 qed
 
 lemma rn_decreases:
