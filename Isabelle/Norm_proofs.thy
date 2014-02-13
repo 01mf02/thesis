@@ -307,6 +307,37 @@ proof -
   then show ?thesis unfolding N nr_def by auto
 qed
 
+lemma mnotr_trnle:
+  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
+      and "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>1 rules) norm"
+    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules) norm"
+sorry
+
+lemma mnotr_trnle2:
+  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
+      and "snd norm \<in> set rules"
+      and "t_rules_have_norm norms\<^sub>1 rules"
+      and "t_rules_have_norm norms\<^sub>2 rules"
+      and "is_alist rules"
+      and "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>1 rules) norm"
+    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules) norm"
+proof -
+  have S1: "snd (min_norm_of_t_rules norms\<^sub>1 rules) \<in> set rules"
+    using mnotr_in_rules[OF assms(3)] by simp
+  have S2: "snd (min_norm_of_t_rules norms\<^sub>2 rules) \<in> set rules"
+    using mnotr_in_rules[OF assms(4)] by simp
+
+  have "min_norm_of_t_rules norms\<^sub>1 rules \<le> norm" using trnle_le[OF assms(6)] .
+  then have "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>1 rules) norm"
+    using trnle_le2[OF _ S1 assms(2) assms(5)] by auto
+  then show ?thesis using mnotr_trnle[OF assms(1)] by auto
+qed
+
+lemma mnotr_trnle3:
+  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
+    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules) (min_norm_of_t_rules norms\<^sub>1 rules)"
+sorry
+
 
 subsection {* @{text add_norms} *}
 
@@ -318,6 +349,9 @@ using an_fst_map keys_fst_map by (metis set_append)
 
 lemma an_var_in_keys: "(v, rules) \<in> set yes \<Longrightarrow> v \<in> keys (add_norms norms yes)"
 unfolding an_keys[of norms yes] by auto
+
+lemma an_superset: "set norms \<subseteq> set (add_norms norms yes)"
+unfolding add_norms_def by auto
 
 lemma an_nil_invariant: "add_norms norms [] = norms"
 unfolding add_norms_def mnotr_map_def by auto
@@ -353,6 +387,11 @@ proof -
   then have "set vs \<subseteq> keys norms" using 1 by auto
   then show ?thesis unfolding t_rule_has_norm_def by auto
 qed
+
+lemma an_mnotr:
+  assumes "(v, rules) \<in> set yes"
+    shows "(v, min_norm_of_t_rules norms rules) \<in> set (add_norms norms yes)"
+using assms unfolding add_norms_def mnotr_map_def by auto
 
 
 subsection {* @{text v_rules_of_norms} *}
@@ -743,6 +782,7 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
   have YR: "keys yes \<subseteq> keys rest" using Step(3) by auto
   have NY: "keys norms \<inter> keys yes = {}" using YR IS(3) by auto
   have AU: "is_alist an" unfolding an_def using alist_distr_fst_map[OF an_fst_map IS(1) AY NY] .
+  have SS: "set norms \<subseteq> set an" using an_superset unfolding an_def .
 
   have T: "t_rules_have_norm norms rules"
   proof (cases "v \<in> keys norms")
@@ -754,9 +794,28 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
     then show ?thesis using Step(3) unfolding v_rule_has_norm_def by auto
   qed
 
-  have "t_rules_have_norm an rules" unfolding an_def
+  have I1: "t_rules_have_norm an rules" unfolding an_def
     using trshn_keys_superset[OF _ T] an_keys[of norms] by auto
-  then show ?case unfolding itno_invariant_sd_member_def an_def by auto
+
+  have I2: "t_rule_norm_less_eq (min_norm_of_t_rules an rules) (lookup an v)"
+  proof (cases "v \<in> keys norms")
+    case True
+    then have 1: "t_rule_norm_less_eq (min_norm_of_t_rules norms rules) (lookup norms v)"
+      using Step(4) unfolding itno_invariant_sd_member_def by auto
+    have EQ: "lookup norms v = lookup an v"
+      using True IS(1) AU alist_superset_lookup_equal[OF _ IS(1) AU SS, of "[v]"] an_def by auto
+    show ?thesis using mnotr_trnle[OF SS 1] unfolding EQ .
+  next
+    case False
+    then have "v \<in> keys yes" using an_keys[of norms yes] P unfolding an_def by auto
+    then have VR: "(v, rules) \<in> set yes" using alist_values_equal[OF AG assms(2)] YG by auto
+
+    have EQ: "lookup an v = min_norm_of_t_rules norms rules"
+      using an_mnotr[OF VR] lookup_from_existence[OF AU] unfolding an_def by auto
+    show ?thesis unfolding EQ using mnotr_trnle3[OF SS] .
+  qed
+
+  show ?case using I1 I2 unfolding itno_invariant_sd_member_def an_def by auto
 qed (auto simp add: assms(1))
 
 lemma itno_rn_invariant:
@@ -766,13 +825,28 @@ proof -
   let ?in = "fst (iterate_norms gr)"
   
   have AG: "is_alist gr" using gsd_alist[OF assms] .
+  have AI: "is_alist ?in" using itno_invariant_sd_holds[OF assms(1)]
+    unfolding itno_invariant_sd_def by simp
+
+  have II: "\<And>v rules. (v, rules) \<in> set gr \<Longrightarrow> v \<in> keys (fst (iterate_norms gr)) \<Longrightarrow>
+    t_rules_have_norm ?in rules \<and>
+    t_rule_norm_less_eq (min_norm_of_t_rules ?in rules) (lookup ?in v)"
+    using itno_invariant_sd_member_holds[OF assms(1)] unfolding itno_invariant_sd_member_def by auto
 
   have I4: "keys ?in \<subseteq> keys gr" using itno_gr_keys_equal by auto
 
-  have I1: "\<forall>(v, norm)\<in>set ?in. t_rule_norm_less_eq (min_norm_of_t_rules ?in (lookup gr v)) norm" sorry
+  have P1: "\<And>v norm. (v, norm) \<in>set ?in \<Longrightarrow> (v, lookup gr v) \<in> set gr"
+    by (metis (hide_lams, no_types) AG I4 alist_keys_fst_set existence_from_lookup in_mono key_in_fst)
+  have P2: "\<And>v norm. (v, norm) \<in>set ?in \<Longrightarrow> v \<in> keys (fst (iterate_norms gr))"
+    by auto
+
+  have "\<And>v norm. (v, norm)\<in>set ?in \<Longrightarrow>
+    t_rule_norm_less_eq (min_norm_of_t_rules ?in (lookup gr v)) norm"
+    using II P1 P2 lookup_from_existence[OF AI] by metis
+  then have I1: "\<forall>(v, norm)\<in>set ?in. t_rule_norm_less_eq (min_norm_of_t_rules ?in (lookup gr v)) norm"
+    by auto
   have I2: "(\<forall>v \<in> keys ?in. t_rules_have_norm ?in (lookup gr v))"
-    using itno_invariant_sd_member_holds[OF assms(1)] unfolding itno_invariant_sd_member_def
-    using existence_from_lookup[OF AG] I4 by (metis (no_types) set_rev_mp)
+    using II using existence_from_lookup[OF AG] I4 by (metis (no_types) set_rev_mp)
   have I3: "is_alist ?in" using itno_invariant_sd_holds[OF assms(1)]
     unfolding itno_invariant_sd_def by auto
 

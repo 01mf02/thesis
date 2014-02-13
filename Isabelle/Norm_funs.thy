@@ -194,7 +194,8 @@ definition itno_invariant_sd where
 
 definition itno_invariant_sd_member where
   "itno_invariant_sd_member norms v rules \<equiv>
-     t_rules_have_norm norms rules (*\<and> lookup norms v \<in> set (norms_of_t_rules norms rules)*)"
+     t_rules_have_norm norms rules (*\<and> lookup norms v \<in> set (norms_of_t_rules norms rules)*) \<and>
+     t_rule_norm_less_eq (min_norm_of_t_rules norms rules) (lookup norms v)"
 
 definition nog_invariant where
   "nog_invariant norms v rules \<equiv>
