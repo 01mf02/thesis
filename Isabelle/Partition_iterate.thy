@@ -109,34 +109,4 @@ proof -
   then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
 qed
 
-(*lemma pi_termination_condition_busy:
-  assumes "filter (P a) l = yesh # yest"
-      and "partition_iterate P f a l = (ac, no)"
-    shows "\<exists>a l. ac = f a l"
-sorry
-
-lemma pi_invariant_extended:
-  assumes "f a [] = a"
-      and "\<And>a l. f (f a l) [] = f a l"
-    shows "partition_iterate P f a l =
-           (\<lambda>(ac, no). (f ac (filter (P ac) no), no)) (partition_iterate P f a l)"
-proof -
-  def pi \<equiv> "partition_iterate P f a l"
-  def ac \<equiv> "fst pi"
-  def no \<equiv> "snd pi"
-  have PI: "partition_iterate P f a l = (ac, no)" using pi_def ac_def no_def by auto
-
-  have FE: "filter (P ac) no = []" using pi_termination_condition PI .
-  then have "f ac (filter (P ac) no) = ac"
-  proof (cases "filter (P a) l")
-    case Nil then show ?thesis using assms(1) unfolding ac_def no_def pi_def by auto
-  next
-    case (Cons yesh yest)
-    have "\<exists>a l. ac = f a l" using pi_termination_condition_busy[of P a l yesh yest, OF Cons PI] .
-    then show ?thesis unfolding FE using assms(2) by auto
-  qed
-  then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
-qed*)
-(*>*)
-
 end

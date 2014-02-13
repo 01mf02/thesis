@@ -104,6 +104,16 @@ next
   qed
 qed
 
+lemma trnle_trans:
+  assumes "t_rule_norm_less_eq n1 n2"
+      and "t_rule_norm_less_eq n2 n3"
+    shows "t_rule_norm_less_eq n1 n3"
+using assms unfolding t_rule_norm_less_eq_def t_rule_norm_strip_vs_def
+apply (case_tac n1)
+apply (case_tac n2)
+apply (case_tac n3) apply auto
+by (metis dual_order.strict_trans) (metis dual_order.strict_trans)
+
 
 subsection {* @{text gram_sd} *}
 
@@ -143,14 +153,14 @@ lemma ns_empty: "norm_sum ns [] = 0"
 by (simp add: norm_sum_def)
 
 lemma ns_norms_superset_equal:
-  assumes "set vs \<subseteq> keys norms"
-      and "is_alist norms"
-      and "is_alist norms'"
-      and "set norms \<subseteq> set norms'"
-    shows "norm_sum norms vs = norm_sum norms' vs"
+  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
+      and "is_alist norms\<^sub>1"
+      and "is_alist norms\<^sub>2"
+      and "set vs \<subseteq> keys norms\<^sub>1"
+    shows "norm_sum norms\<^sub>1 vs = norm_sum norms\<^sub>2 vs"
 proof -
-  have "map (fst \<circ> lookup norms) vs = map (fst \<circ> lookup norms') vs"
-    using alist_superset_lookup_equal[OF assms(1-4)] by auto
+  have "map (fst \<circ> lookup norms\<^sub>1) vs = map (fst \<circ> lookup norms\<^sub>2) vs"
+    using alist_superset_lookup_equal[OF assms(4,2-3,1)] by auto
   then show ?thesis unfolding norm_sum_def by (metis norm_sum_def ns_conv)
 qed
 
@@ -257,6 +267,23 @@ proof -
   show ?thesis unfolding notr_conv FF using list_all2_map[of _ t_rule_norm_less_eq, OF LE] .
 qed
 
+lemma notr_subset:
+  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
+      and "is_alist norms\<^sub>1"
+      and "is_alist norms\<^sub>2"
+    shows "set (norms_of_t_rules norms\<^sub>1 rules) \<subseteq> set (norms_of_t_rules norms\<^sub>2 rules)"
+proof -
+  have K: "keys norms\<^sub>1 \<subseteq> keys norms\<^sub>2" using assms by auto
+  have S: "set (filter (t_rule_has_norm norms\<^sub>1) rules) \<subseteq>
+           set (filter (t_rule_has_norm norms\<^sub>2) rules)" using trhn_keys_superset[OF K] by auto
+  have M:
+    "map (\<lambda>(t, vs). (Suc (norm_sum norms\<^sub>1 vs), t, vs)) (filter (t_rule_has_norm norms\<^sub>1) rules) =
+     map (\<lambda>(t, vs). (Suc (norm_sum norms\<^sub>2 vs), t, vs)) (filter (t_rule_has_norm norms\<^sub>1) rules)"
+    using ns_norms_superset_equal[OF assms] trhn_vars_normed[of norms\<^sub>1] by (induct rules) auto
+  show ?thesis unfolding notr_conv norm_of_t_rule_def
+    unfolding M using S by auto
+qed
+
 
 subsection {* @{text min_norm_of_t_rules} *}
 
@@ -307,36 +334,34 @@ proof -
   then show ?thesis unfolding N nr_def by auto
 qed
 
+lemma mnotr_le:
+  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
+      and "is_alist norms\<^sub>1"
+      and "is_alist norms\<^sub>2"
+      and "t_rules_have_norm norms\<^sub>1 rules"
+    shows "min_norm_of_t_rules norms\<^sub>2 rules \<le> min_norm_of_t_rules norms\<^sub>1 rules"
+unfolding min_norm_of_t_rules_def
+using Min.antimono[OF notr_subset[OF assms(1-3)]] notr_nonempty[OF assms(4)] by auto
+
 lemma mnotr_trnle:
   assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
-      and "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>1 rules) norm"
-    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules) norm"
-sorry
-
-lemma mnotr_trnle2:
-  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
-      and "snd norm \<in> set rules"
-      and "t_rules_have_norm norms\<^sub>1 rules"
-      and "t_rules_have_norm norms\<^sub>2 rules"
+      and "is_alist norms\<^sub>1"
+      and "is_alist norms\<^sub>2"
       and "is_alist rules"
-      and "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>1 rules) norm"
-    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules) norm"
+      and "t_rules_have_norm norms\<^sub>1 rules"
+    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules)
+                               (min_norm_of_t_rules norms\<^sub>1 rules)"
 proof -
   have S1: "snd (min_norm_of_t_rules norms\<^sub>1 rules) \<in> set rules"
-    using mnotr_in_rules[OF assms(3)] by simp
+    using mnotr_in_rules[OF assms(5)] by simp
   have S2: "snd (min_norm_of_t_rules norms\<^sub>2 rules) \<in> set rules"
-    using mnotr_in_rules[OF assms(4)] by simp
+    using mnotr_in_rules trshn_keys_superset[OF _ assms(5)] assms(1)
+    by (metis alist_keys_fst_set image_mono)
 
-  have "min_norm_of_t_rules norms\<^sub>1 rules \<le> norm" using trnle_le[OF assms(6)] .
-  then have "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>1 rules) norm"
-    using trnle_le2[OF _ S1 assms(2) assms(5)] by auto
-  then show ?thesis using mnotr_trnle[OF assms(1)] by auto
+  have "min_norm_of_t_rules norms\<^sub>2 rules \<le> min_norm_of_t_rules norms\<^sub>1 rules"
+    using mnotr_le[OF assms(1-3,5)] .
+  then show ?thesis using trnle_le2[OF _ S2 S1 assms(4)] by simp
 qed
-
-lemma mnotr_trnle3:
-  assumes "set norms\<^sub>1 \<subseteq> set norms\<^sub>2"
-    shows "t_rule_norm_less_eq (min_norm_of_t_rules norms\<^sub>2 rules) (min_norm_of_t_rules norms\<^sub>1 rules)"
-sorry
 
 
 subsection {* @{text add_norms} *}
@@ -374,7 +399,7 @@ proof -
   then have AI: "is_alist (add_norms norms yes)" using S(1) AM alist_distr[of norms]
     unfolding add_norms_def by auto
 
-  show ?thesis using ns_norms_superset_equal[OF assms(3) S(1) AI NI] .
+  show ?thesis using ns_norms_superset_equal[OF NI S(1) AI assms(3)] .
 qed
 
 lemma an_trhn_irrelevant:
@@ -696,7 +721,8 @@ subsection {* @{text minimise_norms} *}
 
 termination minimise_norms
 proof
-  let ?mno = "{((n', g' :: ('t::wellorder, 'v::wellorder) grammar), n, g). (n', n) \<in> grammar_norms_ord}"
+  let ?mno = "{((n', g' :: ('t::wellorder, 'v::wellorder) grammar), n, g).
+    (n', n) \<in> grammar_norms_ord}"
   have id: "?mno = inv_image grammar_norms_ord fst" unfolding inv_image_def by auto
   show "wf ?mno" unfolding id by (rule wf_inv_image[OF gno_wf])
 
@@ -783,6 +809,7 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
   have NY: "keys norms \<inter> keys yes = {}" using YR IS(3) by auto
   have AU: "is_alist an" unfolding an_def using alist_distr_fst_map[OF an_fst_map IS(1) AY NY] .
   have SS: "set norms \<subseteq> set an" using an_superset unfolding an_def .
+  have AR: "is_alist rules" using gsd_rules_alist[OF assms(1-2)] .
 
   have T: "t_rules_have_norm norms rules"
   proof (cases "v \<in> keys norms")
@@ -804,7 +831,7 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
       using Step(4) unfolding itno_invariant_sd_member_def by auto
     have EQ: "lookup norms v = lookup an v"
       using True IS(1) AU alist_superset_lookup_equal[OF _ IS(1) AU SS, of "[v]"] an_def by auto
-    show ?thesis using mnotr_trnle[OF SS 1] unfolding EQ .
+    show ?thesis using mnotr_trnle[OF SS IS(1) AU AR T] trnle_trans[OF _ 1] unfolding EQ by auto
   next
     case False
     then have "v \<in> keys yes" using an_keys[of norms yes] P unfolding an_def by auto
@@ -812,7 +839,7 @@ using assms(3) proof (induct rule: itno_induct_sd(1))
 
     have EQ: "lookup an v = min_norm_of_t_rules norms rules"
       using an_mnotr[OF VR] lookup_from_existence[OF AU] unfolding an_def by auto
-    show ?thesis unfolding EQ using mnotr_trnle3[OF SS] .
+    show ?thesis unfolding EQ using mnotr_trnle[OF SS IS(1) AU AR T] .
   qed
 
   show ?case using I1 I2 unfolding itno_invariant_sd_member_def an_def by auto
