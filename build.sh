@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd Isabelle
-#./build.sh
+./build.sh
 cd ..
 
 cd OCaml
@@ -19,6 +19,7 @@ done
 cd ..
 
 echo "Exporting from LyX to PDF \(via pdflatex driver\) ..."
+lyx Report-Seminar.lyx -e pdf2 > /dev/null
 #lyx Thesis.lyx -e pdf2 > /dev/null
 
 echo "Done."

@@ -1,5 +1,5 @@
 session "Norm" = "HOL" +
-  options [quick_and_dirty, show_question_marks = false,
+  options [show_question_marks = false,
            document = pdf, document_output = "output"]
   theories [document = false]
     "~~/src/HOL/Library/AList_Mapping"
