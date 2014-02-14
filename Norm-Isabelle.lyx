@@ -77,7 +77,8 @@ name "sec:General-purpose-Isabelle-parts"
 \begin_layout Standard
 For the implementation, we heavily used association lists, for which we
  proved several helper lemmata.
- Furthermore, we created a versatile algorithm called partition_iterate.
+ Furthermore, we created a versatile partition iteration algorithm, which
+ can be used to resolve dependencies between elements of a list.
 \end_layout
 
 \begin_layout Standard
@@ -855,7 +856,7 @@ In this section, we show how to use the resulting program, how to integrate
 \end_layout
 
 \begin_layout Subsection
-Demonstration
+Example
 \end_layout
 
 \begin_layout Standard
@@ -968,11 +969,7 @@ Furthermore, to use the exported functions in OCaml, we needed to supply
 \end_layout
 
 \begin_layout Subsection
-Status
-\end_layout
-
-\begin_layout Standard
-Let us give some statistics about our Isabelle theory:
+Statistics
 \end_layout
 
 \begin_layout Standard
@@ -1008,8 +1005,7 @@ end{itemize}
 
 \end_inset
 
-At the moment, there are still about five lemmata left to show, most of
- which are related to the termination of the norm refinement procedure.
+
 \end_layout
 
 \end_body

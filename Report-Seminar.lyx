@@ -20,7 +20,7 @@
 \MakeRobust{\Call}
 
 % to show DRAFT watermark
-\usepackage[firstpage]{draftwatermark}
+%\usepackage[firstpage]{draftwatermark}
 
 % center figures in all float environments
 \makeatletter
@@ -111,8 +111,8 @@ Cezary Kaliszyk
 \begin_layout Abstract
 For normed simple deterministic grammars, there exist algorithms in PTIME
  to calculate the length of the shortest word (norm) of each variable.
- We worked on the implementation and verification of such an algorithm in
- Isabelle/HOL.
+ We implemented such an algorithm in Isabelle/HOL and proved its soundness
+ and completeness.
 \end_layout
 
 \begin_layout Standard
@@ -1831,21 +1831,15 @@ Formalised simple deterministic grammars and their norms
 \end_layout
 
 \begin_layout Itemize
-Created algorithm to calculate norms
+Created an algorithm to calculate norms
 \end_layout
 
 \begin_layout Itemize
-Worked on correctness proof of algorithm
+Integrated the algorithm into OCaml program
 \end_layout
 
 \begin_layout Itemize
-Integrated algorithm into OCaml program
-\end_layout
-
-\begin_layout Standard
-It remains to finish the correctness proof of the algorithm, which is mostly
- done, but just lacks some more work to account for the termination proof
- of the norm refinement procedure.
+Proved soundness and completeness of the algorithm
 \end_layout
 
 \begin_layout Standard

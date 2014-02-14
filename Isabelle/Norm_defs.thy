@@ -51,19 +51,19 @@ subsection {* Norm *}
 text {*
 We use the @{text eat_word} function to verify whether a terminal word can
 be produced from a variable word. For this purpose, we use two lists,
-$S_{t}$ and $S_{v}$, which are initialised with the terminal and
+@{term t} and @{term v} which are initialised with the terminal and
 variable words, respectively. We use these lists as stacks, so we
 refer to them as stacks from now on.
 
 In case that both stacks are non-empty, we obtain the top terminal
-$t$ and the top variable $v$ from the stacks. Then we check whether
-there exists a terminal rule for $v$ with the terminal $t$, i.e.
-whether we can produce a terminal word from $v$ that starts with
-$t$. If this is not the case, then we just return both stacks (which
-will be non-empty). Otherwise, we obtain the terminal rule for $v$
-starting with $t$ and extract the list of variables $v'$ from it.
-Then we pop $t$ and $v$ from their stacks, push $v'$ onto the variable
-stack and call the algorithm with the updated stacks.
+@{term th} and the top variable @{term vh} from the stacks. Then we check whether
+there exists a terminal rule for @{term vh} with the terminal @{term th}, i.e.
+whether we can produce a terminal word from @{term vh} that starts with
+@{term th}. If this is not the case, then we just return both stacks (which
+will be non-empty). Otherwise, we obtain the terminal rule for @{term vh}
+starting with @{term th} and extract its associated list of variables.
+Then we pop @{term th} and @{term vh} from their stacks,
+push the list of variables onto the variable stack and call the algorithm with the updated stacks.
 
 In case that at least one of the stacks is empty, we just return both
 stacks as is. This case can be caused by the following scenarios:
@@ -75,14 +75,13 @@ the original terminal word can be produced from the original variable
 word.
 \item Only the terminal stack is empty: This indicates that the terminal
 word was too short for the variable word; however, we could find a
-terminal word $t'$ such that $t@t'$ can be produced by $v$.
+terminal word @{term t'} such that @{term "t@t'"} can be produced by @{term v}.
 \item Only the variable stack is empty: This means that the terminal word
-cannot be produced from the variable word; however, a prefix $t'$
-of $t$ (being strictly smaller than $t$) exists such that $t'$
-can be produced by $v$.
+cannot be produced from the variable word; however, a strict prefix @{term t'}
+of @{term t} exists such that @{term t'} can be produced by @{term v}.
 \end{itemize}
 However, most of the time we are only interested in whether a terminal
-word can be produced by a variable word, which the function word\_in\_variables
+word can be produced by a variable word, which the function @{text word_in_variables}
 does by verifying whether @{text eat_word} returns two empty lists.
 *}
 
@@ -117,9 +116,9 @@ definition words_of_variables ::
 
 text {*
 Next, we formalise what it means for a grammar to be normed: It means
-that for each variable word $v$ consisting of variables of the grammar,
+that for each variable word @{term v} consisting of variables of the grammar,
 there exists at least one (finite) terminal word which can be produced
-from $v$.
+from @{term v}.
 *}
 
 definition gram_normed_def :: "('t, 'v) grammar \<Rightarrow> bool" where
@@ -135,8 +134,8 @@ definition gram_nsd_def :: "('t, 'v) grammar \<Rightarrow> bool" where
   "gram_nsd_def gr \<equiv> gram_sd gr \<and> gram_normed_def gr"
 
 text {*
-Finally, we can define norms: Given a variable word $v$, we can obtain
-the set of terminal words producible from $v$. The norm is then the
+Finally, we can define norms: Given a variable word @{term v}, we can obtain
+the set of terminal words producible from @{term v}. The norm is then the
 length of the shortest of these terminal words.
 *}
 

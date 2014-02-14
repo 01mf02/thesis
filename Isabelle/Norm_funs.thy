@@ -42,6 +42,16 @@ type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
 
 subsection {* Norm orders *}
 
+text {*
+The following functions define orders for several norm types.
+To prove termination of the function @{text minimise_norms}, we need a well-founded
+order on @{text grammar_norms}. However, we cannot directly use the < order defined in Isabelle,
+because it is not well-founded on the norm types, due to the fact that the norm types contain
+lists of variables, and < on lists is not well-founded.
+Therefore, for the orders, we strip the lists of variables from the types and compare the
+stripped result with < afterwards.
+*}
+
 definition t_rule_norm_strip_vs where
   "t_rule_norm_strip_vs \<equiv> \<lambda>(n, t, vs). (n, t)"
 
@@ -49,26 +59,35 @@ definition v_rule_norm_strip_vs where
   "v_rule_norm_strip_vs \<equiv> \<lambda>(v, n, t, vs). (v, n, t)"
 
 definition t_rule_norm_less ::
-  "('t :: wellorder, 'v :: wellorder) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
-  "t_rule_norm_less n1 n2 \<equiv> t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2"
+  "('t :: wellorder, 'v :: wellorder) t_rule_norm \<Rightarrow>
+   ('t, 'v) t_rule_norm \<Rightarrow> bool" where
+  "t_rule_norm_less n1 n2 \<equiv>
+     t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2"
 
 definition t_rule_norm_less_eq ::
-  "('t :: order, 'v :: order) t_rule_norm \<Rightarrow> ('t, 'v) t_rule_norm \<Rightarrow> bool" where
-  "t_rule_norm_less_eq n1 n2 \<equiv> t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2 \<or> n1 = n2"
+  "('t :: order, 'v :: order) t_rule_norm \<Rightarrow>
+   ('t, 'v) t_rule_norm \<Rightarrow> bool" where
+  "t_rule_norm_less_eq n1 n2 \<equiv>
+     t_rule_norm_strip_vs n1 < t_rule_norm_strip_vs n2 \<or> n1 = n2"
 
 definition v_rule_norm_less ::
-  "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow> ('t, 'v) v_rule_norm \<Rightarrow> bool" where
-  "v_rule_norm_less n1 n2 \<equiv> v_rule_norm_strip_vs n1 < v_rule_norm_strip_vs n2"
+  "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow>
+   ('t, 'v) v_rule_norm \<Rightarrow> bool" where
+  "v_rule_norm_less n1 n2 \<equiv>
+     v_rule_norm_strip_vs n1 < v_rule_norm_strip_vs n2"
 
 definition v_rule_norm_less_eq ::
-  "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow> ('t, 'v) v_rule_norm \<Rightarrow> bool" where
-  "v_rule_norm_less_eq n1 n2 \<equiv> v_rule_norm_strip_vs n1 < v_rule_norm_strip_vs n2 \<or> n1 = n2"
+  "('t :: wellorder, 'v :: wellorder) v_rule_norm \<Rightarrow>
+   ('t, 'v) v_rule_norm \<Rightarrow> bool" where
+  "v_rule_norm_less_eq n1 n2 \<equiv>
+     v_rule_norm_strip_vs n1 < v_rule_norm_strip_vs n2 \<or> n1 = n2"
 
 definition v_rule_norm_ord where
   "v_rule_norm_ord = {(n1, n2). v_rule_norm_less n1 n2}"
 
 definition grammar_norms_ord ::
-  "(('t :: wellorder, 'v :: wellorder) grammar_norms \<times> ('t, 'v) grammar_norms) set" where
+  "(('t :: wellorder, 'v :: wellorder) grammar_norms \<times>
+    ('t, 'v) grammar_norms) set" where
   "grammar_norms_ord = lex v_rule_norm_ord"
 
 
@@ -167,11 +186,11 @@ definition add_norms ::
 
 text {*
 The norm iteration algorithm starts with a set of variable rules,
-initially gr, and a set of norms, initially $\left[\right]$. Then,
+initially @{term gr}, and a set of norms, initially $\left[\right]$. Then,
 in each iteration, the algorithm calculates the variable rules which
 can be normed and those which cannot be normed, then calculates new
 norms for those rules which can be normed, and recurses with the set
-of rules which could not be normed and the updated norms. As sonn
+of rules which could not be normed and the updated norms. As soon
 as no rule can be normed anymore, the algorithm returns the most recent
 norms and the remaining variable rules which could not be normed.
 
@@ -232,11 +251,18 @@ definition refine_norms ::
    ('t, 'v) grammar_norms" where
   "refine_norms norms gr = mnotr_map norms (v_rules_of_norms norms gr)"
 
+text {*
+@{text rn_invariant} is a predicate that simplifies the termination proof of
+@{text minimise_norms}. In particular, @{text rn_invariant} holds for the result of
+@{text iterate_norms}, which is passed as initial input to @{text minimise_norms}.
+*}
+
 definition rn_invariant ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
    bool" where
   "rn_invariant norms gr \<equiv> (\<forall>(v, norm) \<in> set norms.
-     t_rule_norm_less_eq (min_norm_of_t_rules norms (lookup gr v)) norm) \<and>
+     t_rule_norm_less_eq
+       (min_norm_of_t_rules norms (lookup gr v)) norm) \<and>
      (\<forall>v \<in> keys norms. t_rules_have_norm norms (lookup gr v)) \<and>
      is_alist norms \<and> keys norms \<subseteq> keys gr"
 
