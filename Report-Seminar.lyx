@@ -270,11 +270,11 @@ reference "fig:Object-logics."
 
 \end_inset
 
-.
+
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -315,7 +315,7 @@ name "fig:Object-logics."
 
 \end_inset
 
-The most mature object logic in Isabelle at the time of writing is HOL (Higher
+.The most mature object logic in Isabelle at the time of writing is HOL (Higher
  Order Logic), which provides a comfortable programming environment similar
  to common functional programming languages, providing many auxiliary functions
  for e.g.

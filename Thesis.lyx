@@ -166,8 +166,7 @@ Equivalence of simple deterministic grammar is decidable in PTIME.
  our algorithm runs in 2-EXPTIME (although in all our experiments it needed
  at most EXPTIME) and finds a proof of equivalence if and only if the equivalenc
 e holds.
- Furthermore, we made a set of grammars containing equivalent variables,
- whose equivalences are non-trivial to prove.
+ Furthermore, we implemented and verified parts of the algorithm in Isabelle/HOL.
 \end_layout
 
 \begin_layout Standard
@@ -204,6 +203,12 @@ My supervisor Cezary, for supporting me and my studies since we met in 2012,
 Aart Middeldorp, Georg Moser, Pierre Castéran, Marc Zeitoun and Anca Muscholl
  for your amazing logic lectures, of which I had the joy to attend at least
  four different ones during the last two years.
+\end_layout
+
+\begin_layout Itemize
+The team behind LyX, which has been enormously useful in the creation of
+ this document, as well as the Isabelle team, for creating a most impressive
+ theorem prover.
 \end_layout
 
 \begin_layout Itemize
@@ -453,10 +458,18 @@ reference "chap:Conclusion"
 \end_inset
 
 .
- The appendix in 
+ The first appendix in 
 \begin_inset CommandInset ref
 LatexCommand formatted
-reference "chap:Appendix"
+reference "chap:Appendix-Norm"
+
+\end_inset
+
+ describes the implementation and verification of a part of the proof algorithm,
+ and the second appendix in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Appendix-SC"
 
 \end_inset
 
@@ -907,7 +920,7 @@ A context-free grammar (CFG) is a triple
 \begin_inset Formula $V$
 \end_inset
 
- is a finite set of variables,
+ is a finite set of nonterminals, to which we refer henceforth as variables,
 \end_layout
 
 \begin_layout Itemize
@@ -1154,7 +1167,7 @@ reference "fig:Production-graph"
 
 \end_inset
 
-:
+
 \begin_inset Float figure
 wide false
 sideways false
@@ -1273,7 +1286,7 @@ Production graph for example grammar.
 
 \end_inset
 
- We interpret this graph as follows:
+, and we interpret this graph as follows:
 \end_layout
 
 \begin_deeper
@@ -1394,13 +1407,13 @@ Simple deterministic grammars are a subclass of context-free grammars; in
  fact, the relation between several language classes is 
 \begin_inset Formula 
 \[
-\lang{\mathrm{SDG}}\subset\lang{\mathrm{DETCF}}\subset\lang{\mathrm{CF}},
+\lang{\mathrm{SDG}}\subsetneq\lang{\mathrm{DCF}}\subsetneq\lang{\mathrm{CF}},
 \]
 
 \end_inset
 
 where 
-\begin_inset Formula $\mathrm{DETCF}$
+\begin_inset Formula $\mathrm{DCF}$
 \end_inset
 
  denotes deterministic context-free grammars and 
@@ -1523,7 +1536,7 @@ By induction on
 \end_inset
 
 : 
-\begin_inset Formula $\norm{F_{n+1}}=1+2\cdot\norm{F_{n}}\overset{\text{ind.}}{=}1+2\cdot\left(2^{n+1}-1\right)=1+2^{n+2}-2=2^{n+2}-1$
+\begin_inset Formula $\norm{F_{n+1}}=1+2\cdot\norm{F_{n}}\overset{\text{IH}}{=}1+2\cdot\left(2^{n+1}-1\right)=1+2^{n+2}-2=2^{n+2}-1$
 \end_inset
 
 .
@@ -1679,7 +1692,14 @@ For each terminal
 
 \end_inset
 
+This is later required in 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Proof-strategy-1"
 
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2072,7 +2092,7 @@ We prove this by induction on
 \end_inset
 
  to be 
-\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}\overset{\text{ind.}}{\leq}1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
+\begin_inset Formula $\norm{X_{i+1}}=1+k\cdot\norm{X_{i}}\overset{\text{IH}}{\leq}1+k\cdot\sum_{x=0}^{i}k^{x}=1+\sum_{x=0}^{i}k^{x+1}=\sum_{x=0}^{i+1}k^{x}$
 \end_inset
 
 .
@@ -2127,7 +2147,7 @@ By induction on
 \end_inset
 
 : 
-\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{ind.}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}$
+\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{IH}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}$
 \end_inset
 
 .
@@ -2247,7 +2267,7 @@ A monoid is a pair
 \begin_inset Formula $\cdot$
 \end_inset
 
- is an associative operation such that
+ is an associative operation, fulfilling the following conditions:
 \end_layout
 
 \begin_deeper
@@ -3252,46 +3272,18 @@ cutting away
 
  characters of its shortest producible terminal word and returning the remaining
  variables.
- For example, if we know that 
-\begin_inset Formula $AB\equiv CD$
-\end_inset
-
- and 
-\begin_inset Formula $\norm A>\norm C$
-\end_inset
-
-, then we conclude that 
-\begin_inset Formula $C$
-\end_inset
-
- is a prefix of 
-\begin_inset Formula $A$
-\end_inset
-
- and there has to exist a postfix 
-\begin_inset Formula $\alpha=\left[A\right]_{\norm C}$
-\end_inset
-
- of 
-\begin_inset Formula $A$
-\end_inset
-
- such that 
-\begin_inset Formula $A\equiv C\alpha$
-\end_inset
-
- --- see 
+ For an example, see 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "fig:Motivation-Base"
 
 \end_inset
 
-.
+
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -3327,13 +3319,37 @@ Motivation of Caucal base.
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
+: If we know that 
+\begin_inset Formula $AB\equiv CD$
+\end_inset
 
+ and 
+\begin_inset Formula $\norm A>\norm C$
+\end_inset
+
+, then we conclude that 
+\begin_inset Formula $C$
+\end_inset
+
+ is a prefix of 
+\begin_inset Formula $A$
+\end_inset
+
+ and there has to exist a postfix 
+\begin_inset Formula $\alpha=\left[A\right]_{\norm C}$
+\end_inset
+
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+ such that 
+\begin_inset Formula $A\equiv C\alpha$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -4747,7 +4763,7 @@ Transitivity:
 
 Let us assume w.l.o.g.
  that the smallest witness of non-equivalence 
-\begin_inset Formula $w$
+\begin_inset Formula $w\in\lang x\Delta\lang z$
 \end_inset
 
  is contained in 
@@ -5189,7 +5205,7 @@ gr*: This rule replaces the first variable of the left or the right side
  For example:
 \begin_inset Formula 
 \[
-\bussproof{\unaryinf{\axiom{\Gr AB}{CD}}{AB}{CD}{gr*}}\quad\equiv\quad\bussproof{\transinf{AB}{CD}{\timesinf{AB}{\Gr AB}{\gr A{\Gr A}}{\refl BB}}{\axiom{\Gr A\cdot B}{CD}}}
+\bussproof{\unaryinf{\axiom{\Gr AB}{CD}}{AB}{CD}{gr*}}\quad\equiv\quad\bussproof{\transinf{AB}{CD}{\timesinf{AB}{\Gr AB}{\gr A{\Gr A}}{\refl BB}}{\axiom{\Gr AB}{CD}}}
 \]
 
 \end_inset
@@ -5698,7 +5714,7 @@ We prove
 \end_inset
 
 : 
-\begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\left\langle X_{i}\beta\right\rangle _{\norm{X_{i}\beta}}=X_{i}\left\langle \beta\right\rangle _{\norm{\beta}}\overset{\text{ind.}}{=}X_{i}\beta.$
+\begin_inset Formula $\left\langle \alpha\right\rangle _{\norm{\alpha}}=\left\langle X_{i}\beta\right\rangle _{\norm{X_{i}\beta}}=X_{i}\left\langle \beta\right\rangle _{\norm{\beta}}\overset{\text{IH}}{=}X_{i}\beta.$
 \end_inset
 
 
@@ -5795,7 +5811,7 @@ We prove
 \end_inset
 
 
-\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1}}=1+\length{\left\langle \alpha_{i1}\right\rangle _{t-1}}\overset{\text{ind.}}{\leq}1+\left(i-1-1\right)k+k=1+\left(i-1\right)k\leq\left(i-1\right)k+\length{\alpha}.$
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1}}=1+\length{\left\langle \alpha_{i1}\right\rangle _{t-1}}\overset{\text{IH}}{\leq}1+\left(i-1-1\right)k+k=1+\left(i-1\right)k\leq\left(i-1\right)k+\length{\alpha}.$
 \end_inset
 
 
@@ -5810,7 +5826,7 @@ We prove
 \end_inset
 
 
-\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{X_{i}\left\langle \beta\right\rangle _{t-\norm{X_{i}}}}=1+\length{\left\langle \beta\right\rangle _{t-\norm{X_{i}}}}\overset{\text{ind.}}{\leq}1+\left(j-1\right)k+\overbrace{\length{\alpha}-1}^{\length{\beta}}=\left(j-1\right)k+\length{\alpha}$
+\begin_inset Formula $\length{\left\langle \alpha\right\rangle _{t}}=\length{X_{i}\left\langle \beta\right\rangle _{t-\norm{X_{i}}}}=1+\length{\left\langle \beta\right\rangle _{t-\norm{X_{i}}}}\overset{\text{IH}}{\leq}1+\left(j-1\right)k+\overbrace{\length{\alpha}-1}^{\length{\beta}}=\left(j-1\right)k+\length{\alpha}$
 \end_inset
 
 .
@@ -5907,7 +5923,7 @@ If
 \end_inset
 
 
-\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1}\left[\alpha_{i1}\right]_{t-1}\beta\overset{\text{ind.}}{=}V_{a_{i1}}\alpha_{i1}\beta\equiv X_{i}\beta$
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=V_{a_{i1}}\left\langle \alpha_{i1}\right\rangle _{t-1}\left[\alpha_{i1}\right]_{t-1}\beta\overset{\text{IH}}{=}V_{a_{i1}}\alpha_{i1}\beta\equiv X_{i}\beta$
 \end_inset
 
 .
@@ -5922,7 +5938,7 @@ If
 \end_inset
 
 
-\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=X_{i}\left\langle \beta\right\rangle _{t-\norm{X_{i}}}=\left[\beta\right]_{t-\norm{X_{i}}}\overset{\text{ind.}}{=}X_{i}\beta$
+\begin_inset Formula $\left\langle \alpha\right\rangle _{t}\left[\alpha\right]_{t}=X_{i}\left\langle \beta\right\rangle _{t-\norm{X_{i}}}=\left[\beta\right]_{t-\norm{X_{i}}}\overset{\text{IH}}{=}X_{i}\beta$
 \end_inset
 
 .
@@ -6772,9 +6788,9 @@ Pp: To avoid having rules like Pp-B and Pp-G, which would be symmetrical
 \end_layout
 
 \begin_layout Itemize
-PP-S: In all following PP rules, we assume that the first variable on the
- left-hand side has a greater or equal norm than the first variable on the
- right-hand side; we assure that condition with this rule.
+PP-S: In all PP rules following this one, we assume that the first variable
+ on the left-hand side has a greater or equal norm than the first variable
+ on the right-hand side; we assure that condition with this rule.
  
 \begin_inset Formula 
 \begin{gather*}
@@ -7371,8 +7387,17 @@ Grammar generation: The program constructs several different grammars with
 
 \begin_layout Itemize
 Grammar verification & norm calculation: The program verifies that the input
- grammar is a normalised simple deterministic grammar, and in the same turn
+ grammar is a normed simple deterministic grammar, and in the same turn
  calculates the norm of each variable.
+ We implemented and verified this part of the algorithm in Isabelle/HOL;
+ see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Appendix-Norm"
+
+\end_inset
+
+ for details.
 \end_layout
 
 \begin_layout Itemize
@@ -8338,43 +8363,6 @@ As all production rules for this grammar are (strict) sums, we cannot apply
 \end_layout
 
 \begin_layout Chapter
-Verification
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write introduction, conclusion.
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Present Isabelle.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand input
-filename "Norm-Isabelle.lyx"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Chapter
 Conclusion
 \begin_inset CommandInset label
 LatexCommand label
@@ -8432,9 +8420,18 @@ key "paulson1990"
 
 \end_inset
 
- to verify the proof afterwards.
+ to verify the correctness proof afterwards.
  These programs can also automatically produce code from such a proof afterwards
 , meaning we can obtain a program formally proved for correctness.
+ We prepared this path by verifying a part of our algorithm in Isabelle,
+ see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "chap:Appendix-Norm"
+
+\end_inset
+
+.
  However, currently the compilation of the resulting code may still introduce
  errors into the program, or the machine running the program might misbehave,
  producing a wrong result without us being able to verify it.
@@ -8449,12 +8446,64 @@ One last, but for us rather important aspect of this work is the creation
  us.
 \end_layout
 
+\begin_layout Chapter
+Appendix I: Implementation and verification of norm algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Appendix-Norm"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-\begin_inset Note Note
+In this chapter, we present our implementation and verification of the norm
+ calculation algorithm in Isabelle/HOL.
+\end_layout
+
+\begin_layout Standard
+First, we introduce Isabelle.
+ Then, we show some Isabelle theories which we created to formalise norms
+ and to implement the algorithm.
+ Following this, we give our formalisation of norms and the actual implementatio
+n of our algorithm.
+ Finally, we give a very short insight into the proof idea and show some
+ results.
+\end_layout
+
+\begin_layout Section
+Isabelle
+\end_layout
+
+\begin_layout Standard
+Isabelle is an interactive theorem prover programmed in Standard ML.
+ It provides a meta-logic to formalise a multitude of different object logics,
+ such as ZF (Zermelo-Fraenkel Set Theory), CTT (Constructive Type Theory),
+ FOL (First Order Logic) --- see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Object-logics."
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
 status open
 
 \begin_layout Plain Layout
-Verification!
+
+
+\backslash
+includesvg[width=0.6
+\backslash
+columnwidth]{Logics}
 \end_layout
 
 \end_inset
@@ -8462,11 +8511,93 @@ Verification!
 
 \end_layout
 
-\begin_layout Chapter
-Appendix: Soundness and completeness
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Object logics in Isabelle.
 \begin_inset CommandInset label
 LatexCommand label
-name "chap:Appendix"
+name "fig:Object-logics."
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.The most mature object logic in Isabelle at the time of writing is HOL (Higher
+ Order Logic), which provides a comfortable programming environment similar
+ to common functional programming languages, providing many auxiliary functions
+ for e.g.
+ list operations, along with lemmata about these operations.
+\end_layout
+
+\begin_layout Standard
+Isabelle/HOL also permits the export of code written in it into other languages,
+ such as Scala, OCaml and Haskell.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "haftmann2013"
+
+\end_inset
+
+ Having proven certain properties of functions in Isabelle, we can then
+ use the exported functions in aforementioned languages, trusting they also
+ behave according to our proved behaviour.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Of course, we can not exclude the possibility of a faulty target language
+ compiler or hardware failures, but even with these restrictions, we can
+ be a lot more confident in the function of our verified program compared
+ to a completely unverified alternative.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We used Isabelle/HOL to formalise simple deterministic grammars and norms,
+ and based on that, we implemented a norm calculation algorithm in it.
+ Then, we showed the correctness of the algorithm, thus establishing a link
+ between the formalisation and the implementation.
+ Furthermore, we used Isabelle's code export to automatically generate OCaml
+ code from our algorithm, which we embedded in an existing OCaml program
+ --- see subsection 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Integration-with-OCaml"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "Norm-Isabelle.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Appendix II: Soundness and completeness of proof strategy
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Appendix-SC"
 
 \end_inset
 
