@@ -97,7 +97,7 @@ theorems-ams-bytype
 \begin_body
 
 \begin_layout Title
-Calculating norms of simple deterministic grammars
+Calculating Norms of Simple Deterministic Grammars
 \end_layout
 
 \begin_layout Author
@@ -110,9 +110,19 @@ Cezary Kaliszyk
 
 \begin_layout Abstract
 For normed simple deterministic grammars, there exist algorithms in PTIME
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+problems are in ptime, algorithms in polytime? research!
+\end_layout
+
+\end_inset
+
  to calculate the length of the shortest word (norm) of each variable.
- We implemented such an algorithm in Isabelle/HOL and proved its soundness
- and completeness.
+ We implemented such an algorithm and proved its soundness and completeness
+ in Isabelle/HOL.
 \end_layout
 
 \begin_layout Standard
@@ -146,9 +156,35 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-In this document, we show our work that has gone towards the formalisation,
- implementation and verification of an algorithm to calculate the norms
- of simple deterministic grammars.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+fix section §x
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+write section -> Section instead?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this seminar report, we show our work that has gone towards the implementatio
+n and verification of an algorithm to calculate the norms of simple deterministi
+c grammars.
 \end_layout
 
 \begin_layout Standard
@@ -214,10 +250,21 @@ Motivation
 \end_layout
 
 \begin_layout Standard
-In my master's thesis, I present a way to construct and verify equivalence
- proofs of simple deterministic grammars.
+In my master's thesis 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+cite!
+\end_layout
+
+\end_inset
+
+, I present a way to construct and verify equivalence proofs of simple determini
+stic grammars.
  To increase the confidence in the algorithm I developed for the thesis,
- we considered verifying the algorithm formally in a theorem prover.
+ we considered verifying the algorithm formally in an interactive theorem
+ prover.
  The algorithm consists of many parts which could be considered worthwhile
  to verify:
 \end_layout
@@ -242,15 +289,8 @@ Proof construction
 Proof verification
 \end_layout
 
-\begin_layout Itemize
-\begin_inset Formula $\dots$
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-It turned out that the whole algorithm was to big to be verified in the
+It turned out that the whole algorithm was too big to be verified in the
  framework of this seminar, so we concentrated on verifying the first two
  parts, namely grammar verification and norm calculation, in Isabelle/HOL.
 \end_layout
@@ -260,77 +300,34 @@ Isabelle
 \end_layout
 
 \begin_layout Standard
-Isabelle is an interactive theorem prover programmed in Standard ML.
+Isabelle is an LCF-style theorem prover programmed in Standard ML 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "paulson1990"
+
+\end_inset
+
+.
  It provides a meta-logic to formalise a multitude of different object logics,
  such as ZF (Zermelo-Fraenkel Set Theory), CTT (Constructive Type Theory),
- FOL (First Order Logic) --- see 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Object-logics."
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg[width=0.6
-\backslash
-columnwidth]{Logics}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Object logics in Isabelle.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Object-logics."
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-.The most mature object logic in Isabelle at the time of writing is HOL (Higher
- Order Logic), which provides a comfortable programming environment similar
- to common functional programming languages, providing many auxiliary functions
- for e.g.
+ FOL (First Order Logic).
+ The most mature object logic in Isabelle at the time of writing is HOL
+ (Higher Order Logic), which provides a comfortable programming environment
+ similar to common functional programming languages, providing many auxiliary
+ functions for e.g.
  list operations, along with lemmata about these operations.
 \end_layout
 
 \begin_layout Standard
 Isabelle/HOL also permits the export of code written in it into other languages,
- such as Scala, OCaml and Haskell.
+ such as Scala, OCaml and Haskell 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "haftmann2013"
 
 \end_inset
 
+.
  Having proven certain properties of functions in Isabelle, we can then
  use the exported functions in aforementioned languages, trusting they also
  behave according to our proved behaviour.
@@ -915,8 +912,8 @@ Z & \to c
 
 \end_inset
 
-This is a simple deterministic grammar in 2-GNF, as there are maximally
- two variables on the right side of a production rule, namely in 
+This is a context-free grammar in 2-GNF, as there are maximally two variables
+ on the right side of a production rule, namely in 
 \begin_inset Formula $Y\to bZZ$
 \end_inset
 
@@ -1051,11 +1048,11 @@ Production graph for example grammar.
 \end_layout
 
 \begin_layout Itemize
-Each edge represents a variable word.
+Each vertex represents a variable word.
 \end_layout
 
 \begin_layout Itemize
-Each vertex with label 
+Each edge with label 
 \begin_inset Formula $a\in T$
 \end_inset
 
@@ -1243,6 +1240,7 @@ By induction on
 :
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $n=0$
 \end_inset
@@ -1265,6 +1263,7 @@ By induction on
 .
 \end_layout
 
+\end_deeper
 \begin_layout Subsection
 Polynomials
 \begin_inset CommandInset label
