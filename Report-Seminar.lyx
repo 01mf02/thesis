@@ -8,8 +8,8 @@
 \usepackage[svgpath=Graphics/]{svg}
 
 % Isabelle
-\usepackage{Isabelle/output/document/isabelle}
-\usepackage{Isabelle/output/document/isabellesym}
+\usepackage{IsaTeX/isabelle}
+\usepackage{IsaTeX/isabellesym}
 \usepackage{mathpartir}
 \isadroptag{theory}
 
@@ -109,18 +109,9 @@ Cezary Kaliszyk
 \end_layout
 
 \begin_layout Abstract
-For normed simple deterministic grammars, there exist algorithms in PTIME
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-problems are in ptime, algorithms in polytime? research!
-\end_layout
-
-\end_inset
-
- to calculate the length of the shortest word (norm) of each variable.
+For normed simple deterministic grammars, there exist algorithms running
+ in polynomial time to calculate the length of the shortest word (norm)
+ of each variable.
  We implemented such an algorithm and proved its soundness and completeness
  in Isabelle/HOL.
 \end_layout
@@ -151,102 +142,59 @@ LatexCommand tableofcontents
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Abstand bei 
+\begin_inset Formula $\text{\lang X}$
+\end_inset
+
+ kürzen!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+use 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ instead of 
+\begin_inset Formula $T$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+write Section instead of section? auf jeden Fall § davor weg!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Introduction
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-fix section §x
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-write section -> Section instead?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In this seminar report, we show our work that has gone towards the implementatio
-n and verification of an algorithm to calculate the norms of simple deterministi
-c grammars.
-\end_layout
-
-\begin_layout Standard
-In this introductory section, we give a short overview of the motivation
- behind this work and introduce the interactive theorem prover Isabelle,
- which we used for our work.
- Then, in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:Grammars"
-
-\end_inset
-
-, we explain simple deterministic grammars and their norms.
- Following this, in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:General-purpose-Isabelle-parts"
-
-\end_inset
-
- we introduce some general-purpose Isabelle components we developed for
- the formalisation and implementation of the algorithm.
- With this knowledge, we can tackle the Isabelle formalisation of grammars
- and norms in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:Norm-formalisation"
-
-\end_inset
-
-.
- Afterwards, we present the norm calculation algorithm and its implementation
- in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:Norm-calculation-algorithm"
-
-\end_inset
-
-.
- In 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:Proof"
-
-\end_inset
-
-, we very briefly introduce the idea behind the correctness proof of the
- algorithm.
- Last but not least, we conclude with the results of our work in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:Results"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Motivation
 \end_layout
 
 \begin_layout Standard
@@ -260,47 +208,30 @@ cite!
 
 \end_inset
 
-, I present a way to construct and verify equivalence proofs of simple determini
-stic grammars.
- To increase the confidence in the algorithm I developed for the thesis,
- we considered verifying the algorithm formally in an interactive theorem
- prover.
- The algorithm consists of many parts which could be considered worthwhile
- to verify:
-\end_layout
-
-\begin_layout Itemize
-Grammar verification
-\end_layout
-
-\begin_layout Itemize
-Norm calculation
-\end_layout
-
-\begin_layout Itemize
-Variable base construction
-\end_layout
-
-\begin_layout Itemize
-Proof construction
-\end_layout
-
-\begin_layout Itemize
-Proof verification
+, I present a way to construct equivalence proofs of simple deterministic
+ grammars.
+ To increase the confidence in the proof construction algorithm I developed
+ for the thesis, we considered verifying the algorithm formally in an interactiv
+e theorem prover.
+ The algorithm consists of many separate parts which could be considered
+ worthwhile to verify; for example, the proof construction, the norm calculation
+, the grammar verification, and several other parts.
 \end_layout
 
 \begin_layout Standard
 It turned out that the whole algorithm was too big to be verified in the
- framework of this seminar, so we concentrated on verifying the first two
- parts, namely grammar verification and norm calculation, in Isabelle/HOL.
-\end_layout
-
-\begin_layout Subsection
-Isabelle
-\end_layout
-
-\begin_layout Standard
-Isabelle is an LCF-style theorem prover programmed in Standard ML 
+ framework of this seminar, so we concentrated on only two parts, namely
+ grammar verification and norm calculation.
+ For this task, we first formalised simple deterministic grammars and their
+ norms.
+ Then, we implemented an algorithm to calculate the norms of variables of
+ simple deterministic grammars.
+ Finally, we wrote a proof that our algorithm corresponds to the formalisation
+ of norms, i.e.
+ it correctly calculates norms of simple deterministic grammars.
+ We conducted all this work (formalisation, implementation, verification)
+ in Isabelle/HOL, which is an LCF-style theorem prover programmed in Standard
+ ML 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "paulson1990"
@@ -308,18 +239,7 @@ key "paulson1990"
 \end_inset
 
 .
- It provides a meta-logic to formalise a multitude of different object logics,
- such as ZF (Zermelo-Fraenkel Set Theory), CTT (Constructive Type Theory),
- FOL (First Order Logic).
- The most mature object logic in Isabelle at the time of writing is HOL
- (Higher Order Logic), which provides a comfortable programming environment
- similar to common functional programming languages, providing many auxiliary
- functions for e.g.
- list operations, along with lemmata about these operations.
-\end_layout
-
-\begin_layout Standard
-Isabelle/HOL also permits the export of code written in it into other languages,
+ This prover allows us to export code written in it into other languages,
  such as Scala, OCaml and Haskell 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -328,31 +248,9 @@ key "haftmann2013"
 \end_inset
 
 .
- Having proven certain properties of functions in Isabelle, we can then
- use the exported functions in aforementioned languages, trusting they also
- behave according to our proved behaviour.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Of course, we can not exclude the possibility of a faulty target language
- compiler or hardware failures, but even with these restrictions, we can
- be a lot more confident in the function of our verified program compared
- to a completely unverified alternative.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We used Isabelle/HOL to formalise simple deterministic grammars and norms,
- and based on that, we implemented a norm calculation algorithm in it.
- Then, we showed the correctness of the algorithm, thus establishing a link
- between the formalisation and the implementation.
- Furthermore, we used Isabelle's code export to automatically generate OCaml
- code from our algorithm, which we embedded in an existing OCaml program
+ Having proven soundness and correctness of our algorithm in Isabelle/HOL,
+ we then integrated the OCaml code generated from our norm calculation algorithm
+ by Isabelle/HOL into the proof generation algorithm from my master's thesis
  --- see subsection 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -375,244 +273,8 @@ name "sec:Grammars"
 \end_layout
 
 \begin_layout Standard
-In this section, which is largely based on parts of my master's thesis,
- we discuss the basics of simple deterministic grammars and their norms.
-\end_layout
-
-\begin_layout Subsection
-Preliminaries
-\begin_inset CommandInset label
-LatexCommand label
-name "chap:Preliminaries"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Here we define some terms we will use throughout the document.
- For a longer introduction, see the first chapters of 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hopcroft1979,carton2008"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Alphabet
-\end_layout
-
-\end_inset
-
-An alphabet 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- is a finite set of symbols.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Word
-\end_layout
-
-\end_inset
-
-A word 
-\begin_inset Formula $w$
-\end_inset
-
- over an alphabet 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- is a finite sequence 
-\begin_inset Formula $w_{1}w_{2}\dots w_{n}$
-\end_inset
-
-, where each 
-\begin_inset Formula $w_{i}$
-\end_inset
-
- is a symbol in 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- and the length of the word 
-\begin_inset Formula $\left|w\right|$
-\end_inset
-
- is 
-\begin_inset Formula $n$
-\end_inset
-
-.
- The empty word 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- is defined to be the empty sequence, with 
-\begin_inset Formula $\left|\varepsilon\right|=0$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Language
-\end_layout
-
-\end_inset
-
- A language 
-\begin_inset Formula $\mathcal{L}$
-\end_inset
-
- over the alphabet 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- is a set of words over 
-\begin_inset Formula $\Sigma$
-\end_inset
-
-, meaning 
-\begin_inset Formula $\mathcal{L}\subset\mbox{\Sigma}^{*}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Concatenation of words
-\end_layout
-
-\end_inset
-
- The concatenation of two words 
-\begin_inset Formula $u=u_{1}\dots u_{m}$
-\end_inset
-
- and 
-\begin_inset Formula $v=v_{1}\dots v_{n}$
-\end_inset
-
- is the new word 
-\begin_inset Formula $u\cdot v=u_{1}\dots u_{m}v_{1}\dots v_{n}$
-\end_inset
-
-.
- This operation is associative, i.e.
- 
-\begin_inset Formula $\left(u\cdot v\right)\cdot w=u\cdot\left(v\cdot w\right)$
-\end_inset
-
-, and the empty word 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- is its neutral element, i.e.
- 
-\begin_inset Formula $w\cdot\varepsilon=\varepsilon\cdot w=w$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Product of languages
-\end_layout
-
-\end_inset
-
- The product of two languages 
-\begin_inset Formula $\mathcal{L}_{1},\,\mathcal{L}_{2}$
-\end_inset
-
- is defined to be 
-\begin_inset Formula 
-\[
-\mathcal{L}_{1}\cdot\mathcal{L}_{2}:=\bigcup_{\left\{ \left(x,y\right)\mid x\in\mathcal{L}_{1},\, y\in\mathcal{L}_{2}\right\} }x\cdot y.
-\]
-
-\end_inset
-
-
+In this section, we discuss the basics of simple deterministic grammars
+ and their norms.
 \end_layout
 
 \begin_layout Subsection
@@ -630,7 +292,7 @@ Context-free grammar
 \end_inset
 
 A context-free grammar (CFG) is a triple 
-\begin_inset Formula $(V,T,P)$
+\begin_inset Formula $(V,\Sigma,P)$
 \end_inset
 
  such that
@@ -648,14 +310,14 @@ variables
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Formula $T$
+\begin_inset Formula $\Sigma$
 \end_inset
 
  is a finite set of terminals,
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Formula $P\subset V\times(V\cup T)^{*}$
+\begin_inset Formula $P\subset V\times(V\cup\Sigma)^{*}$
 \end_inset
 
  is a finite set of production rules.
@@ -670,7 +332,7 @@ variables
 , i.e.
 \begin_inset Formula 
 \[
-\forall X\in V,\,\exists\alpha\in\left(V\cup T\right)^{*}:\,(X,\alpha)\in P.
+\forall X\in V,\,\exists\alpha\in\left(V\cup\Sigma\right)^{*}:\,(X,\alpha)\in P.
 \]
 
 \end_inset
@@ -704,34 +366,34 @@ Words
 
 \end_inset
 
-A variable word denotes a finite sequence of variables 
+A 
+\emph on
+variable word
+\emph default
+ is a finite sequence of variables 
 \begin_inset Formula $w_{V}\in V^{*}$
 \end_inset
 
-, and a terminal word denotes a finite sequence of terminals 
-\begin_inset Formula $w_{T}\in T^{*}$
+, and a 
+\emph on
+terminal word
+\emph default
+ is a finite sequence of terminals 
+\begin_inset Formula $w_{T}\in\Sigma^{*}$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
-We define the language 
 \begin_inset Formula $\lang X$
 \end_inset
 
- generated by a variable 
+ denotes the language generated by a variable 
 \begin_inset Formula $X$
 \end_inset
 
- a bit later in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "sec:Polynomials"
-
-\end_inset
-
-.
+ .
 \end_layout
 
 \begin_layout Standard
@@ -749,7 +411,11 @@ Variable norm
 
 \end_inset
 
-The variable norm is a function 
+The 
+\emph on
+variable norm
+\emph default
+ is a function 
 \begin_inset Formula $\norm{\cdot}:V^{*}\to\left(\mathbb{N}\cup\left\{ \infty\right\} \right)$
 \end_inset
 
@@ -763,7 +429,7 @@ The variable norm is a function
 \end_inset
 
  equals the length of the shortest terminal word 
-\begin_inset Formula $w\in T^{*}$
+\begin_inset Formula $w\in\Sigma^{*}$
 \end_inset
 
  which can be produced from 
@@ -816,8 +482,11 @@ Normed grammar
 
 \end_inset
 
-A grammar is normed iff all its variables produce at least one finite word,
- i.e.
+A grammar is 
+\emph on
+normed
+\emph default
+ iff all its variables produce at least one finite word, i.e.
 \begin_inset Formula 
 \[
 \forall X\in V:\,\norm X\neq\infty.
@@ -868,7 +537,7 @@ Greibach normal form
 \end_inset
 
 , 
-\begin_inset Formula $a\in T$
+\begin_inset Formula $a\in\Sigma$
 \end_inset
 
  and 
@@ -912,8 +581,8 @@ Z & \to c
 
 \end_inset
 
-This is a context-free grammar in 2-GNF, as there are maximally two variables
- on the right side of a production rule, namely in 
+This is a CFG in 2-GNF, as there are maximally two variables on the right
+ side of a production rule, namely in 
 \begin_inset Formula $Y\to bZZ$
 \end_inset
 
@@ -1049,6 +718,16 @@ Production graph for example grammar.
 
 \begin_layout Itemize
 Each vertex represents a variable word.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+define production graphs properly and make the last two points lemmata.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -1121,6 +800,16 @@ For example,
 \end_inset
 
 .
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+show how we reach this result
+\end_layout
+
+\end_inset
+
  Also, among others, 
 \begin_inset Formula $bcc\in\lang Y$
 \end_inset
@@ -1147,13 +836,12 @@ Simple deterministic grammar
 \end_inset
 
 A simple deterministic grammar (or simple context-free grammar), short SDG,
- is a context-free grammar in Greibach normal form, with the condition that
- for each variable 
+ is a CFG in GNF with the condition that for each variable 
 \begin_inset Formula $X\in V$
 \end_inset
 
  and each 
-\begin_inset Formula $a\in T$
+\begin_inset Formula $a\in\Sigma$
 \end_inset
 
 , there exists at most one rule 
@@ -1168,32 +856,32 @@ A simple deterministic grammar (or simple context-free grammar), short SDG,
 \end_layout
 
 \begin_layout Standard
-Simple deterministic grammars are a subclass of context-free grammars; in
- fact, the relation between several language classes is 
+Simple deterministic grammars are a proper subclass of context-free grammars;
+ in fact, the relation between several language classes is 
 \begin_inset Formula 
 \[
-\lang{\mathrm{SDG}}\subsetneq\lang{\mathrm{DETCF}}\subsetneq\lang{\mathrm{CF}},
+\lang{\mathrm{SDG}}\subsetneq\lang{\mathrm{DCFG}}\subsetneq\lang{\mathrm{CFG}},
 \]
 
 \end_inset
 
 where 
-\begin_inset Formula $\mathrm{DETCF}$
+\begin_inset Formula $\mathrm{DCFG}$
 \end_inset
 
- denotes deterministic context-free grammars and 
-\begin_inset Formula $\mathrm{CF}$
+ denotes deterministic context-free grammars (those grammars accepted by
+ a deterministic pushdown automaton) and 
+\begin_inset Formula $\mathrm{CFG}$
 \end_inset
 
- denotes context-free grammars.
- 
+ denotes context-free grammars 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "harrison1978"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Example
@@ -1264,549 +952,6 @@ By induction on
 \end_layout
 
 \end_deeper
-\begin_layout Subsection
-Polynomials
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Polynomials"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We use polynomials to define the language of a simple deterministic grammar.
- Because the term 
-\begin_inset Quotes eld
-\end_inset
-
-polynomial
-\begin_inset Quotes erd
-\end_inset
-
- is polysemous, we need to define our notion of polynomials.
-\end_layout
-
-\begin_layout Standard
-Let us start by defining some algebraic structures, which serve us later
- in the definitions of polynomials.
- For a more detailed source, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "berstel1984"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Monoid
-\end_layout
-
-\end_inset
-
-A monoid is a pair 
-\begin_inset Formula $\left(A,\cdot\right)$
-\end_inset
-
- such that 
-\begin_inset Formula $A$
-\end_inset
-
- is a set and 
-\begin_inset Formula $\cdot$
-\end_inset
-
- is an associative operation such that
-\end_layout
-
-\begin_layout Itemize
-For all 
-\begin_inset Formula $a,b\in A$
-\end_inset
-
-, 
-\begin_inset Formula $a\cdot b\in A$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-For all 
-\begin_inset Formula $a,b,c\in A$
-\end_inset
-
-, 
-\begin_inset Formula $a\cdot\left(b\cdot c\right)=\left(a\cdot b\right)\cdot c$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-There exists a neutral element 
-\begin_inset Formula $n\in A$
-\end_inset
-
- such that for all 
-\begin_inset Formula $a\in A$
-\end_inset
-
-, 
-\begin_inset Formula $a\cdot n=n\cdot a=a$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Commutative monoid
-\end_layout
-
-\end_inset
-
-If it holds additionally for all 
-\begin_inset Formula $a,b\in A$
-\end_inset
-
- that 
-\begin_inset Formula $a\cdot b=b\cdot a$
-\end_inset
-
-, then we call the monoid 
-\emph on
-commutative
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Semiring
-\end_layout
-
-\end_inset
-
-A semiring is a 3-tuple 
-\begin_inset Formula $\left(A,\cdot,+\right)$
-\end_inset
-
- such that
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\left(A,+\right)$
-\end_inset
-
- is a commutative monoid, whose neutral element is noted 0.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\left(A,\cdot\right)$
-\end_inset
-
- is a monoid, whose neutral element is noted 1.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $\cdot$
-\end_inset
-
- distributes over 
-\begin_inset Formula $+$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-For each 
-\begin_inset Formula $a\in A$
-\end_inset
-
- we have 
-\begin_inset Formula $a\cdot0=0\cdot a=0$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Commutative semiring
-\end_layout
-
-\end_inset
-
-If it holds additionally for all 
-\begin_inset Formula $a,b\in A$
-\end_inset
-
- that 
-\begin_inset Formula $a\cdot b=b\cdot a$
-\end_inset
-
-, then we call the semiring commutative.
-\end_layout
-
-\begin_layout Standard
-In particular, the boolean semiring 
-\begin_inset Formula $\mathbb{B}=\left(\left\{ 0,1\right\} ,\cdot,+\right)$
-\end_inset
-
- is defined by 
-\begin_inset Formula $1+1=1$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Formal power series
-\end_layout
-
-\end_inset
-
-A formal power series 
-\begin_inset Formula $S$
-\end_inset
-
- is a total function from 
-\begin_inset Formula $X^{*}$
-\end_inset
-
- to 
-\begin_inset Formula $K$
-\end_inset
-
-.
- The image of a word 
-\begin_inset Formula $w\in X^{*}$
-\end_inset
-
- with respect to 
-\begin_inset Formula $S$
-\end_inset
-
- is noted as 
-\begin_inset Formula $\left(S,w\right)$
-\end_inset
-
- and is called 
-\emph on
-coefficient
-\emph default
- of 
-\begin_inset Formula $w$
-\end_inset
-
-.
- The 
-\emph on
-support
-\emph default
- of 
-\begin_inset Formula $S$
-\end_inset
-
- is defined as
-\begin_inset Formula 
-\[
-\supp\left(S\right):=\left\{ w\in X^{*}\mid\left(S,w\right)\neq0\right\} .
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Semiring of formal power series
-\end_layout
-
-\end_inset
-
-The set of formal power series over 
-\begin_inset Formula $X$
-\end_inset
-
- with coefficients in 
-\begin_inset Formula $K$
-\end_inset
-
- is noted 
-\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
-\end_inset
-
-.
- We enclose
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-the right word?
-\end_layout
-
-\end_inset
-
- 
-\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
-\end_inset
-
- with a semiring structure as follows: If 
-\begin_inset Formula $S,T$
-\end_inset
-
- are two series, their sum is defined as
-\begin_inset Formula 
-\[
-\left(S+T,w\right):=\left(S,w\right)+\left(T,w\right),
-\]
-
-\end_inset
-
-and their product is defined as
-\begin_inset Formula 
-\[
-\left(ST,w\right):=\sum_{uv=w}\left(S,u\right)\left(T,v\right),
-\]
-
-\end_inset
-
-where the sum is finite.
-\end_layout
-
-\begin_layout Definition
-Based on this, we also define
-\begin_inset Formula 
-\[
-K\left\langle X\right\rangle :=\left\{ S\in K\left\langle \left\langle X\right\rangle \right\rangle \mid\left|\supp\left(S\right)\right|<\infty\right\} 
-\]
-
-\end_inset
-
-to be the set of elements in 
-\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
-\end_inset
-
- with finite support.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Polynomial
-\end_layout
-
-\end_inset
-
-
-\begin_inset CommandInset label
-LatexCommand label
-name "def:Polynomial"
-
-\end_inset
-
-Polynomials over 
-\begin_inset Formula $\Sigma=V\cup T$
-\end_inset
-
- are the elements of the noncommutative semiring
-\begin_inset Formula 
-\[
-R=\mathbb{B}\left\langle \Sigma\right\rangle .
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For each variable of a grammar, we define its grammar polynomial, which
- is the polynomial representation of all production rules belonging to the
- variable.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Grammar polynomial
-\end_layout
-
-\end_inset
-
-For a grammar 
-\begin_inset Formula $G=\left(V,T,P\right)$
-\end_inset
-
-, the grammar polynomial of a variable 
-\begin_inset Formula $X\in V$
-\end_inset
-
- is 
-\begin_inset Formula 
-\[
-\Gr X=\sum_{\left(X,\alpha\right)\in P}\alpha.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Example
-Given a variable 
-\begin_inset Formula $X$
-\end_inset
-
- defined by its production rules
-\begin_inset Formula 
-\[
-X\to a+B+cDE,
-\]
-
-\end_inset
-
-the support of 
-\begin_inset Formula $X$
-\end_inset
-
- is 
-\begin_inset Formula $\supp\left(X\right)=\left\{ a,B,cDE\right\} $
-\end_inset
-
- and the grammar polynomial of 
-\begin_inset Formula $X$
-\end_inset
-
- is 
-\begin_inset Formula $\Gr X=a+B+cDE$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-We define the language generated by a polynomial.
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Polynomial language
-\end_layout
-
-\end_inset
-
-The language generated by a polynomial 
-\begin_inset Formula $p$
-\end_inset
-
- is defined as 
-\begin_inset Formula 
-\[
-\lang p:=\left\{ w\in T^{*}\mid p\overset{*}{\to}w\right\} ,
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $\overset{*}{\to}$
-\end_inset
-
- is the reflexive and transitive closure of the derivation relation, which
- is defined as in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "carton2008"
-
-\end_inset
-
-.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-What is the derivation relation?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Definition
 \begin_inset CommandInset include
 LatexCommand input
