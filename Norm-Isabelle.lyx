@@ -64,62 +64,26 @@ theorems-ams-bytype
 \begin_body
 
 \begin_layout Section
-General-purpose Isabelle parts
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:General-purpose-Isabelle-parts"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For the implementation, we heavily used association lists, for which we
- proved several helper lemmata.
- Furthermore, we created a versatile partition iteration algorithm, which
- can be used to resolve dependencies between elements of a list.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-renewcommand{
-\backslash
-isamarkupheader}[1]{
-\backslash
-subsection{#1}}
-\end_layout
-
-\end_inset
-
-
-\begin_inset CommandInset include
-LatexCommand input
-filename "IsaTeX/AList_ext.tex"
-
-\end_inset
-
-
-\begin_inset CommandInset include
-LatexCommand input
-filename "IsaTeX/Partition_iterate.tex"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Norm formalisation
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Norm-formalisation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, we present our formalisation of grammars and norms.
+ Because in the formalisation we use several definitions related to association
+ lists, we first introduce these.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/AList_ext.tex"
 
 \end_inset
 
@@ -163,8 +127,9 @@ name "sec:Norm-calculation-algorithm"
 \end_layout
 
 \begin_layout Standard
-In this section, we give the idea behind the norm calculation algorithm
- and present our implementation of it.
+In this section, we give the idea behind our norm calculation algorithm
+ and present its implementation, along with the partition iteration algorithm
+ which we use in it.
 \end_layout
 
 \begin_layout Subsection
@@ -172,8 +137,9 @@ Idea
 \end_layout
 
 \begin_layout Standard
-In the original OCaml program to construct equivalence proofs, the user
- had to provide an order 
+In our OCaml program to construct equivalence proofs of simple deterministic
+ grammars, we initially implemented a norm calculation algorithm where the
+ user had to provide a variable order 
 \begin_inset Formula $\preceq$
 \end_inset
 
@@ -194,15 +160,32 @@ In the original OCaml program to construct equivalence proofs, the user
 \end_inset
 
 .
- In the implementation, this was solved by providing the variables in a
- list, and this list had to be sorted by ascending norm.
- That way, we could ignore production rules with variables not having appeared
- before in the list, because their norm would by definition be greater or
- equal to the norm of the current variable and could therefore not induce
- the norm for the current variable.
- In case that the norm of a variable was calculated to be smaller than the
- norm of a variable at an earlier position in the list, the norm calculation
- quit with an error.
+ We then calculated the norms of all variables iteratively by processing
+ the variables in ascending variable order and calculating their norms based
+ on the previously calculated norms, ignoring those variable production
+ rules containing variables with greater or equal norm.
+ In case that the final norms of the variables were not consistent with
+ the provided variable order 
+\begin_inset Formula $\preceq$
+\end_inset
+
+ (i.e., we found variables 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ such that the calculated norms yielded 
+\begin_inset Formula $\norm X>\norm Y$
+\end_inset
+
+, but 
+\begin_inset Formula $X\preceq Y$
+\end_inset
+
+), the norm calculation algorithm quit with an error.
 \end_layout
 
 \begin_layout Standard
@@ -213,131 +196,25 @@ While this was a reliable and fast method to calculate norms, this method
 
  when formulating the grammar, and formalising variable orders would have
  imposed an unnatural and in principle unnecessary restriction on grammars.
- For this reason, we looked into different approaches to generate the norm:
- One was to identify variables 
-\begin_inset Formula $V_{\infty}$
-\end_inset
-
- with an infinite norm, remove them from the grammar, then also remove all
- production rules containing elements of 
-\begin_inset Formula $V_{\infty}$
-\end_inset
-
- from the grammar.
- But how to find all variables with infinite norm? Consider the following
- example:
-\begin_inset Formula 
-\begin{align*}
-X & \to aY\\
-Y & \to aZ\\
-Z & \to aX
-\end{align*}
-
-\end_inset
-
-As we can see, none of these variables has a finite norm, but to find that
- out, we have to look at each of these variables.
- An easier problem is to find the set 
-\begin_inset Formula $V_{n}$
-\end_inset
-
- of all variables which have a finite norm --- having this set and knowing
- that 
-\begin_inset Formula $V=V_{\infty}\cup V_{n}$
-\end_inset
-
- with 
-\begin_inset Formula $V_{\infty}\cap V_{n}=\varnothing$
-\end_inset
-
-, we can obtain 
-\begin_inset Formula $V_{\infty}$
-\end_inset
-
- from 
-\begin_inset Formula $V$
-\end_inset
-
- and 
-\begin_inset Formula $V_{n}$
-\end_inset
-
-.
- So how to calculate 
-\begin_inset Formula $V_{n}$
-\end_inset
-
-? We can use the following algorithm to do that, initialising 
-\begin_inset Formula $V_{n}$
-\end_inset
-
- with 
-\begin_inset Formula $\varnothing$
-\end_inset
-
-:
+ For this reason, we looked into another approach without the need to construct
+ a variable order.
+ This new approach consists of two phases:
 \end_layout
 
 \begin_layout Enumerate
-Obtain all variables from grammar which have a production rule containing
- only variables in 
-\begin_inset Formula $V_{n}$
-\end_inset
-
-.
+Norm overestimation: Here we determine which variables can be normed at
+ all, while we calculate for each normable variable a preliminary norm,
+ which is an overestimation of the actual norm.
 \end_layout
 
 \begin_layout Enumerate
-If such variables exist, remove those variables from grammar and add them
- to 
-\begin_inset Formula $V_{n}$
-\end_inset
-
-, otherwise the algorithm terminates and returns 
-\begin_inset Formula $V_{n}$
-\end_inset
-
-.
+Norm minimisation, or refinement: In this phase, we take the overestimated
+ norms from the first phase and minimise them iteratively, until we reach
+ a fixpoint, which will be equivalent to the actual norms.
 \end_layout
 
-\begin_layout Enumerate
-Go to 1.
-\end_layout
-
-\begin_layout Standard
-As we can see, the amount of variables in the grammar constantly decreases,
- therefore the algorithm terminates, because we consider only grammars with
- a finite set of variables.
-\end_layout
-
-\begin_layout Standard
-This algorithm therefore gives as the means to calculate 
-\begin_inset Formula $V_{n}$
-\end_inset
-
-, and thus also 
-\begin_inset Formula $V_{\infty}$
-\end_inset
-
-.
- Knowing this information, does it help us to calculate the norms? One thing
- that we can do now is to remove all production rules from the grammar which
- contain variables in 
-\begin_inset Formula $V_{\infty}$
-\end_inset
-
-, for they will not induce any finite norm and are therefore irrelevant
- for norm calculation.
- Now the first idea might be to calculate the norm of a variable 
-\begin_inset Formula $X$
-\end_inset
-
- as soon as norms for all variables of the production rules of 
-\begin_inset Formula $X$
-\end_inset
-
- have been calculated.
- We can, however, easily find a counterexample for this approach:
+\begin_layout Example
+Consider the following grammar:
 \begin_inset Formula 
 \begin{align*}
 A & \to a\\
@@ -347,31 +224,7 @@ C & \to cAA+bB
 
 \end_inset
 
-Here, using the approach above, we will wait for 
-\begin_inset Formula $B$
-\end_inset
-
- to be normed because 
-\begin_inset Formula $C$
-\end_inset
-
- was not normed yet, but also 
-\begin_inset Formula $C$
-\end_inset
-
- will wait for 
-\begin_inset Formula $B$
-\end_inset
-
-, so we are in a deadlock.
- Therefore, we decided to calculate a norm for a variable as soon as all
- variables of 
-\emph on
-any
-\emph default
- of the variable's production rules have a known norm.
- This, however, will not always yield the correct norm, but merely an overestima
-tion of the norms --- observe:
+Here, the output of the first phase might look as follows:
 \begin_inset Formula 
 \begin{align*}
 A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
@@ -381,33 +234,32 @@ B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-In this example, we have to choose of which variable we should calculate
- the norm first, and if we choose 
+The 4-tuples on the right-hand side represent the preliminary norms, storing
+ the variable, the norm, and the variable rule which induces the norm.
+ As we can see, the preliminary norm for the variable 
 \begin_inset Formula $B$
 \end_inset
 
- instead of 
+ is not its final norm, because at the time the algorithm calculated the
+ norm of 
+\begin_inset Formula $B$
+\end_inset
+
+, it did not have the norm of 
 \begin_inset Formula $A_{2}$
 \end_inset
 
-, then the norm of 
+ available, so it used the norm of 
+\begin_inset Formula $A_{1}$
+\end_inset
+
+ to calculate the norm of 
 \begin_inset Formula $B$
 \end_inset
 
- will be too big, therefore wrong.
- However, because we overestimate norms, we can try to make the norms smaller
- after the calculation of the initial norms, thus finding a fixpoint where
- the norms to not change anymore, at which point the norms will be minimal
- and therefore valid.
- For the example above, we only need a single refinement step to reach the
- fixpoint:
-\end_layout
-
-\begin_layout Standard
+.
+ Therefore, we need to minimise the preliminary norms, resulting in the
+ following final norms:
 \begin_inset Formula 
 \begin{align*}
 A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
@@ -417,150 +269,13 @@ B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[
 
 \end_inset
 
-We can reach such a fixpoint after 
-\begin_inset Formula $\mathcal{O}(n)$
-\end_inset
-
- iterations, where 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of variables.
- Consider the following example, illustrated in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Norm-example-illustration"
-
-\end_inset
-
-:
-\begin_inset Formula 
-\begin{align*}
-L_{1} & \to l & E_{1} & \to e & X_{1} & \to lL_{4}+eE_{3}\\
-L_{n+1} & \to lL_{n} & E_{n+1} & \to eE_{n}E_{n} & X_{n+1} & \to xX_{n}
-\end{align*}
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg[width=0.4
-\backslash
-columnwidth]{Norm_Dilemma}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Norm example illustration.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Norm-example-illustration"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-The construction has been chosen in such a way that 
-\begin_inset Formula $L_{i}$
-\end_inset
-
- grows linearly, while 
-\begin_inset Formula $E_{i}$
-\end_inset
-
- grows exponentially.
- If we then iteratively calculate the norms, we can calculate the norms
+In this minimisation, the algorithm had as additional information the norm
  of 
-\begin_inset Formula $E_{3}$
+\begin_inset Formula $A_{2}$
 \end_inset
 
- and 
-\begin_inset Formula $L_{3}$
-\end_inset
-
- in the same iteration.
- At that point, let us assume we calculate 
-\begin_inset Formula $\left\Vert X_{1}\right\Vert $
-\end_inset
-
- to be 
-\begin_inset Formula $1+\left\Vert E_{3}\right\Vert $
-\end_inset
-
- instead of 
-\begin_inset Formula $1+\left\Vert L_{4}\right\Vert $
-\end_inset
-
-, because we have previously already calculated the norm of 
-\begin_inset Formula $E_{3}$
-\end_inset
-
-, but the norm of 
-\begin_inset Formula $L_{4}$
-\end_inset
-
- is unknown yet.
- However, 
-\begin_inset Formula $E_{3}$
-\end_inset
-
- was a wrong choice, because the norm of 
-\begin_inset Formula $L_{4}$
-\end_inset
-
- will be calculated one step later to be smaller than the norm of 
-\begin_inset Formula $E_{3}$
-\end_inset
-
-, but having already calculated 
-\begin_inset Formula $\left\Vert X_{1}\right\Vert $
-\end_inset
-
-, this error will propagate until 
-\begin_inset Formula $X_{n}$
-\end_inset
-
-.
- In every iteration of the following fixpoint calculation, however, only
- one 
-\begin_inset Formula $X_{i}$
-\end_inset
-
- will decrease, thus amounting to a total of about 
-\begin_inset Formula $n$
-\end_inset
-
- iterations.
- Because in every iteration, we look through all norms if they are correct,
- our fixpoint calculation has complexity 
-\begin_inset Formula $\mathcal{O}(n^{2})$
+, resulting from which it correctly calculated the final norm of 
+\begin_inset Formula $B$
 \end_inset
 
 .
@@ -790,7 +505,229 @@ name "alg:Norm-calculation-algorithm."
 \end_layout
 
 \begin_layout Standard
+We are now going to show some complexity results.
+\end_layout
+
+\begin_layout Lemma
+Calculating the fixpoint of a norm overestimation takes maximally 
+\begin_inset Formula $n$
+\end_inset
+
+ iterations, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of variables of the grammar.
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Fixpoint-n-iterations"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+We prove this by induction on 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ The base case is trivial, so we consider the step case.
+ Having a grammar with 
+\begin_inset Formula $n+1$
+\end_inset
+
+ variables, the induction hypothesis states that we can calculate the norm
+ fixpoint of 
+\begin_inset Formula $n$
+\end_inset
+
+ variables in maximally 
+\begin_inset Formula $n$
+\end_inset
+
+ iterations.
+ Let us consider the 
+\begin_inset Formula $n+1$
+\end_inset
+
+-th variable 
+\begin_inset Formula $X$
+\end_inset
+
+: In case that we have already reached its final norm 
+\begin_inset Formula $\norm X$
+\end_inset
+
+ in the first 
+\begin_inset Formula $n$
+\end_inset
+
+ iterations, the conclusion follows automatically.
+ Otherwise, we can calculate the final norm 
+\begin_inset Formula $\norm X$
+\end_inset
+
+ in the 
+\begin_inset Formula $n+1$
+\end_inset
+
+-th iteration by just calculating the norms of the variable rules of 
+\begin_inset Formula $X$
+\end_inset
+
+ and taking the smallest one of them.
+ This will yield a correct norm, because all other variables have already
+ achieved their final norm.
+\end_layout
+
+\begin_layout Lemma
+Given a set of norms, calculating a norm of a variable can be done in 
+\begin_inset Formula $\mathcal{O}(n)$
+\end_inset
+
+, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of variables of the grammar.
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Single-Norm-Complexity"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+To calculate the norm of a variable, for each production rule of that variable,
+ we look up the norms of each variable in the production rule and sum them
+ up.
+ Then, we determine the smallest sum among all production rules, which will
+ be the norm.
+ That means that we maximally have to look up 
+\begin_inset Formula $m\cdot k$
+\end_inset
+
+ norms, where 
+\begin_inset Formula $m$
+\end_inset
+
+ is the maximal number of production rules present among all variables,
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+ is the maximal length of any production rule (so the grammar is in 
+\begin_inset Formula $k$
+\end_inset
+
+-GNF).
+ Because looking up a norm takes linear time in the worst case, we have
+ a worst-case runtime of 
+\begin_inset Formula $m\cdot k\cdot n$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Lemma
+One norm fixpoint iteration takes time 
+\begin_inset Formula $\mathcal{O}(n^{2})$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Iteration-time."
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+In one iteration, we go through all previously calculated norms, which amounts
+ to maximally 
+\begin_inset Formula $n$
+\end_inset
+
+ norms.
+ Then, for each variable for which a norm exists, we calculate a new norm,
+ which by lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Single-Norm-Complexity"
+
+\end_inset
+
+ can be done in 
+\begin_inset Formula $\mathcal{O}(n)$
+\end_inset
+
+.
+ Therefore, the conclusion follows.
+\end_layout
+
+\begin_layout Corollary
+Norm minimisation has complexity 
+\begin_inset Formula $\mathcal{O}(n^{3})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+Follows from lemmata 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Fixpoint-n-iterations"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Iteration-time."
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 In the next subsection, we present the implementation of the algorithm.
+\end_layout
+
+\begin_layout Subsection
+Partition iteration
+\end_layout
+
+\begin_layout Standard
+Furthermore, we created a versatile partition iteration algorithm, which
+ can be used to resolve dependencies between elements of a list.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+isamarkupheader}[1]{
+\backslash
+subsection{#1}}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -809,6 +746,20 @@ isamarkupheader}[1]{}
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/Partition_iterate.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Implementation
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 filename "IsaTeX/Norm_funs.tex"

@@ -19,6 +19,9 @@
 \usepackage{fixltx2e}
 \MakeRobust{\Call}
 
+% don't show "section §1.1" in references, but "section 1.1"
+\newref{sec}{name = {section~}, refcmd = {\ref{#1}}}
+
 % to show DRAFT watermark
 %\usepackage[firstpage]{draftwatermark}
 
@@ -152,27 +155,6 @@ Abstand bei
 \end_inset
 
  kürzen!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-use 
-\begin_inset Formula $\Sigma$
-\end_inset
-
- instead of 
-\begin_inset Formula $T$
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -716,44 +698,82 @@ Production graph for example grammar.
  We interpret this graph as follows:
 \end_layout
 
-\begin_layout Itemize
-Each vertex represents a variable word.
-\begin_inset Note Note
+\begin_layout Definition
+\begin_inset Argument
 status open
 
 \begin_layout Plain Layout
-define production graphs properly and make the last two points lemmata.
+Construction graph
 \end_layout
 
 \end_inset
 
+A construction graph for a grammar 
+\begin_inset Formula $G=(V,\Sigma,P)$
+\end_inset
 
+ in GNF is a graph with the following conditions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Each vertex of the graph represents a variable word 
+\begin_inset Formula $w\in V^{*}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
-Each edge with label 
-\begin_inset Formula $a\in T$
-\end_inset
-
- from 
+For each vertex 
 \begin_inset Formula $w=X\beta$
 \end_inset
 
+ (with 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ some variable and 
+\begin_inset Formula $\beta\in V^{*}$
+\end_inset
+
+ some variable word) in the graph and for each production rule 
+\begin_inset Formula $(X,a\alpha)\in P$
+\end_inset
+
+ (with 
+\begin_inset Formula $\alpha\in V^{*}$
+\end_inset
+
+ some variable word), there exists an edge with label 
+\begin_inset Formula $a\in\Sigma$
+\end_inset
+
+ from 
+\begin_inset Formula $w$
+\end_inset
+
  to 
-\begin_inset Formula $w'$
-\end_inset
-
- expresses that there exists a production rule 
-\begin_inset Formula $\left(X,a\alpha\right)\in P$
-\end_inset
-
- such that 
 \begin_inset Formula $w'=\alpha\beta$
 \end_inset
 
 .
 \end_layout
 
+\end_deeper
+\begin_layout Standard
+We have as simple lemma:
+\end_layout
+
+\begin_layout Lemma
+Given a construction graph for a grammar 
+\begin_inset Formula $G$
+\end_inset
+
+, it holds that:
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
 Each path from a variable word 
 \begin_inset Formula $w$
@@ -771,7 +791,7 @@ Each path from a variable word
 \end_layout
 
 \begin_layout Itemize
-The length of the shortest path from a terminal word 
+The length of the shortest path from a variable word 
 \begin_inset Formula $w$
 \end_inset
 
@@ -779,15 +799,47 @@ The length of the shortest path from a terminal word
 \begin_inset Formula $\varepsilon$
 \end_inset
 
- is equivalent to 
+ in the graph is equivalent to 
 \begin_inset Formula $\norm w$
 \end_inset
 
 .
 \end_layout
 
+\end_deeper
 \begin_layout Example
-For example, 
+For example, for the grammar in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:Example-grammar"
+
+\end_inset
+
+, we can determine the norms and producible terminal words of the variable
+ words 
+\begin_inset Formula $X$
+\end_inset
+
+, 
+\begin_inset Formula $Y$
+\end_inset
+
+, 
+\begin_inset Formula $Z$
+\end_inset
+
+ and 
+\begin_inset Formula $ZZ$
+\end_inset
+
+, because these are the variable words present in the graph.
+ To determine the norms of these variable words, we just need to determine
+ the length of the shortest path from these variable words to the empty
+ word 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+, which results in 
 \begin_inset Formula $\norm X=2$
 \end_inset
 
@@ -800,16 +852,6 @@ For example,
 \end_inset
 
 .
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-show how we reach this result
-\end_layout
-
-\end_inset
-
  Also, among others, 
 \begin_inset Formula $bcc\in\lang Y$
 \end_inset
@@ -818,7 +860,12 @@ show how we reach this result
 \begin_inset Formula $aa^{*}bc\subset\lang Y$
 \end_inset
 
- hold.
+ hold, which we conclude by collecting the labels along the paths from the
+ variable words to 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -952,7 +999,7 @@ By induction on
 \end_layout
 
 \end_deeper
-\begin_layout Definition
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 filename "Norm-Isabelle.lyx"
