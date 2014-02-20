@@ -40,6 +40,7 @@ type_synonym ('t, 'v) v_rule_norm   = "('v \<times> ('t, 'v) t_rule_norm)"
 type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
 
 
+(*<*)
 subsection {* Norm orders *}
 
 text {*
@@ -89,17 +90,19 @@ definition grammar_norms_ord ::
   "(('t :: wellorder, 'v :: wellorder) grammar_norms \<times>
     ('t, 'v) grammar_norms) set" where
   "grammar_norms_ord = lex v_rule_norm_ord"
+(*>*)
 
 
 subsection {* Functions *}
 
 text {*
-@{text norm_sum} sums up the supplied norms for a given variable word.
+The function @{text norm_sum} sums up the supplied norms for a given variable word.
 *}
 
 definition norm_sum :: "('t, 'v) grammar_norms \<Rightarrow> 'v list \<Rightarrow> nat" where
   "norm_sum norms vars \<equiv> \<Sum>(n, t, vs)\<leftarrow>map (lookup norms) vars. n"
 
+(*<*)
 text {*
 @{text t_rule_has_norm} determines whether a given terminal rule can be
 normed using an existing set of norms.
@@ -183,9 +186,11 @@ definition add_norms ::
   "('t::wellorder, 'v::wellorder) grammar_norms \<Rightarrow> ('t, 'v) grammar \<Rightarrow>
    ('t, 'v) grammar_norms" where
   "add_norms norms yes = norms @ (mnotr_map norms yes)"
+(*>*)
 
 text {*
-The norm iteration algorithm starts with a set of variable rules,
+The norm iteration algorithm calculates an overestimation of norms of a grammar.
+It starts with a set of variable rules,
 initially @{term gr}, and a set of norms, initially $\left[\right]$. Then,
 in each iteration, the algorithm calculates the variable rules which
 can be normed and those which cannot be normed, then calculates new
@@ -223,16 +228,23 @@ definition nog_invariant where
 definition nog_invariant_n_t_vs where
   "nog_invariant_n_t_vs norms rules n t vs \<equiv>
      t_rules_have_norm norms rules \<and> (n, t, vs) = min_norm_of_t_rules norms rules"
-(*>*)
 
 definition gram_normed_fun ::
   "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
   "gram_normed_fun gr \<equiv> snd (iterate_norms gr) = []"
+(*>*)
+
+text {*
+The function @{text gram_nsd_fun} calculates whether a grammar is normed
+and simple deterministic. Here, @{term gram_normed_fun} is a function that verifies whether
+@{term iterate_norms} found a norm for each variable in the grammar.
+*}
 
 definition gram_nsd_fun ::
   "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow> bool" where
   "gram_nsd_fun gr \<equiv> gram_sd gr \<and> gram_normed_fun gr"
 
+(*<*)
 text {*
 @{text refine_norms} obtains all rules of variables present in the set of
 norms, and recalculates the norms of these rules.
@@ -281,6 +293,12 @@ function minimise_norms ::
        minimise_norms (refine_norms norms gr) gr
      else norms)"
 by auto
+(*>*)
+
+text {*
+The function @{text norms_of_grammar} calculates the final norms of a grammar,
+by calculating the smallest fixpoint of the norm overestimation.
+*}
 
 definition norms_of_grammar ::
   "('t :: wellorder, 'v :: wellorder) grammar \<Rightarrow>
@@ -288,7 +306,8 @@ definition norms_of_grammar ::
   "norms_of_grammar gr \<equiv> minimise_norms (fst (iterate_norms gr)) gr"
 
 text {*
-@{text norm_fun} is the central norm calculation function.
+To calculate norms not only of variables, but also of variable words, we define
+the function @{text norm_fun}.
 *}
 
 definition norm_fun ::
@@ -296,7 +315,7 @@ definition norm_fun ::
   "norm_fun gr vars \<equiv> norm_sum (norms_of_grammar gr) vars"
 
 text {*
-@{text min_word_of_variables} obtains the shortest terminal word producible
+The function @{text min_word_of_variables} obtains the shortest terminal word producible
 by a variable word. This is not used in the norm calculation, but
 for the correctness proof of @{text norm_fun}.
 *}

@@ -770,7 +770,7 @@ filename "IsaTeX/Norm_funs.tex"
 \end_layout
 
 \begin_layout Section
-Proof
+Correctness and completeness proof
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Proof"

@@ -5,7 +5,6 @@ imports
 begin
 
 text {*
-
 To show correctness of the norm calculation algorithm, we proved the following theorem:
 
 \begin{center}

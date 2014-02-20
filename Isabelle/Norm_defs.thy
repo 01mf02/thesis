@@ -8,36 +8,36 @@ subsection {* Types *}
 
 type_synonym ('t, 'v) t_rule  = "'t \<times> 'v list"
 type_synonym ('t, 'v) t_rules = "('t, 'v) t_rule list"
-type_synonym ('t, 'v) v_rule  = "('v \<times> ('t, 'v) t_rules)"
+type_synonym ('t, 'v) v_rule  = "'v \<times> ('t, 'v) t_rules"
 type_synonym ('t, 'v) grammar = "('t, 'v) v_rule list"
 
 text {*
 In the formalisation of grammars, the simplest type is @{text t_rule}, which stands for terminal
-rule. It consists of a terminal followed by a list of variables. An example of this could be the
+rule.
+\footnote{While the name "terminal rule" might be misleading, we chose this name analogously to the
+later defined type @{text v_rule}. The idea behind this is that a variable rule stores a variable
+and associated data, while a terminal rule stores a terminal and associated data.}
+It consists of a terminal followed by a list of variables. An example of this could be the
 rule $aXY$ or $b$.
 The type @{text t_rules} then represents the sum of several terminal rules. An example of this is
 $aXY + b$.
-The type @{text v_rule} saves a variable along with a list of terminal rules, to note which
+The type @{text v_rule} contains a variable along with a list of terminal rules, to note which
 variable the terminal rules belong to. An example would be $X \to aXY + b$.
-A grammar then is nothing else than a list of variables together with their associated terminal
-rules, which is exactly the type @{text grammar}. An example could be $X \to aXY + b, Y \to c$.
+A @{text grammar} then is a list of variables together with their associated terminal
+rules. An example could be $X \to aXY + b, Y \to c$.
 *}
 
 subsection {* Grammar *}
 
 text {*
-We then continue with the formalisation of simple deterministic grammars.
+We continue with the formalisation of simple deterministic grammars.
 
 First, we demand that the grammar should be an association list, meaning
 that for each variable of the grammar, there should be exactly one
-list of terminal rules for that grammar. Furthermore, we also require
-that for all terminals in a list of terminal rules, there is exactly
-one list of variables for that variables. This corresponds to the
-fact that our grammars are deterministic, meaning that for each variable,
-we have maximally one terminal rule starting with the same terminal.
-
-Finally we make sure that all variables contained in terminal rules
-are really variables of that grammar.
+list of terminal rules for that grammar. Furthermore, we require
+that all terminal rules for a variable start with a different terminal.
+This corresponds to the fact that our grammars are deterministic. Finally,
+we make sure that all variables contained in terminal rules are really variables of that grammar.
 *}
 
 definition gram_sd :: "('t, 'v) grammar \<Rightarrow> bool" where
@@ -49,40 +49,10 @@ definition gram_sd :: "('t, 'v) grammar \<Rightarrow> bool" where
 subsection {* Norm *}
 
 text {*
-We use the @{text eat_word} function to verify whether a terminal word can
-be produced from a variable word. For this purpose, we use two lists,
-@{term t} and @{term v} which are initialised with the terminal and
-variable words, respectively. We use these lists as stacks, so we
-refer to them as stacks from now on.
-
-In case that both stacks are non-empty, we obtain the top terminal
-@{term th} and the top variable @{term vh} from the stacks. Then we check whether
-there exists a terminal rule for @{term vh} with the terminal @{term th}, i.e.
-whether we can produce a terminal word from @{term vh} that starts with
-@{term th}. If this is not the case, then we just return both stacks (which
-will be non-empty). Otherwise, we obtain the terminal rule for @{term vh}
-starting with @{term th} and extract its associated list of variables.
-Then we pop @{term th} and @{term vh} from their stacks,
-push the list of variables onto the variable stack and call the algorithm with the updated stacks.
-
-In case that at least one of the stacks is empty, we just return both
-stacks as is. This case can be caused by the following scenarios:
-\begin{itemize}
-\item Both stacks are empty: This means that the empty terminal word is
-accepted by the empty variable word, therefore we return two empty
-stacks. This means that when @{text eat_word} returns two empty stacks, then
-the original terminal word can be produced from the original variable
-word.
-\item Only the terminal stack is empty: This indicates that the terminal
-word was too short for the variable word; however, we could find a
-terminal word @{term t'} such that @{term "t@t'"} can be produced by @{term v}.
-\item Only the variable stack is empty: This means that the terminal word
-cannot be produced from the variable word; however, a strict prefix @{term t'}
-of @{term t} exists such that @{term t'} can be produced by @{term v}.
-\end{itemize}
-However, most of the time we are only interested in whether a terminal
-word can be produced by a variable word, which the function @{text word_in_variables}
-does by verifying whether @{text eat_word} returns two empty lists.
+To verify whether a given variable word can produce a given terminal word,
+we define a function called @{text eat_word}. This function takes a
+simple deterministic grammar, a terminal word and a variable word, and
+returns the pair of empty lists if the variable word produces the terminal word.
 *}
 
 fun eat_word ::
@@ -95,11 +65,38 @@ fun eat_word ::
 | "eat_word gr t v = (t, v)"
 
 text {*
+In case that both terminal and variable words are non-empty, we obtain the first terminal
+@{term th} and the first variable @{term vh} from the words. Then we check whether
+there exists a terminal rule for @{term vh} with the terminal @{term th}, i.e.
+whether we can produce a terminal word from @{term vh} that starts with
+@{term th}. If this is not the case, then we just return both words (which
+will be non-empty). Otherwise, we obtain the terminal rule for @{term vh}
+starting with @{term th} and extract its associated list of variables.
+Then we remove @{term th} and @{term vh} from the beginning of the words,
+prepend the list of variables to the variable word and call the algorithm with the updated words.
+
+In case at least one of the words is empty, we return both
+words as is. This can be caused by the following scenarios:
+\begin{itemize}
+\item Both words are empty: This means that the empty terminal word is
+accepted by the empty variable word, therefore we return two empty
+words. This means that when @{text eat_word} returns two empty words, then
+the original terminal word can be produced from the original variable
+word.
+\item Only the terminal word is empty: This indicates that the original terminal
+word was too short for the original variable word; however, we could find a
+terminal word @{term t'} such that @{term "t@t'"} can be produced by @{term v}.
+\item Only the variable word is empty: This means that the terminal word
+cannot be produced from the variable word; however, a strict prefix @{term t'}
+of @{term t} exists such that @{term t'} can be produced by @{term v}.
+\end{itemize}
+
 However, most of the time we are only interested in whether a terminal
 word can be produced by a variable word, which the function @{text word_in_variables}
 does by verifying whether @{text eat_word} returns two empty lists.
 *}
 
+(*>*)
 definition word_in_variables ::
   "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
@@ -113,12 +110,14 @@ set can be infinite, for example for the grammar $X\to a+bX$.
 definition words_of_variables ::
   "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 't list set" where
   "words_of_variables gr v \<equiv> {w | w. word_in_variables gr w v}"
+(*>*)
 
 text {*
 Next, we formalise what it means for a grammar to be normed: It means
 that for each variable word @{term v} consisting of variables of the grammar,
 there exists at least one (finite) terminal word which can be produced
-from @{term v}.
+from @{term v}. @{term word_in_variables} is a function that verifies via
+@{term eat_word} whether a terminal word can be produced by a variable word.
 *}
 
 definition gram_normed_def :: "('t, 'v) grammar \<Rightarrow> bool" where
@@ -126,8 +125,7 @@ definition gram_normed_def :: "('t, 'v) grammar \<Rightarrow> bool" where
      \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
 
 text {*
-The predicate @{text gram_nsd_def} just expresses that a grammar is normed
-simple-deterministic.
+The predicate @{text gram_nsd_def} expresses that a grammar is normed simple-deterministic.
 *}
 
 definition gram_nsd_def :: "('t, 'v) grammar \<Rightarrow> bool" where
@@ -135,8 +133,8 @@ definition gram_nsd_def :: "('t, 'v) grammar \<Rightarrow> bool" where
 
 text {*
 Finally, we can define norms: Given a variable word @{term v}, we can obtain
-the set of terminal words producible from @{term v}. The norm is then the
-length of the shortest of these terminal words.
+the set of terminal words producible from @{term v} via @{term words_of_variables},
+which uses @{term eat_word}. The norm is then the length of the shortest of these terminal words.
 *}
 
 definition norm_def :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where
@@ -144,6 +142,7 @@ definition norm_def :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat
      Least (\<lambda>l. l \<in> (length ` (words_of_variables gr v)))"
 
 
+(*<*)
 subsection {* Equivalence *}
 
 text {*
@@ -155,5 +154,6 @@ definition variables_equiv ::
   "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "variables_equiv gr v1 v2 \<equiv>
      words_of_variables gr v1 = words_of_variables gr v2"
+(*>*)
 
 end
