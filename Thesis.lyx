@@ -531,7 +531,7 @@ In this chapter, we define some terms we will use throughout the document.
  For a longer introduction, see the first chapters of 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "hopcroft1979,carton2008"
+key "hopcroft2006,carton2008"
 
 \end_inset
 

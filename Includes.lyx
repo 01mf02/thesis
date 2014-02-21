@@ -147,7 +147,7 @@ Operators:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\newcommand{\norm}[1]{\left\Vert #1\right\Vert }
+\renewcommand{\norm}[1]{\left\Vert #1\right\Vert }
 \end_inset
 
 
@@ -221,7 +221,7 @@ filename "LyXproofs.lyx"
 
 \begin_layout Standard
 \begin_inset FormulaMacro
-\renewcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
+\newcommand{\gr}[2]{\unaryinf{\axiomc{}}{#1}{#2}{gr}}
 \end_inset
 
 

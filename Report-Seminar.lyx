@@ -162,31 +162,15 @@ Abstand bei
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-write Section instead of section? auf jeden Fall § davor weg!
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Introduction
 \end_layout
 
 \begin_layout Standard
 In my master's thesis 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-cite!
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "faerber2014"
 
 \end_inset
 
@@ -569,14 +553,130 @@ This is a CFG in 2-GNF, as there are maximally two variables on the right
 \end_inset
 
 .
- To visualise the grammar, we may construct a production graph as in 
+\end_layout
+
+\begin_layout Standard
+To visualise a grammar, we may construct a production graph for it.
+\end_layout
+
+\begin_layout Definition
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Construction graph
+\end_layout
+
+\end_inset
+
+A construction graph for a grammar 
+\begin_inset Formula $G=(V,\Sigma,P)$
+\end_inset
+
+ in GNF is a graph with the following conditions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Each vertex of the graph represents a variable word 
+\begin_inset Formula $w\in V^{*}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+For each vertex 
+\begin_inset Formula $w=X\beta$
+\end_inset
+
+ (with 
+\begin_inset Formula $X\in V$
+\end_inset
+
+ some variable and 
+\begin_inset Formula $\beta\in V^{*}$
+\end_inset
+
+ some variable word) in the graph and for each production rule 
+\begin_inset Formula $(X,a\alpha)\in P$
+\end_inset
+
+ (with 
+\begin_inset Formula $\alpha\in V^{*}$
+\end_inset
+
+ some variable word), there exists an edge with label 
+\begin_inset Formula $a\in\Sigma$
+\end_inset
+
+ from 
+\begin_inset Formula $w$
+\end_inset
+
+ to 
+\begin_inset Formula $w'=\alpha\beta$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+We have as simple lemma:
+\end_layout
+
+\begin_layout Lemma
+Given a construction graph for a grammar 
+\begin_inset Formula $G$
+\end_inset
+
+, it holds that:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Each path from a variable word 
+\begin_inset Formula $w$
+\end_inset
+
+ to 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ represents a terminal word produced by 
+\begin_inset Formula $w$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The length of the shortest path from a variable word 
+\begin_inset Formula $w$
+\end_inset
+
+ to 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ in the graph is equivalent to 
+\begin_inset Formula $\norm w$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Example
+For example, 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "fig:Production-graph"
 
 \end_inset
 
-:
+
 \begin_inset Float figure
 wide false
 sideways false
@@ -695,127 +795,15 @@ Production graph for example grammar.
 
 \end_inset
 
- We interpret this graph as follows:
-\end_layout
-
-\begin_layout Definition
-\begin_inset Argument
-status open
-
-\begin_layout Plain Layout
-Construction graph
-\end_layout
-
-\end_inset
-
-A construction graph for a grammar 
-\begin_inset Formula $G=(V,\Sigma,P)$
-\end_inset
-
- in GNF is a graph with the following conditions:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Each vertex of the graph represents a variable word 
-\begin_inset Formula $w\in V^{*}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-For each vertex 
-\begin_inset Formula $w=X\beta$
-\end_inset
-
- (with 
-\begin_inset Formula $X\in V$
-\end_inset
-
- some variable and 
-\begin_inset Formula $\beta\in V^{*}$
-\end_inset
-
- some variable word) in the graph and for each production rule 
-\begin_inset Formula $(X,a\alpha)\in P$
-\end_inset
-
- (with 
-\begin_inset Formula $\alpha\in V^{*}$
-\end_inset
-
- some variable word), there exists an edge with label 
-\begin_inset Formula $a\in\Sigma$
-\end_inset
-
- from 
-\begin_inset Formula $w$
-\end_inset
-
- to 
-\begin_inset Formula $w'=\alpha\beta$
-\end_inset
-
-.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-We have as simple lemma:
-\end_layout
-
-\begin_layout Lemma
-Given a construction graph for a grammar 
-\begin_inset Formula $G$
-\end_inset
-
-, it holds that:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Each path from a variable word 
-\begin_inset Formula $w$
-\end_inset
-
- to 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- represents a terminal word produced by 
-\begin_inset Formula $w$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-The length of the shortest path from a variable word 
-\begin_inset Formula $w$
-\end_inset
-
- to 
-\begin_inset Formula $\varepsilon$
-\end_inset
-
- in the graph is equivalent to 
-\begin_inset Formula $\norm w$
-\end_inset
-
-.
-\end_layout
-
-\end_deeper
-\begin_layout Example
-For example, for the grammar in 
+ is a production graph for the grammar in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "ex:Example-grammar"
 
 \end_inset
 
-, we can determine the norms and producible terminal words of the variable
+.
+ We can determine the norms and producible terminal words of the variable
  words 
 \begin_inset Formula $X$
 \end_inset
@@ -1026,7 +1014,8 @@ Created an algorithm to calculate norms
 \end_layout
 
 \begin_layout Itemize
-Integrated the algorithm into OCaml program
+Integrated the algorithm into existing OCaml program to produce equivalence
+ proofs of simple deterministic grammars
 \end_layout
 
 \begin_layout Itemize

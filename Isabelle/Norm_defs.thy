@@ -6,11 +6,6 @@ begin
 
 subsection {* Types *}
 
-type_synonym ('t, 'v) t_rule  = "'t \<times> 'v list"
-type_synonym ('t, 'v) t_rules = "('t, 'v) t_rule list"
-type_synonym ('t, 'v) v_rule  = "'v \<times> ('t, 'v) t_rules"
-type_synonym ('t, 'v) grammar = "('t, 'v) v_rule list"
-
 text {*
 In the formalisation of grammars, the simplest type is @{text t_rule}, which stands for terminal
 rule.
@@ -27,6 +22,11 @@ A @{text grammar} then is a list of variables together with their associated ter
 rules. An example could be $X \to aXY + b, Y \to c$.
 *}
 
+type_synonym ('t, 'v) t_rule  = "'t \<times> 'v list"
+type_synonym ('t, 'v) t_rules = "('t, 'v) t_rule list"
+type_synonym ('t, 'v) v_rule  = "'v \<times> ('t, 'v) t_rules"
+type_synonym ('t, 'v) grammar = "('t, 'v) v_rule list"
+
 subsection {* Grammar *}
 
 text {*
@@ -34,7 +34,7 @@ We continue with the formalisation of simple deterministic grammars.
 
 First, we demand that the grammar should be an association list, meaning
 that for each variable of the grammar, there should be exactly one
-list of terminal rules for that grammar. Furthermore, we require
+list of terminal rules for that variable. Furthermore, we require
 that all terminal rules for a variable start with a different terminal.
 This corresponds to the fact that our grammars are deterministic. Finally,
 we make sure that all variables contained in terminal rules are really variables of that grammar.
@@ -96,7 +96,7 @@ word can be produced by a variable word, which the function @{text word_in_varia
 does by verifying whether @{text eat_word} returns two empty lists.
 *}
 
-(*>*)
+(*<*)
 definition word_in_variables ::
   "('t, 'v) grammar \<Rightarrow> 't list \<Rightarrow> 'v list \<Rightarrow> bool" where
   "word_in_variables gr w v \<equiv> eat_word gr w v = ([], [])"
@@ -125,16 +125,18 @@ definition gram_normed_def :: "('t, 'v) grammar \<Rightarrow> bool" where
      \<forall>v. set v \<subseteq> keys gr \<longrightarrow> (\<exists>w. word_in_variables gr w v)"
 
 text {*
-The predicate @{text gram_nsd_def} expresses that a grammar is normed simple-deterministic.
+The predicate @{text gram_nsd_def} expresses that a grammar is normed
+and simple deterministic.
 *}
 
 definition gram_nsd_def :: "('t, 'v) grammar \<Rightarrow> bool" where
   "gram_nsd_def gr \<equiv> gram_sd gr \<and> gram_normed_def gr"
 
 text {*
-Finally, we can define norms: Given a variable word @{term v}, we can obtain
-the set of terminal words producible from @{term v} via @{term words_of_variables},
-which uses @{term eat_word}. The norm is then the length of the shortest of these terminal words.
+Finally, we can define norms: Using the function @{term words_of_variables},
+which uses @{term eat_word}, we obtain the set of terminal words producible
+from a given variable word @{term v}.
+The norm is then the length of the shortest of these terminal words.
 *}
 
 definition norm_def :: "('t, 'v) grammar \<Rightarrow> 'v list \<Rightarrow> nat" where

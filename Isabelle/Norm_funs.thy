@@ -6,7 +6,8 @@ theory Norm_funs imports
 begin
 
 
-subsection {* Types *}
+(*<*)
+subsection {* Norm calculation types *}
 
 text {*
 Similarly to the types used in the formalisation of norms, we have
@@ -38,6 +39,7 @@ type_synonym ('t, 'v) t_rule_norm   = "nat \<times> ('t, 'v) t_rule"
 type_synonym ('t, 'v) t_rules_norms = "('t, 'v) t_rule_norm list"
 type_synonym ('t, 'v) v_rule_norm   = "('v \<times> ('t, 'v) t_rule_norm)"
 type_synonym ('t, 'v) grammar_norms = "('t, 'v) v_rule_norm list"
+(*>*)
 
 
 (*<*)
@@ -93,7 +95,7 @@ definition grammar_norms_ord ::
 (*>*)
 
 
-subsection {* Functions *}
+subsection {* Norm calculation functions *}
 
 text {*
 The function @{text norm_sum} sums up the supplied norms for a given variable word.

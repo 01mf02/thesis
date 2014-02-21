@@ -23,19 +23,6 @@ $P\, a$, namely $no$. We continue this process as long as there
 are list elements which satisfy the predicate; when this is no longer
 the case, we return the last accumulator and those list elements which
 never satisfied the predicate.
-
-This algorithm can be used in many scenarios, most notably when there
-exist dependencies between list elements which we need to resolve.
-Example applications include:
-\begin{itemize}
-\item SAT of Horn formulas
-\item Scheduling
-\item Topological sorting
-\end{itemize}
-Note that the complexity of this algorithm is quadratic in the size $n$
-of the input list, because in each iteration, we determine all the
-elements of the input list which satisfy the predicate, and we may have
-a maximal number of $n$ iterations.
 *}
 
 function partition_iterate ::
@@ -108,5 +95,6 @@ proof -
   then have "f ac (filter (P ac) no) = ac" using assms by auto
   then show ?thesis unfolding ac_def no_def pi_def by (case_tac "partition_iterate P f a l") auto
 qed
+(*>*)
 
 end

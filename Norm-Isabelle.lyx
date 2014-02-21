@@ -75,19 +75,14 @@ name "sec:Norm-formalisation"
 \end_layout
 
 \begin_layout Standard
-In this section, we present our formalisation of grammars and norms.
+In this section, we present our formalisation of grammars and norms in Isabelle/
+HOL.
  Because in the formalisation we use several definitions related to association
  lists, we first introduce these.
 \end_layout
 
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand input
-filename "IsaTeX/AList_ext.tex"
-
-\end_inset
-
-
+\begin_layout Subsection
+Association lists
 \end_layout
 
 \begin_layout Standard
@@ -106,6 +101,16 @@ isamarkupheader}[1]{}
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand input
+filename "IsaTeX/AList_ext.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 filename "IsaTeX/Norm_defs.tex"
@@ -202,9 +207,9 @@ While this was a reliable and fast method to calculate norms, this method
 \end_layout
 
 \begin_layout Enumerate
-Norm overestimation: Here we determine which variables can be normed at
- all, while we calculate for each normable variable a preliminary norm,
- which is an overestimation of the actual norm.
+Norm overestimation: Here we determine which variables can be normed, then
+ we calculate for each normable variable a preliminary norm, which is an
+ overestimation of its actual norm.
 \end_layout
 
 \begin_layout Enumerate
@@ -217,9 +222,9 @@ Norm minimisation, or refinement: In this phase, we take the overestimated
 Consider the following grammar:
 \begin_inset Formula 
 \begin{align*}
-A & \to a\\
-B & \to bAA+cC\\
-C & \to cAA+bB
+A_{1} & \to a\\
+A_{2} & \to aA_{1}\\
+B & \to bA_{1}A_{1}A_{1}+cA_{2}
 \end{align*}
 
 \end_inset
@@ -625,8 +630,8 @@ To calculate the norm of a variable, for each production rule of that variable,
 \end_inset
 
 -GNF).
- Because looking up a norm takes linear time in the worst case, we have
- a worst-case runtime of 
+ Because looking up a norm from the existing set of norms takes linear time
+ in the worst case, we have a worst-case runtime of 
 \begin_inset Formula $m\cdot k\cdot n$
 \end_inset
 
@@ -698,7 +703,20 @@ reference "lem:Iteration-time."
 \end_layout
 
 \begin_layout Standard
-In the next subsection, we present the implementation of the algorithm.
+With a similar argument, we can show that the complexity of the norm overestimat
+ion is also 
+\begin_inset Formula $\mathcal{O}(n^{3})$
+\end_inset
+
+, giving the whole norm calculation algorithm a complexity of 
+\begin_inset Formula $\mathcal{O}(n^{3})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In the next subsections, we present the implementation of the algorithm.
 \end_layout
 
 \begin_layout Subsection
@@ -706,8 +724,9 @@ Partition iteration
 \end_layout
 
 \begin_layout Standard
-Furthermore, we created a versatile partition iteration algorithm, which
- can be used to resolve dependencies between elements of a list.
+For the norm overestimation calculation, we created a versatile partition
+ iteration algorithm, which can most generally be used to resolve dependencies
+ between elements of a list.
 \end_layout
 
 \begin_layout Standard
@@ -755,10 +774,6 @@ filename "IsaTeX/Partition_iterate.tex"
 
 \end_layout
 
-\begin_layout Subsection
-Implementation
-\end_layout
-
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
@@ -778,6 +793,12 @@ name "sec:Proof"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+In this section, we give a very brief overview of our correctness and completene
+ss proofs for our norm calculation algorithm.
+ The proofs have all been checked automatically by Isabelle.
 \end_layout
 
 \begin_layout Standard
@@ -859,32 +880,103 @@ name "sub:Integration-with-OCaml"
 
 \begin_layout Standard
 The export of the Isabelle code to OCaml turned out to be relatively simple.
- However, by default, natural numbers are encoded as inductive datatype
- of the form 
+ However, by default, natural numbers are encoded as inductive datatype.
+ As this representation is very inconvenient to use in OCaml, we imported
+ the theory Code_Target_Nat to make Isabelle export the code using the OCaml
+ datatype big_int.
+ Following that, we only had to convert the OCaml code from int to big_int,
+ which consisted mostly of tasks like replacing operators such as 
+\begin_inset Quotes eld
+\end_inset
+
++
+\begin_inset Quotes erd
+\end_inset
+
+ by 
+\begin_inset Quotes eld
+\end_inset
+
+add_big_int
+\begin_inset Quotes erd
+\end_inset
+
+ and did not have a noticable impact on the performance of the program.
+\end_layout
+
+\begin_layout Standard
+The biggest problem in the integration of the code exported by Isabelle
+ was that the functions we defined in Isabelle were polymorphic with type
+ constraints (namely that types need to have a well-ordered relation).
+ That means that to use the exported functions in OCaml, we needed to supply
+ orderings for the used datatypes, which we defined as follows:
+\end_layout
+
+\begin_layout Standard
 \begin_inset listings
+lstparams "language={[Objective]Caml}"
 inline false
 status open
 
 \begin_layout Plain Layout
 
-type nat = Zero | Succ of nat
+let        eq_poly = {HOL.equal = (=)};;
+\end_layout
+
+\begin_layout Plain Layout
+
+let       ord_poly = {Orderings.less_eq = (<=);
+\end_layout
+
+\begin_layout Plain Layout
+
+                      Orderings.less = (<)};;
+\end_layout
+
+\begin_layout Plain Layout
+
+let  preorder_poly = {Orderings.ord_preorder =
+\end_layout
+
+\begin_layout Plain Layout
+
+                        ord_poly};;
+\end_layout
+
+\begin_layout Plain Layout
+
+let     order_poly = {Orderings.preorder_order =
+\end_layout
+
+\begin_layout Plain Layout
+
+                        preorder_poly};;
+\end_layout
+
+\begin_layout Plain Layout
+
+let  linorder_poly = {Orderings.order_linorder =
+\end_layout
+
+\begin_layout Plain Layout
+
+                        order_poly};;
+\end_layout
+
+\begin_layout Plain Layout
+
+let wellorder_poly = {Orderings.linorder_wellorder =
+\end_layout
+
+\begin_layout Plain Layout
+
+                        linorder_poly};;
 \end_layout
 
 \end_inset
 
-As this representation is very inconvenient to use in OCaml, we imported
- the theory Code_Target_Nat to make Isabelle export the code using the OCaml
- datatype big_int.
- Following that, we only had to convert the OCaml code from int to big_int,
- which turned out to be relatively simple and did not have a noticable impact
- on the performance of the program.
-\end_layout
-
-\begin_layout Standard
-Furthermore, to use the exported functions in OCaml, we needed to supply
- orderings for the used datatypes.
- As we compare only tuples, lists, characters and integers, which are all
- supported by the OCaml polymorphic comparison operator 
+We have to be cautious when using these orders, as in general, the operator
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -892,15 +984,11 @@ Furthermore, to use the exported functions in OCaml, we needed to supply
 \begin_inset Quotes erd
 \end_inset
 
-, we constructed the required orderings in OCaml using 
-\begin_inset Quotes eld
-\end_inset
-
-=
-\begin_inset Quotes erd
-\end_inset
-
-, 
+ of OCaml is not a well-founded relation on all datatypes, for example strings.
+ However, for our application, this is not a problem, as for those types
+ which do not have a well-founded relation, we only use a finite set of
+ different values: For example, in the OCaml code, we use strings as variable
+ identifiers, for which OCaml's 
 \begin_inset Quotes eld
 \end_inset
 
@@ -908,15 +996,24 @@ Furthermore, to use the exported functions in OCaml, we needed to supply
 \begin_inset Quotes erd
 \end_inset
 
- and 
+ is not well-founded, but still, we only use a 
+\emph on
+finite
+\emph default
+ 
+\emph on
+set
+\emph default
+ of variables i.e.
+ strings, so we can use OCaml's 
 \begin_inset Quotes eld
 \end_inset
 
-<=
+<
 \begin_inset Quotes erd
 \end_inset
 
-.
+ here, without compromising termination.
 \end_layout
 
 \begin_layout Subsection
