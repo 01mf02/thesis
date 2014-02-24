@@ -270,7 +270,7 @@ The 4-tuples on the right-hand side represent the preliminary norms, storing
 \begin{align*}
 A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
 A_{2} & \to aA_{1} & \rightsquigarrow\left(A_{2},2,a,\left[A_{1}\right]\right)\\
-B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}{\color{green}\rightsquigarrow\left(B,3,c,\left[A_{2}\right]\right)}
+B & \to bA_{1}A_{1}A_{1}+cA_{2} & {\color{red}\rightsquigarrow\left(B,4,b,\left[A_{1},A_{1},A_{1}\right]\right)}\mbox{ }{\color{green}\rightsquigarrow\left(B,3,c,\left[A_{2}\right]\right)}
 \end{align*}
 
 \end_inset

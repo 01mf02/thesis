@@ -2,14 +2,16 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass scrreprt
+\textclass clmthesis
 \begin_preamble
 % set author and title for the CL class --- why the fuck is that needed?
-%\plainauthor{Michael Färber}
-%\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
+\plainauthor{Michael Färber}
+\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
+\supervisors{Géraud Sénizergues, Cezary Kaliszyk}
+\institute{Université Bordeaux 1, Universität Innsbruck}
 
 % to show DRAFT watermark
-\usepackage[firstpage]{draftwatermark}
+%\usepackage[firstpage]{draftwatermark}
 
 \usepackage{bussproofs}
 
@@ -131,30 +133,6 @@ Complexity of equivalence proofs of simple deterministic grammars
 
 \begin_layout Author
 Michael Färber
-\end_layout
-
-\begin_layout Publishers
-Supervisors: Géraud Sénizergues
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-Université Bordeaux 1
-\end_layout
-
-\end_inset
-
-, Cezary Kaliszyk
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-Universität Innsbruck
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Abstract
@@ -7391,118 +7369,55 @@ In this chapter, we present our implementation and verification of the norm
  calculation algorithm in Isabelle/HOL.
 \end_layout
 
-\begin_layout Standard
-First, we introduce Isabelle.
- Then, we show some Isabelle theories which we created to formalise norms
- and to implement the algorithm.
- Following this, we give our formalisation of norms and the actual implementatio
-n of our algorithm.
- Finally, we give a very short insight into the proof idea and show some
- results.
-\end_layout
-
 \begin_layout Section
-Isabelle
+Introduction
 \end_layout
 
 \begin_layout Standard
-Isabelle is an interactive theorem prover programmed in Standard ML.
- It provides a meta-logic to formalise a multitude of different object logics,
- such as ZF (Zermelo-Fraenkel Set Theory), CTT (Constructive Type Theory),
- FOL (First Order Logic) --- see 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Object-logics."
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-includesvg[width=0.6
-\backslash
-columnwidth]{Logics}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Object logics in Isabelle.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Object-logics."
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-.The most mature object logic in Isabelle at the time of writing is HOL (Higher
- Order Logic), which provides a comfortable programming environment similar
- to common functional programming languages, providing many auxiliary functions
- for e.g.
- list operations, along with lemmata about these operations.
+To increase the confidence in the proof construction algorithm, we considered
+ verifying the algorithm formally in an interactive theorem prover.
+ The algorithm consists of many separate parts which could be considered
+ worthwhile to verify; for example, the proof construction, the norm calculation
+, the grammar verification, and several other parts.
 \end_layout
 
 \begin_layout Standard
-Isabelle/HOL also permits the export of code written in it into other languages,
- such as Scala, OCaml and Haskell.
+It turned out that the whole algorithm was too big to be verified in the
+ framework of this thesis, so we concentrated on only two parts, namely
+ grammar verification and norm calculation.
+ For this task, we first formalised simple deterministic grammars and their
+ norms.
+ Then, we implemented an algorithm to calculate the norms of variables of
+ simple deterministic grammars.
+ Finally, we wrote a proof that our algorithm corresponds to the formalisation
+ of norms, i.e.
+ it correctly calculates norms of simple deterministic grammars.
+\end_layout
+
+\begin_layout Standard
+We conducted all this work (formalisation, implementation, verification)
+ in Isabelle/HOL, which is an LCF-style theorem prover programmed in Standard
+ ML 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "paulson1990"
+
+\end_inset
+
+.
+ This prover allows us to export code written in it into other languages,
+ such as Scala, OCaml and Haskell 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "haftmann2013"
 
 \end_inset
 
- Having proven certain properties of functions in Isabelle, we can then
- use the exported functions in aforementioned languages, trusting they also
- behave according to our proved behaviour.
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-Of course, we can not exclude the possibility of a faulty target language
- compiler or hardware failures, but even with these restrictions, we can
- be a lot more confident in the function of our verified program compared
- to a completely unverified alternative.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We used Isabelle/HOL to formalise simple deterministic grammars and norms,
- and based on that, we implemented a norm calculation algorithm in it.
- Then, we showed the correctness of the algorithm, thus establishing a link
- between the formalisation and the implementation.
- Furthermore, we used Isabelle's code export to automatically generate OCaml
- code from our algorithm, which we embedded in an existing OCaml program
- --- see subsection 
+.
+ Having proven soundness and correctness of our algorithm in Isabelle/HOL,
+ we then integrated the OCaml code generated from our norm calculation algorithm
+ by Isabelle/HOL into the proof generation algorithm --- see subsection
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Integration-with-OCaml"
@@ -9019,7 +8934,6 @@ reference "th:Proof-EXP"
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-btprint "btPrintAll"
 bibfiles "Literature"
 options "abbrv"
 
