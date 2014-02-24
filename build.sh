@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd Isabelle
-./build.sh
+#./build.sh
 cd ..
 
 cd OCaml
