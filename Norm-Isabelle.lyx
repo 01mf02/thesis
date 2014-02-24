@@ -229,7 +229,8 @@ B & \to bA_{1}A_{1}A_{1}+cA_{2}
 
 \end_inset
 
-Here, the output of the first phase might look as follows:
+Here, the output of the first phase (norm overestimation) might look as
+ follows:
 \begin_inset Formula 
 \begin{align*}
 A_{1} & \to a & \rightsquigarrow\left(A_{1},1,a,\left[\right]\right)\\
@@ -507,6 +508,10 @@ name "alg:Norm-calculation-algorithm."
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Complexity
 \end_layout
 
 \begin_layout Standard
@@ -986,17 +991,7 @@ We have to be cautious when using these orders, as in general, the operator
 
  of OCaml is not a well-founded relation on all datatypes, for example strings.
  However, for our application, this is not a problem, as for those types
- which do not have a well-founded relation, we only use a finite set of
- different values: For example, in the OCaml code, we use strings as variable
- identifiers, for which OCaml's 
-\begin_inset Quotes eld
-\end_inset
-
-<
-\begin_inset Quotes erd
-\end_inset
-
- is not well-founded, but still, we only use a 
+ which do not have a well-founded relation, we only use a 
 \emph on
 finite
 \emph default
@@ -1004,7 +999,16 @@ finite
 \emph on
 set
 \emph default
- of variables i.e.
+ of different values: For example, in the OCaml code, we use strings as
+ variable identifiers, for which OCaml's 
+\begin_inset Quotes eld
+\end_inset
+
+<
+\begin_inset Quotes erd
+\end_inset
+
+ is not well-founded, but still, we only use a finite set of variables i.e.
  strings, so we can use OCaml's 
 \begin_inset Quotes eld
 \end_inset

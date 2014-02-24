@@ -795,7 +795,7 @@ Production graph for example grammar.
 
 \end_inset
 
- is a production graph for the grammar in 
+ shows a production graph for the grammar in example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "ex:Example-grammar"
@@ -803,8 +803,8 @@ reference "ex:Example-grammar"
 \end_inset
 
 .
- We can determine the norms and producible terminal words of the variable
- words 
+ With this particular production graph, we can determine the norms and producibl
+e terminal words of the variable words 
 \begin_inset Formula $X$
 \end_inset
 
@@ -822,8 +822,7 @@ reference "ex:Example-grammar"
 
 , because these are the variable words present in the graph.
  To determine the norms of these variable words, we just need to determine
- the length of the shortest path from these variable words to the empty
- word 
+ the length of the shortest path from them to the empty word 
 \begin_inset Formula $\varepsilon$
 \end_inset
 
@@ -917,6 +916,17 @@ key "harrison1978"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+Looking at example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:Example-grammar"
+
+\end_inset
+
+, we can see that its grammar is simple deterministic.
 \end_layout
 
 \begin_layout Example

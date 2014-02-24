@@ -52,7 +52,7 @@ text {*
 To verify whether a given variable word can produce a given terminal word,
 we define a function called @{text eat_word}. This function takes a
 simple deterministic grammar, a terminal word and a variable word, and
-returns the pair of empty lists if the variable word produces the terminal word.
+returns the pair of empty lists iff the variable word produces the terminal word.
 *}
 
 fun eat_word ::
@@ -65,6 +65,7 @@ fun eat_word ::
 | "eat_word gr t v = (t, v)"
 
 text {*
+Let us take a closer look at this function:
 In case that both terminal and variable words are non-empty, we obtain the first terminal
 @{term th} and the first variable @{term vh} from the words. Then we check whether
 there exists a terminal rule for @{term vh} with the terminal @{term th}, i.e.
@@ -116,8 +117,8 @@ text {*
 Next, we formalise what it means for a grammar to be normed: It means
 that for each variable word @{term v} consisting of variables of the grammar,
 there exists at least one (finite) terminal word which can be produced
-from @{term v}. @{term word_in_variables} is a function that verifies via
-@{term eat_word} whether a terminal word can be produced by a variable word.
+from @{term v}. Here, we use a function called @{term word_in_variables} which
+verifies via @{term eat_word} whether a terminal word can be produced by a variable word.
 *}
 
 definition gram_normed_def :: "('t, 'v) grammar \<Rightarrow> bool" where
@@ -133,8 +134,8 @@ definition gram_nsd_def :: "('t, 'v) grammar \<Rightarrow> bool" where
   "gram_nsd_def gr \<equiv> gram_sd gr \<and> gram_normed_def gr"
 
 text {*
-Finally, we can define norms: Using the function @{term words_of_variables},
-which uses @{term eat_word}, we obtain the set of terminal words producible
+Finally, we can define norms: Here, we use a function called @{term words_of_variables},
+which uses @{term eat_word}, to obtain the set of terminal words producible
 from a given variable word @{term v}.
 The norm is then the length of the shortest of these terminal words.
 *}
