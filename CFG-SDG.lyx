@@ -404,7 +404,6 @@ Each vertex of the graph represents a variable word
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 For each vertex 
 \begin_inset Formula $w=X\beta$
@@ -441,7 +440,6 @@ For each vertex
 .
 \end_layout
 
-\end_deeper
 \begin_layout Standard
 We have as simple lemma:
 \end_layout
@@ -470,7 +468,6 @@ Each path from a variable word
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 The length of the shortest path from a variable word 
 \begin_inset Formula $w$
@@ -487,7 +484,6 @@ The length of the shortest path from a variable word
 .
 \end_layout
 
-\end_deeper
 \begin_layout Example
 \begin_inset CommandInset ref
 LatexCommand formatted
@@ -847,7 +843,6 @@ By induction on
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $n+1$
 \end_inset
@@ -859,6 +854,5 @@ By induction on
 .
 \end_layout
 
-\end_deeper
 \end_body
 \end_document

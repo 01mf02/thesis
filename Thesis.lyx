@@ -65,7 +65,7 @@ theorems-ams-bytype
 \language_package default
 \inputencoding utf8
 \fontencoding global
-\font_roman default
+\font_roman lmodern
 \font_sans default
 \font_typewriter default
 \font_default_family default
@@ -1360,28 +1360,41 @@ Formal power series
 
 \end_inset
 
-A formal power series 
+Let 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ be an alphabet and 
+\begin_inset Formula $K$
+\end_inset
+
+ a semiring.
+ Total functions 
 \begin_inset Formula $S$
 \end_inset
 
- is a total function from 
-\begin_inset Formula $X^{*}$
+ from 
+\begin_inset Formula $\Sigma^{*}$
 \end_inset
 
  to 
 \begin_inset Formula $K$
 \end_inset
 
+ are called 
+\emph on
+formal power series
+\emph default
 .
  The image of a word 
-\begin_inset Formula $w\in X^{*}$
+\begin_inset Formula $w\in\Sigma^{*}$
 \end_inset
 
  with respect to 
 \begin_inset Formula $S$
 \end_inset
 
- is noted as 
+ is denoted as 
 \begin_inset Formula $\left(S,w\right)$
 \end_inset
 
@@ -1405,7 +1418,7 @@ support
  is defined as
 \begin_inset Formula 
 \[
-\supp\left(S\right):=\left\{ w\in X^{*}\mid\left(S,w\right)\neq0\right\} .
+\supp\left(S\right):=\left\{ w\in\Sigma^{*}\mid\left(S,w\right)\neq0\right\} .
 \]
 
 \end_inset
@@ -1413,13 +1426,32 @@ support
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
+\begin_layout Example
+The function
+\begin_inset Formula 
+\[
+f(w)=\begin{cases}
+1 & \ifc w=aX\mbox{ or }w=b\\
+0 & \mbox{otherwise}
+\end{cases}
+\]
 
-\begin_layout Plain Layout
+\end_inset
 
-\end_layout
+from 
+\begin_inset Formula $\Sigma=\left\{ a,b,X\right\} $
+\end_inset
+
+ to 
+\begin_inset Formula $\mathbb{B}$
+\end_inset
+
+ is a formal power series.
+ Its support is
+\begin_inset Formula 
+\[
+\supp\left(f\right)=\left\{ aX,b\right\} .
+\]
 
 \end_inset
 
@@ -1445,25 +1477,11 @@ The set of formal power series over
 \end_inset
 
  is noted 
-\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
+\begin_inset Formula $K\langle\langle X\rangle\rangle$
 \end_inset
 
 .
- We enclose
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-the right word?
-\end_layout
-
-\end_inset
-
- 
-\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
-\end_inset
-
- with a semiring structure as follows: If 
+ If 
 \begin_inset Formula $S,T$
 \end_inset
 
@@ -1490,13 +1508,13 @@ where the sum is finite.
 Based on this, we also define
 \begin_inset Formula 
 \[
-K\left\langle X\right\rangle :=\left\{ S\in K\left\langle \left\langle X\right\rangle \right\rangle \mid\left|\supp\left(S\right)\right|<\infty\right\} 
+K\langle X\rangle:=\left\{ S\in K\langle\langle X\rangle\rangle\mid\left|\supp\left(S\right)\right|<\infty\right\} 
 \]
 
 \end_inset
 
 to be the set of elements in 
-\begin_inset Formula $K\left\langle \left\langle X\right\rangle \right\rangle $
+\begin_inset Formula $K\langle\langle X\rangle\rangle$
 \end_inset
 
  with finite support.
@@ -1536,10 +1554,10 @@ Polynomials over
 \begin_inset Formula $\Sigma=V\cup T$
 \end_inset
 
- are the elements of the noncommutative semiring
+ are the elements of
 \begin_inset Formula 
 \[
-R=\mathbb{B}\left\langle \Sigma\right\rangle .
+R=\mathbb{B}\langle\Sigma\rangle.
 \]
 
 \end_inset
@@ -1595,20 +1613,20 @@ X\to a+B+cDE,
 
 \end_inset
 
-the support of 
-\begin_inset Formula $X$
-\end_inset
-
- is 
-\begin_inset Formula $\supp\left(X\right)=\left\{ a,B,cDE\right\} $
-\end_inset
-
- and the grammar polynomial of 
+the grammar polynomial of 
 \begin_inset Formula $X$
 \end_inset
 
  is 
 \begin_inset Formula $\Gr X=a+B+cDE$
+\end_inset
+
+, and the support of 
+\begin_inset Formula $X$
+\end_inset
+
+ is 
+\begin_inset Formula $\supp\left(\Gr X\right)=\left\{ a,B,cDE\right\} $
 \end_inset
 
 .
@@ -1645,25 +1663,7 @@ where
 \end_inset
 
  is the reflexive and transitive closure of the derivation relation, which
- is defined as in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "carton2008"
-
-\end_inset
-
-.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-What is the derivation relation?
-\end_layout
-
-\end_inset
-
-
+ is defined as usual.
 \end_layout
 
 \begin_layout Standard
