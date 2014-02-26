@@ -136,7 +136,7 @@ Michael Färber
 \end_layout
 
 \begin_layout Abstract
-Equivalence of simple deterministic grammar is decidable in PTIME.
+Equivalence of simple deterministic grammars is decidable in PTIME.
  We created a new equivalence proof system, for which we implemented an
  algorithm to decide equivalence of simple deterministic grammars and to
  issue a complementary equivalence proof, which we then verify automatically.
@@ -179,8 +179,7 @@ My supervisor Cezary, for supporting me and my studies since we met in 2012,
 
 \begin_layout Itemize
 Aart Middeldorp, Georg Moser, Pierre Castéran, Marc Zeitoun and Anca Muscholl
- for your amazing logic lectures, of which I had the joy to attend at least
- four different ones during the last two years.
+ for your amazing logic lectures.
 \end_layout
 
 \begin_layout Itemize
@@ -310,8 +309,11 @@ A possible remedy for this problem is to generate proofs for the results.
 
 \begin_layout Standard
 In this document, we considered the problem of equivalence of simple determinist
-ic grammars, which was shown to be decidable by Korenjak and Hopcroft in
- 
+ic grammars, which was shown to be decidable by Korenjak and Hopcroft
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "korenjak1966"
@@ -319,8 +321,12 @@ key "korenjak1966"
 \end_inset
 
 .
- Thirty years later, an efficient algorithm for the problem in PTIME was
- presented by Hirshfeld, Faron and Moller in 
+ Thirty years later, an efficient PTIME algorithm for the problem was presented
+ by Hirshfeld, Faron and Moller
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hirshfeld1996"
@@ -328,7 +334,11 @@ key "hirshfeld1996"
 \end_inset
 
 , however, this algorithm does not yield proofs.
- Another ten years later, Lasota and Rytter 
+ Another ten years later, Lasota and Rytter
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lasota2006"
@@ -347,8 +357,7 @@ We created a relatively simple proof system to prove equivalences of simple
  Based on this test suite, we compared the performances of our algorithms:
  The best algorithm we found so far always terminated in EXPTIME, and we
  proved it to have a maximal complexity of 2-EXPTIME.
- Using the latter result, we proved that our proof system is complete, and
- we proved that it is also sound.
+ Using the latter result, we proved that our proof system is sound and complete.
 \end_layout
 
 \begin_layout Standard
@@ -426,22 +435,9 @@ reference "chap:Conclusion"
 \end_inset
 
 .
- The first appendix in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "chap:Appendix-Norm"
-
-\end_inset
-
- describes the implementation and verification of a part of the proof algorithm,
- and the second appendix in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "chap:Appendix-SC"
-
-\end_inset
-
- contains the proof of soundness and completeness of our proof system.
+ The first appendix describes the implementation and verification of a part
+ of the proof algorithm, and the second appendix contains the proof of soundness
+ and completeness of our proof system.
 \end_layout
 
 \begin_layout Standard
@@ -497,7 +493,11 @@ name "chap:Preliminaries"
 \begin_layout Standard
 In this chapter, we discuss the basics of simple deterministic grammars
  and polynomials.
- For a longer introduction, see the first chapters of 
+ For a longer introduction, see the first chapters of
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hopcroft2006"
@@ -522,8 +522,7 @@ Normalised SDGs
 \end_layout
 
 \begin_layout Standard
-For the proof construction algorithms presented in this document, we use
- so-called 
+For the proof construction algorithms presented in this thesis, we use 
 \emph on
 normalised
 \emph default
@@ -554,19 +553,22 @@ key "hirshfeld1996,lasota2006"
  decide equivalence, as we only consider languages containing finite words:
  For simple deterministic grammars, we can find in linear time equivalent
  grammars exclusively containing variables which produce at least one finite
- word.
- 
+ word
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "yehudai1977"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Example
-As a (perhaps surprising) consequence, in the grammar
+In the grammar
 \begin_inset Formula 
 \begin{align*}
 A & \to aA\\
@@ -713,16 +715,40 @@ name "lem:Indices-ordered"
 
 \end_inset
 
+For all variables 
+\begin_inset Formula $X_{i}$
+\end_inset
 
-\begin_inset Formula $\forall i\forall X_{j}\in\alpha_{i,1}:\, j<i$
+, it holds for all variables 
+\begin_inset Formula $X_{j}$
+\end_inset
+
+ contained in the sequence 
+\begin_inset Formula $\alpha_{i,1}$
+\end_inset
+
+ that 
+\begin_inset Formula $j<i$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Proof
-Assume to the contrary 
-\begin_inset Formula $\exists i\exists X_{j}\in\alpha_{i,1}:\, j\geq i$
+Assume to the contrary that there exists a variable 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ for which there exists a variable 
+\begin_inset Formula $X_{j}$
+\end_inset
+
+ in 
+\begin_inset Formula $\alpha_{i,1}$
+\end_inset
+
+ such that 
+\begin_inset Formula $j\geq i$
 \end_inset
 
 .
@@ -1668,7 +1694,7 @@ if
 \begin_inset Quotes erd
 \end_inset
 
- appropriate?
+ appropriate? (is because it appears in lemma)
 \end_layout
 
 \end_inset
@@ -1709,7 +1735,7 @@ The size of a polynomial is the sum of terminals and variables appearing
 \[
 \size p=\begin{cases}
 1 & \ifc p\in T\cup V\\
-\size{p_{1}}+\size{p_{2}} & \ifc p=p_{1}+p_{2}\lor p=p_{1}\cdot p_{2}
+\size{p_{1}}+\size{p_{2}} & \ifc p=p_{1}+p_{2}\mbox{ or }p=p_{1}\cdot p_{2}
 \end{cases}
 \]
 
@@ -1741,7 +1767,7 @@ simple polynomials
 \end_inset
 
 .
- In a nutshell, a simple polynomial should be:
+ The intention is for a simple polynomial to be:
 \end_layout
 
 \begin_layout Itemize
@@ -2092,7 +2118,7 @@ key "hirshfeld1996"
 
 .
  One of the central techniques they use in their algorithm is the norm reduction
- function, which we shall define first and explain afterwards:
+ function:
 \end_layout
 
 \begin_layout Definition
@@ -2180,13 +2206,6 @@ cutting away
  characters of its shortest producible terminal word and returning the remaining
  variables.
  For an example, see 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Motivation-Base"
-
-\end_inset
-
-
 \begin_inset Float figure
 wide false
 sideways false
@@ -2228,6 +2247,13 @@ Motivation of Caucal base.
 
 \end_inset
 
+
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Motivation-Base"
+
+\end_inset
+
 : If we know that 
 \begin_inset Formula $AB\equiv CD$
 \end_inset
@@ -2260,8 +2286,8 @@ Motivation of Caucal base.
 \end_layout
 
 \begin_layout Standard
-That idea is utilised at the core of the Hirshfeld algorithm, namely in
- the 
+That idea is used at the core of the Hirshfeld algorithm, namely in the
+ 
 \emph on
 Caucal base
 \emph default
@@ -2484,7 +2510,7 @@ reference "fig:Arithmetic-progression"
 
 \end_inset
 
-: There you see two words, 
+: There one can see two words, 
 \begin_inset Formula $\alpha$
 \end_inset
 
@@ -2609,8 +2635,8 @@ name "chap:Equivalence-proof-system"
 \end_layout
 
 \begin_layout Standard
-In this section, we introduce our system to prove equivalence of simple-determin
-istic grammars.
+In this section, we introduce our system to prove equivalence of simple
+ deterministic grammars.
  The motivation for creating this system was to find a very simple logic
  and to find out if we could prove all equivalences in it, and if so, which
  size these proofs would occupy.
@@ -2651,7 +2677,7 @@ C_{2} & \to c
 
 \end_inset
 
-We see at a glance that 
+We see that 
 \begin_inset Formula $C_{1}\equiv C_{2}$
 \end_inset
 
@@ -2700,9 +2726,9 @@ e relation, as well as the
 \begin_inset Formula $\times$
 \end_inset
 
- rules: The latter two basically signify that sums and products can be split
- up in smaller parts whose equivalence is proven separately --- divide et
- impera.
+ rules: The latter two basically indicate that sums and products can be
+ split up in smaller parts whose equivalence is proven separately --- divide
+ et impera.
 \end_layout
 
 \begin_layout Standard
@@ -2757,8 +2783,8 @@ The boxed judgement
 \begin_inset Formula $\boxed{X\equiv Y}$
 \end_inset
 
- signifies that this judgement was already proven at a different place,
- which allows us to prove the equivalence of variables inductively.
+ means that this judgement was already proven at a different place, which
+ allows us to prove the equivalence of variables inductively.
  Note that the box around the judgement is just a visual aid to state that
  the judgement appears in the conclusion of a different rule; the box itself
  is by no means a distinct proof rule.
@@ -2820,7 +2846,6 @@ We note that in both proofs above, we have a certain circularity, as
 n.
  This circularity obviously leads to a contradiction for the second proof,
  whereas we claim that the first proof is correct.
- Why?
 \end_layout
 
 \begin_layout Standard
@@ -2896,7 +2921,7 @@ only
 \end_inset
 
  rule.
- We formalise this argument in 
+ We formally present this argument in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "sec:Soundness"
@@ -2911,8 +2936,7 @@ Proof definition
 \end_layout
 
 \begin_layout Standard
-Now we are ready to formally define equivalence proofs.
- After the definition, we explain it in depth.
+We can formally define equivalence proofs.
 \end_layout
 
 \begin_layout Definition
@@ -3291,7 +3315,7 @@ reference "eq:Unique-conclusions"
 \begin_inset Formula $\Premstartimes r$
 \end_inset
 
- informally returns 
+ returns 
 \begin_inset Formula $r$
 \end_inset
 
@@ -3531,6 +3555,47 @@ reference "lem:Language-of-polynomial"
 
 \end_deeper
 \begin_layout Definition
+For two sets 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+, we define the symmetrical difference of 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+A\Delta B:=\left(A-B\right)\cup\left(B-A\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
 Given two polynomials 
 \begin_inset Formula $p_{1},p_{2}\in\mathcal{P}$
 \end_inset
@@ -3568,8 +3633,7 @@ c\left(p_{1}\equiv p_{2}\right):=c\left(p_{1},p_{2}\right).
 \end_layout
 
 \begin_layout Standard
-Now we shall discuss another important matter which we have not touched
- so far; namely the difference between strict and non-strict rules:
+Now we shall discuss the difference between strict and non-strict rules:
 \end_layout
 
 \begin_layout Lemma
@@ -3589,7 +3653,7 @@ and for all rules
 \begin_inset Formula $\bussproof{\binaryinfc{\axiomc{P_{1}}}{\axiomc{P_{2}}}C{\ensuremath{\times}}}$
 \end_inset
 
- it even holds that
+ it holds that
 \begin_inset Formula 
 \[
 \min\left\{ c\left(P_{1}\right),c\left(P_{2}\right)\right\} <c\left(C\right)\text{ or }c\left(C\right)=\infty.
@@ -3611,10 +3675,14 @@ Let us first assume that
 
 .
  Then 
-\begin_inset Formula $\min\left\{ c\left(P_{1}\right),\dots,c\left(P_{n}\right)\right\} \leq\infty$
+\begin_inset Formula 
+\[
+\min\{c\left(P_{1}\right),\dots,c\left(P_{n}\right)\}\leq\infty
+\]
+
 \end_inset
 
- holds, which affirms the condition for all rules, and 
+holds, which affirms the condition for all rules, and 
 \begin_inset Formula $c\left(C\right)=\infty$
 \end_inset
 
@@ -3980,16 +4048,16 @@ Illustration of a circular proof.
 \end_layout
 
 \begin_layout Standard
-We show completeness constructively, presenting our proof construction algorithm
- in 
+We show completeness by presenting our proof construction algorithm in 
 \begin_inset CommandInset ref
 LatexCommand formatted
 reference "chap:Proof-construction-algorithm"
 
 \end_inset
 
- which we prove in the appendix to find an equivalence proof of two polynomials
- if the languages of the polynomials are equivalent.
+.
+ In the appendix, we prove that this algorithm finds an equivalence proof
+ of two polynomials if the languages of the polynomials are equivalent.
 \end_layout
 
 \begin_layout Chapter
@@ -4004,7 +4072,7 @@ name "chap:Proof-construction-strategies"
 \end_layout
 
 \begin_layout Standard
-In this chapter, we present several options to construct equivalence proofs
+In this chapter, we present several ways to construct equivalence proofs
  of SDGs.
 \end_layout
 
@@ -4141,13 +4209,6 @@ gr*: This rule replaces the first variable of the left or the right side
 \end_deeper
 \begin_layout Proof
 Now we consider the grammar given in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "tab:AB-grammar-non2NF"
-
-\end_inset
-
-
 \begin_inset Float table
 wide false
 sideways false
@@ -4198,6 +4259,13 @@ name "tab:AB-grammar-non2NF"
 
 \end_inset
 
+
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:AB-grammar-non2NF"
+
+\end_inset
+
 , where we want to prove 
 \begin_inset Formula $F_{n}\equiv G_{n}$
 \end_inset
@@ -4213,13 +4281,6 @@ name "tab:AB-grammar-non2NF"
 
 After this initial step, the base replacement algorithm dictates that we
  must continuously apply the proof schemes given in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Proof-schemes-base-replacement"
-
-\end_inset
-
-
 \begin_inset Float figure
 wide false
 sideways false
@@ -4260,6 +4321,13 @@ Proof schemes for base replacement algorithm.
 
 \end_inset
 
+
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Proof-schemes-base-replacement"
+
+\end_inset
+
 , until we have to apply the reflexivity rule at the very end of the proof.
  
 \begin_inset Note Note
@@ -4271,10 +4339,19 @@ Not easy to see ...
 
 \end_inset
 
-We note that in both proof schemes, the norm of the last equality is by
- two smaller than the norm of the first equality, which means that we have
- to apply the proof schemes a number of times linear in the norm of the
- original equivalence.
+We note that in both proof schemes, the norm of the uppermost equality is
+ by two smaller than the norm of the lowermost equality; for example, for
+ the second proof scheme, we can see that 
+\begin_inset Formula $\norm{BA_{B}^{0}X}-\norm{BX}=2$
+\end_inset
+
+ and 
+\begin_inset Formula $\norm{B_{A}^{0}YB}-\norm{YB}=2$
+\end_inset
+
+.
+ That means that we have to apply the proof schemes a number of times linear
+ in the norm of the original equivalence.
  As the norm is exponential in the number of variables, we obtain a proof
  of exponential size.
 \end_layout
@@ -4284,8 +4361,8 @@ Decomposition
 \end_layout
 
 \begin_layout Standard
-After noting that the base replacement idea would produce exponential-size
- proofs even for compression grammars, we thought of new methods.
+Having noted that the base replacement idea would produce exponential-size
+ proofs even for compression grammars, we considered new methods.
  In turn, we discovered a function, which we dubbed 
 \emph on
 decomposition
@@ -4295,19 +4372,19 @@ decomposition
 \end_layout
 
 \begin_layout Definition
-The decomposition function is a partial function from 
+The decomposition function is a partial function taking 
 \begin_inset Formula $V^{*}\times\mathbb{N}$
 \end_inset
 
- to 
+ returning 
 \begin_inset Formula $V^{*}$
 \end_inset
 
-, which returns 
+, or 
 \begin_inset Formula $\bot$
 \end_inset
 
- if undefined.
+ if it fails.
 \begin_inset Formula 
 \begin{align*}
 \left\langle \alpha\right\rangle _{0} & =\varepsilon;\\
@@ -4441,13 +4518,6 @@ reference "sec:Hirshfeld-algorithm"
 
 \begin_layout Standard
 See 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Decomposition-motivation"
-
-\end_inset
-
-
 \begin_inset Float figure
 wide false
 sideways false
@@ -4489,6 +4559,13 @@ Motivation for the decomposition function.
 
 \end_inset
 
+
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Decomposition-motivation"
+
+\end_inset
+
  for an illustration.
  Again, the main difference between decomposition and norm reduction is
  that we derive 
@@ -4499,16 +4576,19 @@ Motivation for the decomposition function.
 \begin_inset Formula $D$
 \end_inset
 
-, not of 
+, rather than 
 \begin_inset Formula $A$
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Definition
+\begin_layout Standard
 Now we prove some properties of the decomposition function, analogous to
- 
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hirshfeld1996"
@@ -4521,7 +4601,8 @@ key "hirshfeld1996"
 \begin_inset Formula $\bot$
 \end_inset
 
-, and that it returns only output of polynomial size.
+, and that the length of its output word is polynomially bound by the length
+ of its input word.
 \end_layout
 
 \begin_layout Theorem
@@ -4993,7 +5074,7 @@ reference "ex:Branching-grammar"
 \end_inset
 
  in the lower half.
- However, we note that 
+ However, 
 \begin_inset Formula $\norm{PC}$
 \end_inset
 
@@ -5017,8 +5098,7 @@ reference "ex:Branching-grammar"
 \begin_inset Formula $A$
 \end_inset
 
-.
- What happens now if we try to do that? We get:
+:
 \begin_inset Formula 
 \begin{align*}
 \left\langle PCD\right\rangle _{\norm A} & =P\left\langle CD\right\rangle _{\norm A-1}\\
@@ -5042,7 +5122,7 @@ From the image, we get an intuition why the decomposition is bound to fail
 \end_inset
 
 , we are bound to return an exponential number of different words.
- In that case it is better to fail directly by returning 
+ In that case, it is better to fail directly by returning 
 \begin_inset Formula $\bot$
 \end_inset
 
@@ -5397,12 +5477,10 @@ reference "sec:Proof-strategy-2"
 ), which uses only base replacement without making use of the decomposition.
 \end_layout
 
-\begin_layout Enumerate
-We also briefly considered writing a proof tactic using neither base replacement
- nor decomposition, only rewriting judgements with the given grammar rules,
- but it soon turned out that it would require significant adaptations to
- our current algorithm.
- Also given the predictably horrendous performance (if it were terminating,
+\begin_layout Standard
+We also considered a proof tactic using neither base replacement nor decompositi
+on, only rewriting judgements with the given grammar rules.
+ However, given the predictably horrendous performance (if it were terminating,
  which is not sure) of the tactic, we chose not to implement it.
 \end_layout
 
@@ -5511,7 +5589,7 @@ For example, if we have to prove
 
 \begin_layout Standard
 For several judgement types, there exist multiple tactic rules, which we
- apply depending on if their conditions are fulfilled.
+ apply depending on whether their conditions are fulfilled.
  If there are several tactic rules for one judgement type, we name them
  accordingly based on the performed action:
 \end_layout
@@ -5972,9 +6050,9 @@ sS-
 
 : If we have sums on both sides of a judgement, their number of addends
  must coincide.
- However, in this case here, we have exactly one addend on the left side
- and a strictly greater number of addends on the right side, so we have
- a contradiction.
+ However, in this case, we have exactly one addend on the left side and
+ a strictly greater number of addends on the right side, so we have a contradict
+ion.
 \begin_inset Formula 
 \[
 \bussproof{\unaryinf{\axiomc{\bot}}{aP}{\sum b_{y}Q_{y}}{\ensuremath{\bot}\text{ (ss-\bot)}}}
@@ -6027,8 +6105,16 @@ The validity of the proof tactic is proven in the appendix.
 \end_layout
 
 \begin_layout Lemma
-Given a judgement, the presented proof tactic constructs a proof rule with
- its conclusion equalling the judgement in polynomial time.
+Given a judgement 
+\begin_inset Formula $j$
+\end_inset
+
+, the presented proof tactic constructs in polynomial time a proof rule
+ whose conclusion is equal to 
+\begin_inset Formula $j$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Proof
@@ -6125,7 +6211,7 @@ Optimisation ideas
 \begin_layout Standard
 During the development of our proof strategy, we considered several ideas
  to improve proof construction.
- We show a small excerpt of these ideas:
+ We show a few of these ideas:
 \end_layout
 
 \begin_layout Itemize
@@ -6150,20 +6236,20 @@ If we have to prove for example
 \end_inset
 
  directly.
- The problem is that we might have several choices to choose from --- what
- do we do for example if we also have to prove 
+ The problem is that we might have several choices to choose from --- for
+ example, if we also have to prove 
 \begin_inset Formula $A\equiv BCF$
 \end_inset
 
-? Do we then prove 
+, we then have to choose whether to prove 
 \begin_inset Formula $F\equiv D$
 \end_inset
 
-, or do we prove 
+ or 
 \begin_inset Formula $F\equiv E$
 \end_inset
 
-?
+.
 \end_layout
 
 \begin_layout Itemize
@@ -6208,8 +6294,8 @@ reference "fig:Equivalence-Groof"
 
 \begin_layout Standard
 As we considered none of these ideas to have a fundamental impact on the
- complexity of our algorithm, we decided to first determine the complexity
- of our algorithm without these optimisation ideas.
+ complexity of our algorithm, we considered the complexity of our algorithm
+ without such optimisations.
 \end_layout
 
 \begin_layout Chapter
@@ -6239,8 +6325,7 @@ The name
 \noun on
 Groof
 \noun default
- is of course a clever pun referring to its respective homophone and to
- 
+ refers to its respective homophone and to 
 \emph on
 gr
 \emph default
@@ -6274,16 +6359,6 @@ filename "OCaml/sizes/programsize.txt"
 \end_inset
 
 lines of code) doing the following tasks:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-fix footnote!
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Itemize
@@ -6293,18 +6368,11 @@ Grammar generation: The program constructs several different grammars with
 \end_layout
 
 \begin_layout Itemize
-Grammar verification & norm calculation: The program verifies that the input
- grammar is a normed simple deterministic grammar, and in the same turn
- calculates the norm of each variable.
+Grammar verification and norm calculation: The program verifies that the
+ input grammar is a normed simple deterministic grammar, and calculates
+ the norm of each variable.
  We implemented and verified this part of the algorithm in Isabelle/HOL;
- see 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "chap:Appendix-Norm"
-
-\end_inset
-
- for details.
+ see appendix I for details.
 \end_layout
 
 \begin_layout Itemize
@@ -6799,8 +6867,8 @@ the cumulative size of all conclusion polynomials, i.e.
 
 \begin_layout Standard
 It is interesting to consider both of these factors, as we might e.g.
- have a linear number of proof rules on the one hand, however at the same
- time containing polynomials of cubic size on the other hand.
+ have a linear number of proof rules on the one hand, containing polynomials
+ of cubic size on the other hand.
 \end_layout
 
 \begin_layout Standard
@@ -6854,14 +6922,7 @@ DF
 \end_layout
 
 \begin_layout Standard
-Now for the results, summarised in 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "tab:Results"
-
-\end_inset
-
-: 
+The results are summarised in 
 \begin_inset Float table
 wide false
 sideways false
@@ -7074,6 +7135,13 @@ Results for the five benchmark grammars.
 \end_inset
 
 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "tab:Results"
+
+\end_inset
+
+:
 \end_layout
 
 \begin_layout Enumerate
@@ -7220,7 +7288,7 @@ Results for AB grammar without branching.
 
 \end_inset
 
-Again, here the base produces an exponential-size proof (as expected with
+Again, here the base produces a proof of exponential size (as expected with
  the result from lemma 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7266,7 +7334,7 @@ As all production rules for this grammar are (strict) sums, we cannot apply
  decomposition here, so the decomposition tactic will always fall back to
  the base tactic.
  As the latter produces exponential-size proofs, the decomposition also
- produces exponential-size proofs.
+ produces proofs of exponential size.
 \end_layout
 
 \begin_layout Chapter
@@ -7285,27 +7353,22 @@ We studied several existing algorithms to decide equivalence of simple determini
 stic grammars, and created several different algorithms based on them to
  produce equivalence proofs in our own proof system.
  Unfortunately, it turned out that all our algorithms have a complexity
- of 2-EXPTIME, which is far away from our projected goal of PTIME.
+ of 2-EXPTIME, which is far from our projected goal of PTIME.
  Nonetheless, in our experiments our decomposition tactic always seemed
- to yield polynomial-size proofs for the special case of compression grammars,
- so at least for a subclass of SDGs, we do not have any counterexample yet
- of a grammar evoking exponential-size proofs.
+ to yield polynomial-size proofs for the special case of compression grammars.
+ For this subclass of SDGs, we have not found any counterexample of a grammar
+ evoking exponential-size proofs.
 \end_layout
 
 \begin_layout Standard
 The problem has been difficult to treat as we could not find a way to translate
  several techniques from the existing PTIME algorithms into proofs in our
- proof system; however, this might be possible in the future by adding new
- proof rules to the proof system, making it more powerful and therefore
- accommodating the function of the PTIME algorithms.
-\end_layout
-
-\begin_layout Standard
-A completely different approach to the problem would be to use a different
+ proof system; however, this might be possible in the future either by adding
+ new proof rules to the proof system, or by using a completely different
  proof system to express the executions of existing PTIME algorithms as
  proofs.
- This approach would have the advantage of yielding polynomial-size proofs
- for sure.
+ The latter approach would have the advantage of yielding polynomial-size
+ proofs for sure.
  However, the proof system would be quite complex, while our original goal
  was to find out if polynomial-size proofs could be constructed with a relativel
 y simple proof system like ours.
@@ -7331,17 +7394,7 @@ key "paulson1990"
  These programs can also automatically produce code from such a proof afterwards
 , meaning we can obtain a program formally proved for correctness.
  We prepared this path by verifying a part of our algorithm in Isabelle,
- see 
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "chap:Appendix-Norm"
-
-\end_inset
-
-.
- However, currently the compilation of the resulting code may still introduce
- errors into the program, or the machine running the program might misbehave,
- producing a wrong result without us being able to verify it.
+ see appendix.
 \end_layout
 
 \begin_layout Standard
@@ -7349,8 +7402,6 @@ One last, but for us rather important aspect of this work is the creation
  of several original SDGs yielding exponential-size words, with non-trivially
  equivalent variables, which is something we did not find so far in existing
  literature.
- May they serve as inspiration for those who walk this rocky road well after
- us.
 \end_layout
 
 \begin_layout Chapter
@@ -8019,8 +8070,8 @@ We note that there are no circularities in this graph, except for the rule
 status collapsed
 
 \begin_layout Plain Layout
-Actually, if the proof construction algorithm is called to prove equivalence
- between two sums, then SS-
+Actually, if the user calls the proof construction algorithm to prove equivalenc
+e of two sums, then SS-
 \begin_inset Formula $+$
 \end_inset
 
@@ -8356,10 +8407,9 @@ move to main
 
 \begin_layout Standard
 Now we show completeness of our proof strategy.
- For this, we first define an auxiliary construction, which we baptised
- 
+ For this, we first define an auxiliary construction, which we call
 \emph on
-cluster
+ cluster
 \emph default
 .
 \end_layout
