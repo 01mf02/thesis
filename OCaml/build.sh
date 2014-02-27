@@ -9,7 +9,7 @@ echo "Building OCaml files ..."
 ocamlbuild -libs nums Main.d.byte
 
 echo "Generating statistics from OCaml program ..."
-#./Main.d.byte > /dev/null
+./Main.d.byte > /dev/null
 
 echo "Creating plots ..."
 gnuplot batch.plt 2> /dev/null

@@ -84,6 +84,7 @@ A context-free grammar (CFG) is a triple
  such that
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $V$
 \end_inset
@@ -138,6 +139,7 @@ X\to\sum_{\left(X,\alpha\right)\in P}\alpha.
 
 \end_layout
 
+\end_deeper
 \begin_layout Standard
 Now we define the different types of words.
 \end_layout
@@ -395,6 +397,7 @@ A construction graph for a grammar
  in GNF is a graph with the following conditions:
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Each vertex of the graph represents a variable word 
 \begin_inset Formula $w\in V^{*}$
@@ -439,6 +442,7 @@ For each vertex
 .
 \end_layout
 
+\end_deeper
 \begin_layout Standard
 We have as simple lemma:
 \end_layout
@@ -451,6 +455,7 @@ Given a construction graph for a grammar
 , it holds that:
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Each path from a variable word 
 \begin_inset Formula $w$
@@ -483,14 +488,8 @@ The length of the shortest path from a variable word
 .
 \end_layout
 
+\end_deeper
 \begin_layout Example
-\begin_inset CommandInset ref
-LatexCommand formatted
-reference "fig:Production-graph"
-
-\end_inset
-
-
 \begin_inset Float figure
 wide false
 sideways false
@@ -606,6 +605,13 @@ Production graph for example grammar.
 
 
 \end_layout
+
+\end_inset
+
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Production-graph"
 
 \end_inset
 
@@ -847,6 +853,7 @@ By induction on
 :
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 \begin_inset Formula $n=0$
 \end_inset
@@ -869,5 +876,6 @@ By induction on
 .
 \end_layout
 
+\end_deeper
 \end_body
 \end_document

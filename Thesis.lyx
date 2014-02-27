@@ -6,7 +6,7 @@
 \begin_preamble
 % set author and title for the CL class --- why the fuck is that needed?
 \plainauthor{Michael Färber}
-\plaintitle{Complexity of equivalence proofs of simple deterministic grammars}
+\plaintitle{Complexity of Equivalence Proofs of Simple Deterministic Grammars}
 \supervisors{Géraud Sénizergues, Cezary Kaliszyk}
 \institute{Université Bordeaux 1, Universität Innsbruck}
 
@@ -128,7 +128,7 @@ theorems-ams-bytype
 \begin_body
 
 \begin_layout Title
-Complexity of equivalence proofs of simple deterministic grammars
+Complexity of Equivalence Proofs of Simple Deterministic Grammars
 \end_layout
 
 \begin_layout Author
@@ -309,7 +309,7 @@ A possible remedy for this problem is to generate proofs for the results.
 
 \begin_layout Standard
 In this document, we considered the problem of equivalence of simple determinist
-ic grammars, which was shown to be decidable by Korenjak and Hopcroft
+ic grammars, which was shown decidable by Korenjak and Hopcroft
 \begin_inset space ~
 \end_inset
 
@@ -719,7 +719,7 @@ For all variables
 \begin_inset Formula $X_{i}$
 \end_inset
 
-, it holds for all variables 
+, it holds that for all variables 
 \begin_inset Formula $X_{j}$
 \end_inset
 
@@ -1136,10 +1136,10 @@ By induction on
 \end_inset
 
 : 
-\begin_inset Formula $k^{0}=1\leq1=\left(k+1\right)^{0}$
+\begin_inset Formula $k^{0}=1\leq1=\left(k+1\right)^{0}.$
 \end_inset
 
-.
+
 \end_layout
 
 \begin_layout Itemize
@@ -1147,10 +1147,10 @@ By induction on
 \end_inset
 
 : 
-\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{IH}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}$
+\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{IH}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}.$
 \end_inset
 
-.
+
 \end_layout
 
 \end_deeper
@@ -3563,7 +3563,7 @@ For two sets
 \begin_inset Formula $B$
 \end_inset
 
-, we define the symmetrical difference of 
+, we denote the symmetric difference of 
 \begin_inset Formula $A$
 \end_inset
 
@@ -6150,12 +6150,13 @@ name "sec:Proof-strategy-2"
 The second proof tactic does not use decomposition, but relies solely on
  base replacement.
  The greatest part of its tactic rules is equivalent to the rules in the
- first tactic; the differences lie only in the PP rules, where we replace
- PP-D, PP-
+ first tactic; the differences lie only in the PP rules, where we remove
+ PP-D and replace PP-
 \begin_inset Formula $\times$
 \end_inset
 
- and PP-B from the first tactic by the following rules:
+ and PP-B from the first tactic by the following rules (this covers all
+ cases):
 \end_layout
 
 \begin_layout Itemize
@@ -6178,7 +6179,7 @@ R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
 \exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
 \end{aligned}
 \\
-\bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times})}}}
+\bussproof{\binaryinf{\axiom{A_{1}}{\prod_{y=1}^{c}B_{y}}}{\axiom{\prod_{x=2}^{n_{A}}A_{x}}{\prod_{y=c+1}^{n_{B}}B_{y}}}{\prod A_{x}}{\prod B_{y}}{\ensuremath{\times}\text{ (PP-\ensuremath{\times}')}}}
 \end{gather*}
 
 \end_inset
@@ -6196,7 +6197,7 @@ R & =B_{1}\left[A_{1}\right]_{\norm{B_{1}}},\\
 \lnot\exists c<n_{B}:\, R & =\prod_{y=1}^{c}B_{y}\implies
 \end{aligned}
 \\
-\bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B)}}}
+\bussproof{\binaryinf{\axiom{\prod A_{x}}{R\prod_{x=2}^{n_{A}}A_{x}}}{\axiom{R\prod_{x=2}^{n_{A}}A_{x}}{\prod B_{y}}}{\prod A_{x}}{\prod B_{y}}{\text{trans (PP-B')}}}
 \end{gather*}
 
 \end_inset
@@ -6212,44 +6213,6 @@ Optimisation ideas
 During the development of our proof strategy, we considered several ideas
  to improve proof construction.
  We show a few of these ideas:
-\end_layout
-
-\begin_layout Itemize
-If we have to prove for example 
-\begin_inset Formula $A\equiv BCD$
-\end_inset
-
- and 
-\begin_inset Formula $A\equiv BCE$
-\end_inset
-
-, we might try to prove only 
-\begin_inset Formula $A\equiv BCD$
-\end_inset
-
- and then prove 
-\begin_inset Formula $A\equiv BCE$
-\end_inset
-
- by just showing 
-\begin_inset Formula $D\equiv E$
-\end_inset
-
- directly.
- The problem is that we might have several choices to choose from --- for
- example, if we also have to prove 
-\begin_inset Formula $A\equiv BCF$
-\end_inset
-
-, we then have to choose whether to prove 
-\begin_inset Formula $F\equiv D$
-\end_inset
-
- or 
-\begin_inset Formula $F\equiv E$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Itemize
@@ -6292,10 +6255,48 @@ reference "fig:Equivalence-Groof"
 .
 \end_layout
 
+\begin_layout Itemize
+If we have to prove for example 
+\begin_inset Formula $A\equiv BCD$
+\end_inset
+
+ and 
+\begin_inset Formula $A\equiv BCE$
+\end_inset
+
+, we might try to prove only 
+\begin_inset Formula $A\equiv BCD$
+\end_inset
+
+ and then prove 
+\begin_inset Formula $A\equiv BCE$
+\end_inset
+
+ by just showing 
+\begin_inset Formula $D\equiv E$
+\end_inset
+
+ directly.
+ The problem is that we might have several choices to choose from --- for
+ example, if we also have to prove 
+\begin_inset Formula $A\equiv BCF$
+\end_inset
+
+, we then have to choose whether to prove 
+\begin_inset Formula $F\equiv D$
+\end_inset
+
+ or 
+\begin_inset Formula $F\equiv E$
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Standard
-As we considered none of these ideas to have a fundamental impact on the
- complexity of our algorithm, we considered the complexity of our algorithm
- without such optimisations.
+We considered the complexity of our algorithm without such optimisations,
+ as we considered none of these to have a fundamental impact on the complexity
+ of our algorithm.
 \end_layout
 
 \begin_layout Chapter
@@ -7361,14 +7362,13 @@ stic grammars, and created several different algorithms based on them to
 \end_layout
 
 \begin_layout Standard
-The problem has been difficult to treat as we could not find a way to translate
- several techniques from the existing PTIME algorithms into proofs in our
- proof system; however, this might be possible in the future either by adding
- new proof rules to the proof system, or by using a completely different
- proof system to express the executions of existing PTIME algorithms as
- proofs.
- The latter approach would have the advantage of yielding polynomial-size
- proofs for sure.
+A number of techniques from the existing PTIME algorithms cannot be directly
+ translated into our simple proof system.
+ However, this might be possible in the future, either by adding new proof
+ rules to the proof system, or by using a completely different proof system
+ to express the executions of existing PTIME algorithms as proofs.
+ The latter approach would have the advantage of certainly yielding polynomial-s
+ize proofs.
  However, the proof system would be quite complex, while our original goal
  was to find out if polynomial-size proofs could be constructed with a relativel
 y simple proof system like ours.
@@ -7390,18 +7390,16 @@ key "paulson1990"
 
 \end_inset
 
- to verify the correctness proof afterwards.
+ to verify the correctness proof.
  These programs can also automatically produce code from such a proof afterwards
 , meaning we can obtain a program formally proved for correctness.
- We prepared this path by verifying a part of our algorithm in Isabelle,
- see appendix.
+ We investigated the feasibility of this approach in the appendix.
 \end_layout
 
 \begin_layout Standard
-One last, but for us rather important aspect of this work is the creation
- of several original SDGs yielding exponential-size words, with non-trivially
- equivalent variables, which is something we did not find so far in existing
- literature.
+One last, but rather important aspect of this work is the creation of several
+ original SDGs yielding exponential-size words with non-trivially equivalent
+ variables, which is something we did not find in existing literature.
 \end_layout
 
 \begin_layout Chapter
