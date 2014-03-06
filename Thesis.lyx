@@ -16,8 +16,8 @@
 \usepackage{bussproofs}
 
 % Isabelle
-\usepackage{Isabelle/output/document/isabelle}
-\usepackage{Isabelle/output/document/isabellesym}
+\usepackage{IsaTeX/isabelle}
+\usepackage{IsaTeX/isabellesym}
 \usepackage{mathpartir}
 \isadroptag{theory}
 
@@ -7398,8 +7398,8 @@ key "paulson1990"
 
 \begin_layout Standard
 One last, but rather important aspect of this work is the creation of several
- original SDGs yielding exponential-size words with non-trivially equivalent
- variables, which is something we did not find in existing literature.
+ original SDGs with non-trivially equivalent variables yielding exponential-size
+ words, which is something we did not find in existing literature.
 \end_layout
 
 \begin_layout Chapter

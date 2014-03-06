@@ -4,8 +4,8 @@
 \begin_header
 \textclass beamer
 \begin_preamble
-\usepackage{Isabelle/output/document/isabelle}
-\usepackage{Isabelle/output/document/isabellesym}
+\usepackage{IsaTeX/isabelle}
+\usepackage{IsaTeX/isabellesym}
 \usepackage{mathpartir}
 
 \usetheme[sealopacity=0.0,boxes,rounded,shadow,darker]{ComputationalLogic}
