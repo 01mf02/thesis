@@ -661,6 +661,30 @@ status open
 \end_layout
 
 \begin_layout BeginFrame
+Selected grammar example
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}A & \to a & A & \to a\\
+B & \to b & B & \to b\\
+A_{B,0} & \to aB & B_{A,0} & \to bA\\
+A_{B,n+1} & \to aBA_{B,n}A_{B,n} & B_{A,n+1} & \to bAB_{A,n}B_{A,n}\\
+F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
 Complexity
 \end_layout
 
@@ -733,7 +757,7 @@ centerline{
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "OCaml/sizes/sizes1.tex"
+filename "OCaml/sizes/sizes_rules1.tex"
 
 \end_inset
 
@@ -820,7 +844,7 @@ Extend the proof system to allow finding proofs in P
 
 \begin_layout Itemize
 Completely prove soundness/completeness of proof construction algorithm
- in Isabelle.
+ in Isabelle
 \end_layout
 
 \end_deeper
@@ -834,7 +858,7 @@ Completely prove soundness/completeness of proof construction algorithm
 
 \begin_layout Standard
 \align center
-Thank you for your attention! Questions?
+Thank you for your attention!
 \end_layout
 
 \begin_layout EndFrame
