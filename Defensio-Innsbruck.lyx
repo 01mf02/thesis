@@ -354,7 +354,7 @@ status open
 
 \begin_layout Plain Layout
 
-{Example:}
+{Example 1}
 \end_layout
 
 \end_inset
@@ -373,6 +373,46 @@ We see that
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ExampleBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{Example 2}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\begin{aligned}A & \to a & A & \to a\\
+B & \to b & B & \to b\\
+A_{B,0} & \to aB & B_{A,0} & \to bA\\
+A_{B,n+1} & \to aBA_{B,n}A_{B,n} & B_{A,n+1} & \to bAB_{A,n}B_{A,n}\\
+F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
+\end{aligned}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout EndFrame
@@ -656,30 +696,6 @@ status open
 \end_layout
 
 \end_deeper
-\begin_layout EndFrame
-
-\end_layout
-
-\begin_layout BeginFrame
-Selected grammar example
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\begin{aligned}A & \to a & A & \to a\\
-B & \to b & B & \to b\\
-A_{B,0} & \to aB & B_{A,0} & \to bA\\
-A_{B,n+1} & \to aBA_{B,n}A_{B,n} & B_{A,n+1} & \to bAB_{A,n}B_{A,n}\\
-F_{n} & \to aBA_{B,n} & G_{n} & \to aB_{A,n}B
-\end{aligned}
-\]
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout EndFrame
 
 \end_layout

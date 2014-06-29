@@ -322,7 +322,7 @@ key "korenjak1966"
 
 .
  Thirty years later, an efficient PTIME algorithm for the problem was presented
- by Hirshfeld, Faron and Moller
+ by Hirshfeld, Jerrum and Moller
 \begin_inset space ~
 \end_inset
 
@@ -598,7 +598,7 @@ Furthermore, we impose several ordering and naming conventions on any SDG
 \begin_inset Formula $G=\left(V,T,P\right)$
 \end_inset
 
-:
+ wlog:
 \end_layout
 
 \begin_layout Itemize
@@ -882,7 +882,7 @@ reference "ex:Example-grammar"
 \begin_inset Formula $b$
 \end_inset
 
-, there exist no dedicated variables, so we add
+, there exist no dedicated variables, so we add fresh
 \begin_inset Formula 
 \begin{align*}
 A & \to a\\
@@ -1147,7 +1147,7 @@ By induction on
 \end_inset
 
 : 
-\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{IH}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{n+1}.$
+\begin_inset Formula $\sum_{x=0}^{i+1}k^{x}=\sum_{x=0}^{i}k^{x}+k^{i+1}\overset{\text{IH}}{\leq}\left(k+1\right)^{i}+k^{i+1}\leq\left(k+1\right)^{i}+k\cdot\left(k+1\right)^{i}=\left(k+1\right)^{i}\cdot\left(k+1\right)=\left(k+1\right)^{i+1}.$
 \end_inset
 
 
@@ -2166,7 +2166,7 @@ Given a variable word
 \begin_inset Formula $\left[u\right]_{t}$
 \end_inset
 
- is defined (which is the case when
+ is defined (which is the case when 
 \begin_inset Formula $\norm u>t$
 \end_inset
 
@@ -2317,7 +2317,7 @@ key "caucal1990"
 Then, in an iterative process, the algorithm removes inequivalent pairs
  from the base, until the process stabilizes.
  To decide whether a base pair is equivalent, the algorithm relies --- amongst
- others --- on following theorem:
+ others --- on the following theorem:
 \end_layout
 
 \begin_layout Theorem
@@ -6832,7 +6832,8 @@ name "tab:AB-grammar-non2NF-br"
 \end_layout
 
 \begin_layout Standard
-We devised all the examples ourselves.
+We devised all the examples ourselves, as there were no standard benchmarks
+ available.
 \begin_inset Note Note
 status open
 

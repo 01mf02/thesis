@@ -320,10 +320,6 @@ Greibach normal form
 \end_inset
 
 , where 
-\begin_inset Formula $X\in V$
-\end_inset
-
-, 
 \begin_inset Formula $a\in\Sigma$
 \end_inset
 
@@ -377,7 +373,11 @@ This is a CFG in 2-GNF, as there are maximally two variables on the right
 \end_layout
 
 \begin_layout Standard
-To visualise a grammar, we may construct a production graph for it.
+We may visualise a grammar with a 
+\emph on
+construction graph
+\emph default
+.
 \end_layout
 
 \begin_layout Definition
