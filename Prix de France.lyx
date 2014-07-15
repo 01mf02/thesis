@@ -1,0 +1,259 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language french
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman lmodern
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Complexité des preuves d'équivalence des grammaires simple déterministes
+\end_layout
+
+\begin_layout Author
+Michael Färber
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+En cette section, nous décrivons le problème qui était à la base de notre
+ mémoire.
+\end_layout
+
+\begin_layout Paragraph
+Langages
+\end_layout
+
+\begin_layout Standard
+Dans notre travail, nous nous sommes concernés avec des 
+\emph on
+langages formels
+\emph default
+, qui sont très souvent utilisés en informatique pour décrire le comportement
+ des logiciels : Par exemple, pour vérifier que deux logiciels réalisent
+ des tâches identiques, c'est-à-dire qu'ils calculent les mêmes résultats
+ donné les mêmes entrées, on peut traduire les deux logiciels en langages
+ formels et puis vérifier que les deux langages soient égaux.
+ Alors pour des langages, on s'intéresse aux certains propriétés, notamment
+ l'
+\emph on
+équivalence 
+\emph default
+des langages.
+ En général, pour deux langages quelconque, leur équivalence n'est pas décidable
+, mais pour certains familles des langages, comme des langages simple déterminis
+tes, l'équivalence est en fait décidable 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "senizergues2001"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Preuves
+\end_layout
+
+\begin_layout Standard
+Pour décider des propriétés comme l'équivalence des langages simple déterministe
+s, il existe des algorithmes efficaces, par exemple 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+.
+ Le dommage de cet algorithme est quand-même qu'il ne sort que le résultat,
+ soit 
+\begin_inset Quotes eld
+\end_inset
+
+les deux langages sont égaux
+\begin_inset Quotes erd
+\end_inset
+
+ ou 
+\begin_inset Quotes eld
+\end_inset
+
+les deux langages ne sont pas égaux
+\begin_inset Quotes erd
+\end_inset
+
+, mais il ne donne pas de 
+\emph on
+preuve
+\emph default
+ de son résultat.
+ En mathématique, une preuve est une justification d'un hypothèse donné,
+ et sans preuve, on ne peut pas facilement vérifier la validité d'une hypothèse.
+ Donc on souhaite avoir des algorithmes qui justifient leurs résultats en
+ produisant des preuves que leurs résultats soient corrects.
+\end_layout
+
+\begin_layout Paragraph
+Complexité
+\end_layout
+
+\begin_layout Standard
+La 
+\emph on
+complexité
+\emph default
+ d'un algorithme spécifie la quantité de temps de laquelle un algorithme
+ a besoin pour finir son calcul.
+ Le meilleur algorithme connu pour décider l'équivalence de deux langages
+ simple déterministes a une complexité polynomiale 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hirshfeld1996"
+
+\end_inset
+
+, donc on veut savoir si on peut trouver un algorithme avec une complexité
+ polynomiale pour produire des preuves d'équivalence.
+\end_layout
+
+\begin_layout Section
+Notre contribution
+\end_layout
+
+\begin_layout Standard
+Nous avons créé un nouveau système de preuves adapté aux langages simple
+ déterministes.
+ Basé sur ce système, nous avons conçu et implémenté plusieurs nouveaux
+ algorithmes différents créant des preuves d'équivalence.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Vérification
+\end_layout
+
+\begin_layout Standard
+Une fois on a créé un algorithme, on souhaite prouver qu'il fonctionne toujours
+ correctement.
+ Pour cela, il suffit de créer une description mathématique du problème
+ que l'algorithme doit résoudre, et puis prouver mathématiquement que l'algorith
+me correspond à la description mathématique du problème.
+ Dans le contexte de notre problème, on a prouvé l'exactitude d'une partie
+ de nos algorithmes, par conséquent augmentant la confiance en notre algorithme.
+\end_layout
+
+\begin_layout Paragraph
+Grammaires de test
+\end_layout
+
+\begin_layout Standard
+Pour évaluer la performance de nos algorithmes, c'est nécessaire d'avoir
+ des grammaires de test avec des preuves non-triviales.
+ Comme il n'y avait pas des ensembles des telles grammaires disponibles,
+ il nous fallait concevoir des grammaires appropriées nous-mêmes.
+\end_layout
+
+\begin_layout Paragraph
+Complexité
+\end_layout
+
+\begin_layout Standard
+Nous avons prouvé une borne supérieur de la complexité de notre algorithme,
+ et nos expériences ont démontré que dans la plupart de nos grammaires que
+ nous avons testé, l'algorithme semble de terminer dans un temps polynomial.
+\end_layout
+
+\begin_layout Section
+Coopération franco-autrichienne
+\end_layout
+
+\begin_layout Standard
+Ce travail m'était proposé par Géraud Sénizergues, chercheur en informatique
+ à l'université Bordeaux 1, pendant mon séjour Erasmus à Bordeaux.
+ Le mémoire était également soutenu par Cezary Kaliszyk, professeur à l'Universi
+tät Innsbruck.
+\end_layout
+
+\begin_layout Standard
+Le mémoire était réalisé en anglais sous le titre 
+\begin_inset Quotes eld
+\end_inset
+
+Complexity of Equivalence Proofs of Simple Deterministic Grammars
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "Literature"
+options "abbrv"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
