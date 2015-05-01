@@ -61,7 +61,7 @@
 \begin_body
 
 \begin_layout Title
-Complexité des preuves d'équivalence des grammaires simple déterministes
+Complexité des preuves d'équivalence des grammaires simples déterministes
 \end_layout
 
 \begin_layout Author
@@ -73,7 +73,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-En cette section, nous décrivons le problème qui était à la base de notre
+Dans cette section, nous décrivons le problème qui est à la base de notre
  mémoire.
 \end_layout
 
@@ -82,7 +82,7 @@ Langages
 \end_layout
 
 \begin_layout Standard
-Dans notre travail, nous nous sommes concernés avec des 
+Notre travail concerne les 
 \emph on
 langages formels
 \emph default
@@ -90,16 +90,16 @@ langages formels
  des logiciels : Par exemple, pour vérifier que deux logiciels réalisent
  des tâches identiques, c'est-à-dire qu'ils calculent les mêmes résultats
  donné les mêmes entrées, on peut traduire les deux logiciels en langages
- formels et puis vérifier que les deux langages soient égaux.
- Alors pour des langages, on s'intéresse aux certains propriétés, notamment
+ formels et puis vérifier que les deux langages sont égaux.
+ Alors pour des langages, on s'intéresse à certaines propriétés, notamment
  l'
 \emph on
 équivalence 
 \emph default
 des langages.
- En général, pour deux langages quelconque, leur équivalence n'est pas décidable
-, mais pour certains familles des langages, comme des langages simple déterminis
-tes, l'équivalence est en fait décidable 
+ En général, pour deux langages quelconques, leur équivalence n'est pas
+ décidable, mais pour certaines familles de langages, comme des langages
+ simples déterministes, l'équivalence est en fait décidable 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "senizergues2001"
@@ -114,8 +114,8 @@ Preuves
 \end_layout
 
 \begin_layout Standard
-Pour décider des propriétés comme l'équivalence des langages simple déterministe
-s, il existe des algorithmes efficaces, par exemple 
+Pour décider des propriétés comme l'équivalence des langages simples déterminist
+es, il existe des algorithmes efficaces, par exemple 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hirshfeld1996"
@@ -123,8 +123,8 @@ key "hirshfeld1996"
 \end_inset
 
 .
- Le dommage de cet algorithme est quand-même qu'il ne sort que le résultat,
- soit 
+ Le revers de cet algorithme est qu'il ne retourne que le résultat, soit
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -145,10 +145,10 @@ les deux langages ne sont pas égaux
 preuve
 \emph default
  de son résultat.
- En mathématique, une preuve est une justification d'un hypothèse donné,
+ En mathématique, une preuve est une justification d'un hypothèse donnée,
  et sans preuve, on ne peut pas facilement vérifier la validité d'une hypothèse.
  Donc on souhaite avoir des algorithmes qui justifient leurs résultats en
- produisant des preuves que leurs résultats soient corrects.
+ produisant des preuves que leurs résultats sont corrects.
 \end_layout
 
 \begin_layout Paragraph
@@ -160,10 +160,10 @@ La
 \emph on
 complexité
 \emph default
- d'un algorithme spécifie la quantité de temps de laquelle un algorithme
- a besoin pour finir son calcul.
+ d'un algorithme spécifie la quantité de temps un algorithme a besoin pour
+ finir son calcul.
  Le meilleur algorithme connu pour décider l'équivalence de deux langages
- simple déterministes a une complexité polynomiale 
+ simples déterministes a une complexité polynomiale 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "hirshfeld1996"
@@ -179,10 +179,10 @@ Notre contribution
 \end_layout
 
 \begin_layout Standard
-Nous avons créé un nouveau système de preuves adapté aux langages simple
+Nous avons créé un nouveau système de preuves adapté aux langages simples
  déterministes.
- Basé sur ce système, nous avons conçu et implémenté plusieurs nouveaux
- algorithmes différents créant des preuves d'équivalence.
+ Basés sur ce système, nous avons conçu et implémenté plusieurs nouveaux
+ algorithmes créant des preuves d'équivalence.
  
 \end_layout
 
@@ -191,7 +191,7 @@ Vérification
 \end_layout
 
 \begin_layout Standard
-Une fois on a créé un algorithme, on souhaite prouver qu'il fonctionne toujours
+Une fois l'algorithme créé, on souhaite prouver qu'il fonctionne toujours
  correctement.
  Pour cela, il suffit de créer une description mathématique du problème
  que l'algorithme doit résoudre, et puis prouver mathématiquement que l'algorith
@@ -205,10 +205,10 @@ Grammaires de test
 \end_layout
 
 \begin_layout Standard
-Pour évaluer la performance de nos algorithmes, c'est nécessaire d'avoir
- des grammaires de test avec des preuves non-triviales.
- Comme il n'y avait pas des ensembles des telles grammaires disponibles,
- il nous fallait concevoir des grammaires appropriées nous-mêmes.
+Pour évaluer la performance de nos algorithmes, est nécessaire d'avoir des
+ grammaires de test avec des preuves non-triviales.
+ Comme il n'y avait pas d'ensembles de telles grammaires disponibles, nous
+ avons dû concevoir des grammaires appropriées nous-mêmes.
 \end_layout
 
 \begin_layout Paragraph
@@ -216,9 +216,9 @@ Complexité
 \end_layout
 
 \begin_layout Standard
-Nous avons prouvé une borne supérieur de la complexité de notre algorithme,
+Nous avons prouvé une borne supérieur pour la complexité de notre algorithme,
  et nos expériences ont démontré que dans la plupart de nos grammaires que
- nous avons testé, l'algorithme semble de terminer dans un temps polynomial.
+ nous avons testées, l'algorithme semble terminer en un temps polynomial.
 \end_layout
 
 \begin_layout Section
