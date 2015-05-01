@@ -2,14 +2,14 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass article
+\textclass scrlttr2
 \use_default_options true
 \maintain_unincluded_children false
-\language naustrian
+\language english
 \language_package default
-\inputencoding auto
+\inputencoding utf8
 \fontencoding global
-\font_roman default
+\font_roman lmodern
 \font_sans default
 \font_typewriter default
 \font_default_family default
@@ -60,8 +60,8 @@
 
 \begin_body
 
-\begin_layout Title
-Gutachten zur Masterarbeit 
+\begin_layout Subject
+Evaluation of the master's thesis 
 \begin_inset Quotes eld
 \end_inset
 
@@ -72,27 +72,83 @@ Complexity of Equivalence Proofs of Simple Deterministic Grammars
 
 \end_layout
 
-\begin_layout Author
+\begin_layout Name
 Cezary Kaliszyk
 \end_layout
 
+\begin_layout SenderAddress
+Computational Logic Group
+\begin_inset Newline newline
+\end_inset
+
+Technikerstraße 21a
+\begin_inset Newline newline
+\end_inset
+
+A-6020 Innsbruck
+\end_layout
+
+\begin_layout Address
+Interdisziplinärer Frankreich-Schwerpunkt der Universität Innsbruck
+\begin_inset Newline newline
+\end_inset
+
+Herzog-Friedrich-Straße 3
+\begin_inset Newline newline
+\end_inset
+
+A-6020 Innsbruck
+\end_layout
+
+\begin_layout Opening
+To whom it may concern,
+\end_layout
+
 \begin_layout Standard
-Die Masterarbeit von Michael Färber behandelt Äquivalenzbeweise von simpel-deter
-ministischen Grammatiken.
- Damit eng zusammenhängende Thematiken wurden in Frankreich schon längere
- Zeit untersucht, u.a.
- von dem Informatiker Géraud Sénizergues in Bordeaux, der für seine Forschung
- im Jahr 2002 den renommierten Gödel-Preis erhielt.
- Bei seinem Erasmus-Aufenthalt in Bordeaux hatte Michael Färber die Gelegenheit,
- von Géraud Sénizergues für obige Arbeit betreut zu werden, und konnte seine
- Ergebnisse auch auf einer Fachkonferenz auf der Île de Ré präsentieren.
- Er hat das der Arbeit zugrundeliegende Problem sowohl theoretisch als auch
- praktisch behandelt und somit einen wichtigen Beitrag zur Verifikation
- von Algorithmen geleistet.
- Darüber hinausgehend hat er auch dazu beigetragen, die Verbindung zwischen
- der Université Bordeaux 1 und der Universität Innsbruck intensivieren.
- Daher schlage ich Michael Färber für den Frankreich-Preis 2014 des Frankreich-S
-chwerpunkts vor.
+I have known Michael Färber since 2012, when he started working on a master
+ seminar topic with me.
+ During his final year, Michael has been granted an Erasmus scholarship
+ to visit the University of Bordeaux.
+ There he established a collaboration with Prof.
+ Géraud Sénizergues and started a jointly supervised research on equivalence
+ proofs of simple deterministic grammars, that later became the main topic
+ of his thesis.
+ The solution to the problem is of practical use: If you are able to model
+ a computer program as simple deterministic grammar, you can decide properties
+ such as equivalence with other programs, which is important to verify the
+ security of protocols, or to find out whether an optimised version of a
+ program performs the same task.
+\end_layout
+
+\begin_layout Standard
+The equivalence problem has been studied in Bordeaux theoretically already
+ for some time and the research has been awarded a Gödel price in 2002;
+ while the Innsbruck group specialized in proof assistant based formalized
+ proofs.
+ This gave Michael the idea to combine the the two directions and define
+ formally an algorithm that can be defined and proved correct in a formal
+ proof assistant.
+ Michael defined a proof system for equivalence proofs and developed a computer
+ program that can find and generate such proofs automatically.
+ He then investigated the proof assistant Isabelle/HOL and its formal specificat
+ion of the algorithm.
+ The higher-order logic formalization of an algorithm allows to certify
+ the correctness of the algorithms and ensure its termination.
+ Michael has proven both formally in the course of his thesis.
+ The results of the thesis were also presented at the FREC workshop at Île
+ de Ré.
+\end_layout
+
+\begin_layout Standard
+I therefore recommend Michael Färber for the Frankreich-Preis 2014.
+\end_layout
+
+\begin_layout Closing
+Sincerely,
+\end_layout
+
+\begin_layout EndLetter
+
 \end_layout
 
 \end_body
